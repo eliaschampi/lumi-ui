@@ -49,7 +49,7 @@
 		maxHeight: `${maxHeight}px`
 	}));
 
-	export function open(event: MouseEvent, data?: unknown): void {
+	export function open(event: MouseEvent, data: unknown = null): void {
 		event.preventDefault();
 		event.stopPropagation();
 
@@ -59,7 +59,7 @@
 		void positionMenu(event, data);
 	}
 
-	async function positionMenu(event: MouseEvent, data?: unknown): Promise<void> {
+	async function positionMenu(event: MouseEvent, data: unknown = null): Promise<void> {
 		await tick();
 		if (!contextMenu || !show) return;
 
