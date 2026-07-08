@@ -7,7 +7,7 @@ This library was extracted from Coedula and Faztore with a strict rule: **core c
 ## Install
 
 ```bash
-pnpm add git+ssh://git@github.com/eliaschampi/lumi-ui.git#main --ignore-scripts
+pnpm add git+https://github.com/eliaschampi/lumi-ui.git#main --ignore-scripts
 ```
 
 For local development before the remote package is pushed:

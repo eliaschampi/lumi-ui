@@ -8,7 +8,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/eliaschampi/lumi-ui.git"
+    "url": "git+https://github.com/eliaschampi/lumi-ui.git"
   },
   "svelte": "./dist/index.js",
   "types": "./dist/index.d.ts",
