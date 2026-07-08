@@ -1,19 +1,20 @@
 import type { Snippet } from 'svelte';
-import type { DropdownProps } from './types';
+import type { DropdownPlacement, DropdownTrigger } from './types';
 interface Props {
     open?: boolean;
-    position?: DropdownProps['position'];
-    size?: DropdownProps['size'];
+    placement?: DropdownPlacement;
+    position?: DropdownPlacement;
+    size?: 'sm' | 'md';
     disabled?: boolean;
-    trigger?: DropdownProps['trigger'];
+    trigger?: DropdownTrigger;
     closeOnClickOutside?: boolean;
     maxHeight?: number;
     offset?: number;
     viewportPadding?: number;
     'aria-label'?: string;
     class?: string;
-    onshow?: () => void;
-    onhide?: () => void;
+    onopen?: () => void;
+    onclose?: () => void;
     children?: Snippet;
     content?: Snippet;
     triggerContent?: Snippet;

@@ -4,7 +4,7 @@ export interface FloatingPosition {
     width?: number;
     maxHeight?: number;
 }
-export type FloatingPlacement = 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end' | 'bottom' | 'top';
+export type FloatingPlacement = 'top' | 'bottom' | 'left' | 'right' | 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end' | 'left-start' | 'left-end' | 'right-start' | 'right-end';
 export interface UseFloatingOptions {
     offset?: number;
     placement?: FloatingPlacement;
@@ -16,8 +16,10 @@ export interface UseFloatingOptions {
 }
 export type FloatingController = {
     isOpen: boolean;
+    hasPosition: boolean;
     position: FloatingPosition;
     floatingStyles: Record<string, string>;
+    styleString: string;
     open: () => void;
     close: () => void;
     toggle: () => void;

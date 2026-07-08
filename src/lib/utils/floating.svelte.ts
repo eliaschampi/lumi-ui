@@ -17,7 +17,18 @@ export interface FloatingPosition {
 }
 
 export type FloatingPlacement =
-	'bottom-start' | 'bottom-end' | 'top-start' | 'top-end' | 'bottom' | 'top';
+	| 'top'
+	| 'bottom'
+	| 'left'
+	| 'right'
+	| 'top-start'
+	| 'top-end'
+	| 'bottom-start'
+	| 'bottom-end'
+	| 'left-start'
+	| 'left-end'
+	| 'right-start'
+	| 'right-end';
 
 export interface UseFloatingOptions {
 	offset?: number;
@@ -31,8 +42,10 @@ export interface UseFloatingOptions {
 
 export type FloatingController = {
 	isOpen: boolean;
+	hasPosition: boolean;
 	position: FloatingPosition;
 	floatingStyles: Record<string, string>;
+	styleString: string;
 	open: () => void;
 	close: () => void;
 	toggle: () => void;
@@ -49,7 +62,7 @@ export function createFloating(
 ): FloatingController {
 	const optionsGetter: () => UseFloatingOptions =
 		typeof options === 'function' ? options : () => options;
-	const resolvedOptions = $derived(() => {
+	const resolvedOptions = $derived.by(() => {
 		const current = optionsGetter() ?? {};
 		return {
 			offset: 8,
@@ -68,8 +81,8 @@ export function createFloating(
 	let hasPosition = $state(false);
 	let updateToken = 0;
 
-	const floatingStyles = $derived(() => {
-		const { strategy, zIndex, matchWidth } = resolvedOptions();
+	const floatingStyles = $derived.by(() => {
+		const { strategy, zIndex, matchWidth } = resolvedOptions;
 		const styles: Record<string, string> = {
 			position: strategy,
 			top: `${position.top}px`,
@@ -89,6 +102,12 @@ export function createFloating(
 		return styles;
 	});
 
+	const styleString = $derived(
+		Object.entries(floatingStyles)
+			.map(([key, value]) => `${key}: ${value}`)
+			.join('; ')
+	);
+
 	async function calculatePosition(): Promise<void> {
 		const trigger = triggerElement();
 		const floating = floatingElement();
@@ -101,17 +120,20 @@ export function createFloating(
 			maxHeight,
 			viewportPadding,
 			strategy
-		} = resolvedOptions();
+		} = resolvedOptions;
 		const token = ++updateToken;
 		let floatingMaxHeight = maxHeight;
 
-		const { x, y } = await computePosition(trigger, floating, {
-			placement: placement as Placement,
-			strategy: strategy as Strategy,
-			middleware: [
-				floatingOffset(offset),
-				flip({ padding: viewportPadding }),
-				shift({ padding: viewportPadding }),
+		const middleware: NonNullable<
+			Parameters<typeof computePosition>[2]
+		>['middleware'] = [
+			floatingOffset(offset),
+			flip({ padding: viewportPadding }),
+			shift({ padding: viewportPadding })
+		];
+
+		if (typeof maxHeight === 'number') {
+			middleware.push(
 				size({
 					padding: viewportPadding,
 					apply({ availableHeight }) {
@@ -121,7 +143,13 @@ export function createFloating(
 						);
 					}
 				})
-			]
+			);
+		}
+
+		const { x, y } = await computePosition(trigger, floating, {
+			placement: placement as Placement,
+			strategy: strategy as Strategy,
+			middleware
 		});
 
 		if (token !== updateToken || !isOpen) return;
@@ -143,7 +171,9 @@ export function createFloating(
 
 	function close(): void {
 		isOpen = false;
-		hasPosition = false;
+		// Keep last-known position visible so the consumer's exit transition
+		// (e.g. Svelte `transition:scale`) is not suppressed by `visibility: hidden`.
+		// `hasPosition` is reset to `false` on the next `open()`.
 		updateToken += 1;
 	}
 
@@ -176,11 +206,17 @@ export function createFloating(
 		get isOpen() {
 			return isOpen;
 		},
+		get hasPosition() {
+			return hasPosition;
+		},
 		get position() {
 			return position;
 		},
 		get floatingStyles() {
-			return floatingStyles();
+			return floatingStyles;
+		},
+		get styleString() {
+			return styleString;
 		},
 		open,
 		close,

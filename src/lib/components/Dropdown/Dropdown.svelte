@@ -1,26 +1,27 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { onMount, setContext } from 'svelte';
+	import { setContext } from 'svelte';
 	import { scale } from 'svelte/transition';
 	import { portal } from '../../actions/portal';
 	import { createFloating } from '../../utils/floating.svelte';
 	import { LUMI_CONFIG } from '../config';
-	import type { DropdownProps } from './types';
+	import type { DropdownPlacement, DropdownTrigger } from './types';
 
 	interface Props {
 		open?: boolean;
-		position?: DropdownProps['position'];
-		size?: DropdownProps['size'];
+		placement?: DropdownPlacement;
+		position?: DropdownPlacement; // Added for backwards compatibility
+		size?: 'sm' | 'md';
 		disabled?: boolean;
-		trigger?: DropdownProps['trigger'];
+		trigger?: DropdownTrigger;
 		closeOnClickOutside?: boolean;
 		maxHeight?: number;
 		offset?: number;
 		viewportPadding?: number;
 		'aria-label'?: string;
 		class?: string;
-		onshow?: () => void;
-		onhide?: () => void;
+		onopen?: () => void;
+		onclose?: () => void;
 		children?: Snippet;
 		content?: Snippet;
 		triggerContent?: Snippet;
@@ -28,7 +29,8 @@
 
 	let {
 		open = $bindable(false),
-		position = 'bottom-start',
+		placement,
+		position,
 		size = 'md',
 		disabled = false,
 		trigger = 'click',
@@ -38,25 +40,29 @@
 		viewportPadding = 12,
 		'aria-label': ariaLabel = '',
 		class: className = '',
-		onshow,
-		onhide,
+		onopen,
+		onclose,
 		children,
 		content,
 		triggerContent
 	}: Props = $props();
 
+	// Support both placement and position (deprecated) with fallback to default
+	const resolvedPlacement = $derived(placement ?? position ?? 'bottom-start');
+
 	let dropdownRef: HTMLDivElement | undefined = $state();
 	let menuRef: HTMLDivElement | undefined = $state();
 
-	const triggerId = `lumi-dropdown-trigger-${Math.random().toString(36).substring(2, 11)}`;
-	const menuId = `lumi-dropdown-menu-${Math.random().toString(36).substring(2, 11)}`;
+	const instanceId = $props.id();
+	const triggerId = `lumi-dropdown-trigger-${instanceId}`;
+	const menuId = `lumi-dropdown-menu-${instanceId}`;
 	const transitionDuration = LUMI_CONFIG.transitions.fast;
-	// Floating element management
+
 	const floating = createFloating(
 		() => dropdownRef,
 		() => menuRef,
 		() => ({
-			placement: position,
+			placement: resolvedPlacement,
 			maxHeight,
 			offset,
 			viewportPadding,
@@ -65,16 +71,13 @@
 		})
 	);
 
-	// Sync open state with floating
+	// Sync external `open` prop with the floating controller.
 	$effect(() => {
-		if (open && !floating.isOpen) {
-			openDropdown();
-		} else if (!open && floating.isOpen) {
-			closeDropdown();
-		}
+		if (open && !floating.isOpen) openDropdown();
+		else if (!open && floating.isOpen) closeDropdown();
 	});
 
-	// Provide close function to child components
+	// Provide close function to child components (DropdownItem).
 	setContext('dropdownClose', closeDropdown);
 
 	const dropdownClasses = $derived.by(() =>
@@ -83,44 +86,42 @@
 
 	const styleVars = `--dropdown-transition-duration: ${transitionDuration}ms;`;
 
+	// Render rule (no double-render of `children`):
+	//   trigger  -> `triggerContent`, or `children` only when no `content` is given.
+	//   menu     -> `content`, or `children` only when `triggerContent` is given.
+	const triggerSnippet = $derived(triggerContent ?? (content ? undefined : children));
+	const menuSnippet = $derived(content ?? (triggerContent ? children : undefined));
+
 	function openDropdown(): void {
-		if (disabled) return;
+		if (disabled || floating.isOpen) return;
 		floating.open();
 		open = true;
-		onshow?.();
+		onopen?.();
 	}
 
 	function closeDropdown(): void {
+		if (!floating.isOpen) return;
 		floating.close();
 		open = false;
-		onhide?.();
+		onclose?.();
 	}
 
 	function toggle(): void {
 		if (disabled) return;
-		if (open) {
-			closeDropdown();
-		} else {
-			openDropdown();
-		}
+		if (open) closeDropdown();
+		else openDropdown();
 	}
 
-	function handleClickOutside(event: MouseEvent): void {
-		if (!closeOnClickOutside || !open) return;
-		if (!dropdownRef || !menuRef) return;
-
+	function handleClickOutside(event: PointerEvent): void {
+		if (!closeOnClickOutside || !open || !dropdownRef || !menuRef) return;
 		const target = event.target as Element;
-
-		// Check if click is outside both trigger and menu
 		if (!dropdownRef.contains(target) && !menuRef.contains(target)) {
 			closeDropdown();
 		}
 	}
 
 	function handleEscape(event: KeyboardEvent): void {
-		if (event.key === 'Escape' && open) {
-			closeDropdown();
-		}
+		if (event.key === 'Escape' && open) closeDropdown();
 	}
 
 	function handleTriggerClick(event: MouseEvent): void {
@@ -139,28 +140,68 @@
 		}
 	}
 
-	function handleMouseEnter(): void {
-		if (trigger === 'hover' && !disabled) {
-			openDropdown();
+	// Hover trigger: the menu is portaled to document.body, so both the trigger
+	// and the menu coordinate via a shared, cancelable close timer. Moving the
+	// cursor from trigger into the portaled menu no longer closes the dropdown.
+	let hoverCloseTimer: ReturnType<typeof setTimeout> | null = null;
+
+	function cancelHoverClose(): void {
+		if (hoverCloseTimer !== null) {
+			clearTimeout(hoverCloseTimer);
+			hoverCloseTimer = null;
 		}
 	}
 
-	function handleMouseLeave(): void {
-		if (trigger === 'hover' && !disabled) {
+	function scheduleHoverClose(): void {
+		if (trigger !== 'hover' || disabled) return;
+		cancelHoverClose();
+		hoverCloseTimer = setTimeout(() => {
+			hoverCloseTimer = null;
 			closeDropdown();
-		}
+		}, 80);
 	}
 
-	onMount(() => {
-		// Use capture phase for click outside to prevent issues
+	function handleTriggerEnter(): void {
+		if (trigger !== 'hover' || disabled) return;
+		cancelHoverClose();
+		openDropdown();
+	}
+
+	function handleTriggerLeave(): void {
+		if (trigger !== 'hover') return;
+		scheduleHoverClose();
+	}
+
+	function handleMenuEnter(): void {
+		if (trigger !== 'hover') return;
+		cancelHoverClose();
+	}
+
+	function handleMenuLeave(): void {
+		if (trigger !== 'hover') return;
+		scheduleHoverClose();
+	}
+
+	// Reactive document listeners: attached only while open, and only when
+	// their feature is enabled. A change to `closeOnClickOutside` after mount
+	// is now honored on the next open cycle.
+	$effect(() => {
+		if (!open) return;
 		if (closeOnClickOutside) {
-			document.addEventListener('click', handleClickOutside, true);
+			document.addEventListener('pointerdown', handleClickOutside, true);
 		}
 		document.addEventListener('keydown', handleEscape);
-
 		return () => {
-			document.removeEventListener('click', handleClickOutside, true);
+			document.removeEventListener('pointerdown', handleClickOutside, true);
 			document.removeEventListener('keydown', handleEscape);
+		};
+	});
+
+	// Component-level resource and timer cleanup
+	$effect(() => {
+		return () => {
+			cancelHoverClose();
+			floating.close();
 		};
 	});
 </script>
@@ -169,11 +210,10 @@
 	bind:this={dropdownRef}
 	class={dropdownClasses}
 	style={styleVars}
-	onmouseenter={handleMouseEnter}
-	onmouseleave={handleMouseLeave}
+	onmouseenter={handleTriggerEnter}
+	onmouseleave={handleTriggerLeave}
 	role="presentation"
 >
-	<!-- Trigger -->
 	<div
 		id={triggerId}
 		class="lumi-dropdown__trigger"
@@ -187,14 +227,11 @@
 		onclick={handleTriggerClick}
 		onkeydown={handleTriggerKeydown}
 	>
-		{#if triggerContent}
-			{@render triggerContent()}
-		{:else if !content && children}
-			{@render children()}
+		{#if triggerSnippet}
+			{@render triggerSnippet()}
 		{/if}
 	</div>
 
-	<!-- Menu -->
 	{#if open}
 		<div
 			bind:this={menuRef}
@@ -203,18 +240,15 @@
 			class="lumi-dropdown__menu lumi-dropdown__menu--{size}"
 			role="menu"
 			aria-labelledby={triggerId}
-			style="position: {floating.floatingStyles.position}; top: {floating.floatingStyles
-				.top}; left: {floating.floatingStyles.left}; z-index: {floating.floatingStyles
-				.zIndex}; {floating.floatingStyles.maxHeight
-				? `max-height: ${floating.floatingStyles.maxHeight}`
-				: ''}"
+			tabindex="-1"
+			style={floating.styleString}
+			onmouseenter={handleMenuEnter}
+			onmouseleave={handleMenuLeave}
 			transition:scale={{ duration: transitionDuration, start: 0.96 }}
 		>
 			<div class="lumi-dropdown__content">
-				{#if content}
-					{@render content()}
-				{:else if children}
-					{@render children()}
+				{#if menuSnippet}
+					{@render menuSnippet()}
 				{/if}
 			</div>
 		</div>

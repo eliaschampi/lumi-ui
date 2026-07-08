@@ -1,11 +1,10 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { onDestroy } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { portal } from '../../actions/portal';
-	import type { TooltipProps } from './types';
-	import type { TooltipPosition } from './types';
+	import { createFloating } from '../../utils/floating.svelte';
 	import { LUMI_CONFIG } from '../config';
+	import type { TooltipPosition, TooltipProps } from './types';
 
 	interface Props extends TooltipProps {
 		children?: Snippet;
@@ -22,26 +21,43 @@
 		content
 	}: Props = $props();
 
-	const uniqueId =
-		globalThis.crypto?.randomUUID?.().slice(0, 8) ?? Math.random().toString(36).slice(2, 10);
-	const tooltipId = `lumi-tooltip-${uniqueId}`;
+	const instanceId = $props.id();
+	const tooltipId = `lumi-tooltip-${instanceId}`;
+
 	let isVisible = $state(false);
 	let isPositioned = $state(false);
-	let resolvedPosition = $state<TooltipPosition>('top');
-	let tooltipTop = $state(0);
-	let tooltipLeft = $state(0);
+	// svelte-ignore state_referenced_locally
+	// `resolvedPosition` is kept in sync with `position` by `showTooltip` and
+	// the position $effect; the initializer only sets the first paint default.
+	let resolvedPosition = $state<TooltipPosition>(position);
 	let arrowOffset = $state(0);
 	let showTimeout: number | null = null;
-	let frameId: number | null = null;
+
 	let triggerRef: HTMLDivElement | undefined = $state();
 	let tooltipRef: HTMLDivElement | undefined = $state();
 
-	const viewportPadding = 8;
 	const tooltipGap = 10;
 	const arrowEdgePadding = 12;
+	const viewportPadding = 8;
 	const transitionDuration = LUMI_CONFIG.transitions.fast;
 
-	const tooltipClasses = $derived(
+	// single source of truth: flip / shift / autoUpdate are delegated to
+	// @floating-ui via createFloating. Only the arrow cross-axis offset is
+	// computed here, because it depends on the presentation layer (rotated
+	// square pseudo-element) rather than the floating geometry.
+	const floating = createFloating(
+		() => triggerRef,
+		() => tooltipRef,
+		() => ({
+			placement: position,
+			offset: tooltipGap,
+			viewportPadding,
+			zIndex: 'var(--lumi-z-tooltip)',
+			strategy: 'fixed' as const
+		})
+	);
+
+	const tooltipClasses = $derived.by(() =>
 		[
 			'lumi-tooltip__content',
 			`lumi-tooltip--${resolvedPosition}`,
@@ -54,8 +70,7 @@
 
 	const tooltipStyles = $derived(
 		[
-			`top: ${tooltipTop}px`,
-			`left: ${tooltipLeft}px`,
+			floating.styleString,
 			`--lumi-tooltip-arrow-offset: ${arrowOffset}px`,
 			`--tooltip-accent: var(--lumi-color-${color})`,
 			`--tooltip-accent-rgb: var(--lumi-color-${color}-rgb)`
@@ -73,185 +88,85 @@
 		}
 	}
 
-	function clearFrame(): void {
-		if (frameId !== null) {
-			cancelAnimationFrame(frameId);
-			frameId = null;
-		}
-	}
-
-	function schedulePositionUpdate(preferredPosition: TooltipPosition = position): void {
-		clearFrame();
-		frameId = requestAnimationFrame(() => {
-			frameId = null;
-			updatePosition(preferredPosition);
-		});
-	}
-
-	function resolveBestPosition(
-		preferred: TooltipPosition,
-		triggerRect: DOMRect,
-		tooltipRect: DOMRect
-	): TooltipPosition {
-		const spaces: Record<TooltipPosition, number> = {
-			top: triggerRect.top - viewportPadding,
-			bottom: window.innerHeight - triggerRect.bottom - viewportPadding,
-			left: triggerRect.left - viewportPadding,
-			right: window.innerWidth - triggerRect.right - viewportPadding
-		};
-
-		const required: Record<TooltipPosition, number> = {
-			top: tooltipRect.height + tooltipGap,
-			bottom: tooltipRect.height + tooltipGap,
-			left: tooltipRect.width + tooltipGap,
-			right: tooltipRect.width + tooltipGap
-		};
-
-		if (spaces[preferred] >= required[preferred]) {
-			return preferred;
-		}
-
-		const oppositeMap: Record<TooltipPosition, TooltipPosition> = {
-			top: 'bottom',
-			bottom: 'top',
-			left: 'right',
-			right: 'left'
-		};
-		const opposite = oppositeMap[preferred];
-
-		if (spaces[opposite] >= required[opposite]) {
-			return opposite;
-		}
-
-		return (Object.entries(spaces).sort(([, a], [, b]) => b - a)[0]?.[0] ??
-			preferred) as TooltipPosition;
-	}
-
-	function updatePosition(preferredPosition: TooltipPosition = position): void {
-		if (!triggerRef || !tooltipRef || !isVisible) return;
-
-		const triggerRect = triggerRef.getBoundingClientRect();
-		const tooltipRect = tooltipRef.getBoundingClientRect();
-		const nextPosition = resolveBestPosition(preferredPosition, triggerRect, tooltipRect);
-
-		const triggerCenterX = triggerRect.left + triggerRect.width / 2;
-		const triggerCenterY = triggerRect.top + triggerRect.height / 2;
-
-		let top = 0;
-		let left = 0;
-
-		switch (nextPosition) {
-			case 'top':
-				top = triggerRect.top - tooltipRect.height - tooltipGap;
-				left = triggerCenterX - tooltipRect.width / 2;
-				break;
-			case 'bottom':
-				top = triggerRect.bottom + tooltipGap;
-				left = triggerCenterX - tooltipRect.width / 2;
-				break;
-			case 'left':
-				top = triggerCenterY - tooltipRect.height / 2;
-				left = triggerRect.left - tooltipRect.width - tooltipGap;
-				break;
-			case 'right':
-				top = triggerCenterY - tooltipRect.height / 2;
-				left = triggerRect.right + tooltipGap;
-				break;
-		}
-
-		const maxLeft = Math.max(
-			viewportPadding,
-			window.innerWidth - tooltipRect.width - viewportPadding
-		);
-		const maxTop = Math.max(
-			viewportPadding,
-			window.innerHeight - tooltipRect.height - viewportPadding
-		);
-		const clampedLeft = clamp(left, viewportPadding, maxLeft);
-		const clampedTop = clamp(top, viewportPadding, maxTop);
-
-		const axisSize =
-			nextPosition === 'top' || nextPosition === 'bottom' ? tooltipRect.width : tooltipRect.height;
-		const desiredArrow =
-			nextPosition === 'top' || nextPosition === 'bottom'
-				? triggerCenterX - clampedLeft
-				: triggerCenterY - clampedTop;
-		const minArrowOffset = Math.min(arrowEdgePadding, axisSize / 2);
-		const maxArrowOffset = Math.max(minArrowOffset, axisSize - minArrowOffset);
-
-		resolvedPosition = nextPosition;
-		tooltipTop = clampedTop;
-		tooltipLeft = clampedLeft;
-		arrowOffset = clamp(desiredArrow, minArrowOffset, maxArrowOffset);
-		isPositioned = true;
-	}
-
 	function showTooltip(): void {
 		clearShowTimeout();
 		resolvedPosition = position;
 
-		if (delay > 0) {
-			showTimeout = window.setTimeout(() => {
-				isVisible = true;
-				showTimeout = null;
-				isPositioned = false;
-			}, delay);
-		} else {
+		const reveal = (): void => {
 			isVisible = true;
 			isPositioned = false;
+			floating.open();
+		};
+
+		if (delay > 0) {
+			showTimeout = window.setTimeout(() => {
+				showTimeout = null;
+				reveal();
+			}, delay);
+		} else {
+			reveal();
 		}
 	}
 
 	function hideTooltip(): void {
 		clearShowTimeout();
-		clearFrame();
 		isVisible = false;
 		isPositioned = false;
+		floating.close();
 	}
 
 	function handleFocusOut(event: FocusEvent): void {
 		const nextTarget = event.relatedTarget as Node | null;
-		if (nextTarget && triggerRef?.contains(nextTarget)) {
-			return;
-		}
+		if (nextTarget && triggerRef?.contains(nextTarget)) return;
 		hideTooltip();
 	}
 
+	// Arrow + resolved placement: recomputed whenever floating-ui repositions the
+	// tooltip. We read the live rects (post-shift/clamp) rather than threading
+	// middleware data through the public floating API, so the arrow stays
+	// anchored to the trigger center even after viewport clamping, and `flip`
+	// is reflected by inferring the resolved axis from the geometry.
 	$effect(() => {
-		if (!isVisible || !tooltipRef || !triggerRef) return;
-		schedulePositionUpdate(position);
+		if (!isVisible || !tooltipRef || !triggerRef || !floating.hasPosition) return;
+		// Touch `floating.position` so this effect re-runs on every reposition.
+		const { top, left } = floating.position;
 
-		const resizeObserver = new ResizeObserver(() => {
-			schedulePositionUpdate();
-		});
+		const triggerRect = triggerRef.getBoundingClientRect();
+		const tooltipRect = tooltipRef.getBoundingClientRect();
+		if (tooltipRect.width === 0 || tooltipRect.height === 0) return;
 
-		resizeObserver.observe(tooltipRef);
-		resizeObserver.observe(triggerRef);
+		const resolved: TooltipPosition =
+			position === 'left' || position === 'right'
+				? tooltipRect.right <= triggerRect.left
+					? 'left'
+					: 'right'
+				: tooltipRect.bottom <= triggerRect.top
+					? 'top'
+					: 'bottom';
 
-		return () => {
-			resizeObserver.disconnect();
-		};
+		const triggerCenterX = triggerRect.left + triggerRect.width / 2;
+		const triggerCenterY = triggerRect.top + triggerRect.height / 2;
+
+		const axisSize =
+			resolved === 'top' || resolved === 'bottom' ? tooltipRect.width : tooltipRect.height;
+		const desiredArrow =
+			resolved === 'top' || resolved === 'bottom'
+				? triggerCenterX - tooltipRect.left
+				: triggerCenterY - tooltipRect.top;
+		const minArrowOffset = Math.min(arrowEdgePadding, axisSize / 2);
+		const maxArrowOffset = Math.max(minArrowOffset, axisSize - minArrowOffset);
+
+		resolvedPosition = resolved;
+		arrowOffset = clamp(desiredArrow, minArrowOffset, maxArrowOffset);
+		isPositioned = true;
 	});
 
+	// Component-level resource and timeout cleanup
 	$effect(() => {
-		if (!isVisible) return;
-
-		const handleViewportChange = (): void => {
-			schedulePositionUpdate();
-		};
-
-		window.addEventListener('scroll', handleViewportChange, true);
-		window.addEventListener('resize', handleViewportChange);
-
 		return () => {
-			window.removeEventListener('scroll', handleViewportChange, true);
-			window.removeEventListener('resize', handleViewportChange);
+			clearShowTimeout();
+			floating.close();
 		};
-	});
-
-	onDestroy(() => {
-		clearShowTimeout();
-		clearFrame();
 	});
 </script>
 
@@ -278,7 +193,6 @@
 		class={tooltipClasses}
 		style={tooltipStyles}
 		role="tooltip"
-		aria-label={text || 'Tooltip'}
 		transition:fade={{ duration: transitionDuration }}
 	>
 		{#if content}

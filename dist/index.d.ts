@@ -10,7 +10,7 @@ export type { ContextItemProps, ContextProps, ContextSize } from './components/C
 export { Context, ContextItem } from './components/Context';
 export type { DialogProps, DialogSize } from './components/Dialog';
 export { Dialog } from './components/Dialog';
-export type { DropdownPosition, DropdownProps, DropdownSize, DropdownTrigger } from './components/Dropdown';
+export type { DropdownPlacement, DropdownPosition, DropdownProps, DropdownSize, DropdownTrigger } from './components/Dropdown';
 export { Dropdown, DropdownItem } from './components/Dropdown';
 export type { IconProps } from './components/Icon';
 export { getAvailableIcons, getIcon, hasIcon, Icon } from './components/Icon';

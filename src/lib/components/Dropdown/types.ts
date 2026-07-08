@@ -1,16 +1,21 @@
 import type { FloatingPlacement } from '../../utils/floating.svelte';
 import type { LumiCompactSize } from '../config';
 
-export type DropdownPosition = FloatingPlacement;
+export type DropdownPlacement = FloatingPlacement;
+/** @deprecated Use `DropdownPlacement` instead. */
+export type DropdownPosition = DropdownPlacement;
 export type DropdownSize = LumiCompactSize;
 export type DropdownTrigger = 'click' | 'hover';
 
 export interface DropdownProps {
-	/** Whether dropdown is open */
+	/** Whether dropdown is open (bindable) */
 	open?: boolean;
 
-	/** Dropdown position relative to trigger */
-	position?: DropdownPosition;
+	/** Dropdown placement relative to trigger */
+	placement?: DropdownPlacement;
+
+	/** @deprecated Use `placement` instead. */
+	position?: DropdownPlacement;
 
 	/** Size variant */
 	size?: DropdownSize;
@@ -39,9 +44,9 @@ export interface DropdownProps {
 	/** Accessible label for trigger when trigger content has no text */
 	'aria-label'?: string;
 
-	/** Show event handler */
-	onshow?: () => void;
+	/** Open event handler */
+	onopen?: () => void;
 
-	/** Hide event handler */
-	onhide?: () => void;
+	/** Close event handler */
+	onclose?: () => void;
 }

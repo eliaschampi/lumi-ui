@@ -19,6 +19,7 @@ export { Context, ContextItem } from './components/Context';
 export type { DialogProps, DialogSize } from './components/Dialog';
 export { Dialog } from './components/Dialog';
 export type {
+	DropdownPlacement,
 	DropdownPosition,
 	DropdownProps,
 	DropdownSize,

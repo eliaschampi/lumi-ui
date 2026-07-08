@@ -1,7 +1,7 @@
 import { autoUpdate, computePosition, flip, offset as floatingOffset, shift, size } from '@floating-ui/dom';
 export function createFloating(triggerElement, floatingElement, options = {}) {
     const optionsGetter = typeof options === 'function' ? options : () => options;
-    const resolvedOptions = $derived(() => {
+    const resolvedOptions = $derived.by(() => {
         const current = optionsGetter() ?? {};
         return {
             offset: 8,
@@ -18,8 +18,8 @@ export function createFloating(triggerElement, floatingElement, options = {}) {
     let position = $state({ top: 0, left: 0 });
     let hasPosition = $state(false);
     let updateToken = 0;
-    const floatingStyles = $derived(() => {
-        const { strategy, zIndex, matchWidth } = resolvedOptions();
+    const floatingStyles = $derived.by(() => {
+        const { strategy, zIndex, matchWidth } = resolvedOptions;
         const styles = {
             position: strategy,
             top: `${position.top}px`,
@@ -35,28 +35,34 @@ export function createFloating(triggerElement, floatingElement, options = {}) {
         }
         return styles;
     });
+    const styleString = $derived(Object.entries(floatingStyles)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join('; '));
     async function calculatePosition() {
         const trigger = triggerElement();
         const floating = floatingElement();
         if (!trigger || !floating || !isOpen)
             return;
-        const { offset, placement, matchWidth, maxHeight, viewportPadding, strategy } = resolvedOptions();
+        const { offset, placement, matchWidth, maxHeight, viewportPadding, strategy } = resolvedOptions;
         const token = ++updateToken;
         let floatingMaxHeight = maxHeight;
+        const middleware = [
+            floatingOffset(offset),
+            flip({ padding: viewportPadding }),
+            shift({ padding: viewportPadding })
+        ];
+        if (typeof maxHeight === 'number') {
+            middleware.push(size({
+                padding: viewportPadding,
+                apply({ availableHeight }) {
+                    floatingMaxHeight = Math.max(0, Math.min(maxHeight, availableHeight));
+                }
+            }));
+        }
         const { x, y } = await computePosition(trigger, floating, {
             placement: placement,
             strategy: strategy,
-            middleware: [
-                floatingOffset(offset),
-                flip({ padding: viewportPadding }),
-                shift({ padding: viewportPadding }),
-                size({
-                    padding: viewportPadding,
-                    apply({ availableHeight }) {
-                        floatingMaxHeight = Math.max(0, Math.min(maxHeight, availableHeight));
-                    }
-                })
-            ]
+            middleware
         });
         if (token !== updateToken || !isOpen)
             return;
@@ -75,7 +81,9 @@ export function createFloating(triggerElement, floatingElement, options = {}) {
     }
     function close() {
         isOpen = false;
-        hasPosition = false;
+        // Keep last-known position visible so the consumer's exit transition
+        // (e.g. Svelte `transition:scale`) is not suppressed by `visibility: hidden`.
+        // `hasPosition` is reset to `false` on the next `open()`.
         updateToken += 1;
     }
     function toggle() {
@@ -105,11 +113,17 @@ export function createFloating(triggerElement, floatingElement, options = {}) {
         get isOpen() {
             return isOpen;
         },
+        get hasPosition() {
+            return hasPosition;
+        },
         get position() {
             return position;
         },
         get floatingStyles() {
-            return floatingStyles();
+            return floatingStyles;
+        },
+        get styleString() {
+            return styleString;
         },
         open,
         close,

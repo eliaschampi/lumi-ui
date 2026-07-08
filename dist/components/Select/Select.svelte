@@ -225,16 +225,23 @@
 	function moveFocus(direction: 1 | -1): void {
 		if (!navigableIndices.length) return;
 		const currentIdx = navigableIndices.indexOf(focusedIndex);
-		const nextIdx =
-			currentIdx === -1
-				? direction === 1
-					? navigableIndices[0]
-					: navigableIndices.at(-1)
-				: navigableIndices[currentIdx + direction];
-		if (nextIdx !== undefined) {
-			focusedIndex = nextIdx;
-			scrollToFocused();
+		let nextIdx: number;
+
+		if (currentIdx === -1) {
+			nextIdx = direction === 1 ? 0 : navigableIndices.length - 1;
+		} else {
+			const offsetIdx = currentIdx + direction;
+			// Wrap around so neither end of the list is a dead end.
+			nextIdx =
+				offsetIdx < 0
+					? navigableIndices.length - 1
+					: offsetIdx >= navigableIndices.length
+						? 0
+						: offsetIdx;
 		}
+
+		focusedIndex = navigableIndices[nextIdx];
+		scrollToFocused();
 	}
 
 	function handleKeydown(event: KeyboardEvent): void {
@@ -399,13 +406,7 @@
 			use:portal
 			id={dropdownId}
 			class="lumi-select__dropdown"
-			style:position={floating.floatingStyles.position}
-			style:top={floating.floatingStyles.top}
-			style:left={floating.floatingStyles.left}
-			style:z-index={floating.floatingStyles.zIndex}
-			style:width={floating.floatingStyles.width}
-			style:max-height={floating.floatingStyles.maxHeight}
-			style:visibility={floating.floatingStyles.visibility}
+			style={floating.styleString}
 			style:--select-focus={selectFocusColor}
 			role="listbox"
 			aria-label={label || placeholder}
