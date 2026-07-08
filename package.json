@@ -1,6 +1,6 @@
 {
 	"name": "@lumi-ui/svelte",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Lumi UI: calm glassmorphic Svelte 5 component library with semantic tokens and reusable patterns.",
 	"type": "module",
 	"packageManager": "pnpm@10.33.2",
@@ -61,7 +61,7 @@
 		"./themes/faztore.css": "./dist/styles/themes/faztore.css"
 	},
 	"peerDependencies": {
-		"svelte": "^5.55.5"
+		"svelte": "^5.56.4"
 	},
 	"dependencies": {
 		"@floating-ui/dom": "^1.7.6",
