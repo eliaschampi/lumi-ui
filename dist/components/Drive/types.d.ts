@@ -1,4 +1,4 @@
-import type { DriveFileType, DriveScope } from "../../utils/drive";
+import type { DriveFileType, DriveScope } from '../../utils/drive';
 export interface DriveFileItem {
     code: string;
     scope: DriveScope;

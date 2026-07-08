@@ -57,7 +57,9 @@ export function formatChartValue(
 
 	if (valueFormat === 'ratio') {
 		const formatted =
-			role === 'axis' ? ratioAxisFormatter.format(value) : decimalFormatter.format(value);
+			role === 'axis'
+				? ratioAxisFormatter.format(value)
+				: decimalFormatter.format(value);
 		return `${formatted}x`;
 	}
 

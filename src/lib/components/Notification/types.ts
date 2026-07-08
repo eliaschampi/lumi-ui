@@ -3,7 +3,8 @@
  * Toast notifications with positioning and queue management
  */
 
-export type NotificationType = 'success' | 'warning' | 'error' | 'info' | 'primary';
+export type NotificationType =
+	'success' | 'warning' | 'error' | 'info' | 'primary';
 export type NotificationPosition =
 	| 'top-left'
 	| 'top-right'

@@ -69,7 +69,11 @@ export interface TableProps {
 	/* ── Event handlers ── */
 	'onrow-click'?: (row: TableRow, index: number) => void;
 	'onrow-dblclick'?: (row: TableRow, index: number) => void;
-	'onrow-contextmenu'?: (event: MouseEvent, row: TableRow, index: number) => void;
+	'onrow-contextmenu'?: (
+		event: MouseEvent,
+		row: TableRow,
+		index: number
+	) => void;
 	'onrow-select'?: (row: TableRow, selected: boolean) => void;
 	onsearch?: (query: string) => void;
 	'onpage-change'?: (page: number) => void;

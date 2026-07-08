@@ -2,4 +2,9 @@
 
 export { default as Dropdown } from './Dropdown.svelte';
 export { default as DropdownItem } from './DropdownItem.svelte';
-export type { DropdownPosition, DropdownProps, DropdownSize, DropdownTrigger } from './types';
+export type {
+	DropdownPosition,
+	DropdownProps,
+	DropdownSize,
+	DropdownTrigger
+} from './types';

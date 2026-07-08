@@ -1,5 +1,9 @@
 /** Stable SVG defs id (SSR-safe); unique per series and color on a page. */
-export function chartGradientId(prefix: string, color: string, keys: readonly string[]): string {
+export function chartGradientId(
+	prefix: string,
+	color: string,
+	keys: readonly string[]
+): string {
 	const seed = keys.join('\0');
 	let hash = 0;
 	for (let index = 0; index < seed.length; index += 1) {

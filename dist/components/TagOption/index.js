@@ -1,1 +1,1 @@
-export { default as TagOption } from "./TagOption.svelte";
+export { default as TagOption } from './TagOption.svelte';

@@ -1,10 +1,10 @@
-import type { LumiColor } from "../components/config";
+import type { LumiColor } from '../components/config';
 /** Supported drive file types */
-export type DriveFileType = "dir" | "img" | "vid" | "aud" | "doc" | "zip" | "otr";
+export type DriveFileType = 'dir' | 'img' | 'vid' | 'aud' | 'doc' | 'zip' | 'otr';
 /** Supported drive visibility scopes */
-export type DriveScope = "shared" | "user_private";
+export type DriveScope = 'shared' | 'user_private';
 /** Supported image serve variants */
-export type DriveImageVariant = "thumb" | "preview" | "original";
+export type DriveImageVariant = 'thumb' | 'preview' | 'original';
 export interface DriveScopeOption {
     value: DriveScope;
     name: string;
@@ -12,10 +12,10 @@ export interface DriveScopeOption {
     icon: string;
     color: LumiColor;
 }
-export type DriveTagTone = "favorite" | "highlight" | "work" | "personal";
+export type DriveTagTone = 'favorite' | 'highlight' | 'work' | 'personal';
 export interface DriveTagOption {
     tone: DriveTagTone;
-    color: "secondary" | "success" | "warning" | "info";
+    color: 'secondary' | 'success' | 'warning' | 'info';
     hash: string;
     name: string;
 }
@@ -108,7 +108,7 @@ export declare function formatDriveDateTime(value: string): string;
 export declare const TAG_OPTIONS: DriveTagOption[];
 export declare function getDriveTagByHash(hash: string | null | undefined): DriveTagOption | null;
 /** CSS `var(--lumi-color-*)` for tag dots (semantic `color` is not a paint value). */
-export declare function driveTagColorCssVar(color: DriveTagOption["color"]): string;
+export declare function driveTagColorCssVar(color: DriveTagOption['color']): string;
 /**
  * Sidebar menu options for Drive navigation
  */

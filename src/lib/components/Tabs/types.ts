@@ -57,7 +57,10 @@ export interface TabsProps {
 	/**
 	 * Tab change event handler
 	 */
-	onchange?: (value: string | number, previousValue: string | number | undefined) => void;
+	onchange?: (
+		value: string | number,
+		previousValue: string | number | undefined
+	) => void;
 
 	/**
 	 * Accessible label for the tablist

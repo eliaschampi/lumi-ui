@@ -28,7 +28,12 @@ export interface ContextProps {
 	'aria-label'?: string;
 
 	/** Open event handler */
-	onopen?: (event: MouseEvent, data?: unknown, top?: number, left?: number) => void;
+	onopen?: (
+		event: MouseEvent,
+		data?: unknown,
+		top?: number,
+		left?: number
+	) => void;
 
 	/** Close event handler */
 	onclose?: () => void;

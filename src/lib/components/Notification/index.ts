@@ -4,4 +4,8 @@
  */
 
 export { default as Notification } from './Notification.svelte';
-export type { NotificationPosition, NotificationProps, NotificationType } from './types';
+export type {
+	NotificationPosition,
+	NotificationProps,
+	NotificationType
+} from './types';

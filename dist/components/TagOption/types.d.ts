@@ -1,4 +1,4 @@
-import type { LumiColor } from "../config";
+import type { LumiColor } from '../config';
 export type TagOptionColor = LumiColor;
 export interface TagOptionProps {
     /** Display label */

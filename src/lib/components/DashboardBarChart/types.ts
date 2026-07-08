@@ -1,4 +1,8 @@
-import type { ChartColor, ChartSeriesPoint, ChartValueFormat } from '../../types/charts';
+import type {
+	ChartColor,
+	ChartSeriesPoint,
+	ChartValueFormat
+} from '../../types/charts';
 
 export interface DashboardBarChartProps {
 	data: ChartSeriesPoint[];

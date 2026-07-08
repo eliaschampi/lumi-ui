@@ -1,60 +1,80 @@
 {
-  "name": "@lumi-ui/svelte",
-  "version": "0.1.0",
-  "description": "Lumi UI: calm glassmorphic Svelte 5 component library with semantic tokens and reusable patterns.",
-  "type": "module",
-  "packageManager": "pnpm@10.33.2",
-  "license": "UNLICENSED",
-  "private": true,
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/eliaschampi/lumi-ui.git"
-  },
-  "svelte": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "sideEffects": [
-    "**/*.css"
-  ],
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "package": "svelte-package --input src/lib --output dist --tsconfig ./tsconfig.json",
-    "check": "svelte-check --tsconfig ./tsconfig.json",
-    "lint": "prettier --check .",
-    "format": "prettier --write ."
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "svelte": "./dist/index.js",
-      "default": "./dist/index.js"
-    },
-    "./drive": {
-      "types": "./dist/drive.d.ts",
-      "default": "./dist/drive.js"
-    },
-    "./styles": "./dist/styles/index.css",
-    "./styles/core.css": "./dist/styles/core.css",
-    "./styles/tokens.base.css": "./dist/styles/tokens.base.css",
-    "./themes/coedula.css": "./dist/styles/themes/coedula.css",
-    "./themes/faztore.css": "./dist/styles/themes/faztore.css"
-  },
-  "peerDependencies": {
-    "svelte": "^5.55.5"
-  },
-  "dependencies": {
-    "@floating-ui/dom": "^1.7.6",
-    "@lucide/svelte": "^1.11.0"
-  },
-  "devDependencies": {
-    "@sveltejs/package": "^2.5.5",
-    "@sveltejs/vite-plugin-svelte": "^7.0.0",
-    "prettier": "^3.8.1",
-    "prettier-plugin-svelte": "^3.5.1",
-    "svelte": "5.55.5",
-    "svelte-check": "^4.4.6",
-    "typescript": "^5.9.3",
-    "vite": "^8.0.0"
-  }
+	"name": "@lumi-ui/svelte",
+	"version": "0.1.0",
+	"description": "Lumi UI: calm glassmorphic Svelte 5 component library with semantic tokens and reusable patterns.",
+	"type": "module",
+	"packageManager": "pnpm@10.33.2",
+	"license": "MIT",
+	"homepage": "https://github.com/eliaschampi/lumi-ui#readme",
+	"bugs": {
+		"url": "https://github.com/eliaschampi/lumi-ui/issues"
+	},
+	"keywords": [
+		"svelte",
+		"sveltekit",
+		"svelte-5",
+		"ui",
+		"components",
+		"design-system",
+		"lumi-ui",
+		"glassmorphism"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/eliaschampi/lumi-ui.git"
+	},
+	"svelte": "./dist/index.js",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"sideEffects": [
+		"**/*.css"
+	],
+	"files": [
+		"dist"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "pnpm run package",
+		"package": "svelte-package --input src/lib --output dist --tsconfig ./tsconfig.json",
+		"check": "svelte-check --tsconfig ./tsconfig.json",
+		"lint": "prettier --check .",
+		"format": "prettier --write .",
+		"prepack": "pnpm run package",
+		"prepublishOnly": "pnpm run lint && pnpm run check"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"svelte": "./dist/index.js",
+			"default": "./dist/index.js"
+		},
+		"./drive": {
+			"types": "./dist/drive.d.ts",
+			"default": "./dist/drive.js"
+		},
+		"./styles": "./dist/styles/index.css",
+		"./styles/core.css": "./dist/styles/core.css",
+		"./styles/tokens.base.css": "./dist/styles/tokens.base.css",
+		"./themes/coedula.css": "./dist/styles/themes/coedula.css",
+		"./themes/faztore.css": "./dist/styles/themes/faztore.css"
+	},
+	"peerDependencies": {
+		"svelte": "^5.55.5"
+	},
+	"dependencies": {
+		"@floating-ui/dom": "^1.7.6",
+		"@lucide/svelte": "^1.11.0"
+	},
+	"devDependencies": {
+		"@sveltejs/package": "^2.5.5",
+		"@sveltejs/vite-plugin-svelte": "^7.0.0",
+		"prettier": "^3.8.1",
+		"prettier-plugin-svelte": "^3.5.1",
+		"svelte": "5.55.5",
+		"svelte-check": "^4.4.6",
+		"typescript": "^5.9.3",
+		"vite": "^8.0.0"
+	}
 }

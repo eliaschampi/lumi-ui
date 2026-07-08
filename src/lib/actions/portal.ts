@@ -4,10 +4,15 @@ import { tick } from 'svelte';
  * Usage: <div use:portal={'css-selector'}> or <div use:portal={element}>
  * Default target is document.body
  */
-export function portal(node: HTMLElement, target: HTMLElement | string = 'body') {
+export function portal(
+	node: HTMLElement,
+	target: HTMLElement | string = 'body'
+) {
 	let activeTarget: HTMLElement | null = null;
 
-	async function resolveTarget(nextTarget: HTMLElement | string): Promise<HTMLElement | null> {
+	async function resolveTarget(
+		nextTarget: HTMLElement | string
+	): Promise<HTMLElement | null> {
 		const resolved =
 			typeof nextTarget === 'string'
 				? (document.querySelector(nextTarget) as HTMLElement | null)

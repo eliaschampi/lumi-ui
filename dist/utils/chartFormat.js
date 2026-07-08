@@ -40,7 +40,9 @@ export function formatChartValue(value, valueFormat, role, options = {}) {
             : decimalFormatter.format(value);
     }
     if (valueFormat === 'ratio') {
-        const formatted = role === 'axis' ? ratioAxisFormatter.format(value) : decimalFormatter.format(value);
+        const formatted = role === 'axis'
+            ? ratioAxisFormatter.format(value)
+            : decimalFormatter.format(value);
         return `${formatted}x`;
     }
     if (role === 'tooltip')

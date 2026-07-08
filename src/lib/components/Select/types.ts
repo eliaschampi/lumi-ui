@@ -4,7 +4,8 @@ import type { FloatingPlacement } from '../../utils/floating.svelte';
 import type { LumiControlSize } from '../config';
 
 export type SelectValue = string | number | Record<string, unknown>;
-export type SelectOptionInput = SelectOption | Record<string, unknown> | string | number;
+export type SelectOptionInput =
+	SelectOption | Record<string, unknown> | string | number;
 
 export interface SelectOption {
 	/** Option value */

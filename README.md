@@ -7,17 +7,10 @@ This library was extracted from Coedula and Faztore with a strict rule: **core c
 ## Install
 
 ```bash
-pnpm add git+https://github.com/eliaschampi/lumi-ui.git#main --ignore-scripts
+pnpm add @lumi-ui/svelte
+# or
+npm install @lumi-ui/svelte
 ```
-
-For local development before the remote package is pushed:
-
-```bash
-pnpm add ../lumi-ui --ignore-scripts
-```
-
-`dist/` is part of the package contract and is intended to be versioned. Consumers
-do not need to run package build scripts during install.
 
 ## Usage
 
@@ -37,10 +30,10 @@ do not need to run package build scripts during install.
 Use one theme at a time:
 
 ```ts
-import "@lumi-ui/svelte/styles";
-import "@lumi-ui/svelte/themes/coedula.css";
+import '@lumi-ui/svelte/styles';
+import '@lumi-ui/svelte/themes/coedula.css';
 // or
-import "@lumi-ui/svelte/themes/faztore.css";
+import '@lumi-ui/svelte/themes/faztore.css';
 ```
 
 ## Included Core
@@ -59,19 +52,30 @@ Lumi UI exposes primitives and neutral patterns. Apps translate their domain int
 Good:
 
 ```ts
-variant: "default";
-color: "success";
+variant: 'default';
+color: 'success';
 selected: true;
-orientation: "vertical";
+orientation: 'vertical';
 ```
 
 Not allowed in core:
 
 ```ts
-variant: "attendance";
-variant: "inventory";
-studentStatus: "enrolled";
-productStockState: "low";
+variant: 'attendance';
+variant: 'inventory';
+studentStatus: 'enrolled';
+productStockState: 'low';
 ```
 
 Domain-specific components belong in each app or in a separate package such as `@lumi-ui/coedula` or `@lumi-ui/faztore`.
+
+## Publishing
+
+For maintainers:
+
+```bash
+pnpm install --frozen-lockfile
+npm publish
+```
+
+The package lifecycle validates lint and Svelte types before publishing, then builds `dist/` during pack.

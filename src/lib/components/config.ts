@@ -67,7 +67,10 @@ export type LumiColor = keyof typeof LUMI_CONFIG.colors;
 export type LumiCompactSize = Extract<LumiSize, 'sm' | 'md'>;
 export type LumiControlSize = Extract<LumiSize, 'sm' | 'md' | 'lg'>;
 export type LumiDisplaySize = Extract<LumiSize, 'sm' | 'md' | 'lg' | 'xl'>;
-export type LumiExtendedSize = Extract<LumiSize, 'xs' | 'sm' | 'md' | 'lg' | 'xl'>;
+export type LumiExtendedSize = Extract<
+	LumiSize,
+	'xs' | 'sm' | 'md' | 'lg' | 'xl'
+>;
 export type LumiIconSize = keyof typeof LUMI_CONFIG.iconSizes;
 export type LumiTransition = keyof typeof LUMI_CONFIG.transitions;
 

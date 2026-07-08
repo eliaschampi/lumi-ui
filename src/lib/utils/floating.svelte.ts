@@ -17,12 +17,7 @@ export interface FloatingPosition {
 }
 
 export type FloatingPlacement =
-	| 'bottom-start'
-	| 'bottom-end'
-	| 'top-start'
-	| 'top-end'
-	| 'bottom'
-	| 'top';
+	'bottom-start' | 'bottom-end' | 'top-start' | 'top-end' | 'bottom' | 'top';
 
 export interface UseFloatingOptions {
 	offset?: number;
@@ -44,7 +39,8 @@ export type FloatingController = {
 	updatePosition: () => void;
 };
 
-export type FloatingOptionsInput = UseFloatingOptions | (() => UseFloatingOptions);
+export type FloatingOptionsInput =
+	UseFloatingOptions | (() => UseFloatingOptions);
 
 export function createFloating(
 	triggerElement: () => HTMLElement | undefined,
@@ -98,8 +94,14 @@ export function createFloating(
 		const floating = floatingElement();
 		if (!trigger || !floating || !isOpen) return;
 
-		const { offset, placement, matchWidth, maxHeight, viewportPadding, strategy } =
-			resolvedOptions();
+		const {
+			offset,
+			placement,
+			matchWidth,
+			maxHeight,
+			viewportPadding,
+			strategy
+		} = resolvedOptions();
 		const token = ++updateToken;
 		let floatingMaxHeight = maxHeight;
 
@@ -113,7 +115,10 @@ export function createFloating(
 				size({
 					padding: viewportPadding,
 					apply({ availableHeight }) {
-						floatingMaxHeight = Math.max(0, Math.min(maxHeight, availableHeight));
+						floatingMaxHeight = Math.max(
+							0,
+							Math.min(maxHeight, availableHeight)
+						);
 					}
 				})
 			]
