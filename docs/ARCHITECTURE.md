@@ -1,0 +1,57 @@
+# Lumi UI Architecture
+
+## Extraction Decision
+
+The library is a selective merge:
+
+- Coedula source: `Dialog`, `Context`, `RemoteSelect`, broad layout utilities, and robust overlay behavior.
+- Faztore source: `Input`, `NumberInput`, `SegmentedControl`, `Sidebar`, `SidebarHeader`, `floating.svelte.ts`, and richer surface tokens.
+- Shared/equal source: `Table`, `Tabs`, `Textarea`, `Button`, `Icon`, `Avatar`, `Card` with targeted fusion.
+
+## Package Shape
+
+```txt
+src/lib/
+  actions/
+  components/
+  styles/
+    core.css
+    index.css
+    tokens.base.css
+    themes/
+      coedula.css
+      faztore.css
+  utils/
+```
+
+## CSS Ownership
+
+`tokens.base.css` defines the full token contract. Theme files preserve product identity. `core.css` owns only domain-neutral layout, surfaces, and utilities.
+
+No domain classes belong in `core.css`.
+
+Examples that must stay out:
+
+- `.lumi-page-sidebar__card--attendance`
+- `.lumi-page-sidebar__card--inventory`
+- `.lumi-product-*`
+- `.lumi-student-*`
+
+## Component Ownership
+
+Primitive components must be usable in any product surface. If a component needs app actions, server endpoints, permissions, database entities, stores, or route invalidation, it is not a core component.
+
+## Overlay Standard
+
+Floating UI behavior uses `@floating-ui/dom` through `createFloating`. Components that can be clipped by parent overflow must use `portal`.
+
+## Theme Direction
+
+The target visual language is calm, modern, high-contrast-enough glass:
+
+- semantic color seeds
+- layered surfaces
+- subtle 145 degree gradients
+- tokenized shadows
+- soft motion
+- no arbitrary decoration

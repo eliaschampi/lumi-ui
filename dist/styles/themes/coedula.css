@@ -1,0 +1,53 @@
+/* Lumi UI Theme - Coedula */
+/* Identity layer only: color seeds and brand ramps. Structural tokens live in tokens.base.css. */
+
+:root {
+  /* Light color seeds */
+  --lumi-neutral-rgb: 34, 28, 26;
+  --lumi-canvas-rgb: 246, 241, 234;
+  --lumi-shadow-key-rgb: 48, 42, 38;
+
+  --lumi-color-primary: rgb(0, 113, 227);
+  --lumi-color-primary-rgb: 0, 113, 227;
+  --lumi-color-primary-50: rgb(232, 246, 255);
+  --lumi-color-primary-300: rgb(103, 183, 255);
+
+  --lumi-color-secondary: rgb(100, 170, 20);
+  --lumi-color-secondary-rgb: 100, 170, 20;
+  --lumi-color-success: rgb(16, 153, 100);
+  --lumi-color-success-rgb: 16, 153, 100;
+  --lumi-color-warning: rgb(217, 119, 6);
+  --lumi-color-warning-rgb: 217, 119, 6;
+  --lumi-color-danger: rgb(193, 37, 104);
+  --lumi-color-danger-rgb: 193, 37, 104;
+  --lumi-color-info: rgb(14, 118, 204);
+  --lumi-color-info-rgb: 14, 118, 204;
+}
+
+[data-theme="dark"] {
+  /* Dark color seeds */
+  --lumi-neutral-rgb: 9, 9, 11;
+  --lumi-color-text: rgb(250, 250, 252);
+  --lumi-shadow-key-rgb: 0, 0, 0;
+
+  --lumi-color-primary: rgb(37, 99, 235);
+  --lumi-color-primary-rgb: 37, 99, 235;
+  --lumi-color-primary-50: color-mix(
+    in srgb,
+    var(--lumi-color-primary) 28%,
+    var(--lumi-color-black)
+  );
+  --lumi-color-primary-300: rgb(29, 78, 216);
+  --lumi-color-primary-600: rgb(96, 165, 250);
+
+  --lumi-color-secondary: rgb(132, 204, 22);
+  --lumi-color-secondary-rgb: 132, 204, 22;
+  --lumi-color-success: rgb(52, 211, 153);
+  --lumi-color-success-rgb: 52, 211, 153;
+  --lumi-color-warning: rgb(251, 191, 36);
+  --lumi-color-warning-rgb: 251, 191, 36;
+  --lumi-color-danger: rgb(236, 72, 153);
+  --lumi-color-danger-rgb: 236, 72, 153;
+  --lumi-color-info: rgb(56, 189, 248);
+  --lumi-color-info-rgb: 56, 189, 248;
+}
