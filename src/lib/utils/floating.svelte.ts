@@ -102,9 +102,13 @@ export function createFloating(
 		return styles;
 	});
 
+	// Convert camelCase to kebab-case for valid CSS in a raw style attribute.
 	const styleString = $derived(
 		Object.entries(floatingStyles)
-			.map(([key, value]) => `${key}: ${value}`)
+			.map(
+				([key, value]) =>
+					`${key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)}: ${value}`
+			)
 			.join('; ')
 	);
 
@@ -171,9 +175,6 @@ export function createFloating(
 
 	function close(): void {
 		isOpen = false;
-		// Keep last-known position visible so the consumer's exit transition
-		// (e.g. Svelte `transition:scale`) is not suppressed by `visibility: hidden`.
-		// `hasPosition` is reset to `false` on the next `open()`.
 		updateToken += 1;
 	}
 

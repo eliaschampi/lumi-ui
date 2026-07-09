@@ -2,52 +2,59 @@
 /* Identity layer only: color seeds and brand ramps. Structural tokens live in tokens.base.css. */
 
 :root {
-	/* Light color seeds */
 	--lumi-neutral-rgb: 34, 28, 26;
-	--lumi-canvas-rgb: 246, 241, 234;
-	--lumi-shadow-key-rgb: 48, 42, 38;
+	--lumi-canvas-rgb: 247, 243, 237;
+	--lumi-shadow-key-rgb: 44, 36, 32;
 
-	--lumi-color-primary: rgb(0, 113, 227);
-	--lumi-color-primary-rgb: 0, 113, 227;
-	--lumi-color-primary-50: rgb(232, 246, 255);
-	--lumi-color-primary-300: rgb(103, 183, 255);
+	--lumi-color-primary: rgb(10, 110, 220);
+	--lumi-color-primary-rgb: 10, 110, 220;
+	--lumi-color-primary-50: color-mix(
+		in srgb,
+		var(--lumi-color-primary) 10%,
+		white
+	);
 
-	--lumi-color-secondary: rgb(100, 170, 20);
-	--lumi-color-secondary-rgb: 100, 170, 20;
-	--lumi-color-success: rgb(16, 153, 100);
-	--lumi-color-success-rgb: 16, 153, 100;
-	--lumi-color-warning: rgb(217, 119, 6);
-	--lumi-color-warning-rgb: 217, 119, 6;
-	--lumi-color-danger: rgb(193, 37, 104);
-	--lumi-color-danger-rgb: 193, 37, 104;
-	--lumi-color-info: rgb(14, 118, 204);
-	--lumi-color-info-rgb: 14, 118, 204;
+	--lumi-color-secondary: rgb(104, 164, 24);
+	--lumi-color-secondary-rgb: 104, 164, 24;
+
+	--lumi-color-success: rgb(14, 148, 104);
+	--lumi-color-success-rgb: 14, 148, 104;
+
+	--lumi-color-warning: rgb(214, 124, 8);
+	--lumi-color-warning-rgb: 214, 124, 8;
+
+	--lumi-color-danger: rgb(196, 40, 108);
+	--lumi-color-danger-rgb: 196, 40, 108;
+
+	--lumi-color-info: rgb(12, 132, 196);
+	--lumi-color-info-rgb: 12, 132, 196;
 }
 
 [data-theme='dark'] {
-	/* Dark color seeds */
-	--lumi-neutral-rgb: 9, 9, 11;
-	--lumi-color-text: rgb(250, 250, 252);
+	--lumi-neutral-rgb: 14, 12, 12;
+	--lumi-color-text: rgb(250, 248, 245);
 	--lumi-shadow-key-rgb: 0, 0, 0;
 
-	--lumi-color-primary: rgb(37, 99, 235);
-	--lumi-color-primary-rgb: 37, 99, 235;
+	--lumi-color-primary: rgb(82, 150, 250);
+	--lumi-color-primary-rgb: 82, 150, 250;
 	--lumi-color-primary-50: color-mix(
 		in srgb,
-		var(--lumi-color-primary) 28%,
-		var(--lumi-color-black)
+		var(--lumi-color-primary) 18%,
+		black
 	);
-	--lumi-color-primary-300: rgb(29, 78, 216);
-	--lumi-color-primary-600: rgb(96, 165, 250);
 
-	--lumi-color-secondary: rgb(132, 204, 22);
-	--lumi-color-secondary-rgb: 132, 204, 22;
+	--lumi-color-secondary: rgb(156, 214, 56);
+	--lumi-color-secondary-rgb: 156, 214, 56;
+
 	--lumi-color-success: rgb(52, 211, 153);
 	--lumi-color-success-rgb: 52, 211, 153;
+
 	--lumi-color-warning: rgb(251, 191, 36);
 	--lumi-color-warning-rgb: 251, 191, 36;
-	--lumi-color-danger: rgb(236, 72, 153);
-	--lumi-color-danger-rgb: 236, 72, 153;
+
+	--lumi-color-danger: rgb(244, 114, 182);
+	--lumi-color-danger-rgb: 244, 114, 182;
+
 	--lumi-color-info: rgb(56, 189, 248);
 	--lumi-color-info-rgb: 56, 189, 248;
 }
