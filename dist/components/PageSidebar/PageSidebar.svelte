@@ -8,7 +8,6 @@
 		mobileTitle = 'Filtros',
 		mobileAriaLabel = 'Cerrar panel lateral',
 		hideMobileHeader = false,
-		variant = 'default',
 		class: className = '',
 		sidebar,
 		drawer,
@@ -16,9 +15,7 @@
 	}: PageSidebarProps = $props();
 
 	const cardClasses = $derived(
-		['lumi-page-sidebar__card', `lumi-page-sidebar__card--${variant}`, className]
-			.filter(Boolean)
-			.join(' ')
+		['lumi-page-sidebar__card', className].filter(Boolean).join(' ')
 	);
 
 	function closeMobileSidebar(): void {
