@@ -1,4 +1,4 @@
-import { type DriveMenuOption, type DriveScope, type DriveTagOption } from "../../utils/drive";
+import { type DriveMenuOption, type DriveScope } from "../../utils/drive";
 interface StorageInfo {
     used: number;
     total: number;
@@ -7,15 +7,11 @@ interface StorageInfo {
 interface Props {
     currentScope?: DriveScope;
     selectedMenu: DriveMenuOption | null;
-    selectedTag?: DriveTagOption | null;
     storageInfo: StorageInfo;
     closable?: boolean;
     showScopeControl?: boolean;
-    showTags?: boolean;
-    tagOptions?: DriveTagOption[];
     onscopechange?: (scope: DriveScope) => void;
     onmenuselect?: (menu: DriveMenuOption | null) => void;
-    ontagselect?: (tag: DriveTagOption) => void;
     onclose?: () => void;
 }
 declare const DriveSidebar: import("svelte").Component<Props, {}, "">;
