@@ -222,6 +222,28 @@ body {
 /* ========================================================================== */
 /* SHARED COMPONENT PRIMITIVES */
 /* ========================================================================== */
+:where(
+	.lumi-input-container,
+	.lumi-number-input,
+	.lumi-select,
+	.lumi-textarea
+) {
+	--lumi-color-control-focus-fill: color-mix(
+		in srgb,
+		var(--lumi-color-control-fill) 84%,
+		var(--lumi-control-accent, var(--lumi-color-primary)) 16%
+	);
+	--lumi-control-focus-shadow:
+		0 0 0 var(--lumi-border-width-thick)
+			color-mix(
+				in srgb,
+				var(--lumi-control-accent, var(--lumi-color-primary))
+					var(--lumi-control-focus-ring-strength),
+				transparent
+			),
+		var(--lumi-control-shadow);
+}
+
 :where(.lumi-surface, .lumi-card, .lumi-navbar, .lumi-sidebar, .lumi-dialog) {
 	background: var(--lumi-surface-bg, var(--lumi-floating-surface-bg));
 	border: var(
@@ -355,25 +377,6 @@ body {
 
 .lumi-page-sidebar__card--drive {
 	--lumi-page-sidebar-gradient: var(--lumi-gradient-glass-sidebar-drive);
-}
-
-.lumi-page-sidebar__card--inventory {
-	--lumi-page-sidebar-gradient: var(
-		--lumi-gradient-glass-sidebar-inventory,
-		var(--lumi-gradient-glass-sidebar)
-	);
-}
-
-.lumi-page-sidebar__card--enrollments {
-	--lumi-page-sidebar-gradient: var(--lumi-gradient-glass-sidebar-enrollments);
-}
-
-.lumi-page-sidebar__card--attendance {
-	--lumi-page-sidebar-gradient: var(--lumi-gradient-glass-sidebar-attendance);
-}
-
-.lumi-page-sidebar__card--evaluations {
-	--lumi-page-sidebar-gradient: var(--lumi-gradient-glass-sidebar-evaluations);
 }
 
 .lumi-page-sidebar__content {
@@ -720,7 +723,7 @@ body {
 
 /** Cap vertical growth next to fixed-height charts; keeps two-column dashboards aligned */
 .lumi-metric-rank-list--scroll-capped {
-	max-height: var(--lumi-metric-rank-list-scroll-max-height);
+	max-height: var(--lumi-metric-rank-list-scroll-max-height, none);
 	min-height: 0;
 	overflow-y: auto;
 	overscroll-behavior: contain;
@@ -1074,7 +1077,7 @@ button.lumi-person-cell--link:focus-visible {
 	border-radius: var(--lumi-radius-2xl);
 	border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
 	background:
-		var(--lumi-gradient-glass-search-panel),
+		var(--lumi-gradient-glass-search-panel, var(--lumi-gradient-subtle)),
 		var(--lumi-color-surface-glass-strong);
 	box-shadow: var(--lumi-shadow-sm);
 }
@@ -1124,7 +1127,8 @@ button.lumi-person-cell--link:focus-visible {
 	border-radius: var(--lumi-radius-xl);
 	border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
 	background:
-		var(--lumi-gradient-glass-history-item), var(--lumi-color-surface-card);
+		var(--lumi-gradient-glass-history-item, var(--lumi-gradient-subtle)),
+		var(--lumi-color-surface-card);
 	box-shadow: var(--lumi-shadow-sm);
 }
 
@@ -1176,7 +1180,8 @@ button.lumi-person-cell--link:focus-visible {
 	cursor: pointer;
 	text-align: left;
 	background:
-		var(--lumi-gradient-glass-item-row), var(--lumi-color-surface-card);
+		var(--lumi-gradient-glass-item-row, var(--lumi-gradient-subtle)),
+		var(--lumi-color-surface-card);
 	transition:
 		transform var(--lumi-duration-base) var(--lumi-easing-default),
 		border-color var(--lumi-duration-base) var(--lumi-easing-default),
@@ -1847,7 +1852,7 @@ button.lumi-person-cell--link:focus-visible {
 	display: none;
 }
 
-/* Shared body for attendance / employee QR scan result cards */
+/* Shared body for QR scan result cards */
 .lumi-scan-result {
 	display: flex;
 	flex-direction: column;
