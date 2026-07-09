@@ -13,16 +13,6 @@
 		var(--lumi-color-primary) 10%,
 		white
 	);
-	--lumi-color-primary-300: color-mix(
-		in srgb,
-		var(--lumi-color-primary) 58%,
-		white
-	);
-	--lumi-color-primary-600: color-mix(
-		in srgb,
-		var(--lumi-color-primary) 78%,
-		black
-	);
 
 	--lumi-color-secondary: rgb(104, 164, 24);
 	--lumi-color-secondary-rgb: 104, 164, 24;
@@ -51,16 +41,6 @@
 		in srgb,
 		var(--lumi-color-primary) 18%,
 		black
-	);
-	--lumi-color-primary-300: color-mix(
-		in srgb,
-		var(--lumi-color-primary) 62%,
-		black
-	);
-	--lumi-color-primary-600: color-mix(
-		in srgb,
-		var(--lumi-color-primary) 72%,
-		white
 	);
 
 	--lumi-color-secondary: rgb(156, 214, 56);
