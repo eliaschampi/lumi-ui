@@ -45,12 +45,15 @@ Primitive components must be usable in any product surface. If a component needs
 
 Floating UI behavior uses `@floating-ui/dom` through `createFloating`. Components that can be clipped by parent overflow must use `portal`.
 
+Portaled overlays own their open lifecycle. If a component delays unmounting for transitions, a new open must cancel the pending close before changing target data or position.
+
 ## Theme Direction
 
 The target visual language is calm, modern, high-contrast-enough glass:
 
 - semantic color seeds
 - layered surfaces
+- translucent layout content so cards remain visibly elevated
 - subtle 145 degree gradients
 - tokenized shadows
 - soft motion

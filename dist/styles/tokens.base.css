@@ -585,7 +585,6 @@
 	--lumi-placeholder-tile-size-lg: 5.5rem;
 	--lumi-dashboard-card-grid-min: 17.5rem;
 	--lumi-dashboard-card-grid-max: 21rem;
-	--lumi-date-range-filter-field-min: 11rem;
 	--lumi-drive-file-grid-min-desktop: 10.5rem;
 	--lumi-drive-file-grid-min-tablet: 9.75rem;
 	--lumi-drive-file-grid-min-mobile: 8.5rem;
@@ -629,28 +628,28 @@
 	color-scheme: dark;
 
 	/* --- SEEDS ---------------------------------------------------------------- */
-	--lumi-neutral-rgb: 8, 10, 14;
-	--lumi-color-text: rgb(250, 250, 252);
+	--lumi-neutral-rgb: 6, 10, 18;
+	--lumi-color-text: rgb(248, 250, 252);
 	--lumi-shadow-key-rgb: 0, 0, 0;
-	--lumi-color-primary: rgb(92, 169, 255);
-	--lumi-color-primary-rgb: 92, 169, 255;
+	--lumi-color-primary: rgb(96, 165, 250);
+	--lumi-color-primary-rgb: 96, 165, 250;
 	--lumi-color-primary-50: color-mix(
 		in srgb,
 		var(--lumi-color-primary) 28%,
 		var(--lumi-color-black)
 	);
-	--lumi-color-primary-300: rgb(10, 132, 255);
-	--lumi-color-secondary: rgb(55, 218, 195);
-	--lumi-color-secondary-rgb: 55, 218, 195;
-	--lumi-color-success: rgb(52, 199, 137);
-	--lumi-color-success-rgb: 52, 199, 137;
-	--lumi-color-warning: rgb(245, 183, 63);
-	--lumi-color-warning-rgb: 245, 183, 63;
-	--lumi-color-danger: rgb(255, 107, 132);
-	--lumi-color-danger-rgb: 255, 107, 132;
+	--lumi-color-primary-300: rgb(147, 197, 253);
+	--lumi-color-secondary: rgb(129, 140, 248);
+	--lumi-color-secondary-rgb: 129, 140, 248;
+	--lumi-color-success: rgb(45, 212, 150);
+	--lumi-color-success-rgb: 45, 212, 150;
+	--lumi-color-warning: rgb(251, 191, 36);
+	--lumi-color-warning-rgb: 251, 191, 36;
+	--lumi-color-danger: rgb(251, 113, 133);
+	--lumi-color-danger-rgb: 251, 113, 133;
 	/* Info: cool sky on dark — clear informational state without warning/danger overlap */
-	--lumi-color-info: rgb(56, 189, 248);
-	--lumi-color-info-rgb: 56, 189, 248;
+	--lumi-color-info: rgb(125, 211, 252);
+	--lumi-color-info-rgb: 125, 211, 252;
 	--lumi-color-gray-400: color-mix(
 		in srgb,
 		var(--lumi-color-text) 60%,
@@ -661,7 +660,7 @@
 
 	/* --- DERIVED RAMP / TEXT -------------------------------------------------- */
 	--lumi-color-primary-500: var(--lumi-color-primary);
-	--lumi-color-primary-600: rgb(168, 211, 255);
+	--lumi-color-primary-600: rgb(191, 219, 254);
 	--lumi-color-text-muted: color-mix(
 		in srgb,
 		var(--lumi-color-text) 70%,
@@ -683,7 +682,7 @@
 	/* lift stays restrained; blue/teal belongs in reflections, not the whole canvas. */
 	--lumi-lift: color-mix(
 		in srgb,
-		var(--lumi-color-white) 60%,
+		var(--lumi-color-white) 52%,
 		var(--lumi-color-primary)
 	);
 	--lumi-color-background: rgb(var(--lumi-neutral-rgb));
@@ -796,14 +795,14 @@
 	);
 	--lumi-control-shadow:
 		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 6%, transparent),
-		inset 0 -1px 0 rgba(var(--lumi-shadow-key-rgb), 0.32),
-		inset 0 10px 18px -18px rgba(var(--lumi-shadow-key-rgb), 0.55),
-		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.22);
+		inset 0 -1px 0 rgba(var(--lumi-shadow-key-rgb), 0.24),
+		inset 0 10px 18px -18px rgba(var(--lumi-shadow-key-rgb), 0.42),
+		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.16);
 	--lumi-control-focus-shadow:
 		0 0 0 var(--lumi-border-width-thick)
-			color-mix(in srgb, var(--lumi-color-primary) 30%, transparent),
+			color-mix(in srgb, var(--lumi-color-primary) 26%, transparent),
 		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 7%, transparent),
-		0 12px 26px -20px rgba(var(--lumi-shadow-key-rgb), 0.68);
+		0 12px 26px -20px rgba(var(--lumi-shadow-key-rgb), 0.5);
 
 	/* --- DERIVED STATE BACKGROUNDS / OVERLAY --------------------------------- */
 	--lumi-color-success-bg: rgba(var(--lumi-color-success-rgb), 0.14);
@@ -818,12 +817,12 @@
 	--lumi-gradient-app:
 		radial-gradient(
 			circle at 8% 0%,
-			rgba(var(--lumi-color-primary-rgb), 0.09),
+			rgba(var(--lumi-color-primary-rgb), 0.065),
 			transparent 34%
 		),
 		radial-gradient(
 			circle at 92% 10%,
-			rgba(var(--lumi-color-info-rgb), 0.032),
+			rgba(var(--lumi-color-secondary-rgb), 0.018),
 			transparent 32%
 		),
 		linear-gradient(
@@ -839,9 +838,9 @@
 		);
 	--lumi-app-background-accent: linear-gradient(
 		145deg,
-		color-mix(in srgb, var(--lumi-color-primary) 7%, transparent),
-		color-mix(in srgb, var(--lumi-color-secondary) 4%, transparent) 42%,
-		transparent 74%
+		color-mix(in srgb, var(--lumi-color-primary) 4.5%, transparent),
+		color-mix(in srgb, var(--lumi-color-secondary) 2%, transparent) 46%,
+		transparent 76%
 	);
 	--lumi-app-pattern-line-color: color-mix(
 		in srgb,
@@ -850,15 +849,15 @@
 	);
 	--lumi-app-pattern-dot-color: color-mix(
 		in srgb,
-		var(--lumi-color-secondary) 4.5%,
+		var(--lumi-color-secondary) 3%,
 		transparent
 	);
 	--lumi-gradient-card:
 		linear-gradient(
 			145deg,
 			color-mix(in srgb, var(--lumi-color-white) 5.2%, transparent) 0%,
-			rgba(var(--lumi-color-primary-rgb), 0.045) 42%,
-			rgba(var(--lumi-color-info-rgb), 0.02) 68%,
+			rgba(var(--lumi-color-primary-rgb), 0.032) 42%,
+			rgba(var(--lumi-color-secondary-rgb), 0.014) 68%,
 			transparent 100%
 		),
 		var(--lumi-color-surface-card);
@@ -866,8 +865,8 @@
 		linear-gradient(
 			145deg,
 			color-mix(in srgb, var(--lumi-color-white) 6.8%, transparent) 0%,
-			rgba(var(--lumi-color-primary-rgb), 0.058) 42%,
-			rgba(var(--lumi-color-info-rgb), 0.026) 68%,
+			rgba(var(--lumi-color-primary-rgb), 0.042) 42%,
+			rgba(var(--lumi-color-secondary-rgb), 0.018) 68%,
 			transparent 100%
 		),
 		var(--lumi-color-surface-card-hover);
@@ -881,17 +880,17 @@
 		linear-gradient(
 			145deg,
 			color-mix(in srgb, var(--lumi-color-white) 5.8%, transparent) 0%,
-			rgba(var(--lumi-color-primary-rgb), 0.044) 44%,
-			rgba(var(--lumi-color-info-rgb), 0.02) 70%,
+			rgba(var(--lumi-color-primary-rgb), 0.032) 44%,
+			rgba(var(--lumi-color-secondary-rgb), 0.014) 70%,
 			transparent 100%
 		),
 		var(--lumi-color-surface-glass-strong);
 	--lumi-floating-surface-border: var(--lumi-color-border-glass);
 	--lumi-floating-surface-shadow:
 		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 7%, transparent),
-		inset 0 -1px 0 rgba(var(--lumi-shadow-key-rgb), 0.32),
-		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.2),
-		0 22px 56px -30px rgba(var(--lumi-shadow-key-rgb), 0.72);
+		inset 0 -1px 0 rgba(var(--lumi-shadow-key-rgb), 0.24),
+		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.15),
+		0 20px 48px -30px rgba(var(--lumi-shadow-key-rgb), 0.56);
 	--lumi-gradient-sidebar-header: linear-gradient(
 		145deg,
 		color-mix(
@@ -916,42 +915,42 @@
 	--lumi-sidebar-header-sheen-opacity: 0.42;
 	--lumi-gradient-subtle: linear-gradient(
 		180deg,
-		rgba(var(--lumi-color-primary-rgb), 0.064) 0%,
-		rgba(var(--lumi-color-info-rgb), 0.03) 48%,
+		rgba(var(--lumi-color-primary-rgb), 0.046) 0%,
+		rgba(var(--lumi-color-secondary-rgb), 0.018) 48%,
 		transparent 74%
 	);
 	--lumi-gradient-glass-sidebar: linear-gradient(
 		180deg,
-		rgba(var(--lumi-color-primary-rgb), 0.064) 0%,
-		rgba(var(--lumi-color-info-rgb), 0.03) 48%,
+		rgba(var(--lumi-color-primary-rgb), 0.046) 0%,
+		rgba(var(--lumi-color-secondary-rgb), 0.018) 48%,
 		transparent 74%
 	);
 	--lumi-gradient-glass-sidebar-drive: linear-gradient(
 		145deg,
-		rgba(var(--lumi-color-primary-rgb), 0.052) 0%,
-		rgba(var(--lumi-color-info-rgb), 0.028) 55%,
+		rgba(var(--lumi-color-primary-rgb), 0.038) 0%,
+		rgba(var(--lumi-color-secondary-rgb), 0.016) 55%,
 		transparent 100%
 	);
 	--lumi-gradient-glass-total-summary: linear-gradient(
 		180deg,
-		rgba(var(--lumi-color-primary-rgb), 0.07) 0%,
-		rgba(var(--lumi-color-info-rgb), 0.032) 52%,
+		rgba(var(--lumi-color-primary-rgb), 0.052) 0%,
+		rgba(var(--lumi-color-secondary-rgb), 0.018) 52%,
 		transparent 78%
 	);
 	--lumi-shadow-sm:
 		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 4.8%, transparent),
-		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.2),
-		0 10px 24px -18px rgba(var(--lumi-shadow-key-rgb), 0.68);
+		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.15),
+		0 10px 22px -18px rgba(var(--lumi-shadow-key-rgb), 0.48);
 	--lumi-shadow-md:
 		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 5.2%, transparent),
-		0 2px 5px rgba(var(--lumi-shadow-key-rgb), 0.22),
-		0 20px 46px -26px rgba(var(--lumi-shadow-key-rgb), 0.72);
+		0 2px 5px rgba(var(--lumi-shadow-key-rgb), 0.17),
+		0 18px 42px -26px rgba(var(--lumi-shadow-key-rgb), 0.52);
 	--lumi-shadow-lg:
 		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 5.6%, transparent),
-		0 4px 10px rgba(var(--lumi-shadow-key-rgb), 0.24),
-		0 30px 68px -34px rgba(var(--lumi-shadow-key-rgb), 0.76);
+		0 4px 10px rgba(var(--lumi-shadow-key-rgb), 0.19),
+		0 26px 58px -34px rgba(var(--lumi-shadow-key-rgb), 0.56);
 	--lumi-shadow-xl:
 		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 6%, transparent),
-		0 8px 20px rgba(var(--lumi-shadow-key-rgb), 0.26),
-		0 44px 92px -38px rgba(var(--lumi-shadow-key-rgb), 0.8);
+		0 7px 18px rgba(var(--lumi-shadow-key-rgb), 0.2),
+		0 36px 78px -38px rgba(var(--lumi-shadow-key-rgb), 0.6);
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { onMount, tick } from 'svelte';
+	import { tick } from 'svelte';
 	import { scale } from 'svelte/transition';
 	import { portal } from '../../actions/portal';
 	import { LUMI_CONFIG } from '../config';
@@ -30,6 +30,7 @@
 	let top = $state(0);
 	let left = $state(0);
 	let contextData = $state<unknown>(null);
+	let closeTimer: ReturnType<typeof setTimeout> | null = null;
 
 	const contextClasses = $derived.by(() =>
 		[
@@ -49,9 +50,17 @@
 		maxHeight: `${maxHeight}px`
 	}));
 
+	function clearCloseTimer(): void {
+		if (closeTimer !== null) {
+			clearTimeout(closeTimer);
+			closeTimer = null;
+		}
+	}
+
 	export function open(event: MouseEvent, data?: unknown): void {
 		event.preventDefault();
 		event.stopPropagation();
+		clearCloseTimer();
 
 		contextData = data;
 		show = true;
@@ -64,14 +73,16 @@
 		if (!contextMenu || !show) return;
 
 		const { clientX, clientY } = event;
-		const maxLeft = window.innerWidth - contextMenu.offsetWidth - viewportPadding;
-		const maxTop = window.innerHeight - contextMenu.offsetHeight - viewportPadding;
+		const maxLeft =
+			window.innerWidth - contextMenu.offsetWidth - viewportPadding;
+		const maxTop =
+			window.innerHeight - contextMenu.offsetHeight - viewportPadding;
 
 		left = Math.min(Math.max(viewportPadding, clientX), maxLeft);
 		top = Math.min(Math.max(viewportPadding, clientY), maxTop);
 
 		requestAnimationFrame(() => {
-			if (!contextMenu || !show) return;
+			if (!contextMenu || !show || closeTimer !== null) return;
 			isPositioned = true;
 			contextMenu.focus();
 
@@ -84,10 +95,11 @@
 	}
 
 	export function close(): void {
-		if (!show) return;
+		if (!show || closeTimer !== null) return;
 
 		isPositioned = false;
-		setTimeout(() => {
+		closeTimer = setTimeout(() => {
+			closeTimer = null;
 			show = false;
 			contextData = null;
 		}, transitionDuration);
@@ -129,7 +141,9 @@
 		if (!contextMenu) return;
 
 		const items = contextMenu.querySelectorAll(itemSelector);
-		const currentIndex = Array.from(items).findIndex((item) => item === document.activeElement);
+		const currentIndex = Array.from(items).findIndex(
+			(item) => item === document.activeElement
+		);
 
 		let nextIndex = currentIndex + direction;
 		if (nextIndex < 0) nextIndex = items.length - 1;
@@ -145,11 +159,14 @@
 		}
 	}
 
-	onMount(() => {
+	$effect(() => {
+		if (!show) return;
+
 		document.addEventListener('click', handleClickOutside, true);
 		document.addEventListener('contextmenu', handleClickOutside, true);
 
 		return () => {
+			clearCloseTimer();
 			document.removeEventListener('click', handleClickOutside, true);
 			document.removeEventListener('contextmenu', handleClickOutside, true);
 			if (closeOnScroll) {
@@ -187,7 +204,8 @@
 		position: fixed;
 		z-index: var(--lumi-z-dropdown);
 		background: var(--lumi-floating-surface-bg);
-		border: var(--lumi-border-width-thin) solid var(--lumi-floating-surface-border);
+		border: var(--lumi-border-width-thin) solid
+			var(--lumi-floating-surface-border);
 		border-radius: var(--lumi-radius-2xl);
 		padding: var(--lumi-space-xs);
 		min-width: calc(var(--lumi-space-5xl) * 2);
@@ -228,7 +246,9 @@
 
 	/* Sizes */
 	.lumi-context--sm {
-		min-width: calc(var(--lumi-space-4xl) + var(--lumi-space-xl) + var(--lumi-space-sm));
+		min-width: calc(
+			var(--lumi-space-4xl) + var(--lumi-space-xl) + var(--lumi-space-sm)
+		);
 	}
 	.lumi-context--md {
 		min-width: calc(var(--lumi-space-5xl) * 2 + var(--lumi-space-sm));

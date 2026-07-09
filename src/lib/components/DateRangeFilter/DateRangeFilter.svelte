@@ -35,23 +35,31 @@
 	const inputSize = $derived(compact ? 'sm' : 'md');
 	const buttonSize = $derived(compact ? 'sm' : 'md');
 
-	const filtersClass = $derived(
-		['lumi-inline-filters', compact && 'lumi-inline-filters--compact'].filter(Boolean).join(' ')
-	);
-
 	const showReset = $derived(Boolean(resetLabel && onreset));
 	const showApply = $derived(!hideApply && Boolean(onapply));
 </script>
 
-<div class={filtersClass}>
-	<div class="lumi-toolbar-field">
-		<Input type="date" bind:value={fromValue} label={fromLabel} {disabled} size={inputSize} />
+<div class="lumi-form-action-row">
+	<div class="lumi-form-action-row__field">
+		<Input
+			type="date"
+			bind:value={fromValue}
+			label={fromLabel}
+			{disabled}
+			size={inputSize}
+		/>
 	</div>
-	<div class="lumi-toolbar-field">
-		<Input type="date" bind:value={toValue} label={toLabel} {disabled} size={inputSize} />
+	<div class="lumi-form-action-row__field">
+		<Input
+			type="date"
+			bind:value={toValue}
+			label={toLabel}
+			{disabled}
+			size={inputSize}
+		/>
 	</div>
 	{#if showReset || showApply}
-		<div class="lumi-inline-filters__actions">
+		<div class="lumi-form-action-row__actions">
 			{#if showReset}
 				<Button type="border" size={buttonSize} onclick={onreset} {disabled}>
 					{resetLabel}
@@ -59,15 +67,14 @@
 			{/if}
 			{#if showApply}
 				<Button
-					type="filled"
-					color="primary"
+					type="flat"
+					color="info"
 					icon="search"
 					size={buttonSize}
+					aria-label={applyLabel}
 					onclick={onapply}
 					{disabled}
-				>
-					{applyLabel}
-				</Button>
+				/>
 			{/if}
 		</div>
 	{/if}

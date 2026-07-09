@@ -18,7 +18,6 @@ npm install @lumi-ui/svelte
 <script lang="ts">
 	import { Button, Card, Dialog, Input, Select, Table } from '@lumi-ui/svelte';
 	import '@lumi-ui/svelte/styles';
-	import '@lumi-ui/svelte/themes/coedula.css';
 </script>
 
 <Card title="Resumen" subtitle="Estado actual" spaced>
@@ -27,19 +26,19 @@ npm install @lumi-ui/svelte
 </Card>
 ```
 
-Use one theme at a time:
+`@lumi-ui/svelte/styles` includes the default Lumi theme. Product themes are optional; if an app needs one, import only one theme after the core styles:
 
 ```ts
 import '@lumi-ui/svelte/styles';
-import '@lumi-ui/svelte/themes/coedula.css';
-// or
 import '@lumi-ui/svelte/themes/faztore.css';
+// or
+import '@lumi-ui/svelte/themes/coedula.css';
 ```
 
 ## Included Core
 
 - Structure: `Card`, `Sidebar`, `SidebarHeader`, `Navbar`
-- Forms: `Button`, `Input`, `NumberInput`, `Textarea`, `Select`, `RemoteSelect`, `Checkbox`, `SegmentedControl`
+- Forms: `Button`, `Input`, `NumberInput`, `Textarea`, `Select`, `RemoteSelect`, `Checkbox`, `SegmentedControl`, `DateRangeFilter`
 - Overlays: `Dialog`, `Dropdown`, `DropdownItem`, `Context`, `ContextItem`
 - Display/navigation: `Table`, `Tabs`, `Avatar`, `Icon`, `TagOption`
 - File workspace: `DriveFileCard`, `DriveFileGrid`, `DriveFileList`, `DriveFilePreview`, `DriveFileUploader`, `DriveSidebar`
@@ -79,3 +78,9 @@ npm publish
 ```
 
 The package lifecycle validates lint and Svelte types before publishing, then builds `dist/` during pack.
+
+## 0.1.4 Notes
+
+- Context menus cancel pending close transitions before reopening, so right-clicking a second target does not immediately dismiss the new menu.
+- Core form/action utilities and filter summary styles were restored as reusable Lumi patterns instead of app-local CSS.
+- The default light theme restores the calibrated Aurora Blue x teal seed palette, translucent dashboard content, and liquid-glass shadow balance.

@@ -515,8 +515,24 @@ body {
 
 .lumi-filter-summary--compact {
 	display: grid;
-	justify-content: stretch;
-	gap: var(--lumi-space-xs);
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--lumi-space-md);
+}
+
+.lumi-filter-summary--primary {
+	--lumi-filter-summary-accent: var(--lumi-color-primary);
+	--lumi-filter-summary-accent-2: var(--lumi-color-info);
+}
+
+.lumi-filter-summary--secondary {
+	--lumi-filter-summary-accent: var(--lumi-color-secondary);
+	--lumi-filter-summary-accent-2: var(--lumi-color-primary);
+}
+
+.lumi-filter-summary--success {
+	--lumi-filter-summary-accent: var(--lumi-color-success);
+	--lumi-filter-summary-accent-2: var(--lumi-color-info);
 }
 
 .lumi-filter-summary--warning {
@@ -524,8 +540,13 @@ body {
 	--lumi-filter-summary-accent-2: var(--lumi-color-primary);
 }
 
-.lumi-filter-summary--secondary {
-	--lumi-filter-summary-accent: var(--lumi-color-secondary);
+.lumi-filter-summary--danger {
+	--lumi-filter-summary-accent: var(--lumi-color-danger);
+	--lumi-filter-summary-accent-2: var(--lumi-color-warning);
+}
+
+.lumi-filter-summary--info {
+	--lumi-filter-summary-accent: var(--lumi-color-info);
 	--lumi-filter-summary-accent-2: var(--lumi-color-primary);
 }
 
@@ -558,7 +579,7 @@ body {
 .lumi-filter-summary__title {
 	margin: 0;
 	color: var(--lumi-color-text);
-	font-size: var(--lumi-font-size-xl);
+	font-size: var(--lumi-font-size-sm);
 	line-height: var(--lumi-line-height-tight);
 	overflow-wrap: anywhere;
 }
@@ -639,6 +660,31 @@ body {
 /** Compact controls inside section toolbars. */
 .lumi-toolbar-field--course-select {
 	grid-template-columns: minmax(0, min(18rem, 100%));
+}
+
+.lumi-form-action-row {
+	display: flex;
+	align-items: flex-end;
+	gap: var(--lumi-space-sm);
+	flex-wrap: wrap;
+}
+
+.lumi-form-action-row__field {
+	flex: 1 1 0;
+	min-width: min(var(--lumi-min-width-md), 100%);
+	max-width: 100%;
+}
+
+.lumi-form-action-row--toolbar .lumi-form-action-row__field {
+	flex: 0 1 auto;
+	max-width: min(var(--lumi-max-width-xs), 100%);
+}
+
+.lumi-form-action-row__actions {
+	display: flex;
+	align-items: flex-end;
+	gap: var(--lumi-space-xs);
+	flex-wrap: wrap;
 }
 
 /**
@@ -1181,6 +1227,20 @@ button.lumi-person-cell--link:focus-visible {
 	gap: var(--lumi-space-sm);
 }
 
+.lumi-item-list__row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--lumi-space-md);
+}
+
+.lumi-item-list__actions {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: var(--lumi-space-xs);
+}
+
 /* ========================================================================== */
 /* TOTAL BOX - emphasized summary (totals, closing balance) */
 /* ========================================================================== */
@@ -1253,6 +1313,7 @@ button.lumi-person-cell--link:focus-visible {
 
 	.lumi-filter-summary {
 		gap: var(--lumi-space-md);
+		grid-template-columns: minmax(0, 1fr);
 		padding: var(--lumi-space-md);
 		border-radius: var(--lumi-radius-xl);
 	}
@@ -1274,6 +1335,16 @@ button.lumi-person-cell--link:focus-visible {
 		width: 100%;
 	}
 
+	.lumi-item-list__row {
+		grid-template-columns: minmax(0, 1fr);
+		align-items: start;
+	}
+
+	.lumi-item-list__actions {
+		width: 100%;
+		justify-content: flex-start;
+	}
+
 	.lumi-section-toolbar {
 		align-items: stretch;
 	}
@@ -1282,6 +1353,20 @@ button.lumi-person-cell--link:focus-visible {
 	.lumi-toolbar-field {
 		width: 100%;
 		grid-template-columns: 1fr;
+		justify-content: flex-start;
+	}
+
+	.lumi-form-action-row {
+		align-items: stretch;
+	}
+
+	.lumi-form-action-row__field {
+		flex-basis: 100%;
+		max-width: 100%;
+	}
+
+	.lumi-form-action-row__actions {
+		width: 100%;
 		justify-content: flex-start;
 	}
 
@@ -2404,6 +2489,10 @@ button.lumi-person-cell--link:focus-visible {
 	min-width: 0;
 	overflow-wrap: anywhere;
 	word-break: break-word;
+}
+
+.lumi-text-pre-line {
+	white-space: pre-line;
 }
 
 .lumi-text-clamp--2 {
