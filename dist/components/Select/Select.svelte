@@ -483,11 +483,7 @@
 		--select-border: var(--lumi-color-control-border);
 		--select-focus: var(--lumi-color-primary);
 		--select-bg: var(--lumi-color-control-fill);
-		--select-bg-focus: color-mix(
-			in srgb,
-			var(--lumi-color-control-fill) 84%,
-			var(--select-focus) 16%
-		);
+		--select-bg-focus: var(--lumi-color-control-focus-fill);
 	}
 
 	/* ── Label ────────────────────────────────── */
@@ -513,7 +509,7 @@
 		min-height: var(--lumi-control-height-md);
 		background: var(--select-bg);
 		border: var(--lumi-border-width-thin) solid var(--select-border);
-		border-radius: var(--lumi-radius-md);
+		border-radius: var(--lumi-control-radius);
 		box-shadow: var(--lumi-control-shadow);
 		transition:
 			border-color var(--lumi-duration-base) var(--lumi-easing-default),

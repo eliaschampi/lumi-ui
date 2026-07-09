@@ -28,7 +28,7 @@
 	const transitionDuration = `${LUMI_CONFIG.transitions.base}ms`;
 	const styleVars = $derived.by(
 		() =>
-			`--progress-color: var(--lumi-color-${color}); --progress-transition-duration: ${transitionDuration};`
+			`--progress-color: var(--lumi-color-${color}); --progress-foreground: var(--lumi-color-${color}-foreground); --progress-transition-duration: ${transitionDuration};`
 	);
 	const progressStyle = $derived(indeterminate ? '' : `width: ${clampedValue}%`);
 
@@ -105,6 +105,11 @@
 			var(--lumi-color-surface) 35%
 		);
 		--progress-indeterminate-width: 30%;
+		--progress-stripe-color: color-mix(
+			in srgb,
+			var(--progress-foreground) 15%,
+			transparent
+		);
 	}
 
 	.lumi-progress__track {
@@ -121,7 +126,7 @@
 		height: 100%;
 		background: linear-gradient(
 			90deg,
-			color-mix(in srgb, var(--progress-color) 85%, var(--lumi-color-white)) 0%,
+			color-mix(in srgb, var(--progress-color) 85%, var(--progress-foreground)) 0%,
 			var(--progress-color) 100%
 		);
 		border-radius: var(--lumi-radius-full);
@@ -142,11 +147,11 @@
 		inset: 0;
 		background-image: linear-gradient(
 			45deg,
-			rgba(255, 255, 255, 0.15) 25%,
+			var(--progress-stripe-color) 25%,
 			transparent 25%,
 			transparent 50%,
-			rgba(255, 255, 255, 0.15) 50%,
-			rgba(255, 255, 255, 0.15) 75%,
+			var(--progress-stripe-color) 50%,
+			var(--progress-stripe-color) 75%,
 			transparent 75%,
 			transparent
 		);

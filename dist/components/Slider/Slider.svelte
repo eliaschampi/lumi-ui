@@ -155,7 +155,8 @@
 		border-radius: var(--lumi-radius-full);
 		outline: none;
 		cursor: pointer;
-		box-shadow: inset 0 var(--lumi-border-width-thin) 3px rgba(0, 0, 0, 0.1);
+		box-shadow: inset 0 var(--lumi-border-width-thin) 3px
+			color-mix(in srgb, var(--lumi-color-black) 10%, transparent);
 	}
 
 	/* Webkit thumb styling */

@@ -804,7 +804,7 @@
 
 	.lumi-table__pagination-page--active {
 		background: var(--lumi-color-primary);
-		color: var(--lumi-color-white);
+		color: var(--lumi-color-primary-foreground);
 		font-weight: var(--lumi-font-weight-semibold);
 		border-color: var(--lumi-color-primary);
 	}

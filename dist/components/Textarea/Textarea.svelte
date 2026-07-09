@@ -132,11 +132,7 @@
 		--textarea-color: var(--lumi-color-primary);
 		--lumi-control-accent: var(--textarea-color);
 		--textarea-bg: var(--lumi-color-control-fill);
-		--textarea-bg-focus: color-mix(
-			in srgb,
-			var(--lumi-color-control-fill) 84%,
-			var(--textarea-color) 16%
-		);
+		--textarea-bg-focus: var(--lumi-color-control-focus-fill);
 	}
 
 	.lumi-textarea__label {
@@ -163,7 +159,7 @@
 		padding: var(--lumi-space-sm) var(--lumi-space-md);
 		background: var(--textarea-bg);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-control-border);
-		border-radius: var(--lumi-radius-md);
+		border-radius: var(--lumi-control-radius);
 		box-shadow: var(--lumi-control-shadow);
 		font-family: inherit;
 		font-size: var(--lumi-font-size-base);

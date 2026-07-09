@@ -51,7 +51,8 @@
 	const styleVars = $derived.by(() => {
 		const colorVar = `var(--lumi-color-${color})`;
 		const colorRgb = `var(--lumi-color-${color}-rgb)`;
-		return `--btn-color: ${colorVar}; --btn-color-rgb: ${colorRgb};`;
+		const colorForeground = `var(--lumi-color-${color}-foreground)`;
+		return `--btn-color: ${colorVar}; --btn-color-rgb: ${colorRgb}; --btn-foreground: ${colorForeground};`;
 	});
 
 	function handleClick(event: MouseEvent) {
@@ -219,12 +220,8 @@
 
 	/* FILLED - Bold with colored glow */
 	.lumi-button--filled {
-		background: linear-gradient(
-			145deg,
-			color-mix(in srgb, var(--btn-color) 90%, var(--lumi-color-white)) 0%,
-			color-mix(in srgb, var(--btn-color) 96%, var(--lumi-color-black)) 100%
-		);
-		color: var(--lumi-color-text-inverse);
+		background: var(--btn-color);
+		color: var(--btn-foreground);
 		border-color: color-mix(in srgb, var(--btn-color) 48%, transparent);
 		box-shadow:
 			inset 0 var(--lumi-border-width-thin) 0
@@ -233,11 +230,7 @@
 	}
 
 	.lumi-button--filled:hover:not(:disabled) {
-		background: linear-gradient(
-			145deg,
-			color-mix(in srgb, var(--btn-color) 94%, var(--lumi-color-white)) 0%,
-			color-mix(in srgb, var(--btn-color) 92%, var(--lumi-color-black)) 100%
-		);
+		background: color-mix(in srgb, var(--btn-color) 94%, var(--lumi-color-black));
 		box-shadow:
 			inset 0 var(--lumi-border-width-thin) 0
 				color-mix(in srgb, var(--lumi-color-white) 32%, transparent),
@@ -309,11 +302,10 @@
 	.lumi-button--gradient {
 		background: linear-gradient(
 			145deg,
-			color-mix(in srgb, var(--btn-color) 82%, var(--lumi-color-white)) 0%,
-			var(--btn-color) 56%,
-			color-mix(in srgb, var(--btn-color) 82%, var(--lumi-color-black)) 100%
+			color-mix(in srgb, var(--btn-color) 99%, var(--lumi-color-white)) 0%,
+			var(--btn-color) 100%
 		);
-		color: var(--lumi-color-text-inverse);
+		color: var(--btn-foreground);
 		border-color: color-mix(in srgb, var(--btn-color) 45%, transparent);
 		box-shadow:
 			inset 0 var(--lumi-border-width-thin) 0
@@ -322,12 +314,6 @@
 	}
 
 	.lumi-button--gradient:hover:not(:disabled) {
-		background: linear-gradient(
-			145deg,
-			color-mix(in srgb, var(--btn-color) 86%, var(--lumi-color-white)) 0%,
-			var(--btn-color) 56%,
-			color-mix(in srgb, var(--btn-color) 78%, var(--lumi-color-black)) 100%
-		);
 		border-color: color-mix(in srgb, var(--btn-color) 60%, transparent);
 		box-shadow:
 			inset 0 var(--lumi-border-width-thin) 0
@@ -367,7 +353,7 @@
 
 	.lumi-button--filled.lumi-button--loading .lumi-button__spinner,
 	.lumi-button--gradient.lumi-button--loading .lumi-button__spinner {
-		color: var(--lumi-color-text-inverse);
+		color: var(--btn-foreground);
 	}
 
 	.lumi-button--border.lumi-button--loading .lumi-button__spinner,

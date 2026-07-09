@@ -70,7 +70,11 @@
 	};
 </script>
 
-<div class={classes} aria-label={alt || text || 'Avatar'}>
+<div
+	class={classes}
+	style={`--avatar-foreground: var(--lumi-color-${color}-foreground);`}
+	aria-label={alt || text || 'Avatar'}
+>
 	{#if imageSrc && !imageError}
 		<img src={imageSrc} {alt} class="lumi-avatar__image" onerror={handleImageError} />
 	{:else if icon}
@@ -97,6 +101,7 @@
 		font-weight: var(--lumi-font-weight-semibold);
 		line-height: var(--lumi-line-height-none);
 		white-space: nowrap;
+		color: var(--avatar-foreground);
 		user-select: none;
 		overflow: hidden;
 		flex-shrink: 0;
@@ -130,32 +135,26 @@
 	/* Color variants */
 	.lumi-avatar--primary {
 		background-color: var(--lumi-color-primary);
-		color: var(--lumi-color-white);
 	}
 
 	.lumi-avatar--secondary {
 		background-color: var(--lumi-color-secondary);
-		color: var(--lumi-color-white);
 	}
 
 	.lumi-avatar--success {
 		background-color: var(--lumi-color-success);
-		color: var(--lumi-color-white);
 	}
 
 	.lumi-avatar--warning {
 		background-color: var(--lumi-color-warning);
-		color: var(--lumi-color-white);
 	}
 
 	.lumi-avatar--danger {
 		background-color: var(--lumi-color-danger);
-		color: var(--lumi-color-white);
 	}
 
 	.lumi-avatar--info {
 		background-color: var(--lumi-color-info);
-		color: var(--lumi-color-white);
 	}
 
 	/* Text styling */
