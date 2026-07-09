@@ -56,9 +56,7 @@
 		},
 		"./styles": "./dist/styles/index.css",
 		"./styles/core.css": "./dist/styles/core.css",
-		"./styles/tokens.base.css": "./dist/styles/tokens.base.css",
-		"./themes/coedula.css": "./dist/styles/themes/coedula.css",
-		"./themes/faztore.css": "./dist/styles/themes/faztore.css"
+		"./styles/tokens.base.css": "./dist/styles/tokens.base.css"
 	},
 	"peerDependencies": {
 		"svelte": "^5.56.4"

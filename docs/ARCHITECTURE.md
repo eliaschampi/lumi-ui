@@ -18,15 +18,12 @@ src/lib/
     core.css
     index.css
     tokens.base.css
-    themes/
-      coedula.css
-      faztore.css
   utils/
 ```
 
 ## CSS Ownership
 
-`tokens.base.css` defines the full token contract. Theme files preserve product identity. `core.css` owns only domain-neutral layout, surfaces, and utilities.
+`tokens.base.css` defines the full token contract and ships the default identity (Coedula — cobalt primary, olive secondary, warm-paper neutrals). `core.css` owns only domain-neutral layout, surfaces, and utilities.
 
 No domain classes belong in `core.css`.
 

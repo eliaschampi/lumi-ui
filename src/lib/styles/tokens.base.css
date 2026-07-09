@@ -1,5 +1,5 @@
 /* Lumi UI - Base Design Tokens */
-/* Default theme: Lumi Calm Glass - Aurora Blue x Liquid Glass */
+/* Default theme: Lumi Calm Glass - Coedula identity (Cobalt x Olive) on warm paper, liquid glass */
 /*
  * Architecture: every color is derived from a small set of SEEDS via color-mix().
  *   Light seeds : --lumi-neutral-rgb, --lumi-canvas-rgb, brand primary/secondary,
@@ -19,23 +19,32 @@
 	/* ========================================================================== */
 
 	/* --- SEEDS (curated; everything below is derived from these) -------------- */
-	--lumi-neutral-rgb: 11, 18, 32;
-	--lumi-canvas-rgb: 243, 247, 252;
-	--lumi-color-primary: rgb(0, 113, 227);
-	--lumi-color-primary-rgb: 0, 113, 227;
-	--lumi-color-primary-50: rgb(232, 246, 255);
-	--lumi-color-primary-300: rgb(103, 183, 255);
-	--lumi-color-secondary: rgb(18, 191, 168);
-	--lumi-color-secondary-rgb: 18, 191, 168;
-	--lumi-color-success: rgb(13, 154, 104);
-	--lumi-color-success-rgb: 13, 154, 104;
-	--lumi-color-warning: rgb(194, 123, 11);
-	--lumi-color-warning-rgb: 194, 123, 11;
-	--lumi-color-danger: rgb(214, 51, 82);
-	--lumi-color-danger-rgb: 214, 51, 82;
-	/* Info: cool sky — informational state, distinct from brand primary and danger */
-	--lumi-color-info: rgb(3, 105, 161);
-	--lumi-color-info-rgb: 3, 105, 161;
+	/* Identity: Coedula — warm paper neutrals, cobalt primary, olive secondary, magenta danger. */
+	--lumi-neutral-rgb: 34, 28, 26;
+	--lumi-canvas-rgb: 247, 243, 237;
+	--lumi-color-primary: rgb(10, 110, 220);
+	--lumi-color-primary-rgb: 10, 110, 220;
+	--lumi-color-primary-50: color-mix(
+		in srgb,
+		var(--lumi-color-primary) 10%,
+		var(--lumi-color-white)
+	);
+	--lumi-color-primary-300: color-mix(
+		in srgb,
+		var(--lumi-color-primary) 45%,
+		var(--lumi-color-white)
+	);
+	--lumi-color-secondary: rgb(104, 164, 24);
+	--lumi-color-secondary-rgb: 104, 164, 24;
+	--lumi-color-success: rgb(14, 148, 104);
+	--lumi-color-success-rgb: 14, 148, 104;
+	--lumi-color-warning: rgb(214, 124, 8);
+	--lumi-color-warning-rgb: 214, 124, 8;
+	--lumi-color-danger: rgb(196, 40, 108);
+	--lumi-color-danger-rgb: 196, 40, 108;
+	/* Info: cobalt-sky — informational state, distinct from brand primary and danger */
+	--lumi-color-info: rgb(12, 132, 196);
+	--lumi-color-info-rgb: 12, 132, 196;
 	--lumi-color-gray-400: color-mix(
 		in srgb,
 		var(--lumi-color-text) 45%,
@@ -43,7 +52,7 @@
 	);
 	--lumi-color-white: rgb(255, 255, 255);
 	--lumi-color-black: rgb(0, 0, 0);
-	--lumi-shadow-key-rgb: 11, 18, 32;
+	--lumi-shadow-key-rgb: 44, 36, 32;
 
 	/* --- DERIVED TEXT -------------------------------------------------------- */
 	--lumi-color-text: rgb(var(--lumi-neutral-rgb));
@@ -58,6 +67,12 @@
 		var(--lumi-color-surface)
 	);
 	--lumi-color-text-inverse: var(--lumi-color-white);
+	--lumi-color-primary-foreground: var(--lumi-color-white);
+	--lumi-color-secondary-foreground: var(--lumi-color-black);
+	--lumi-color-success-foreground: var(--lumi-color-black);
+	--lumi-color-warning-foreground: var(--lumi-color-black);
+	--lumi-color-danger-foreground: var(--lumi-color-white);
+	--lumi-color-info-foreground: var(--lumi-color-black);
 	--lumi-color-placeholder: color-mix(
 		in srgb,
 		var(--lumi-color-text-muted) 72%,
@@ -174,7 +189,6 @@
 		var(--lumi-color-control-fill) 68%,
 		var(--lumi-color-surface-raised) 32%
 	);
-
 	/* --- DERIVED STATE BACKGROUNDS ------------------------------------------- */
 	--lumi-color-success-bg: rgba(var(--lumi-color-success-rgb), 0.11);
 	--lumi-color-warning-bg: rgba(var(--lumi-color-warning-rgb), 0.13);
@@ -328,7 +342,6 @@
 		rgba(var(--lumi-color-info-rgb), 0.022) 55%,
 		transparent 100%
 	);
-	--lumi-gradient-glass-sidebar-inventory: var(--lumi-gradient-glass-sidebar);
 	--lumi-sidebar-header-veil: linear-gradient(
 		180deg,
 		color-mix(in srgb, var(--lumi-color-white) 62%, transparent) 0%,
@@ -415,6 +428,7 @@
 	--lumi-radius-2xl: 1.625rem;
 	--lumi-radius-full: 9999px;
 	--lumi-control-radius: var(--lumi-radius-md);
+	--lumi-control-focus-ring-strength: 24%;
 	--lumi-surface-radius: var(--lumi-radius-2xl);
 	--lumi-surface-saturation: 1.12;
 	--lumi-interactive-lift: calc(var(--lumi-space-2xs) * -0.25);
@@ -570,6 +584,7 @@
 	--lumi-grid-identity-split-min: 20rem;
 	--lumi-grid-analytics-primary-min: 0;
 	--lumi-grid-analytics-secondary-min: 20rem;
+	--lumi-grid-auto-min: var(--lumi-grid-responsive-min);
 	--lumi-max-width-xs: 20rem;
 	--lumi-max-width-sm: 24rem;
 	--lumi-max-width-md: 28rem;
@@ -628,28 +643,33 @@
 	color-scheme: dark;
 
 	/* --- SEEDS ---------------------------------------------------------------- */
-	--lumi-neutral-rgb: 6, 10, 18;
-	--lumi-color-text: rgb(248, 250, 252);
+	/* Identity: Coedula — warm ink, warm-white text, cobalt primary, lime secondary, pink danger. */
+	--lumi-neutral-rgb: 14, 12, 12;
+	--lumi-color-text: rgb(250, 248, 245);
 	--lumi-shadow-key-rgb: 0, 0, 0;
-	--lumi-color-primary: rgb(96, 165, 250);
-	--lumi-color-primary-rgb: 96, 165, 250;
+	--lumi-color-primary: rgb(82, 150, 250);
+	--lumi-color-primary-rgb: 82, 150, 250;
 	--lumi-color-primary-50: color-mix(
 		in srgb,
-		var(--lumi-color-primary) 28%,
+		var(--lumi-color-primary) 18%,
 		var(--lumi-color-black)
 	);
-	--lumi-color-primary-300: rgb(147, 197, 253);
-	--lumi-color-secondary: rgb(129, 140, 248);
-	--lumi-color-secondary-rgb: 129, 140, 248;
-	--lumi-color-success: rgb(45, 212, 150);
-	--lumi-color-success-rgb: 45, 212, 150;
+	--lumi-color-primary-300: color-mix(
+		in srgb,
+		var(--lumi-color-primary) 50%,
+		var(--lumi-color-white)
+	);
+	--lumi-color-secondary: rgb(156, 214, 56);
+	--lumi-color-secondary-rgb: 156, 214, 56;
+	--lumi-color-success: rgb(52, 211, 153);
+	--lumi-color-success-rgb: 52, 211, 153;
 	--lumi-color-warning: rgb(251, 191, 36);
 	--lumi-color-warning-rgb: 251, 191, 36;
-	--lumi-color-danger: rgb(251, 113, 133);
-	--lumi-color-danger-rgb: 251, 113, 133;
-	/* Info: cool sky on dark — clear informational state without warning/danger overlap */
-	--lumi-color-info: rgb(125, 211, 252);
-	--lumi-color-info-rgb: 125, 211, 252;
+	--lumi-color-danger: rgb(244, 114, 182);
+	--lumi-color-danger-rgb: 244, 114, 182;
+	/* Info: cobalt-sky on dark — clear informational state without warning/danger overlap */
+	--lumi-color-info: rgb(56, 189, 248);
+	--lumi-color-info-rgb: 56, 189, 248;
 	--lumi-color-gray-400: color-mix(
 		in srgb,
 		var(--lumi-color-text) 60%,
@@ -660,7 +680,11 @@
 
 	/* --- DERIVED RAMP / TEXT -------------------------------------------------- */
 	--lumi-color-primary-500: var(--lumi-color-primary);
-	--lumi-color-primary-600: rgb(191, 219, 254);
+	--lumi-color-primary-600: color-mix(
+		in srgb,
+		var(--lumi-color-primary) 35%,
+		var(--lumi-color-white)
+	);
 	--lumi-color-text-muted: color-mix(
 		in srgb,
 		var(--lumi-color-text) 70%,
@@ -687,6 +711,12 @@
 	);
 	--lumi-color-background: rgb(var(--lumi-neutral-rgb));
 	--lumi-color-background-rgb: var(--lumi-neutral-rgb);
+	--lumi-color-primary-foreground: var(--lumi-color-black);
+	--lumi-color-secondary-foreground: var(--lumi-color-black);
+	--lumi-color-success-foreground: var(--lumi-color-black);
+	--lumi-color-warning-foreground: var(--lumi-color-black);
+	--lumi-color-danger-foreground: var(--lumi-color-black);
+	--lumi-color-info-foreground: var(--lumi-color-black);
 	--lumi-color-background-secondary: color-mix(
 		in srgb,
 		var(--lumi-color-background) 98.5%,
@@ -793,6 +823,7 @@
 		var(--lumi-color-background) 94%,
 		var(--lumi-lift)
 	);
+	--lumi-control-focus-ring-strength: 26%;
 	--lumi-control-shadow:
 		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 6%, transparent),
 		inset 0 -1px 0 rgba(var(--lumi-shadow-key-rgb), 0.24),

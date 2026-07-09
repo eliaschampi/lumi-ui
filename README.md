@@ -26,14 +26,7 @@ npm install @lumi-ui/svelte
 </Card>
 ```
 
-`@lumi-ui/svelte/styles` includes the default Lumi theme. Product themes are optional; if an app needs one, import only one theme after the core styles:
-
-```ts
-import '@lumi-ui/svelte/styles';
-import '@lumi-ui/svelte/themes/faztore.css';
-// or
-import '@lumi-ui/svelte/themes/coedula.css';
-```
+`@lumi-ui/svelte/styles` includes the default Lumi theme — the Coedula identity (cobalt primary, olive secondary, warm-paper neutrals) baked into the base design tokens. Product-specific theme overlays are no longer shipped; apps consume the base tokens directly.
 
 ## Included Core
 

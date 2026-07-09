@@ -16,8 +16,7 @@ This package is the shared Lumi UI source of truth for Coedula and Faztore.
 ## Library Layers
 
 - `src/lib/components`: primitive, reusable Svelte components.
-- `src/lib/styles/tokens.base.css`: complete default token contract.
-- `src/lib/styles/themes`: product themes that preserve app identity.
+- `src/lib/styles/tokens.base.css`: complete default token contract and product identity (Coedula — cobalt primary, olive secondary, warm-paper neutrals).
 - `src/lib/styles/core.css`: domain-neutral layout, surface, and utility classes.
 - `src/lib/actions` and `src/lib/utils`: internal primitives shared by components.
 
