@@ -37,7 +37,11 @@
 	}
 </script>
 
-<label for={switchId} class={classes}>
+<label
+	for={switchId}
+	class={classes}
+	style={`--switch-thumb-color: var(--lumi-color-${color}-foreground);`}
+>
 	<input
 		id={switchId}
 		type="checkbox"
@@ -156,6 +160,7 @@
 	}
 
 	.lumi-switch--checked .lumi-switch__thumb {
+		background: var(--switch-thumb-color);
 		transform: translateX(var(--switch-travel));
 	}
 

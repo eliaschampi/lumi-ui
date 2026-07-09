@@ -135,11 +135,7 @@
 		--lumi-control-accent: var(--input-accent);
 		--number-border: var(--lumi-color-control-border);
 		--number-bg: var(--lumi-color-control-fill);
-		--number-bg-focus: color-mix(
-			in srgb,
-			var(--lumi-color-control-fill) 84%,
-			var(--input-accent) 16%
-		);
+		--number-bg-focus: var(--lumi-color-control-focus-fill);
 		--number-btn-size: var(--lumi-control-height-md);
 	}
 
@@ -158,7 +154,7 @@
 		min-height: var(--lumi-control-height-md);
 		background: var(--number-bg);
 		border: var(--lumi-border-width-thin) solid var(--number-border);
-		border-radius: var(--lumi-radius-md);
+		border-radius: var(--lumi-control-radius);
 		box-shadow: var(--lumi-control-shadow);
 		overflow: hidden;
 		transition:

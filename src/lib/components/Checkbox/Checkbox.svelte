@@ -46,7 +46,11 @@
 	};
 </script>
 
-<label for={checkboxId} class={classes}>
+<label
+	for={checkboxId}
+	class={classes}
+	style={`--checkbox-foreground: var(--lumi-color-${color}-foreground);`}
+>
 	<!-- Hidden input -->
 	<input
 		id={checkboxId}
@@ -125,7 +129,7 @@
 
 	/* Check mark icon */
 	:global(.lumi-checkbox__icon) {
-		color: var(--lumi-color-white);
+		color: var(--checkbox-foreground);
 		opacity: 0;
 		transform: scale(0.6);
 		transition: var(--lumi-transition-all);

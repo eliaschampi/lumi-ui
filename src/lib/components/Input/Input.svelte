@@ -226,11 +226,7 @@
 		--lumi-control-accent: var(--input-color);
 		--input-border: var(--lumi-color-control-border);
 		--input-bg: var(--lumi-color-control-fill);
-		--input-bg-focus: color-mix(
-			in srgb,
-			var(--lumi-color-control-fill) 84%,
-			var(--input-color) 16%
-		);
+		--input-bg-focus: var(--lumi-color-control-focus-fill);
 	}
 
 	/* States unify border to the active color */
