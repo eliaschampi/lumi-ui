@@ -336,12 +336,6 @@
 		rgba(var(--lumi-color-info-rgb), 0.024) 48%,
 		transparent 74%
 	);
-	--lumi-gradient-glass-sidebar-drive: linear-gradient(
-		145deg,
-		rgba(var(--lumi-color-primary-rgb), 0.034) 0%,
-		rgba(var(--lumi-color-info-rgb), 0.022) 55%,
-		transparent 100%
-	);
 	--lumi-sidebar-header-veil: linear-gradient(
 		180deg,
 		color-mix(in srgb, var(--lumi-color-white) 62%, transparent) 0%,
@@ -955,12 +949,6 @@
 		rgba(var(--lumi-color-primary-rgb), 0.046) 0%,
 		rgba(var(--lumi-color-secondary-rgb), 0.018) 48%,
 		transparent 74%
-	);
-	--lumi-gradient-glass-sidebar-drive: linear-gradient(
-		145deg,
-		rgba(var(--lumi-color-primary-rgb), 0.038) 0%,
-		rgba(var(--lumi-color-secondary-rgb), 0.016) 55%,
-		transparent 100%
 	);
 	--lumi-gradient-glass-total-summary: linear-gradient(
 		180deg,

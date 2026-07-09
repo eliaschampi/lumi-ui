@@ -375,10 +375,6 @@ body {
 	box-shadow: var(--lumi-shadow-sm);
 }
 
-.lumi-page-sidebar__card--drive {
-	--lumi-page-sidebar-gradient: var(--lumi-gradient-glass-sidebar-drive);
-}
-
 .lumi-page-sidebar__content {
 	display: flex;
 	flex-direction: column;

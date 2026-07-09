@@ -179,10 +179,7 @@ export type {
 export { Notification } from './components/Notification';
 export type { PageHeaderProps } from './components/PageHeader';
 export { PageHeader } from './components/PageHeader';
-export type {
-	PageSidebarProps,
-	PageSidebarVariant
-} from './components/PageSidebar';
+export type { PageSidebarProps } from './components/PageSidebar';
 export { PageSidebar } from './components/PageSidebar';
 export type {
 	ProgressColor,

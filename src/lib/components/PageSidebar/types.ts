@@ -1,13 +1,5 @@
 import type { Snippet } from 'svelte';
 
-export type PageSidebarVariant =
-	| 'default'
-	| 'drive'
-	| 'inventory'
-	| 'enrollments'
-	| 'attendance'
-	| 'evaluations';
-
 export interface PageSidebarProps {
 	/** Whether the mobile drawer is currently open */
 	mobileOpen?: boolean;
@@ -20,9 +12,6 @@ export interface PageSidebarProps {
 
 	/** Hides the built-in mobile drawer header when true */
 	hideMobileHeader?: boolean;
-
-	/** Visual variant for gradients and accents */
-	variant?: PageSidebarVariant;
 
 	/** Additional class names applied to the internal card */
 	class?: string;
