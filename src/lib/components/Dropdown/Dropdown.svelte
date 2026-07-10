@@ -70,9 +70,6 @@
 
 	// Provide close function to child components (DropdownItem).
 	setContext('dropdownClose', () => closeDropdown(true));
-	setContext('dropdownSubmit', () =>
-		dropdownRef?.closest('form')?.requestSubmit()
-	);
 
 	const dropdownClasses = $derived.by(() =>
 		['lumi-dropdown', floating.isOpen && 'lumi-dropdown--open', className]

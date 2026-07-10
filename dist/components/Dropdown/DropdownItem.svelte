@@ -21,7 +21,6 @@
 	}: Props = $props();
 
 	const closeDropdown = getContext<() => void>('dropdownClose');
-	const submitDropdown = getContext<() => void>('dropdownSubmit');
 
 	const itemClasses = $derived.by(() =>
 		[
@@ -46,15 +45,20 @@
 			event.stopPropagation();
 			return;
 		}
-		closeDropdown?.();
+
 		onclick?.(event);
-		if (
-			submit &&
-			event.currentTarget instanceof HTMLButtonElement &&
-			!event.defaultPrevented
-		) {
-			event.preventDefault();
-			submitDropdown?.();
+
+		if (event.defaultPrevented) {
+			return;
+		}
+
+		if (submit) {
+			// Defer closing to allow form submission to bubble
+			setTimeout(() => {
+				closeDropdown?.();
+			}, 0);
+		} else {
+			closeDropdown?.();
 		}
 	}
 
