@@ -38,15 +38,10 @@
 <style>
 	.lumi-list {
 		--list-accent: var(--lumi-color-primary);
-		--list-hover-border: color-mix(
-			in srgb,
-			var(--list-accent) 20%,
-			var(--lumi-color-border-strong)
-		);
 		--list-border: color-mix(
 			in srgb,
-			var(--lumi-color-border-glass) 72%,
-			var(--lumi-color-border-strong) 28%
+			var(--list-accent) 6%,
+			var(--lumi-color-border-glass)
 		);
 		--list-shell-bg: color-mix(
 			in srgb,
@@ -68,20 +63,11 @@
 		background: var(--list-shell-bg);
 		border: var(--lumi-border-width-thin) solid var(--list-border);
 		border-radius: var(--lumi-radius-2xl);
-		box-shadow: var(--lumi-shadow-sm);
-		transition:
-			border-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-fast) var(--lumi-easing-default);
 		overflow-x: hidden;
 		overflow-y: auto;
 		overscroll-behavior: contain;
 		scrollbar-width: thin;
 		scrollbar-color: var(--list-scroll-thumb) var(--list-scroll-track);
-	}
-
-	.lumi-list:hover:not(.lumi-list--disabled) {
-		border-color: var(--list-hover-border);
-		box-shadow: var(--lumi-shadow-md);
 	}
 
 	/* Size variants */

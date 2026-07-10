@@ -41,9 +41,7 @@
 		return classList.filter(Boolean).join(' ');
 	});
 
-	const styleVars = $derived(
-		`--notification-duration: ${duration}ms; --notification-transition-duration: ${transitionDuration}ms;`
-	);
+	const styleVars = $derived(`--notification-duration: ${duration}ms;`);
 
 	$effect(() => {
 		if (!active || duration <= 0) return;
@@ -113,8 +111,8 @@
 		background:
 			linear-gradient(
 				145deg,
-				color-mix(in srgb, var(--notification-bg) 42%, var(--lumi-color-surface-glass-strong)),
-				var(--lumi-color-surface-glass-strong)
+				var(--notification-bg),
+				transparent 60%
 			),
 			var(--lumi-color-surface-glass-strong);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
@@ -124,28 +122,6 @@
 		pointer-events: auto;
 		position: relative;
 		overflow: hidden;
-		transition:
-			transform var(--notification-transition-duration) var(--lumi-easing-default),
-			box-shadow var(--notification-transition-duration) var(--lumi-easing-default),
-			border-color var(--notification-transition-duration) var(--lumi-easing-default);
-	}
-
-	.lumi-notification::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(
-			145deg,
-			color-mix(in srgb, var(--notification-bg) 34%, transparent),
-			transparent 45%,
-			transparent
-		);
-		pointer-events: none;
-	}
-
-	.lumi-notification:hover {
-		transform: translateY(calc(var(--lumi-space-2xs) * -1));
-		box-shadow: var(--lumi-shadow-xl);
 	}
 
 	.lumi-notification--timed::after {

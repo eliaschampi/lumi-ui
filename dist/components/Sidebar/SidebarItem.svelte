@@ -86,7 +86,6 @@
 			rgba(var(--lumi-color-primary-rgb), 0.018)
 		);
 		--sidebar-item-focus-ring: color-mix(in srgb, var(--lumi-color-primary) 20%, transparent);
-		--sidebar-item-lift: calc(var(--lumi-space-2xs) * -0.25);
 		position: relative;
 		display: flex;
 		align-items: center;
@@ -103,8 +102,7 @@
 		transition:
 			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
 			color var(--lumi-duration-fast) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-fast) var(--lumi-easing-default),
-			transform var(--lumi-duration-fast) var(--lumi-easing-default);
+			box-shadow var(--lumi-duration-fast) var(--lumi-easing-default);
 		width: 100%;
 		outline: none;
 	}
@@ -138,16 +136,11 @@
 		background: var(--sidebar-item-hover-bg);
 		color: var(--lumi-color-text);
 		border-color: color-mix(in srgb, var(--lumi-color-primary) 18%, transparent);
-		transform: translateY(var(--sidebar-item-lift));
 	}
 
 	.lumi-sidebar-item:focus-visible {
 		background: var(--sidebar-item-hover-bg);
 		box-shadow: 0 0 0 var(--lumi-border-width-thick) var(--sidebar-item-focus-ring);
-	}
-
-	.lumi-sidebar-item:active:not(.lumi-sidebar-item--active) {
-		transform: none;
 	}
 
 	.lumi-sidebar-item--active {
@@ -169,7 +162,6 @@
 	.lumi-sidebar-item--active:hover {
 		background: var(--sidebar-item-active-bg);
 		color: var(--lumi-color-primary);
-		transform: none;
 	}
 
 	.lumi-sidebar-item__icon {

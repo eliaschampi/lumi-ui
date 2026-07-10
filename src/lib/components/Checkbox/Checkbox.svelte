@@ -90,7 +90,7 @@
 	.lumi-checkbox {
 		--checkbox-size: var(--lumi-icon-md);
 		--checkbox-label-size: var(--lumi-font-size-base);
-		--checkbox-radius: var(--lumi-radius-md);
+		--checkbox-radius: var(--lumi-radius-sm);
 		position: relative;
 		display: inline-flex;
 		align-items: center;
@@ -155,7 +155,7 @@
 	.lumi-checkbox--md {
 		--checkbox-size: var(--lumi-icon-md);
 		--checkbox-label-size: var(--lumi-font-size-base);
-		--checkbox-radius: var(--lumi-radius-md);
+		--checkbox-radius: var(--lumi-radius-sm);
 	}
 
 	/* Color variants */

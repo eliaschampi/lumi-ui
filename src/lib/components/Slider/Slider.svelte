@@ -96,18 +96,18 @@
 
 		--slider-accent: var(--lumi-color-primary);
 		--slider-fill: 0%;
-		--_track-h: 6px;
-		--_thumb-size: 18px;
+		--_track-h: var(--lumi-space-2xs);
+		--_thumb-size: var(--lumi-icon-md);
 	}
 
 	.lumi-slider--sm {
-		--_track-h: 4px;
-		--_thumb-size: 15px;
+		--_track-h: var(--lumi-border-width-thick);
+		--_thumb-size: var(--lumi-icon-sm);
 	}
 
 	.lumi-slider--lg {
-		--_track-h: 8px;
-		--_thumb-size: 22px;
+		--_track-h: calc(var(--lumi-space-2xs) + var(--lumi-border-width-thick));
+		--_thumb-size: var(--lumi-icon-lg);
 	}
 
 	.lumi-slider__header {
@@ -140,7 +140,7 @@
 
 	.lumi-slider__input {
 		width: 100%;
-		height: calc(var(--_track-h) + 12px); /* larger hit area */
+		height: calc(var(--_track-h) + var(--lumi-space-sm)); /* larger hit area */
 		margin: 0;
 		appearance: none;
 		-webkit-appearance: none;
@@ -197,7 +197,8 @@
 		transform: scale(1.16);
 		box-shadow:
 			var(--lumi-shadow-lg),
-			0 0 0 9px color-mix(in srgb, var(--slider-accent) 24%, transparent);
+			0 0 0 calc(var(--lumi-space-xs) + var(--lumi-border-width-thin))
+				color-mix(in srgb, var(--slider-accent) 24%, transparent);
 	}
 
 	.lumi-slider__input:hover::-moz-range-thumb,
@@ -205,7 +206,8 @@
 		transform: scale(1.16);
 		box-shadow:
 			var(--lumi-shadow-lg),
-			0 0 0 9px color-mix(in srgb, var(--slider-accent) 24%, transparent);
+			0 0 0 calc(var(--lumi-space-xs) + var(--lumi-border-width-thin))
+				color-mix(in srgb, var(--slider-accent) 24%, transparent);
 	}
 
 	/* Active dragging states (using :active pseudo-class!) */
@@ -213,7 +215,8 @@
 		transform: scale(1.26);
 		box-shadow:
 			var(--lumi-shadow-xl),
-			0 0 0 14px color-mix(in srgb, var(--slider-accent) 30%, transparent);
+			0 0 0 calc(var(--lumi-space-sm) + var(--lumi-border-width-thick))
+				color-mix(in srgb, var(--slider-accent) 30%, transparent);
 		transition: none;
 	}
 
@@ -221,7 +224,8 @@
 		transform: scale(1.26);
 		box-shadow:
 			var(--lumi-shadow-xl),
-			0 0 0 14px color-mix(in srgb, var(--slider-accent) 30%, transparent);
+			0 0 0 calc(var(--lumi-space-sm) + var(--lumi-border-width-thick))
+				color-mix(in srgb, var(--slider-accent) 30%, transparent);
 		transition: none;
 	}
 

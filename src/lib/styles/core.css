@@ -252,6 +252,10 @@ body {
 	);
 	border-radius: var(--lumi-surface-radius-local, var(--lumi-surface-radius));
 	box-shadow: var(--lumi-surface-shadow, var(--lumi-floating-surface-shadow));
+}
+
+/* Blur belongs to translucent surfaces; opaque structural panels stay crisp. */
+:where(.lumi-surface, .lumi-navbar, .lumi-dialog) {
 	backdrop-filter: blur(var(--lumi-surface-blur, var(--lumi-blur-sm)))
 		saturate(var(--lumi-surface-saturation));
 	-webkit-backdrop-filter: blur(var(--lumi-surface-blur, var(--lumi-blur-sm)))

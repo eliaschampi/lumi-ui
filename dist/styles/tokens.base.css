@@ -1,29 +1,25 @@
 /* Lumi UI - Base Design Tokens */
-/* Default theme: Lumi Calm Glass - Coedula identity (Cobalt x Olive) on warm paper, liquid glass */
+/* Default theme: Lumi Calm Surface - Coedula identity (Cobalt x Olive) on warm paper */
 /*
- * Architecture: every color is derived from a small set of SEEDS via color-mix().
- *   Light seeds : --lumi-neutral-rgb, --lumi-canvas-rgb, brand primary/secondary,
- *                 semantic status colors, white / black.
- *   Dark  seeds : --lumi-neutral-rgb, brand primary/secondary, near-white text,
- *                 semantic status colors, white/black.
- *   Surfaces    : light = primary-tinted canvas with white-elevated surfaces;
- *                 dark = neutral canvas lifted with --lumi-lift.
- *   Text/border : derived from text seed; shadow key from the neutral seed.
- *   Core palette avoids arbitrary one-off colors outside the curated SEEDS.
+ * Architecture: theme seeds own identity; semantic tokens own component behavior.
+ *   Seeds       : neutral/canvas RGB, brand, status, white and black.
+ *   Surfaces    : warm neutral solids by default; transparency is reserved for overlays.
+ *   Effects     : one restrained accent per layer, with neutral elevation shadows.
+ *   Overrides   : product themes replace seeds, never component-level semantic tokens.
  */
 :root {
 	color-scheme: light;
 
 	/* ========================================================================== */
-	/* COLOR SYSTEM - LUMI CALM GLASS (Light)                                  */
+	/* COLOR SYSTEM - LUMI CALM SURFACE (Light)                                */
 	/* ========================================================================== */
 
 	/* --- SEEDS (curated; everything below is derived from these) -------------- */
 	/* Identity: Coedula — warm paper neutrals, cobalt primary, olive secondary, magenta danger. */
 	--lumi-neutral-rgb: 34, 28, 26;
 	--lumi-canvas-rgb: 247, 243, 237;
-	--lumi-color-primary: rgb(10, 110, 220);
 	--lumi-color-primary-rgb: 10, 110, 220;
+	--lumi-color-primary: rgb(var(--lumi-color-primary-rgb));
 	--lumi-color-primary-50: color-mix(
 		in srgb,
 		var(--lumi-color-primary) 10%,
@@ -34,17 +30,17 @@
 		var(--lumi-color-primary) 45%,
 		var(--lumi-color-white)
 	);
-	--lumi-color-secondary: rgb(104, 164, 24);
 	--lumi-color-secondary-rgb: 104, 164, 24;
-	--lumi-color-success: rgb(14, 148, 104);
+	--lumi-color-secondary: rgb(var(--lumi-color-secondary-rgb));
 	--lumi-color-success-rgb: 14, 148, 104;
-	--lumi-color-warning: rgb(214, 124, 8);
+	--lumi-color-success: rgb(var(--lumi-color-success-rgb));
 	--lumi-color-warning-rgb: 214, 124, 8;
-	--lumi-color-danger: rgb(196, 40, 108);
+	--lumi-color-warning: rgb(var(--lumi-color-warning-rgb));
 	--lumi-color-danger-rgb: 196, 40, 108;
+	--lumi-color-danger: rgb(var(--lumi-color-danger-rgb));
 	/* Info: cobalt-sky — informational state, distinct from brand primary and danger */
-	--lumi-color-info: rgb(12, 132, 196);
 	--lumi-color-info-rgb: 12, 132, 196;
+	--lumi-color-info: rgb(var(--lumi-color-info-rgb));
 	--lumi-color-gray-400: color-mix(
 		in srgb,
 		var(--lumi-color-text) 45%,
@@ -91,35 +87,31 @@
 	--lumi-color-background: rgb(var(--lumi-canvas-rgb));
 	--lumi-color-background-secondary: color-mix(
 		in srgb,
-		var(--lumi-color-background) 96%,
-		var(--lumi-color-primary)
+		var(--lumi-color-background) 94%,
+		var(--lumi-color-text)
 	);
 	--lumi-color-background-hover: color-mix(
 		in srgb,
-		var(--lumi-color-background) 91%,
-		var(--lumi-color-primary)
+		var(--lumi-color-background) 88%,
+		var(--lumi-color-text)
 	);
 	--lumi-color-background-rgb: var(--lumi-canvas-rgb);
 
 	/* --- DERIVED SURFACE LADDER --------------------------------------------- */
 	--lumi-color-surface-inset: color-mix(
 		in srgb,
-		var(--lumi-color-background) 94%,
-		var(--lumi-color-primary)
+		var(--lumi-color-background) 95%,
+		var(--lumi-color-text)
 	);
 	--lumi-color-surface: color-mix(
-		in srgb,
-		var(--lumi-color-white) 82%,
-		var(--lumi-color-background)
-	);
-	--lumi-color-surface-card: color-mix(
 		in srgb,
 		var(--lumi-color-white) 78%,
 		var(--lumi-color-background)
 	);
+	--lumi-color-surface-card: var(--lumi-color-surface);
 	--lumi-color-surface-elevated: color-mix(
 		in srgb,
-		var(--lumi-color-white) 70%,
+		var(--lumi-color-white) 92%,
 		var(--lumi-color-background)
 	);
 	--lumi-color-surface-raised: var(--lumi-color-white);
@@ -127,23 +119,23 @@
 	--lumi-color-surface-card-hover: var(--lumi-color-white);
 	--lumi-color-surface-glass: color-mix(
 		in srgb,
-		var(--lumi-color-surface) 80%,
+		var(--lumi-color-surface) 88%,
 		transparent
 	);
 	--lumi-color-surface-glass-strong: color-mix(
 		in srgb,
-		var(--lumi-color-surface-raised) 86%,
+		var(--lumi-color-surface-raised) 94%,
 		transparent
 	);
 	--lumi-color-surface-card-glass: color-mix(
 		in srgb,
-		var(--lumi-color-surface-card) 90%,
+		var(--lumi-color-surface-card) 94%,
 		transparent
 	);
 	--lumi-color-surface-card-glass-border: color-mix(
 		in srgb,
-		var(--lumi-color-primary) 18%,
-		var(--lumi-color-border)
+		var(--lumi-color-border-strong) 44%,
+		var(--lumi-color-surface-inset)
 	);
 
 	/* --- DERIVED BORDERS / RINGS --------------------------------------------- */
@@ -164,8 +156,8 @@
 	);
 	--lumi-color-border-glass: color-mix(
 		in srgb,
-		var(--lumi-color-primary) 20%,
-		var(--lumi-color-border)
+		var(--lumi-color-border-strong) 44%,
+		var(--lumi-color-surface-inset)
 	);
 	--lumi-color-border-interactive: color-mix(
 		in srgb,
@@ -176,122 +168,93 @@
 	/* --- DERIVED CONTROL SURFACES -------------------------------------------- */
 	--lumi-color-control-fill: color-mix(
 		in srgb,
-		var(--lumi-color-surface-inset) 64%,
-		var(--lumi-color-surface) 36%
+		var(--lumi-color-surface-inset) 60%,
+		var(--lumi-color-surface) 40%
 	);
 	--lumi-color-control-border: color-mix(
 		in srgb,
-		var(--lumi-color-border) 78%,
-		var(--lumi-color-border-strong)
+		var(--lumi-color-border) 80%,
+		transparent
 	);
 	--lumi-color-control-hover-fill: color-mix(
 		in srgb,
-		var(--lumi-color-control-fill) 68%,
-		var(--lumi-color-surface-raised) 32%
+		var(--lumi-color-control-fill) 80%,
+		var(--lumi-color-surface) 20%
 	);
 	/* --- DERIVED STATE BACKGROUNDS ------------------------------------------- */
-	--lumi-color-success-bg: rgba(var(--lumi-color-success-rgb), 0.11);
-	--lumi-color-warning-bg: rgba(var(--lumi-color-warning-rgb), 0.13);
-	--lumi-color-danger-bg: rgba(var(--lumi-color-danger-rgb), 0.11);
-	--lumi-color-info-bg: rgba(var(--lumi-color-info-rgb), 0.11);
-	--lumi-color-primary-bg: rgba(var(--lumi-color-primary-rgb), 0.11);
+	--lumi-color-success-bg: rgba(var(--lumi-color-success-rgb), 0.1);
+	--lumi-color-warning-bg: rgba(var(--lumi-color-warning-rgb), 0.12);
+	--lumi-color-danger-bg: rgba(var(--lumi-color-danger-rgb), 0.1);
+	--lumi-color-info-bg: rgba(var(--lumi-color-info-rgb), 0.1);
+	--lumi-color-primary-bg: rgba(var(--lumi-color-primary-rgb), 0.1);
 	--lumi-color-secondary-bg: rgba(var(--lumi-color-secondary-rgb), 0.12);
 
 	/* --- DERIVED GRADIENTS / FX ---------------------------------------------- */
 	--lumi-gradient-app:
 		radial-gradient(
 			circle at 8% 0%,
-			rgba(var(--lumi-color-primary-rgb), 0.062),
-			transparent 34%
-		),
-		radial-gradient(
-			circle at 92% 10%,
-			rgba(var(--lumi-color-info-rgb), 0.032),
-			transparent 32%
+			rgba(var(--lumi-color-primary-rgb), 0.04),
+			transparent 36%
 		),
 		linear-gradient(
 			145deg,
 			var(--lumi-color-background) 0%,
-			var(--lumi-color-background-secondary) 60%,
-			color-mix(
-					in srgb,
-					var(--lumi-color-background) 82%,
-					var(--lumi-color-primary-50)
-				)
-				100%
+			var(--lumi-color-background-secondary) 100%
 		);
-	--lumi-app-background-accent: linear-gradient(
-		145deg,
-		color-mix(in srgb, var(--lumi-color-primary) 8%, transparent),
-		color-mix(in srgb, var(--lumi-color-secondary) 4%, transparent) 42%,
-		transparent 72%
-	);
+	--lumi-app-background-accent: linear-gradient(transparent, transparent);
 	--lumi-app-pattern-size: var(--lumi-space-3xl);
 	--lumi-app-pattern-line-color: color-mix(
 		in srgb,
-		var(--lumi-color-primary) 8%,
+		var(--lumi-color-primary) 4.5%,
 		transparent
 	);
-	--lumi-app-pattern-dot-color: color-mix(
-		in srgb,
-		var(--lumi-color-secondary) 7%,
-		transparent
-	);
+	--lumi-app-pattern-dot-color: transparent;
 	--lumi-app-pattern-dot-size: var(--lumi-border-width-thin);
 	--lumi-app-pattern-dot-edge: var(--lumi-border-width-base);
 
-	--lumi-dashboard-content-bg: linear-gradient(
-		145deg,
-		color-mix(in srgb, var(--lumi-color-background-secondary) 76%, transparent),
-		color-mix(in srgb, var(--lumi-color-background) 62%, transparent)
+	--lumi-dashboard-content-bg: color-mix(
+		in srgb,
+		var(--lumi-color-background-secondary) 94%,
+		transparent
 	);
 	--lumi-gradient-card:
 		linear-gradient(
 			145deg,
-			color-mix(in srgb, var(--lumi-color-white) 58%, transparent) 0%,
-			rgba(var(--lumi-color-primary-rgb), 0.032) 42%,
-			rgba(var(--lumi-color-info-rgb), 0.018) 68%,
+			rgba(var(--lumi-color-primary-rgb), 0.012) 0%,
+			transparent 68%,
 			transparent 100%
 		),
 		var(--lumi-color-surface-card);
 	--lumi-gradient-card-hover:
 		linear-gradient(
 			145deg,
-			color-mix(in srgb, var(--lumi-color-white) 66%, transparent) 0%,
-			rgba(var(--lumi-color-primary-rgb), 0.046) 42%,
-			rgba(var(--lumi-color-info-rgb), 0.026) 68%,
+			rgba(var(--lumi-color-primary-rgb), 0.022) 0%,
+			transparent 68%,
 			transparent 100%
 		),
 		var(--lumi-color-surface-card-hover);
 	--lumi-gradient-card-sheen: linear-gradient(
-		180deg,
-		color-mix(in srgb, var(--lumi-color-surface-raised) 48%, transparent),
-		transparent 38%
+		145deg,
+		color-mix(in srgb, var(--lumi-color-surface-raised) 36%, transparent),
+		transparent 40%
 	);
-	--lumi-card-sheen-opacity: 0.46;
+	--lumi-card-sheen-opacity: 0.28;
 	--lumi-floating-surface-bg:
 		linear-gradient(
 			145deg,
-			color-mix(in srgb, var(--lumi-color-white) 64%, transparent) 0%,
-			rgba(var(--lumi-color-primary-rgb), 0.034) 44%,
-			rgba(var(--lumi-color-info-rgb), 0.022) 70%,
-			transparent 100%
+			rgba(var(--lumi-color-primary-rgb), 0.018) 0%,
+			transparent 28%
 		),
 		var(--lumi-color-surface-glass-strong);
 	--lumi-floating-surface-border: var(--lumi-color-border-glass);
 	--lumi-floating-surface-shadow:
-		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 76%, transparent),
-		inset 0 -1px 0 rgba(var(--lumi-shadow-key-rgb), 0.035),
-		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.035),
-		0 18px 46px -28px rgba(var(--lumi-shadow-key-rgb), 0.22);
+		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.04),
+		0 18px 42px -28px rgba(var(--lumi-shadow-key-rgb), 0.2);
 	--lumi-control-shadow:
 		inset 0 var(--lumi-border-width-thin) 0
-			color-mix(in srgb, var(--lumi-color-white) 48%, transparent),
-		inset 0 calc(var(--lumi-border-width-thin) * -1) 0
-			color-mix(in srgb, var(--lumi-color-black) 4%, transparent),
+			color-mix(in srgb, var(--lumi-color-white) 30%, transparent),
 		0 var(--lumi-border-width-thin) 0
-			color-mix(in srgb, var(--lumi-color-background) 70%, transparent),
-		0 8px 18px -16px rgba(var(--lumi-shadow-key-rgb), 0.2);
+			color-mix(in srgb, var(--lumi-color-background) 70%, transparent);
 	--lumi-control-focus-shadow:
 		0 0 0 var(--lumi-border-width-thick)
 			color-mix(
@@ -300,13 +263,7 @@
 				transparent
 			),
 		inset 0 var(--lumi-border-width-thin) 0
-			color-mix(in srgb, var(--lumi-color-white) 48%, transparent),
-		0 10px 24px -18px
-			color-mix(
-				in srgb,
-				var(--lumi-control-accent, var(--lumi-color-primary)) 32%,
-				transparent
-			);
+			color-mix(in srgb, var(--lumi-color-white) 30%, transparent);
 
 	--lumi-gradient-sidebar-header: linear-gradient(
 		145deg,
@@ -325,17 +282,11 @@
 			100%
 	);
 	--lumi-gradient-subtle: linear-gradient(
-		180deg,
-		rgba(var(--lumi-color-primary-rgb), 0.038) 0%,
-		rgba(var(--lumi-color-info-rgb), 0.024) 48%,
-		transparent 76%
+		145deg,
+		rgba(var(--lumi-color-primary-rgb), 0.012) 0%,
+		transparent 70%
 	);
-	--lumi-gradient-glass-sidebar: linear-gradient(
-		180deg,
-		rgba(var(--lumi-color-primary-rgb), 0.04) 0%,
-		rgba(var(--lumi-color-info-rgb), 0.024) 48%,
-		transparent 74%
-	);
+	--lumi-gradient-glass-sidebar: var(--lumi-gradient-subtle);
 	--lumi-sidebar-header-veil: linear-gradient(
 		180deg,
 		color-mix(in srgb, var(--lumi-color-white) 62%, transparent) 0%,
@@ -346,12 +297,11 @@
 		color-mix(in srgb, var(--lumi-color-white) 58%, transparent) 0%,
 		transparent 44%
 	);
-	--lumi-sidebar-header-sheen-opacity: 0.6;
+	--lumi-sidebar-header-sheen-opacity: 0.52;
 	--lumi-gradient-glass-total-summary: linear-gradient(
-		180deg,
-		rgba(var(--lumi-color-primary-rgb), 0.05) 0%,
-		rgba(var(--lumi-color-info-rgb), 0.026) 52%,
-		transparent 78%
+		145deg,
+		rgba(var(--lumi-color-primary-rgb), 0.025) 0%,
+		transparent 70%
 	);
 	/* ========================================================================== */
 	/* SPACING SYSTEM - 4px base unit                                             */
@@ -424,32 +374,28 @@
 	--lumi-control-radius: var(--lumi-radius-md);
 	--lumi-control-focus-ring-strength: 24%;
 	--lumi-surface-radius: var(--lumi-radius-2xl);
-	--lumi-surface-saturation: 1.12;
+	--lumi-surface-saturation: 1.04;
 	--lumi-interactive-lift: calc(var(--lumi-space-2xs) * -0.25);
 	--lumi-interactive-press-scale: 0.98;
 
 	/* ========================================================================== */
-	/* SHADOW SYSTEM - ink neutral, contact + soft ambient                        */
+	/* SHADOW SYSTEM - neutral contact and restrained ambient depth               */
 	/* ========================================================================== */
 	--lumi-shadow-sm:
-		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 58%, transparent),
-		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.038),
-		0 10px 24px -18px rgba(var(--lumi-shadow-key-rgb), 0.2);
+		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.04),
+		0 8px 18px -14px rgba(var(--lumi-shadow-key-rgb), 0.14);
 
 	--lumi-shadow-md:
-		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 62%, transparent),
-		0 2px 5px rgba(var(--lumi-shadow-key-rgb), 0.045),
-		0 20px 42px -24px rgba(var(--lumi-shadow-key-rgb), 0.22);
+		0 2px 5px rgba(var(--lumi-shadow-key-rgb), 0.05),
+		0 16px 34px -20px rgba(var(--lumi-shadow-key-rgb), 0.17);
 
 	--lumi-shadow-lg:
-		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 64%, transparent),
-		0 4px 10px rgba(var(--lumi-shadow-key-rgb), 0.048),
-		0 28px 62px -30px rgba(var(--lumi-shadow-key-rgb), 0.24);
+		0 4px 10px rgba(var(--lumi-shadow-key-rgb), 0.06),
+		0 24px 48px -26px rgba(var(--lumi-shadow-key-rgb), 0.2);
 
 	--lumi-shadow-xl:
-		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 66%, transparent),
-		0 8px 20px rgba(var(--lumi-shadow-key-rgb), 0.058),
-		0 40px 86px -34px rgba(var(--lumi-shadow-key-rgb), 0.26);
+		0 8px 20px rgba(var(--lumi-shadow-key-rgb), 0.07),
+		0 32px 64px -30px rgba(var(--lumi-shadow-key-rgb), 0.22);
 
 	/* ========================================================================== */
 	/* ICON SIZE SYSTEM                                                           */
@@ -465,10 +411,10 @@
 	--lumi-border-width-thick: 2px;
 
 	/* ========================================================================== */
-	/* BLUR SYSTEM - Crucial para Glassmorfismo                                   */
+	/* BLUR SYSTEM - reserved for translucent overlays                            */
 	/* ========================================================================== */
-	--lumi-blur-sm: 10px;
-	--lumi-blur-md: 14px;
+	--lumi-blur-sm: 6px;
+	--lumi-blur-md: 12px;
 	--lumi-blur-lg: 20px;
 	--lumi-color-overlay: color-mix(
 		in srgb,
@@ -631,7 +577,7 @@
 }
 
 /* ========================================================================== */
-/* DARK THEME - LUMI CALM GLASS                                             */
+/* DARK THEME - LUMI CALM SURFACE                                           */
 /* ========================================================================== */
 [data-theme='dark'] {
 	color-scheme: dark;
@@ -641,8 +587,8 @@
 	--lumi-neutral-rgb: 14, 12, 12;
 	--lumi-color-text: rgb(250, 248, 245);
 	--lumi-shadow-key-rgb: 0, 0, 0;
-	--lumi-color-primary: rgb(82, 150, 250);
-	--lumi-color-primary-rgb: 82, 150, 250;
+	--lumi-color-primary-rgb: 36, 112, 220;
+	--lumi-color-primary: rgb(var(--lumi-color-primary-rgb));
 	--lumi-color-primary-50: color-mix(
 		in srgb,
 		var(--lumi-color-primary) 18%,
@@ -653,17 +599,17 @@
 		var(--lumi-color-primary) 50%,
 		var(--lumi-color-white)
 	);
-	--lumi-color-secondary: rgb(156, 214, 56);
 	--lumi-color-secondary-rgb: 156, 214, 56;
-	--lumi-color-success: rgb(52, 211, 153);
+	--lumi-color-secondary: rgb(var(--lumi-color-secondary-rgb));
 	--lumi-color-success-rgb: 52, 211, 153;
-	--lumi-color-warning: rgb(251, 191, 36);
+	--lumi-color-success: rgb(var(--lumi-color-success-rgb));
 	--lumi-color-warning-rgb: 251, 191, 36;
-	--lumi-color-danger: rgb(244, 114, 182);
+	--lumi-color-warning: rgb(var(--lumi-color-warning-rgb));
 	--lumi-color-danger-rgb: 244, 114, 182;
+	--lumi-color-danger: rgb(var(--lumi-color-danger-rgb));
 	/* Info: cobalt-sky on dark — clear informational state without warning/danger overlap */
-	--lumi-color-info: rgb(56, 189, 248);
 	--lumi-color-info-rgb: 56, 189, 248;
+	--lumi-color-info: rgb(var(--lumi-color-info-rgb));
 	--lumi-color-gray-400: color-mix(
 		in srgb,
 		var(--lumi-color-text) 60%,
@@ -697,15 +643,11 @@
 	);
 
 	/* --- DERIVED BACKGROUND / LIFT ------------------------------------------- */
-	/* lift stays restrained; blue/teal belongs in reflections, not the whole canvas. */
-	--lumi-lift: color-mix(
-		in srgb,
-		var(--lumi-color-white) 52%,
-		var(--lumi-color-primary)
-	);
+	/* Elevation is neutral; brand color belongs to interaction, not every surface. */
+	--lumi-lift: var(--lumi-color-white);
 	--lumi-color-background: rgb(var(--lumi-neutral-rgb));
 	--lumi-color-background-rgb: var(--lumi-neutral-rgb);
-	--lumi-color-primary-foreground: var(--lumi-color-black);
+	--lumi-color-primary-foreground: var(--lumi-color-white);
 	--lumi-color-secondary-foreground: var(--lumi-color-black);
 	--lumi-color-success-foreground: var(--lumi-color-black);
 	--lumi-color-warning-foreground: var(--lumi-color-black);
@@ -713,7 +655,7 @@
 	--lumi-color-info-foreground: var(--lumi-color-black);
 	--lumi-color-background-secondary: color-mix(
 		in srgb,
-		var(--lumi-color-background) 98.5%,
+		var(--lumi-color-background) 97.5%,
 		var(--lumi-lift)
 	);
 	--lumi-color-background-hover: color-mix(
@@ -725,17 +667,17 @@
 	/* --- DERIVED SURFACE LADDER ---------------------------------------------- */
 	--lumi-color-surface-inset: color-mix(
 		in srgb,
-		var(--lumi-color-background) 98.5%,
+		var(--lumi-color-background) 98%,
 		var(--lumi-lift)
 	);
 	--lumi-color-surface: color-mix(
 		in srgb,
-		var(--lumi-color-background) 96%,
+		var(--lumi-color-background) 94%,
 		var(--lumi-lift)
 	);
 	--lumi-color-surface-card: color-mix(
 		in srgb,
-		var(--lumi-color-background) 95.2%,
+		var(--lumi-color-background) 92.5%,
 		var(--lumi-lift)
 	);
 	--lumi-color-surface-card-hover: color-mix(
@@ -745,12 +687,12 @@
 	);
 	--lumi-color-surface-raised: color-mix(
 		in srgb,
-		var(--lumi-color-background) 93%,
+		var(--lumi-color-background) 90%,
 		var(--lumi-lift)
 	);
 	--lumi-color-surface-elevated: color-mix(
 		in srgb,
-		var(--lumi-color-background) 89.5%,
+		var(--lumi-color-background) 87%,
 		var(--lumi-lift)
 	);
 	--lumi-color-surface-overlay: color-mix(
@@ -760,17 +702,17 @@
 	);
 	--lumi-color-surface-glass: color-mix(
 		in srgb,
-		var(--lumi-color-surface) 82%,
+		var(--lumi-color-surface) 88%,
 		transparent
 	);
 	--lumi-color-surface-glass-strong: color-mix(
 		in srgb,
-		var(--lumi-color-surface-raised) 88%,
+		var(--lumi-color-surface-raised) 94%,
 		transparent
 	);
 	--lumi-color-surface-card-glass: color-mix(
 		in srgb,
-		var(--lumi-color-surface-card) 86%,
+		var(--lumi-color-surface-card) 94%,
 		transparent
 	);
 
@@ -804,7 +746,7 @@
 	/* --- DERIVED CONTROL SURFACES -------------------------------------------- */
 	--lumi-color-control-fill: color-mix(
 		in srgb,
-		var(--lumi-color-background) 98%,
+		var(--lumi-color-background) 96.5%,
 		var(--lumi-lift)
 	);
 	--lumi-color-control-border: color-mix(
@@ -814,20 +756,17 @@
 	);
 	--lumi-color-control-hover-fill: color-mix(
 		in srgb,
-		var(--lumi-color-background) 94%,
+		var(--lumi-color-background) 92.5%,
 		var(--lumi-lift)
 	);
 	--lumi-control-focus-ring-strength: 26%;
 	--lumi-control-shadow:
 		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 6%, transparent),
-		inset 0 -1px 0 rgba(var(--lumi-shadow-key-rgb), 0.24),
-		inset 0 10px 18px -18px rgba(var(--lumi-shadow-key-rgb), 0.42),
-		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.16);
+		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.28);
 	--lumi-control-focus-shadow:
 		0 0 0 var(--lumi-border-width-thick)
 			color-mix(in srgb, var(--lumi-color-primary) 26%, transparent),
-		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 7%, transparent),
-		0 12px 26px -20px rgba(var(--lumi-shadow-key-rgb), 0.5);
+		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 7%, transparent);
 
 	/* --- DERIVED STATE BACKGROUNDS / OVERLAY --------------------------------- */
 	--lumi-color-success-bg: rgba(var(--lumi-color-success-rgb), 0.14);
@@ -842,80 +781,59 @@
 	--lumi-gradient-app:
 		radial-gradient(
 			circle at 8% 0%,
-			rgba(var(--lumi-color-primary-rgb), 0.065),
-			transparent 34%
-		),
-		radial-gradient(
-			circle at 92% 10%,
-			rgba(var(--lumi-color-secondary-rgb), 0.018),
-			transparent 32%
+			rgba(var(--lumi-color-primary-rgb), 0.035),
+			transparent 36%
 		),
 		linear-gradient(
 			145deg,
 			var(--lumi-color-background) 0%,
-			var(--lumi-color-background-secondary) 58%,
-			color-mix(
-					in srgb,
-					var(--lumi-color-background-secondary) 92%,
-					var(--lumi-color-primary-50)
-				)
-				100%
+			var(--lumi-color-background-secondary) 100%
 		);
-	--lumi-app-background-accent: linear-gradient(
-		145deg,
-		color-mix(in srgb, var(--lumi-color-primary) 4.5%, transparent),
-		color-mix(in srgb, var(--lumi-color-secondary) 2%, transparent) 46%,
-		transparent 76%
-	);
+	--lumi-app-background-accent: linear-gradient(transparent, transparent);
 	--lumi-app-pattern-line-color: color-mix(
 		in srgb,
-		var(--lumi-color-white) 4.5%,
+		var(--lumi-color-white) 4%,
 		transparent
 	);
-	--lumi-app-pattern-dot-color: color-mix(
+	--lumi-app-pattern-dot-color: transparent;
+	--lumi-dashboard-content-bg: color-mix(
 		in srgb,
-		var(--lumi-color-secondary) 3%,
+		color-mix(in srgb, var(--lumi-color-background) 96%, var(--lumi-lift)) 94%,
 		transparent
 	);
 	--lumi-gradient-card:
 		linear-gradient(
 			145deg,
-			color-mix(in srgb, var(--lumi-color-white) 5.2%, transparent) 0%,
-			rgba(var(--lumi-color-primary-rgb), 0.032) 42%,
-			rgba(var(--lumi-color-secondary-rgb), 0.014) 68%,
+			rgba(var(--lumi-color-primary-rgb), 0.01) 0%,
+			transparent 68%,
 			transparent 100%
 		),
 		var(--lumi-color-surface-card);
 	--lumi-gradient-card-hover:
 		linear-gradient(
 			145deg,
-			color-mix(in srgb, var(--lumi-color-white) 6.8%, transparent) 0%,
-			rgba(var(--lumi-color-primary-rgb), 0.042) 42%,
-			rgba(var(--lumi-color-secondary-rgb), 0.018) 68%,
+			rgba(var(--lumi-color-primary-rgb), 0.018) 0%,
+			transparent 68%,
 			transparent 100%
 		),
 		var(--lumi-color-surface-card-hover);
 	--lumi-gradient-card-sheen: linear-gradient(
 		180deg,
-		color-mix(in srgb, var(--lumi-color-white) 7%, transparent) 0%,
-		transparent 24%
+		color-mix(in srgb, var(--lumi-color-white) 4%, transparent) 0%,
+		transparent 28%
 	);
 	--lumi-card-sheen-opacity: 0.18;
 	--lumi-floating-surface-bg:
 		linear-gradient(
 			145deg,
-			color-mix(in srgb, var(--lumi-color-white) 5.8%, transparent) 0%,
-			rgba(var(--lumi-color-primary-rgb), 0.032) 44%,
-			rgba(var(--lumi-color-secondary-rgb), 0.014) 70%,
-			transparent 100%
+			rgba(var(--lumi-color-primary-rgb), 0.015) 0%,
+			transparent 28%
 		),
 		var(--lumi-color-surface-glass-strong);
 	--lumi-floating-surface-border: var(--lumi-color-border-glass);
 	--lumi-floating-surface-shadow:
-		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 7%, transparent),
-		inset 0 -1px 0 rgba(var(--lumi-shadow-key-rgb), 0.24),
-		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.15),
-		0 20px 48px -30px rgba(var(--lumi-shadow-key-rgb), 0.56);
+		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.3),
+		0 20px 44px -30px rgba(var(--lumi-shadow-key-rgb), 0.52);
 	--lumi-gradient-sidebar-header: linear-gradient(
 		145deg,
 		color-mix(
@@ -939,37 +857,26 @@
 	);
 	--lumi-sidebar-header-sheen-opacity: 0.42;
 	--lumi-gradient-subtle: linear-gradient(
-		180deg,
-		rgba(var(--lumi-color-primary-rgb), 0.046) 0%,
-		rgba(var(--lumi-color-secondary-rgb), 0.018) 48%,
-		transparent 74%
+		145deg,
+		rgba(var(--lumi-color-primary-rgb), 0.012) 0%,
+		transparent 70%
 	);
-	--lumi-gradient-glass-sidebar: linear-gradient(
-		180deg,
-		rgba(var(--lumi-color-primary-rgb), 0.046) 0%,
-		rgba(var(--lumi-color-secondary-rgb), 0.018) 48%,
-		transparent 74%
-	);
+	--lumi-gradient-glass-sidebar: var(--lumi-gradient-subtle);
 	--lumi-gradient-glass-total-summary: linear-gradient(
-		180deg,
-		rgba(var(--lumi-color-primary-rgb), 0.052) 0%,
-		rgba(var(--lumi-color-secondary-rgb), 0.018) 52%,
-		transparent 78%
+		145deg,
+		rgba(var(--lumi-color-primary-rgb), 0.022) 0%,
+		transparent 70%
 	);
 	--lumi-shadow-sm:
-		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 4.8%, transparent),
-		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.15),
-		0 10px 22px -18px rgba(var(--lumi-shadow-key-rgb), 0.48);
+		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.3),
+		0 10px 22px -18px rgba(var(--lumi-shadow-key-rgb), 0.42);
 	--lumi-shadow-md:
-		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 5.2%, transparent),
-		0 2px 5px rgba(var(--lumi-shadow-key-rgb), 0.17),
-		0 18px 42px -26px rgba(var(--lumi-shadow-key-rgb), 0.52);
+		0 2px 5px rgba(var(--lumi-shadow-key-rgb), 0.34),
+		0 18px 40px -26px rgba(var(--lumi-shadow-key-rgb), 0.48);
 	--lumi-shadow-lg:
-		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 5.6%, transparent),
-		0 4px 10px rgba(var(--lumi-shadow-key-rgb), 0.19),
-		0 26px 58px -34px rgba(var(--lumi-shadow-key-rgb), 0.56);
+		0 4px 10px rgba(var(--lumi-shadow-key-rgb), 0.38),
+		0 26px 56px -34px rgba(var(--lumi-shadow-key-rgb), 0.54);
 	--lumi-shadow-xl:
-		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 6%, transparent),
-		0 7px 18px rgba(var(--lumi-shadow-key-rgb), 0.2),
-		0 36px 78px -38px rgba(var(--lumi-shadow-key-rgb), 0.6);
+		0 7px 18px rgba(var(--lumi-shadow-key-rgb), 0.42),
+		0 36px 74px -38px rgba(var(--lumi-shadow-key-rgb), 0.6);
 }

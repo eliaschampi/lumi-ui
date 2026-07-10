@@ -96,16 +96,6 @@
 		background: var(--lumi-sidebar-header-veil);
 	}
 
-	.lumi-sidebar__header::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		z-index: 0;
-		opacity: var(--lumi-sidebar-header-sheen-opacity);
-		background: var(--lumi-sidebar-header-sheen);
-		pointer-events: none;
-	}
-
 	.lumi-sidebar__header-content {
 		position: relative;
 		z-index: 1;

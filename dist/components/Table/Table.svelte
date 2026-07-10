@@ -534,17 +534,7 @@
 		background: var(--lumi-gradient-subtle), var(--lumi-color-surface-card);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
 		border-radius: var(--lumi-radius-2xl);
-		box-shadow: var(--lumi-shadow-sm);
 		overflow-x: auto;
-		/* FIX(C1): tokenized transition */
-		transition:
-			box-shadow var(--lumi-duration-base) var(--lumi-easing-default),
-			border-color var(--lumi-duration-base) var(--lumi-easing-default);
-	}
-
-	.lumi-table__wrapper:hover {
-		box-shadow: var(--lumi-shadow-md);
-		border-color: var(--lumi-color-border-strong);
 	}
 
 	/* ── Table content ────────────────────────── */

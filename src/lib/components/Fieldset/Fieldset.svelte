@@ -32,10 +32,6 @@
 			var(--lumi-gradient-subtle),
 			color-mix(in srgb, var(--lumi-color-surface-inset) 22%, var(--lumi-color-surface-card));
 		position: relative;
-		box-shadow: var(--lumi-shadow-sm);
-		transition:
-			box-shadow var(--lumi-duration-fast) var(--lumi-easing-default),
-			border-color var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
 	.lumi-fieldset__legend {

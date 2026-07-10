@@ -46,25 +46,10 @@
 		padding: var(--lumi-space-lg);
 		border-radius: var(--lumi-radius-2xl);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border);
-		background: var(--lumi-gradient-subtle), var(--lumi-color-surface-card);
+		background: var(--lumi-gradient-card);
 		box-shadow: var(--lumi-shadow-sm);
 		overflow: hidden;
 		isolation: isolate;
-		transition: var(--lumi-transition-all);
-	}
-
-	.lumi-page-header::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background:
-			radial-gradient(
-				circle at top left,
-				rgba(var(--lumi-color-primary-rgb), 0.035),
-				transparent 42%
-			),
-			linear-gradient(145deg, var(--lumi-color-surface-raised), var(--lumi-color-surface-card));
-		z-index: -2;
 	}
 
 	.lumi-page-header__title {

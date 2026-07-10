@@ -40,7 +40,6 @@
 <label
 	for={switchId}
 	class={classes}
-	style={`--switch-thumb-color: var(--lumi-color-${color}-foreground);`}
 >
 	<input
 		id={switchId}
@@ -87,11 +86,12 @@
 		/* md size: 44px x 24px using closest token values */
 		--switch-track-w: calc(var(--lumi-space-xxl) + var(--lumi-space-2xs));
 		--switch-track-h: var(--lumi-space-lg);
-		--switch-inset: 2px;
+		--switch-inset: var(--lumi-border-width-thick);
 		--switch-thumb: calc(var(--switch-track-h) - var(--switch-inset) * 2);
 		--switch-travel: calc(var(--switch-track-w) - var(--switch-track-h));
 		--switch-stretch: 4px;
 		--switch-color: var(--lumi-color-primary);
+		--switch-thumb-color: var(--lumi-color-white);
 		--switch-label-size: var(--lumi-font-size-sm);
 
 		position: relative;
@@ -122,7 +122,7 @@
 		background: var(--lumi-color-border-strong);
 		box-shadow: inset 0 0 0 var(--lumi-border-width-thin)
 			color-mix(in srgb, var(--lumi-color-border) 60%, transparent);
-		border-radius: var(--lumi-radius-full);
+		border-radius: var(--lumi-control-radius);
 		transition:
 			background-color var(--lumi-duration-base) var(--lumi-easing-default),
 			box-shadow var(--lumi-duration-base) var(--lumi-easing-default);

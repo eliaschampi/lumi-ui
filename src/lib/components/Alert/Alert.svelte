@@ -105,13 +105,7 @@
 		border-left-width: var(--lumi-space-2xs);
 		background:
 			linear-gradient(145deg, var(--alert-bg), transparent), var(--lumi-color-surface-card);
-		transition: var(--lumi-transition-all);
 		box-shadow: var(--lumi-shadow-sm);
-	}
-
-	.lumi-alert:hover {
-		transform: translateY(-1px);
-		box-shadow: var(--lumi-shadow-md);
 	}
 
 	/* Icon styling */

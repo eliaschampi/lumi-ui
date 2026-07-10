@@ -95,11 +95,11 @@
 
 <style>
 	/* ========================================================================== */
-	/* LUMI BUTTON - Premium 2026 Design */
+	/* LUMI BUTTON - semantic actions with restrained tactile depth */
 	/* ========================================================================== */
 
 	.lumi-button {
-		--button-hover-lift: var(--lumi-interactive-lift);
+		--button-hover-lift: 0;
 		/* Base Layout */
 		display: inline-flex;
 		align-items: center;
@@ -132,14 +132,13 @@
 			transform var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
-	/* Focus visible - Modern ring with glow */
+	/* Focus visible */
 	.lumi-button:focus-visible {
 		outline: none;
 		box-shadow:
 			0 0 0 var(--lumi-border-width-thick)
 				color-mix(in srgb, var(--lumi-color-background) 88%, transparent),
-			0 0 0 calc(var(--lumi-border-width-thick) * 2) var(--btn-color),
-			0 0 var(--lumi-space-xl) color-mix(in srgb, var(--btn-color) 36%, transparent);
+			0 0 0 calc(var(--lumi-border-width-thick) * 2) var(--btn-color);
 	}
 
 	/* Disabled - Elegant fade */
@@ -215,11 +214,12 @@
 	}
 
 	/* ========================================================================== */
-	/* TYPE VARIANTS - Premium 2026 Styling */
+	/* TYPE VARIANTS */
 	/* ========================================================================== */
 
-	/* FILLED - Bold with colored glow */
+	/* FILLED - tactile primary action */
 	.lumi-button--filled {
+		--button-hover-lift: var(--lumi-interactive-lift);
 		background: var(--btn-color);
 		color: var(--btn-foreground);
 		border-color: color-mix(in srgb, var(--btn-color) 48%, transparent);
@@ -241,28 +241,23 @@
 		box-shadow: var(--lumi-shadow-sm);
 	}
 
-	/* BORDER - Glass morphism outline */
+	/* BORDER - quiet outline action */
 	.lumi-button--border {
-		background:
-			linear-gradient(145deg, rgba(var(--btn-color-rgb), 0.055), transparent),
-			var(--lumi-color-surface-glass);
+		background: var(--lumi-color-surface-glass);
 		color: var(--btn-color);
 		border-color: color-mix(in srgb, var(--btn-color) 34%, var(--lumi-color-border));
 	}
 
 	.lumi-button--border:hover:not(:disabled) {
-		background:
-			linear-gradient(145deg, rgba(var(--btn-color-rgb), 0.095), transparent),
-			var(--lumi-color-surface-glass-strong);
+		background: var(--lumi-color-surface-glass-strong);
 		border-color: color-mix(in srgb, var(--btn-color) 48%, var(--lumi-color-border));
-		box-shadow: var(--lumi-shadow-sm);
 	}
 
 	.lumi-button--border:active:not(:disabled) {
 		background: rgba(var(--btn-color-rgb), 0.15);
 	}
 
-	/* FLAT - Subtle ghost with glass effect */
+	/* FLAT - tinted low-emphasis action */
 	.lumi-button--flat {
 		background: color-mix(in srgb, var(--btn-color) 9%, transparent);
 		color: var(--btn-color);
@@ -272,14 +267,13 @@
 	.lumi-button--flat:hover:not(:disabled) {
 		background: rgba(var(--btn-color-rgb), 0.15);
 		border-color: rgba(var(--btn-color-rgb), 0.32);
-		box-shadow: var(--lumi-shadow-sm);
 	}
 
 	.lumi-button--flat:active:not(:disabled) {
 		background: rgba(var(--btn-color-rgb), 0.18);
 	}
 
-	/* GHOST - Transparent base with elegant hover feedback */
+	/* GHOST - transparent low-emphasis action */
 	.lumi-button--ghost {
 		background: transparent;
 		color: var(--btn-color);
@@ -290,7 +284,6 @@
 	.lumi-button--ghost:hover:not(:disabled) {
 		background: color-mix(in srgb, var(--btn-color) 10%, transparent);
 		border-color: color-mix(in srgb, var(--btn-color) 18%, transparent);
-		box-shadow: var(--lumi-shadow-sm);
 	}
 
 	.lumi-button--ghost:active:not(:disabled) {
@@ -298,8 +291,9 @@
 		border-color: color-mix(in srgb, var(--btn-color) 22%, transparent);
 	}
 
-	/* GRADIENT - Modern premium depth */
+	/* GRADIENT - expressive tactile action */
 	.lumi-button--gradient {
+		--button-hover-lift: var(--lumi-interactive-lift);
 		background: linear-gradient(
 			145deg,
 			color-mix(in srgb, var(--btn-color) 99%, var(--lumi-color-white)) 0%,

@@ -88,7 +88,10 @@
 		--chip-border-strength: 20%;
 		display: inline-flex;
 		align-items: center;
+		align-self: flex-start;
 		gap: var(--lumi-chip-gap);
+		inline-size: fit-content;
+		max-inline-size: 100%;
 		min-height: var(--lumi-chip-min-height);
 		padding: var(--lumi-chip-padding-block) var(--lumi-chip-padding-inline);
 		border-radius: var(--lumi-radius-full);
@@ -169,6 +172,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
 		line-height: inherit;
 	}
 

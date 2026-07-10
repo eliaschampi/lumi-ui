@@ -109,7 +109,7 @@
 	.lumi-card {
 		--card-hover-lift: var(--lumi-interactive-lift);
 		--lumi-surface-bg: var(--lumi-card-surface-bg, var(--lumi-gradient-card));
-		--lumi-surface-shadow: var(--lumi-card-surface-shadow, var(--lumi-shadow-md));
+		--lumi-surface-shadow: var(--lumi-card-surface-shadow, var(--lumi-shadow-sm));
 		position: relative;
 		min-width: 0;
 		overflow: hidden;
@@ -155,14 +155,14 @@
 		box-shadow:
 			0 0 0 var(--lumi-border-width-thick)
 				color-mix(in srgb, var(--lumi-color-primary) 18%, transparent),
-			var(--lumi-shadow-md);
+			var(--lumi-shadow-sm);
 	}
 
 	.lumi-card--hoverable:hover {
 		transform: translateY(var(--card-hover-lift));
 		border-color: var(--lumi-color-border-interactive);
 		background: var(--lumi-gradient-card-hover);
-		box-shadow: var(--lumi-shadow-lg);
+		box-shadow: var(--lumi-shadow-md);
 	}
 
 	.lumi-card--hoverable:active {
@@ -173,7 +173,7 @@
 	.lumi-card--selected,
 	.lumi-card--selected:hover {
 		--lumi-surface-border: var(--lumi-border-width-base) solid var(--lumi-color-primary);
-		--lumi-surface-shadow: var(--lumi-shadow-lg);
+		--lumi-surface-shadow: var(--lumi-shadow-md);
 		border-color: var(--lumi-color-primary);
 	}
 
