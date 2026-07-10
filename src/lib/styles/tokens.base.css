@@ -69,6 +69,7 @@
 	--lumi-color-warning-foreground: var(--lumi-color-black);
 	--lumi-color-danger-foreground: var(--lumi-color-white);
 	--lumi-color-info-foreground: var(--lumi-color-black);
+
 	--lumi-color-placeholder: color-mix(
 		in srgb,
 		var(--lumi-color-text-muted) 72%,
@@ -587,7 +588,7 @@
 	--lumi-neutral-rgb: 14, 12, 12;
 	--lumi-color-text: rgb(250, 248, 245);
 	--lumi-shadow-key-rgb: 0, 0, 0;
-	--lumi-color-primary-rgb: 36, 112, 220;
+	--lumi-color-primary-rgb: 59, 130, 246;
 	--lumi-color-primary: rgb(var(--lumi-color-primary-rgb));
 	--lumi-color-primary-50: color-mix(
 		in srgb,
@@ -599,17 +600,18 @@
 		var(--lumi-color-primary) 50%,
 		var(--lumi-color-white)
 	);
-	--lumi-color-secondary-rgb: 156, 214, 56;
+	--lumi-color-secondary-rgb: 101, 163, 13;
 	--lumi-color-secondary: rgb(var(--lumi-color-secondary-rgb));
-	--lumi-color-success-rgb: 52, 211, 153;
+	--lumi-color-success-rgb: 16, 185, 129;
 	--lumi-color-success: rgb(var(--lumi-color-success-rgb));
-	--lumi-color-warning-rgb: 251, 191, 36;
+	--lumi-color-warning-rgb: 234, 88, 12;
 	--lumi-color-warning: rgb(var(--lumi-color-warning-rgb));
-	--lumi-color-danger-rgb: 244, 114, 182;
+	--lumi-color-danger-rgb: 239, 68, 68;
 	--lumi-color-danger: rgb(var(--lumi-color-danger-rgb));
 	/* Info: cobalt-sky on dark — clear informational state without warning/danger overlap */
-	--lumi-color-info-rgb: 56, 189, 248;
+	--lumi-color-info-rgb: 14, 165, 233;
 	--lumi-color-info: rgb(var(--lumi-color-info-rgb));
+
 	--lumi-color-gray-400: color-mix(
 		in srgb,
 		var(--lumi-color-text) 60%,
@@ -648,11 +650,11 @@
 	--lumi-color-background: rgb(var(--lumi-neutral-rgb));
 	--lumi-color-background-rgb: var(--lumi-neutral-rgb);
 	--lumi-color-primary-foreground: var(--lumi-color-white);
-	--lumi-color-secondary-foreground: var(--lumi-color-black);
-	--lumi-color-success-foreground: var(--lumi-color-black);
-	--lumi-color-warning-foreground: var(--lumi-color-black);
-	--lumi-color-danger-foreground: var(--lumi-color-black);
-	--lumi-color-info-foreground: var(--lumi-color-black);
+	--lumi-color-secondary-foreground: var(--lumi-color-white);
+	--lumi-color-success-foreground: var(--lumi-color-white);
+	--lumi-color-warning-foreground: var(--lumi-color-white);
+	--lumi-color-danger-foreground: var(--lumi-color-white);
+	--lumi-color-info-foreground: var(--lumi-color-white);
 	--lumi-color-background-secondary: color-mix(
 		in srgb,
 		var(--lumi-color-background) 97.5%,
