@@ -9,6 +9,8 @@ export function portal(
 	target: HTMLElement | string = 'body'
 ) {
 	let activeTarget: HTMLElement | null = null;
+	let updateVersion = 0;
+	let destroyed = false;
 
 	async function resolveTarget(
 		nextTarget: HTMLElement | string
@@ -27,8 +29,15 @@ export function portal(
 	}
 
 	async function update(nextTarget: HTMLElement | string) {
+		const version = ++updateVersion;
 		const resolved = await resolveTarget(nextTarget);
-		if (!resolved || resolved === activeTarget) return;
+		if (
+			destroyed ||
+			version !== updateVersion ||
+			!resolved ||
+			resolved === activeTarget
+		)
+			return;
 
 		activeTarget = resolved;
 		resolved.appendChild(node);
@@ -36,6 +45,8 @@ export function portal(
 	}
 
 	function destroy() {
+		destroyed = true;
+		updateVersion += 1;
 		node.parentNode?.removeChild(node);
 		activeTarget = null;
 	}

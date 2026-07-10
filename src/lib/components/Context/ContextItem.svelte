@@ -29,22 +29,17 @@
 			onclick?.(event);
 		}
 	}
-
-	function handleKeydown(event: KeyboardEvent): void {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			handleClick(event as unknown as MouseEvent);
-		}
-	}
 </script>
 
-<div
+<button
+	type="button"
+	{disabled}
 	class={itemClasses}
 	style={colorStyle}
-	tabindex={disabled ? -1 : 0}
+	tabindex="-1"
 	role="menuitem"
+	aria-disabled={disabled || undefined}
 	onclick={handleClick}
-	onkeydown={handleKeydown}
 >
 	{#if icon}
 		<div class="lumi-context-item__icon">
@@ -57,14 +52,23 @@
 	{#if shortcut}
 		<span class="lumi-context-item__shortcut">{shortcut}</span>
 	{/if}
-</div>
+</button>
 
 <style>
 	.lumi-context-item {
-		--context-item-hover-bg: color-mix(in srgb, var(--lumi-color-primary) 4%, transparent);
-		--context-item-focus-ring: color-mix(in srgb, var(--lumi-color-primary) 20%, transparent);
+		--context-item-hover-bg: color-mix(
+			in srgb,
+			var(--lumi-color-primary) 4%,
+			transparent
+		);
+		--context-item-focus-ring: color-mix(
+			in srgb,
+			var(--lumi-color-primary) 20%,
+			transparent
+		);
 		--context-item-lift: calc(var(--lumi-space-2xs) * -0.25);
 		display: flex;
+		width: 100%;
 		align-items: center;
 		gap: var(--lumi-space-md);
 		padding: var(--lumi-space-sm) var(--lumi-space-md);
@@ -78,7 +82,11 @@
 		color: var(--lumi-color-text);
 		font-size: var(--lumi-font-size-sm);
 		line-height: var(--lumi-line-height-normal);
+		font-family: inherit;
 		border-radius: var(--lumi-radius-md);
+		border: none;
+		background: transparent;
+		text-align: left;
 		text-decoration: none;
 		outline: none;
 	}
@@ -91,7 +99,8 @@
 
 	.lumi-context-item:focus-visible {
 		background: var(--context-item-hover-bg);
-		box-shadow: 0 0 0 var(--lumi-border-width-thick) var(--context-item-focus-ring);
+		box-shadow: 0 0 0 var(--lumi-border-width-thick)
+			var(--context-item-focus-ring);
 	}
 
 	.lumi-context-item:active:not(.lumi-context-item--disabled) {

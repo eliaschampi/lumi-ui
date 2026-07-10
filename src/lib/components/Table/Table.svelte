@@ -1,6 +1,5 @@
-<script lang="ts">
+	<script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { setContext } from 'svelte';
 	import Button from '../Button/Button.svelte';
 	import Checkbox from '../Checkbox/Checkbox.svelte';
 	import Input from '../Input/Input.svelte';
@@ -37,7 +36,7 @@
 		currentPage: controlledPage = 1,
 		totalItems: totalItemsProp,
 		loading = false,
-		sortable = false,
+		rowKey,
 		selected = $bindable([]),
 		class: className = '',
 		'onrow-click': onRowClick,
@@ -46,7 +45,6 @@
 		'onrow-select': onRowSelect,
 		onsearch,
 		'onpage-change': onPageChange,
-		onsort,
 		children,
 		header,
 		thead,
@@ -56,26 +54,20 @@
 
 	let searchQuery = $state('');
 	let currentPageState = $state(1);
-	let sortColumn = $state<string | null>(null);
-	let sortDirection = $state<'asc' | 'desc' | null>(null);
 	const isServerPagination = $derived(pagination && paginationMode === 'server');
-	const activePage = $derived(isServerPagination ? controlledPage : currentPageState);
+	const pageSize = $derived(
+		Number.isFinite(itemsPerPage) && itemsPerPage > 0 ? Math.floor(itemsPerPage) : 1
+	);
 
 	// ── Row identity ──────────────────────────
-	function getRowKey(row: TableRow): string {
-		if (row.id != null) return String(row.id);
-		if (row.key != null) return String(row.key);
-		try {
-			return `row-${JSON.stringify(row)}`;
-		} catch {
-			return `row-${Object.values(row).join('-')}`;
-		}
-	}
+	type TableRowIdentity = string | number | TableRow;
 
-	function getRowListKey(row: TableRow, index: number): string {
+	function getRowIdentity(row: TableRow): TableRowIdentity {
+		const customKey = rowKey?.(row);
+		if (customKey != null) return customKey;
 		if (row.id != null) return String(row.id);
 		if (row.key != null) return String(row.key);
-		return `row-${index}`;
+		return row;
 	}
 
 	// ── Processed data ────────────────────────
@@ -93,44 +85,24 @@
 			);
 		}
 
-		if (sortColumn && sortDirection && sortable && !isServerPagination) {
-			const col = sortColumn;
-			const dir = sortDirection;
-			result.sort((a, b) => {
-				const aVal = a[col] as unknown;
-				const bVal = b[col] as unknown;
-
-				if (aVal === bVal) return 0;
-				if (aVal == null) return 1;
-				if (bVal == null) return -1;
-
-				let comparison: number;
-				if (typeof aVal === 'number' && typeof bVal === 'number') {
-					comparison = aVal - bVal;
-				} else {
-					comparison = String(aVal).localeCompare(String(bVal), undefined, {
-						numeric: true,
-						sensitivity: 'base'
-					});
-				}
-
-				return dir === 'asc' ? comparison : -comparison;
-			});
-		}
-
 		return result;
 	});
 
 	const totalItems = $derived(
 		isServerPagination ? (totalItemsProp ?? processedData.length) : processedData.length
 	);
-	const totalPages = $derived(totalItems === 0 ? 0 : Math.ceil(totalItems / itemsPerPage));
+	const totalPages = $derived(totalItems === 0 ? 0 : Math.ceil(totalItems / pageSize));
+	const activePage = $derived.by(() => {
+		if (totalPages === 0) return 1;
+		const requestedPage = isServerPagination ? controlledPage : currentPageState;
+		return Math.min(Math.max(1, requestedPage), totalPages);
+	});
 
 	const currentPageData = $derived.by(() => {
 		if (!pagination) return processedData;
 		if (isServerPagination) return processedData;
-		const start = (currentPageState - 1) * itemsPerPage;
-		return processedData.slice(start, start + itemsPerPage);
+		const start = (activePage - 1) * pageSize;
+		return processedData.slice(start, start + pageSize);
 	});
 
 	const isAllSelected = $derived.by(() => {
@@ -147,7 +119,7 @@
 	const paginationData = $derived({
 		currentPage: activePage,
 		totalPages,
-		itemsPerPage,
+		itemsPerPage: pageSize,
 		totalItems
 	});
 
@@ -162,8 +134,8 @@
 		return [activePage - 2, activePage - 1, activePage, activePage + 1, activePage + 2];
 	});
 
-	/* FIX(S4): check all interactive handlers for keyboard accessibility */
-	const isInteractive = $derived(!!onRowClick || !!onRowDblClick || !!onRowContextMenu);
+	const hasRowInteraction = $derived(!!onRowClick || !!onRowDblClick || !!onRowContextMenu);
+	const hasKeyboardRowAction = $derived(!!onRowClick);
 
 	const tableClasses = $derived(
 		[
@@ -172,7 +144,6 @@
 			compact && 'lumi-table--compact',
 			stripe && 'lumi-table--stripe',
 			hover && 'lumi-table--hover',
-			loading && 'lumi-table--loading',
 			className
 		]
 			.filter(Boolean)
@@ -184,37 +155,26 @@
 	/* FIX(S1): Don't mutate searchQuery — let user type freely including spaces */
 	function handleSearch(): void {
 		onsearch?.(searchQuery.trim());
-		if (pagination) currentPageState = 1;
-	}
-
-	function handleSort(column: string): void {
-		if (!sortable) return;
-
-		if (sortColumn === column) {
-			if (sortDirection === 'asc') {
-				sortDirection = 'desc';
-			} else {
-				sortDirection = null;
-				sortColumn = null;
-			}
+		if (!pagination) return;
+		if (isServerPagination) {
+			onPageChange?.(1);
 		} else {
-			sortColumn = column;
-			sortDirection = 'asc';
+			currentPageState = 1;
 		}
-
-		onsort?.(column, sortDirection);
 	}
 
 	function toggleSelectAll(checked: boolean): void {
 		if (!data || !selectable) return;
 
 		if (checked) {
-			const selectedKeys = new Set(selected.map((r) => getRowKey(r)));
-			const newSelections = currentPageData.filter((r) => !selectedKeys.has(getRowKey(r)));
+			const selectedKeys = new Set(selected.map((r) => getRowIdentity(r)));
+			const newSelections = currentPageData.filter(
+				(r) => !selectedKeys.has(getRowIdentity(r))
+			);
 			selected = [...selected, ...newSelections];
 		} else {
-			const pageKeys = new Set(currentPageData.map((r) => getRowKey(r)));
-			selected = selected.filter((item) => !pageKeys.has(getRowKey(item)));
+			const pageKeys = new Set(currentPageData.map((r) => getRowIdentity(r)));
+			selected = selected.filter((item) => !pageKeys.has(getRowIdentity(item)));
 		}
 	}
 
@@ -249,6 +209,7 @@
 	}
 
 	function handleRowKeydown(event: KeyboardEvent, row: TableRow, index: number): void {
+		if (!onRowClick) return;
 		if (isInteractiveTarget(event.target)) return;
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
@@ -259,8 +220,8 @@
 	function handleRowSelect(row: TableRow, checked: boolean): void {
 		if (!selectable) return;
 
-		const rowKey = getRowKey(row);
-		const index = selected.findIndex((item) => getRowKey(item) === rowKey);
+		const identity = getRowIdentity(row);
+		const index = selected.findIndex((item) => getRowIdentity(item) === identity);
 
 		if (checked && index === -1) {
 			selected = [...selected, row];
@@ -273,8 +234,8 @@
 
 	function isRowSelected(row: TableRow): boolean {
 		if (!selectable) return false;
-		const rowKey = getRowKey(row);
-		return selected.some((item) => getRowKey(item) === rowKey);
+		const identity = getRowIdentity(row);
+		return selected.some((item) => getRowIdentity(item) === identity);
 	}
 
 	function goToPage(page: number): void {
@@ -282,31 +243,6 @@
 		if (!isServerPagination) currentPageState = page;
 		onPageChange?.(page);
 	}
-
-	// ── Context ───────────────────────────────
-	setContext('table', {
-		get compact() {
-			return compact;
-		},
-		get stripe() {
-			return stripe;
-		},
-		get hover() {
-			return hover;
-		},
-		get selectable() {
-			return selectable;
-		},
-		get sortable() {
-			return sortable;
-		},
-		getSelectedItems: () => selected,
-		getSortColumn: () => sortColumn,
-		getSortDirection: () => sortDirection,
-		handleRowSelect,
-		handleSort,
-		isRowSelected
-	});
 
 	// ── Effects ───────────────────────────────
 	$effect(() => {
@@ -348,33 +284,35 @@
 			</div>
 		{:else}
 			<table class="lumi-table__content">
-				<thead class="lumi-table__thead">
-					<tr>
-						{#if selectable}
-							<th class="lumi-table__th lumi-table__th--select" scope="col">
-								<Checkbox
-									aria-label="Select all rows"
-									checked={isAllSelected}
-									indeterminate={isPartiallySelected}
-									size="sm"
-									onchange={toggleSelectAll}
-								/>
-							</th>
-						{/if}
-						{#if thead}
-							{@render thead()}
-						{/if}
-					</tr>
-				</thead>
+				{#if selectable || thead}
+					<thead class="lumi-table__thead">
+						<tr>
+							{#if selectable}
+								<th class="lumi-table__th lumi-table__th--select" scope="col">
+									<Checkbox
+										aria-label="Select all rows"
+										checked={isAllSelected}
+										indeterminate={isPartiallySelected}
+										size="sm"
+										onchange={toggleSelectAll}
+									/>
+								</th>
+							{/if}
+							{#if thead}
+								{@render thead()}
+							{/if}
+						</tr>
+					</thead>
+				{/if}
 				<tbody class="lumi-table__tbody">
 					{#if data && currentPageData.length > 0}
-						{#each currentPageData as rowData, index (getRowListKey(rowData, index))}
+						{#each currentPageData as rowData, index (getRowIdentity(rowData))}
 							{@const isSelected = isRowSelected(rowData)}
 							<tr
 								class="lumi-table__row"
 								class:lumi-table__row--selected={isSelected}
-								class:lumi-table__row--clickable={isInteractive}
-								tabindex={isInteractive ? 0 : undefined}
+								class:lumi-table__row--clickable={hasRowInteraction}
+								tabindex={hasKeyboardRowAction ? 0 : undefined}
 								aria-selected={selectable ? isSelected : undefined}
 								onclick={(event) => handleRowClick(event, rowData, index)}
 								ondblclick={(event) => handleRowDblClick(event, rowData, index)}
@@ -432,8 +370,8 @@
 							{noResultsText}
 						{:else}
 							{showingLabel}
-							{(activePage - 1) * itemsPerPage + 1}–{Math.min(
-								activePage * itemsPerPage,
+								{(activePage - 1) * pageSize + 1}–{Math.min(
+									activePage * pageSize,
 								totalItems
 							)}
 							{ofLabel}
@@ -522,8 +460,8 @@
 	/* FIX(C4): rem instead of px */
 	.lumi-table__search {
 		flex: 1;
-		max-width: 22.5rem;
-		min-width: 12.5rem;
+		max-width: var(--lumi-centered-card-width-sm);
+		min-width: var(--lumi-min-width-md);
 	}
 
 	/* ── Table wrapper ────────────────────────── */
@@ -695,7 +633,7 @@
 		border: var(--lumi-border-width-thick) solid var(--lumi-color-border);
 		border-top-color: var(--lumi-color-primary);
 		border-radius: var(--lumi-radius-full);
-		animation: lumi-table-spin 0.6s linear infinite;
+		animation: lumi-table-spin var(--lumi-duration-slower) linear infinite;
 	}
 
 	@keyframes lumi-table-spin {
@@ -830,13 +768,12 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.lumi-table__tbody .lumi-table__row,
-		.lumi-table__wrapper,
 		.lumi-table__pagination-page {
 			transition: none;
 		}
 
 		.lumi-table__spinner {
-			animation-duration: 1.5s;
+			animation: none;
 		}
 	}
 </style>

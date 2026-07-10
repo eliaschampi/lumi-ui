@@ -32,10 +32,43 @@ npm install @lumi-ui/svelte
 
 - Structure: `Card`, `Sidebar`, `SidebarHeader`, `Navbar`
 - Forms: `Button`, `Input`, `NumberInput`, `Textarea`, `Select`, `RemoteSelect`, `Checkbox`, `SegmentedControl`, `DateRangeFilter`
-- Overlays: `Dialog`, `Dropdown`, `DropdownItem`, `Context`, `ContextItem`
+- Overlays: `Dialog`, `Dropdown`, `DropdownItem`, `Context`, `ContextItem`, `Tooltip`
 - Display/navigation: `Table`, `Tabs`, `Avatar`, `Icon`, `TagOption`
 - File workspace: `DriveFileCard`, `DriveFileGrid`, `DriveFileList`, `DriveFilePreview`, `DriveFileUploader`, `DriveSidebar`
 - Utilities: `portal`, icon registry, `@lumi-ui/svelte/drive`
+
+## Floating Controls
+
+`Select`, `Dropdown`, `Context` and `Tooltip` are portaled to avoid clipped parents. They share viewport collision handling, automatic placement updates and tokenized surface geometry.
+
+| Component  | Intended use                            | Main API                                                          |
+| ---------- | --------------------------------------- | ----------------------------------------------------------------- |
+| `Select`   | Single selection, optionally searchable | `bind:value`, `options`, `autocomplete`, `placement`, `clearable` |
+| `Dropdown` | Triggered action menu                   | `bind:open`, `triggerContent`, `placement`, `trigger`             |
+| `Context`  | Pointer-positioned action menu          | `bind:this`, `open(event, data)`, `close()`                       |
+| `Tooltip`  | Short supplementary information         | `text` or `content`, `position`, `delay`, `color`                 |
+
+```svelte
+<script lang="ts">
+	import { Dropdown, DropdownItem, Select, Tooltip } from '@lumi-ui/svelte';
+
+	let status = $state<string | number | Record<string, unknown> | null>(null);
+</script>
+
+<Select bind:value={status} options={['Activo', 'Pausado']} label="Estado" />
+
+<Dropdown aria-label="Acciones">
+	{#snippet triggerContent()}Acciones{/snippet}
+	<DropdownItem icon="edit">Editar</DropdownItem>
+	<DropdownItem icon="trash" color="danger">Eliminar</DropdownItem>
+</Dropdown>
+
+<Tooltip text="Cambios guardados automáticamente">
+	<span>Más información</span>
+</Tooltip>
+```
+
+When `name` is provided, primitive `Select` values are submitted as strings. Object values use JSON by default; provide `serializeValue` when the form requires another representation.
 
 ## Architecture Principle
 
@@ -74,6 +107,6 @@ The package lifecycle validates lint and Svelte types before publishing, then bu
 
 ## 0.1.4 Notes
 
-- Context menus cancel pending close transitions before reopening, so right-clicking a second target does not immediately dismiss the new menu.
+- Context menus can move directly between targets without leaving a stale menu or position.
 - Core form/action utilities and filter summary styles were restored as reusable Lumi patterns instead of app-local CSS.
 - The default light theme restores the calibrated Aurora Blue x teal seed palette, translucent dashboard content, and liquid-glass shadow balance.

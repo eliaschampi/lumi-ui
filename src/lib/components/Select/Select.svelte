@@ -3,6 +3,7 @@
 	import { portal } from '../../actions/portal';
 	import { createFloating } from '../../utils/floating.svelte';
 	import Icon from '../Icon/Icon.svelte';
+	import { LUMI_CONFIG } from '../config';
 	import type { SelectProps } from './types';
 
 	type OptionValue = string | number | Record<string, unknown>;
@@ -35,8 +36,10 @@
 		clearable = true,
 		loading = false,
 		placement = 'bottom-start',
-		maxHeight = 250,
-		offset = 4,
+		maxHeight = LUMI_CONFIG.floating.select.maxHeight,
+		offset = LUMI_CONFIG.floating.select.offset,
+		viewportPadding = LUMI_CONFIG.floating.select.viewportPadding,
+		serializeValue,
 		class: className = '',
 		onchange,
 		onopen,
@@ -58,24 +61,46 @@
 			matchWidth: true,
 			maxHeight,
 			offset,
+			viewportPadding,
 			zIndex: 'var(--lumi-z-dropdown)',
 			strategy: 'fixed'
 		})
 	);
 
 	// ── Deep equality ──────────────────────────
-	function isEqual(a: unknown, b: unknown): boolean {
-		if (a === b) return true;
+	function isEqual(
+		a: unknown,
+		b: unknown,
+		seen = new WeakMap<object, object>()
+	): boolean {
+		if (Object.is(a, b)) return true;
 		if (a == null || b == null) return false;
 		if (typeof a !== typeof b) return false;
 		if (typeof a !== 'object') return false;
+		const seenMatch = seen.get(a);
+		if (seenMatch) return seenMatch === b;
+		seen.set(a, b as object);
+		if (Array.isArray(a) || Array.isArray(b)) {
+			if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length)
+				return false;
+			return a.every((entry, index) => isEqual(entry, b[index], seen));
+		}
+		if (Object.getPrototypeOf(a) !== Object.getPrototypeOf(b)) return false;
+		if (
+			Object.getPrototypeOf(a) !== Object.prototype &&
+			Object.getPrototypeOf(a) !== null
+		) {
+			return false;
+		}
 
 		const objA = a as Record<string, unknown>;
 		const objB = b as Record<string, unknown>;
 		const keysA = Object.keys(objA);
 
 		if (keysA.length !== Object.keys(objB).length) return false;
-		return keysA.every((key) => Object.hasOwn(objB, key) && isEqual(objA[key], objB[key]));
+		return keysA.every(
+			(key) => Object.hasOwn(objB, key) && isEqual(objA[key], objB[key], seen)
+		);
 	}
 
 	function toOptionKey(optionValue: OptionValue | null, index: number): string {
@@ -129,9 +154,23 @@
 	);
 	const selectedKey = $derived(selectedOption?.key ?? null);
 	const selectedLabel = $derived(selectedOption?.label ?? '');
-	const displayValue = $derived(floating.isOpen && autocomplete ? filterText : selectedLabel);
+	const displayValue = $derived(
+		floating.isOpen && autocomplete ? filterText : selectedLabel
+	);
 	const hasValue = $derived(value != null && value !== '');
-	const showClearButton = $derived(clearable && hasValue && !disabled && !loading);
+	const showClearButton = $derived(
+		clearable && hasValue && !disabled && !loading
+	);
+	const formValue = $derived.by(() => {
+		if (value == null) return '';
+		if (serializeValue) return serializeValue(value);
+		if (typeof value !== 'object') return String(value);
+		try {
+			return JSON.stringify(value);
+		} catch {
+			return '';
+		}
+	});
 	const selectFocusColor = $derived(
 		error ? 'var(--lumi-color-danger)' : 'var(--lumi-color-primary)'
 	);
@@ -144,7 +183,9 @@
 	const visibleOptions = $derived.by(() => {
 		if (!isFilterActive || searchMode === 'server') return normalizedOptions;
 		const query = filterText.toLowerCase();
-		return normalizedOptions.filter((opt) => opt.label.toLowerCase().includes(query));
+		return normalizedOptions.filter((opt) =>
+			opt.label.toLowerCase().includes(query)
+		);
 	});
 
 	const navigableIndices = $derived(
@@ -187,14 +228,24 @@
 		inputRef?.focus();
 	}
 
-	function openDropdown(): void {
+	function openDropdown(initialDirection?: 1 | -1): void {
 		if (disabled || floating.isOpen) return;
 		floating.open();
 		inputRef?.focus();
 		filterText = selectedLabel;
-		focusedIndex = selectedOption
-			? visibleOptions.findIndex((opt) => isEqual(opt.value, selectedOption.value))
+		const selectedIndex = selectedOption
+			? visibleOptions.findIndex((opt) =>
+					isEqual(opt.value, selectedOption.value)
+				)
 			: -1;
+		focusedIndex =
+			selectedIndex >= 0
+				? selectedIndex
+				: initialDirection === 1
+					? (navigableIndices[0] ?? -1)
+					: initialDirection === -1
+						? (navigableIndices.at(-1) ?? -1)
+						: -1;
 		onopen?.();
 	}
 
@@ -263,13 +314,13 @@
 
 			case 'ArrowDown':
 				event.preventDefault();
-				if (!floating.isOpen) openDropdown();
+				if (!floating.isOpen) openDropdown(1);
 				else moveFocus(1);
 				break;
 
 			case 'ArrowUp':
 				event.preventDefault();
-				if (!floating.isOpen) openDropdown();
+				if (!floating.isOpen) openDropdown(-1);
 				else moveFocus(-1);
 				break;
 
@@ -287,6 +338,10 @@
 					focusedIndex = navigableIndices.at(-1)!;
 					scrollToFocused();
 				}
+				break;
+
+			case 'Tab':
+				closeDropdown();
 				break;
 		}
 	}
@@ -312,11 +367,26 @@
 		closeDropdown();
 	}
 
+	function handleFocusOut(event: FocusEvent): void {
+		const nextTarget = event.relatedTarget as Node | null;
+		if (
+			nextTarget &&
+			(selectRef?.contains(nextTarget) || dropdownRef?.contains(nextTarget))
+		)
+			return;
+		closeDropdown();
+	}
+
 	$effect(() => {
 		if (floating.isOpen) {
 			document.addEventListener('pointerdown', handleClickOutside, true);
-			return () => document.removeEventListener('pointerdown', handleClickOutside, true);
+			return () =>
+				document.removeEventListener('pointerdown', handleClickOutside, true);
 		}
+	});
+
+	$effect(() => {
+		if (disabled && floating.isOpen) closeDropdown();
 	});
 </script>
 
@@ -328,6 +398,7 @@
 	class:lumi-select--error={error}
 	class:lumi-select--loading={loading}
 	style={width ? `width: ${width}` : undefined}
+	onfocusout={handleFocusOut}
 >
 	{#if label}
 		<label for={inputId} class="lumi-select__label">
@@ -337,15 +408,7 @@
 
 	<div class="lumi-select__container">
 		{#if name}
-			<input
-				type="hidden"
-				{name}
-				value={value == null
-					? ''
-					: typeof value === 'object'
-						? JSON.stringify(value)
-						: String(value)}
-			/>
+			<input type="hidden" {name} value={formValue} />
 		{/if}
 
 		<input
@@ -361,7 +424,9 @@
 			aria-controls={dropdownId}
 			aria-haspopup="listbox"
 			aria-autocomplete={autocomplete ? 'list' : 'none'}
-			aria-activedescendant={focusedIndex > -1 ? getOptionId(focusedIndex) : undefined}
+			aria-activedescendant={focusedIndex > -1
+				? getOptionId(focusedIndex)
+				: undefined}
 			aria-label={ariaLabel || label || placeholder}
 			aria-invalid={error || undefined}
 			aria-errormessage={error && errorMessage ? errorId : undefined}
@@ -382,7 +447,6 @@
 				type="button"
 				class="lumi-select__clear"
 				aria-label="Limpiar selección"
-				tabindex="-1"
 				onclick={clearValue}
 			>
 				<Icon icon="x" {size} />
@@ -519,7 +583,11 @@
 		overflow: hidden;
 	}
 
-	.lumi-select:not(.lumi-select--error, .lumi-select--active, .lumi-select--disabled)
+	.lumi-select:not(
+			.lumi-select--error,
+			.lumi-select--active,
+			.lumi-select--disabled
+		)
 		.lumi-select__container:hover {
 		border-color: var(--lumi-color-border-strong);
 		background: var(--lumi-color-control-hover-fill);
@@ -634,14 +702,16 @@
 	/* ── Dropdown ─────────────────────────────── */
 	.lumi-select__dropdown {
 		background: var(--lumi-floating-surface-bg);
-		border: var(--lumi-border-width-thin) solid var(--lumi-floating-surface-border);
+		border: var(--lumi-border-width-thin) solid
+			var(--lumi-floating-surface-border);
 		border-radius: var(--lumi-radius-2xl);
 		overflow: hidden;
 		box-shadow: var(--lumi-floating-surface-shadow);
 		padding: var(--lumi-space-xs);
 		display: flex;
 		flex-direction: column;
-		animation: select-dropdown-in var(--lumi-duration-fast) var(--lumi-easing-default);
+		animation: select-dropdown-in var(--lumi-duration-fast)
+			var(--lumi-easing-default);
 		transform-origin: top center;
 	}
 

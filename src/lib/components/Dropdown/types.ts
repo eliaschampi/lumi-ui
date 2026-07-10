@@ -1,5 +1,5 @@
 import type { FloatingPlacement } from '../../utils/floating.svelte';
-import type { LumiCompactSize } from '../config';
+import type { LumiColor, LumiCompactSize } from '../config';
 
 export type DropdownPlacement = FloatingPlacement;
 /** @deprecated Use `DropdownPlacement` instead. */
@@ -49,4 +49,30 @@ export interface DropdownProps {
 
 	/** Close event handler */
 	onclose?: () => void;
+}
+
+export interface DropdownItemProps {
+	/** Optional leading icon */
+	icon?: string;
+
+	/** Link destination; renders an anchor when provided */
+	href?: string;
+
+	/** Semantic accent color */
+	color?: LumiColor;
+
+	/** Whether the item is unavailable */
+	disabled?: boolean;
+
+	/** Whether a button item submits its containing form */
+	submit?: boolean;
+
+	/** Whether the item represents the current selection */
+	selected?: boolean;
+
+	/** Custom class */
+	class?: string;
+
+	/** Activation handler */
+	onclick?: (event: MouseEvent) => void;
 }

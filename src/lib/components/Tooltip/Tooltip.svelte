@@ -25,45 +25,41 @@
 	const tooltipId = `lumi-tooltip-${instanceId}`;
 
 	let isVisible = $state(false);
-	let isPositioned = $state(false);
-	// svelte-ignore state_referenced_locally
-	// `resolvedPosition` is kept in sync with `position` by `showTooltip` and
-	// the position $effect; the initializer only sets the first paint default.
-	let resolvedPosition = $state<TooltipPosition>(position);
-	let arrowOffset = $state(0);
 	let showTimeout: number | null = null;
 
 	let triggerRef: HTMLDivElement | undefined = $state();
 	let tooltipRef: HTMLDivElement | undefined = $state();
+	let arrowRef: HTMLSpanElement | undefined = $state();
 
-	const tooltipGap = 10;
-	const arrowEdgePadding = 12;
-	const viewportPadding = 8;
 	const transitionDuration = LUMI_CONFIG.transitions.fast;
 
-	// single source of truth: flip / shift / autoUpdate are delegated to
-	// @floating-ui via createFloating. Only the arrow cross-axis offset is
-	// computed here, because it depends on the presentation layer (rotated
-	// square pseudo-element) rather than the floating geometry.
+	// Position, collision handling and arrow alignment share the same
+	// Floating UI controller used by the other portaled components.
 	const floating = createFloating(
 		() => triggerRef,
 		() => tooltipRef,
 		() => ({
 			placement: position,
-			offset: tooltipGap,
-			viewportPadding,
+			offset: LUMI_CONFIG.floating.tooltip.offset,
+			maxHeight: LUMI_CONFIG.floating.tooltip.maxHeight,
+			viewportPadding: LUMI_CONFIG.floating.tooltip.viewportPadding,
 			zIndex: 'var(--lumi-z-tooltip)',
-			strategy: 'fixed' as const
+			strategy: 'fixed' as const,
+			arrow: arrowRef
+				? {
+						element: arrowRef,
+						padding: LUMI_CONFIG.floating.tooltip.arrowPadding
+					}
+				: undefined
 		})
 	);
 
+	const resolvedPosition = $derived(
+		floating.resolvedPlacement.split('-')[0] as TooltipPosition
+	);
+
 	const tooltipClasses = $derived.by(() =>
-		[
-			'lumi-tooltip__content',
-			`lumi-tooltip--${resolvedPosition}`,
-			isPositioned && 'lumi-tooltip--visible',
-			className
-		]
+		['lumi-tooltip__content', `lumi-tooltip--${resolvedPosition}`, className]
 			.filter(Boolean)
 			.join(' ')
 	);
@@ -71,15 +67,12 @@
 	const tooltipStyles = $derived(
 		[
 			floating.styleString,
-			`--lumi-tooltip-arrow-offset: ${arrowOffset}px`,
+			`--lumi-tooltip-arrow-x: ${floating.position.arrowX ?? 0}px`,
+			`--lumi-tooltip-arrow-y: ${floating.position.arrowY ?? 0}px`,
 			`--tooltip-accent: var(--lumi-color-${color})`,
 			`--tooltip-accent-rgb: var(--lumi-color-${color}-rgb)`
 		].join('; ')
 	);
-
-	function clamp(value: number, min: number, max: number): number {
-		return Math.min(Math.max(value, min), max);
-	}
 
 	function clearShowTimeout(): void {
 		if (showTimeout !== null) {
@@ -90,11 +83,13 @@
 
 	function showTooltip(): void {
 		clearShowTimeout();
-		resolvedPosition = position;
+		if (isVisible) {
+			floating.updatePosition();
+			return;
+		}
 
 		const reveal = (): void => {
 			isVisible = true;
-			isPositioned = false;
 			floating.open();
 		};
 
@@ -111,7 +106,6 @@
 	function hideTooltip(): void {
 		clearShowTimeout();
 		isVisible = false;
-		isPositioned = false;
 		floating.close();
 	}
 
@@ -121,44 +115,14 @@
 		hideTooltip();
 	}
 
-	// Arrow + resolved placement: recomputed whenever floating-ui repositions the
-	// tooltip. We read the live rects (post-shift/clamp) rather than threading
-	// middleware data through the public floating API, so the arrow stays
-	// anchored to the trigger center even after viewport clamping, and `flip`
-	// is reflected by inferring the resolved axis from the geometry.
+	function handleEscape(event: KeyboardEvent): void {
+		if (event.key === 'Escape') hideTooltip();
+	}
+
 	$effect(() => {
-		if (!isVisible || !tooltipRef || !triggerRef || !floating.hasPosition) return;
-		// Touch `floating.position` so this effect re-runs on every reposition.
-		const { top, left } = floating.position;
-
-		const triggerRect = triggerRef.getBoundingClientRect();
-		const tooltipRect = tooltipRef.getBoundingClientRect();
-		if (tooltipRect.width === 0 || tooltipRect.height === 0) return;
-
-		const resolved: TooltipPosition =
-			position === 'left' || position === 'right'
-				? tooltipRect.right <= triggerRect.left
-					? 'left'
-					: 'right'
-				: tooltipRect.bottom <= triggerRect.top
-					? 'top'
-					: 'bottom';
-
-		const triggerCenterX = triggerRect.left + triggerRect.width / 2;
-		const triggerCenterY = triggerRect.top + triggerRect.height / 2;
-
-		const axisSize =
-			resolved === 'top' || resolved === 'bottom' ? tooltipRect.width : tooltipRect.height;
-		const desiredArrow =
-			resolved === 'top' || resolved === 'bottom'
-				? triggerCenterX - tooltipRect.left
-				: triggerCenterY - tooltipRect.top;
-		const minArrowOffset = Math.min(arrowEdgePadding, axisSize / 2);
-		const maxArrowOffset = Math.max(minArrowOffset, axisSize - minArrowOffset);
-
-		resolvedPosition = resolved;
-		arrowOffset = clamp(desiredArrow, minArrowOffset, maxArrowOffset);
-		isPositioned = true;
+		if (!isVisible) return;
+		document.addEventListener('keydown', handleEscape);
+		return () => document.removeEventListener('keydown', handleEscape);
 	});
 
 	// Component-level resource and timeout cleanup
@@ -200,6 +164,8 @@
 		{:else}
 			{text}
 		{/if}
+		<span bind:this={arrowRef} class="lumi-tooltip__arrow" aria-hidden="true"
+		></span>
 	</div>
 {/if}
 
@@ -225,8 +191,6 @@
 		font-family: var(--lumi-font-family-sans);
 		font-weight: var(--lumi-font-weight-medium);
 		line-height: var(--lumi-line-height-snug);
-		opacity: 0;
-		visibility: hidden;
 		background:
 			linear-gradient(
 				145deg,
@@ -242,13 +206,9 @@
 			);
 		box-shadow: var(--lumi-shadow-md);
 		transform-origin: center;
-		transition:
-			opacity var(--lumi-duration-fast) ease,
-			visibility var(--lumi-duration-fast) ease;
 	}
 
-	.lumi-tooltip__content::after {
-		content: '';
+	.lumi-tooltip__arrow {
 		position: absolute;
 		width: var(--lumi-space-xs);
 		height: var(--lumi-space-xs);
@@ -262,32 +222,27 @@
 		transform: rotate(45deg);
 	}
 
-	.lumi-tooltip--visible {
-		opacity: 1;
-		visibility: visible;
-	}
-
-	.lumi-tooltip--top::after {
+	.lumi-tooltip--top .lumi-tooltip__arrow {
 		top: calc(100% - (var(--lumi-space-2xs) * 1.5));
-		left: var(--lumi-tooltip-arrow-offset);
+		left: var(--lumi-tooltip-arrow-x);
 		transform: translateX(-50%) rotate(45deg);
 	}
 
-	.lumi-tooltip--bottom::after {
+	.lumi-tooltip--bottom .lumi-tooltip__arrow {
 		bottom: calc(100% - (var(--lumi-space-2xs) * 1.5));
-		left: var(--lumi-tooltip-arrow-offset);
+		left: var(--lumi-tooltip-arrow-x);
 		transform: translateX(-50%) rotate(45deg);
 	}
 
-	.lumi-tooltip--left::after {
+	.lumi-tooltip--left .lumi-tooltip__arrow {
 		left: calc(100% - (var(--lumi-space-2xs) * 1.5));
-		top: var(--lumi-tooltip-arrow-offset);
+		top: var(--lumi-tooltip-arrow-y);
 		transform: translateY(-50%) rotate(45deg);
 	}
 
-	.lumi-tooltip--right::after {
+	.lumi-tooltip--right .lumi-tooltip__arrow {
 		right: calc(100% - (var(--lumi-space-2xs) * 1.5));
-		top: var(--lumi-tooltip-arrow-offset);
+		top: var(--lumi-tooltip-arrow-y);
 		transform: translateY(-50%) rotate(45deg);
 	}
 

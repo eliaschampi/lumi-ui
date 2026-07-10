@@ -40,9 +40,9 @@ Primitive components must be usable in any product surface. If a component needs
 
 ## Overlay Standard
 
-Floating UI behavior uses `@floating-ui/dom` through `createFloating`. Components that can be clipped by parent overflow must use `portal`.
+Floating UI behavior uses `@floating-ui/dom` through `createFloating`. Element anchors and pointer-based virtual references share the same flip, shift, size and arrow pipeline. Components that can be clipped by parent overflow must use `portal`.
 
-Portaled overlays own their open lifecycle. If a component delays unmounting for transitions, a new open must cancel the pending close before changing target data or position.
+Portaled overlays own their open lifecycle, dismissal and focus semantics. Menu roles must provide arrow/Home/End navigation, skip disabled items and restore focus when keyboard interaction closes the menu.
 
 ## Theme Direction
 

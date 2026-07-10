@@ -6,6 +6,7 @@ export type {
 	DropdownPlacement,
 	DropdownPosition,
 	DropdownProps,
+	DropdownItemProps,
 	DropdownSize,
 	DropdownTrigger
 } from './types';

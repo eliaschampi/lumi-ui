@@ -59,6 +59,10 @@ export interface SelectProps {
     maxHeight?: number;
     /** Offset from trigger element */
     offset?: number;
+    /** Minimum distance from viewport edges */
+    viewportPadding?: number;
+    /** Custom form serialization for object values */
+    serializeValue?: (value: SelectValue) => string;
     /** Custom class */
     class?: string;
     /** Change event handler */

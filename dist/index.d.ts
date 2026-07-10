@@ -10,7 +10,7 @@ export type { ContextItemProps, ContextProps, ContextSize } from './components/C
 export { Context, ContextItem } from './components/Context';
 export type { DialogProps, DialogSize } from './components/Dialog';
 export { Dialog } from './components/Dialog';
-export type { DropdownPlacement, DropdownPosition, DropdownProps, DropdownSize, DropdownTrigger } from './components/Dropdown';
+export type { DropdownPlacement, DropdownPosition, DropdownItemProps, DropdownProps, DropdownSize, DropdownTrigger } from './components/Dropdown';
 export { Dropdown, DropdownItem } from './components/Dropdown';
 export type { IconProps } from './components/Icon';
 export { getAvailableIcons, getIcon, hasIcon, Icon } from './components/Icon';
@@ -26,7 +26,7 @@ export type { SelectOption, SelectOptionInput, SelectProps, SelectSearchMode, Se
 export { RemoteSelect, Select } from './components/Select';
 export type { SidebarHeaderProps, SidebarItemProps, SidebarProps } from './components/Sidebar';
 export { Sidebar, SidebarHeader, SidebarItem } from './components/Sidebar';
-export type { TableProps, TableRow, TdProps, ThProps, TrProps } from './components/Table';
+export type { TableProps, TableRow } from './components/Table';
 export { Table } from './components/Table';
 export type { Tab, TabsColor, TabsPosition, TabsProps } from './components/Tabs';
 export { Tabs } from './components/Tabs';

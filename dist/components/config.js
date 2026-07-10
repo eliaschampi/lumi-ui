@@ -48,6 +48,33 @@ export const LUMI_CONFIG = {
         slower: 500
     },
     /**
+     * Semantic geometry for portaled floating components.
+     * Values are consumed by Floating UI and therefore remain numeric.
+     */
+    floating: {
+        menu: {
+            offset: 8,
+            maxHeight: 320,
+            viewportPadding: 12
+        },
+        select: {
+            offset: 4,
+            maxHeight: 250,
+            viewportPadding: 16
+        },
+        context: {
+            offset: 0,
+            maxHeight: 300,
+            viewportPadding: 12
+        },
+        tooltip: {
+            offset: 10,
+            maxHeight: 300,
+            viewportPadding: 8,
+            arrowPadding: 12
+        }
+    },
+    /**
      * Default component props
      */
     defaults: {

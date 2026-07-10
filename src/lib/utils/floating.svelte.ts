@@ -1,4 +1,5 @@
 import {
+	arrow as floatingArrow,
 	autoUpdate,
 	computePosition,
 	flip,
@@ -6,6 +7,7 @@ import {
 	shift,
 	size,
 	type Placement,
+	type ReferenceElement,
 	type Strategy
 } from '@floating-ui/dom';
 
@@ -14,6 +16,8 @@ export interface FloatingPosition {
 	left: number;
 	width?: number;
 	maxHeight?: number;
+	arrowX?: number;
+	arrowY?: number;
 }
 
 export type FloatingPlacement =
@@ -38,12 +42,17 @@ export interface UseFloatingOptions {
 	viewportPadding?: number;
 	zIndex?: string;
 	strategy?: 'fixed' | 'absolute';
+	arrow?: {
+		element: HTMLElement;
+		padding?: number;
+	};
 }
 
 export type FloatingController = {
 	isOpen: boolean;
 	hasPosition: boolean;
 	position: FloatingPosition;
+	resolvedPlacement: FloatingPlacement;
 	floatingStyles: Record<string, string>;
 	styleString: string;
 	open: () => void;
@@ -55,8 +64,10 @@ export type FloatingController = {
 export type FloatingOptionsInput =
 	UseFloatingOptions | (() => UseFloatingOptions);
 
+export type FloatingReference = ReferenceElement;
+
 export function createFloating(
-	triggerElement: () => HTMLElement | undefined,
+	triggerElement: () => ReferenceElement | undefined,
 	floatingElement: () => HTMLElement | undefined,
 	options: FloatingOptionsInput = {} as UseFloatingOptions
 ): FloatingController {
@@ -78,6 +89,7 @@ export function createFloating(
 
 	let isOpen = $state(false);
 	let position = $state<FloatingPosition>({ top: 0, left: 0 });
+	let resolvedPlacement = $state<FloatingPlacement>('bottom-start');
 	let hasPosition = $state(false);
 	let updateToken = 0;
 
@@ -123,7 +135,8 @@ export function createFloating(
 			matchWidth,
 			maxHeight,
 			viewportPadding,
-			strategy
+			strategy,
+			arrow
 		} = resolvedOptions;
 		const token = ++updateToken;
 		let floatingMaxHeight = maxHeight;
@@ -150,7 +163,18 @@ export function createFloating(
 			);
 		}
 
-		const { x, y } = await computePosition(trigger, floating, {
+		if (arrow?.element) {
+			middleware.push(
+				floatingArrow({ element: arrow.element, padding: arrow.padding })
+			);
+		}
+
+		const {
+			x,
+			y,
+			placement: computedPlacement,
+			middlewareData
+		} = await computePosition(trigger, floating, {
 			placement: placement as Placement,
 			strategy: strategy as Strategy,
 			middleware
@@ -162,8 +186,11 @@ export function createFloating(
 			top: y,
 			left: x,
 			width: matchWidth ? trigger.getBoundingClientRect().width : undefined,
-			maxHeight: floatingMaxHeight
+			maxHeight: floatingMaxHeight,
+			arrowX: middlewareData.arrow?.x,
+			arrowY: middlewareData.arrow?.y
 		};
+		resolvedPlacement = computedPlacement as FloatingPlacement;
 		hasPosition = true;
 	}
 
@@ -212,6 +239,9 @@ export function createFloating(
 		},
 		get position() {
 			return position;
+		},
+		get resolvedPlacement() {
+			return resolvedPlacement;
 		},
 		get floatingStyles() {
 			return floatingStyles;

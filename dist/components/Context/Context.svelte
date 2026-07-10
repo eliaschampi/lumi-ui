@@ -1,8 +1,11 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { tick } from 'svelte';
 	import { scale } from 'svelte/transition';
 	import { portal } from '../../actions/portal';
+	import {
+		createFloating,
+		type FloatingReference
+	} from '../../utils/floating.svelte';
 	import { LUMI_CONFIG } from '../config';
 	import type { ContextProps } from './types';
 
@@ -15,8 +18,8 @@
 		closeOnClick = true,
 		closeOnScroll = true,
 		itemSelector = '.lumi-context-item',
-		maxHeight = 300,
-		viewportPadding = 12,
+		maxHeight = LUMI_CONFIG.floating.context.maxHeight,
+		viewportPadding = LUMI_CONFIG.floating.context.viewportPadding,
 		'aria-label': ariaLabel = '',
 		class: className = '',
 		onopen,
@@ -25,97 +28,97 @@
 	}: Props = $props();
 
 	let contextMenu: HTMLDivElement | undefined = $state();
-	let show = $state(false);
-	let isPositioned = $state(false);
-	let top = $state(0);
-	let left = $state(0);
+	let reference: FloatingReference | undefined = $state();
 	let contextData = $state<unknown>(null);
-	let closeTimer: ReturnType<typeof setTimeout> | null = null;
+	let previousActiveElement: HTMLElement | null = null;
+	let pendingOpen: { event: MouseEvent; data?: unknown } | null = null;
+
+	const floating = createFloating(
+		() => reference,
+		() => contextMenu,
+		() => ({
+			placement: 'bottom-start',
+			offset: LUMI_CONFIG.floating.context.offset,
+			maxHeight,
+			viewportPadding,
+			zIndex: 'var(--lumi-z-dropdown)',
+			strategy: 'fixed'
+		})
+	);
 
 	const contextClasses = $derived.by(() =>
-		[
-			'lumi-context',
-			`lumi-context--${size}`,
-			show && isPositioned && 'lumi-context--visible',
-			className
-		]
+		['lumi-context', `lumi-context--${size}`, className]
 			.filter(Boolean)
 			.join(' ')
 	);
 	const transitionDuration = LUMI_CONFIG.transitions.fast;
 
-	const contextStyle = $derived.by(() => ({
-		top: `${top}px`,
-		left: `${left}px`,
-		maxHeight: `${maxHeight}px`
-	}));
+	function createPointReference(event: MouseEvent): FloatingReference {
+		const { clientX: x, clientY: y } = event;
+		const contextElement =
+			event.currentTarget instanceof Element
+				? event.currentTarget
+				: event.target instanceof Element
+					? event.target
+					: undefined;
 
-	function clearCloseTimer(): void {
-		if (closeTimer !== null) {
-			clearTimeout(closeTimer);
-			closeTimer = null;
-		}
+		return {
+			contextElement,
+			getBoundingClientRect: () => ({
+				x,
+				y,
+				top: y,
+				right: x,
+				bottom: y,
+				left: x,
+				width: 0,
+				height: 0
+			})
+		};
 	}
 
 	export function open(event: MouseEvent, data?: unknown): void {
 		event.preventDefault();
 		event.stopPropagation();
-		clearCloseTimer();
-
+		const activeElement =
+			document.activeElement instanceof HTMLElement
+				? document.activeElement
+				: null;
+		previousActiveElement =
+			activeElement === contextMenu &&
+			event.currentTarget instanceof HTMLElement
+				? event.currentTarget
+				: activeElement;
+		reference = createPointReference(event);
 		contextData = data;
-		show = true;
-		isPositioned = false;
-		void positionMenu(event, data);
-	}
-
-	async function positionMenu(event: MouseEvent, data?: unknown): Promise<void> {
-		await tick();
-		if (!contextMenu || !show) return;
-
-		const { clientX, clientY } = event;
-		const maxLeft =
-			window.innerWidth - contextMenu.offsetWidth - viewportPadding;
-		const maxTop =
-			window.innerHeight - contextMenu.offsetHeight - viewportPadding;
-
-		left = Math.min(Math.max(viewportPadding, clientX), maxLeft);
-		top = Math.min(Math.max(viewportPadding, clientY), maxTop);
-
-		requestAnimationFrame(() => {
-			if (!contextMenu || !show || closeTimer !== null) return;
-			isPositioned = true;
-			contextMenu.focus();
-
-			if (closeOnScroll) {
-				window.addEventListener('scroll', close, { passive: true });
-			}
-
-			onopen?.(event, data, top, left);
-		});
+		pendingOpen = { event, data };
+		floating.open();
 	}
 
 	export function close(): void {
-		if (!show || closeTimer !== null) return;
+		closeContext(true);
+	}
 
-		isPositioned = false;
-		closeTimer = setTimeout(() => {
-			closeTimer = null;
-			show = false;
-			contextData = null;
-		}, transitionDuration);
-
-		if (closeOnScroll) {
-			window.removeEventListener('scroll', close);
-		}
-
+	function closeContext(restoreFocus: boolean): void {
+		if (!floating.isOpen) return;
+		floating.close();
+		pendingOpen = null;
 		onclose?.();
+
+		const elementToRestore = previousActiveElement;
+		previousActiveElement = null;
+		if (restoreFocus && elementToRestore?.isConnected) {
+			requestAnimationFrame(() => {
+				if (!floating.isOpen) elementToRestore.focus({ preventScroll: true });
+			});
+		}
 	}
 
 	function handleClick(event: Event): void {
 		if (closeOnClick) {
 			const target = event.target as HTMLElement;
 			if (target.closest(itemSelector)) {
-				close();
+				closeContext(true);
 			}
 		}
 	}
@@ -124,7 +127,7 @@
 		switch (event.key) {
 			case 'Escape':
 				event.preventDefault();
-				close();
+				closeContext(true);
 				break;
 			case 'ArrowDown':
 				event.preventDefault();
@@ -134,14 +137,28 @@
 				event.preventDefault();
 				focusNextItem(-1);
 				break;
+			case 'Home':
+			case 'End':
+				event.preventDefault();
+				focusBoundaryItem(event.key === 'Home' ? 'first' : 'last');
+				break;
+			case 'Tab':
+				closeContext(true);
+				break;
 		}
 	}
 
-	function focusNextItem(direction: number): void {
-		if (!contextMenu) return;
+	function getItems(): HTMLElement[] {
+		if (!contextMenu) return [];
+		return Array.from(
+			contextMenu.querySelectorAll<HTMLElement>(itemSelector)
+		).filter((item) => item.getAttribute('aria-disabled') !== 'true');
+	}
 
-		const items = contextMenu.querySelectorAll(itemSelector);
-		const currentIndex = Array.from(items).findIndex(
+	function focusNextItem(direction: number): void {
+		const items = getItems();
+		if (!items.length) return;
+		const currentIndex = items.findIndex(
 			(item) => item === document.activeElement
 		);
 
@@ -149,41 +166,72 @@
 		if (nextIndex < 0) nextIndex = items.length - 1;
 		if (nextIndex >= items.length) nextIndex = 0;
 
-		const nextItem = items[nextIndex] as HTMLElement;
-		nextItem?.focus();
+		items[nextIndex]?.focus();
+	}
+
+	function focusBoundaryItem(boundary: 'first' | 'last'): void {
+		const items = getItems();
+		items[boundary === 'first' ? 0 : items.length - 1]?.focus();
 	}
 
 	function handleClickOutside(event: Event): void {
-		if (show && contextMenu && !contextMenu.contains(event.target as Node)) {
-			close();
+		if (
+			floating.isOpen &&
+			contextMenu &&
+			!contextMenu.contains(event.target as Node)
+		) {
+			closeContext(false);
 		}
 	}
 
+	function handleScroll(): void {
+		closeContext(false);
+	}
+
 	$effect(() => {
-		if (!show) return;
+		if (
+			!floating.isOpen ||
+			!floating.hasPosition ||
+			!pendingOpen ||
+			!contextMenu
+		)
+			return;
+		const { event, data } = pendingOpen;
+		pendingOpen = null;
+		contextMenu.focus();
+		onopen?.(event, data, floating.position.top, floating.position.left);
+	});
+
+	$effect(() => {
+		if (!floating.isOpen) return;
 
 		document.addEventListener('click', handleClickOutside, true);
 		document.addEventListener('contextmenu', handleClickOutside, true);
+		if (closeOnScroll) {
+			window.addEventListener('scroll', handleScroll, {
+				capture: true,
+				passive: true
+			});
+		}
 
 		return () => {
-			clearCloseTimer();
 			document.removeEventListener('click', handleClickOutside, true);
 			document.removeEventListener('contextmenu', handleClickOutside, true);
 			if (closeOnScroll) {
-				window.removeEventListener('scroll', close);
+				window.removeEventListener('scroll', handleScroll, true);
 			}
 		};
 	});
+
+	$effect(() => () => floating.close());
 </script>
 
-{#if show}
+{#if floating.isOpen}
 	<div
 		bind:this={contextMenu}
 		use:portal
 		class={contextClasses}
-		style:top={contextStyle.top}
-		style:left={contextStyle.left}
-		style:max-height={contextStyle.maxHeight}
+		style={floating.styleString}
 		tabindex="-1"
 		role="menu"
 		aria-label={ariaLabel || 'Context menu'}
@@ -212,14 +260,9 @@
 		max-width: calc(var(--lumi-space-5xl) * 3 + var(--lumi-space-xl));
 		box-shadow: var(--lumi-floating-surface-shadow);
 		outline: none;
-		opacity: 0;
 		transform-origin: top left;
 		display: flex;
 		flex-direction: column;
-	}
-
-	.lumi-context--visible {
-		opacity: 1;
 	}
 
 	.lumi-context__content {

@@ -1,4 +1,4 @@
-import { autoUpdate, computePosition, flip, offset as floatingOffset, shift, size } from '@floating-ui/dom';
+import { arrow as floatingArrow, autoUpdate, computePosition, flip, offset as floatingOffset, shift, size } from '@floating-ui/dom';
 export function createFloating(triggerElement, floatingElement, options = {}) {
     const optionsGetter = typeof options === 'function' ? options : () => options;
     const resolvedOptions = $derived.by(() => {
@@ -16,6 +16,7 @@ export function createFloating(triggerElement, floatingElement, options = {}) {
     });
     let isOpen = $state(false);
     let position = $state({ top: 0, left: 0 });
+    let resolvedPlacement = $state('bottom-start');
     let hasPosition = $state(false);
     let updateToken = 0;
     const floatingStyles = $derived.by(() => {
@@ -44,7 +45,7 @@ export function createFloating(triggerElement, floatingElement, options = {}) {
         const floating = floatingElement();
         if (!trigger || !floating || !isOpen)
             return;
-        const { offset, placement, matchWidth, maxHeight, viewportPadding, strategy } = resolvedOptions;
+        const { offset, placement, matchWidth, maxHeight, viewportPadding, strategy, arrow } = resolvedOptions;
         const token = ++updateToken;
         let floatingMaxHeight = maxHeight;
         const middleware = [
@@ -60,7 +61,10 @@ export function createFloating(triggerElement, floatingElement, options = {}) {
                 }
             }));
         }
-        const { x, y } = await computePosition(trigger, floating, {
+        if (arrow?.element) {
+            middleware.push(floatingArrow({ element: arrow.element, padding: arrow.padding }));
+        }
+        const { x, y, placement: computedPlacement, middlewareData } = await computePosition(trigger, floating, {
             placement: placement,
             strategy: strategy,
             middleware
@@ -71,8 +75,11 @@ export function createFloating(triggerElement, floatingElement, options = {}) {
             top: y,
             left: x,
             width: matchWidth ? trigger.getBoundingClientRect().width : undefined,
-            maxHeight: floatingMaxHeight
+            maxHeight: floatingMaxHeight,
+            arrowX: middlewareData.arrow?.x,
+            arrowY: middlewareData.arrow?.y
         };
+        resolvedPlacement = computedPlacement;
         hasPosition = true;
     }
     function open() {
@@ -116,6 +123,9 @@ export function createFloating(triggerElement, floatingElement, options = {}) {
         },
         get position() {
             return position;
+        },
+        get resolvedPlacement() {
+            return resolvedPlacement;
         },
         get floatingStyles() {
             return floatingStyles;

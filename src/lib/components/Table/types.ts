@@ -6,17 +6,6 @@ export interface TableRow {
 	[key: string]: unknown;
 }
 
-export interface TableColumn {
-	/** Column identifier — must match a key in TableRow */
-	key: string;
-	/** Display label for column header */
-	label: string;
-	/** Whether this column supports sorting */
-	sortable?: boolean;
-	/** CSS width value (e.g. '200px', '30%') */
-	width?: string;
-}
-
 export interface TableProps {
 	/** Table column sizing strategy */
 	layout?: 'auto' | 'fixed';
@@ -59,8 +48,8 @@ export interface TableProps {
 	totalItems?: number;
 	/** Show loading state */
 	loading?: boolean;
-	/** Enable column sorting */
-	sortable?: boolean;
+	/** Stable row identity when rows do not expose id or key */
+	rowKey?: (row: TableRow) => string | number;
 	/** Currently selected rows (bindable) */
 	selected?: TableRow[];
 	/** Additional CSS class */
@@ -77,35 +66,4 @@ export interface TableProps {
 	'onrow-select'?: (row: TableRow, selected: boolean) => void;
 	onsearch?: (query: string) => void;
 	'onpage-change'?: (page: number) => void;
-	onsort?: (column: string, direction: 'asc' | 'desc' | null) => void;
-}
-
-export interface TrProps {
-	data?: TableRow;
-	selectable?: boolean;
-	index?: number;
-}
-
-export interface ThProps {
-	sortKey?: string;
-	sortable?: boolean;
-	width?: string;
-}
-
-export interface TdProps {
-	data?: unknown;
-}
-
-export interface TableContext {
-	compact: boolean;
-	stripe: boolean;
-	hover: boolean;
-	selectable: boolean;
-	sortable: boolean;
-	getSelectedItems: () => TableRow[];
-	getSortColumn: () => string | null;
-	getSortDirection: () => 'asc' | 'desc' | null;
-	handleRowSelect: (row: TableRow, selected: boolean) => void;
-	handleSort: (column: string) => void;
-	isRowSelected: (row: TableRow) => boolean;
 }

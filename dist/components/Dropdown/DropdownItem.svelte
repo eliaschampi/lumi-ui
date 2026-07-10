@@ -2,19 +2,10 @@
 	import type { Snippet } from 'svelte';
 	import { getContext } from 'svelte';
 	import Icon from '../Icon/Icon.svelte';
+	import type { DropdownItemProps } from './types';
 
-	import type { LumiColor } from '../config';
-
-	interface Props {
+	interface Props extends DropdownItemProps {
 		children?: Snippet;
-		icon?: string;
-		href?: string;
-		color?: LumiColor;
-		disabled?: boolean;
-		submit?: boolean;
-		selected?: boolean;
-		class?: string;
-		onclick?: () => void;
 	}
 
 	const {
@@ -30,6 +21,7 @@
 	}: Props = $props();
 
 	const closeDropdown = getContext<() => void>('dropdownClose');
+	const submitDropdown = getContext<() => void>('dropdownSubmit');
 
 	const itemClasses = $derived.by(() =>
 		[
@@ -48,10 +40,28 @@
 			: undefined
 	);
 
-	function handleClick(): void {
-		if (disabled) return;
+	function handleClick(event: MouseEvent): void {
+		if (disabled) {
+			event.preventDefault();
+			event.stopPropagation();
+			return;
+		}
 		closeDropdown?.();
-		onclick?.();
+		onclick?.(event);
+		if (
+			submit &&
+			event.currentTarget instanceof HTMLButtonElement &&
+			!event.defaultPrevented
+		) {
+			event.preventDefault();
+			submitDropdown?.();
+		}
+	}
+
+	function handleLinkKeydown(event: KeyboardEvent): void {
+		if (event.key !== ' ') return;
+		event.preventDefault();
+		if (!disabled) (event.currentTarget as HTMLAnchorElement).click();
 	}
 </script>
 
@@ -62,14 +72,10 @@
 		style={colorStyle}
 		role="menuitem"
 		aria-current={selected ? 'true' : undefined}
-		tabindex={disabled ? -1 : 0}
+		aria-disabled={disabled || undefined}
+		tabindex="-1"
 		onclick={handleClick}
-		onkeydown={(e) => {
-			if (e.key === 'Enter' || e.key === ' ') {
-				e.preventDefault();
-				handleClick();
-			}
-		}}
+		onkeydown={handleLinkKeydown}
 	>
 		{#if icon}
 			<div class="lumi-dropdown-item__icon">
@@ -86,18 +92,14 @@
 {:else}
 	<button
 		type={submit ? 'submit' : 'button'}
+		{disabled}
 		class={itemClasses}
 		style={colorStyle}
 		role="menuitem"
 		aria-current={selected ? 'true' : undefined}
-		tabindex={disabled ? -1 : 0}
+		aria-disabled={disabled || undefined}
+		tabindex="-1"
 		onclick={handleClick}
-		onkeydown={(e) => {
-			if (e.key === 'Enter' || e.key === ' ') {
-				e.preventDefault();
-				handleClick();
-			}
-		}}
 	>
 		{#if icon}
 			<div class="lumi-dropdown-item__icon">
@@ -115,8 +117,16 @@
 
 <style>
 	.lumi-dropdown-item {
-		--dropdown-item-hover-bg: color-mix(in srgb, var(--lumi-color-primary) 4%, transparent);
-		--dropdown-item-focus-ring: color-mix(in srgb, var(--lumi-color-primary) 20%, transparent);
+		--dropdown-item-hover-bg: color-mix(
+			in srgb,
+			var(--lumi-color-primary) 4%,
+			transparent
+		);
+		--dropdown-item-focus-ring: color-mix(
+			in srgb,
+			var(--lumi-color-primary) 20%,
+			transparent
+		);
 		--dropdown-item-lift: calc(var(--lumi-space-2xs) * -0.25);
 		width: 100%;
 		padding: var(--lumi-space-sm) var(--lumi-space-md);
@@ -149,7 +159,8 @@
 	.lumi-dropdown-item:focus-visible {
 		outline: none;
 		background: var(--dropdown-item-hover-bg);
-		box-shadow: 0 0 0 var(--lumi-border-width-thick) var(--dropdown-item-focus-ring);
+		box-shadow: 0 0 0 var(--lumi-border-width-thick)
+			var(--dropdown-item-focus-ring);
 	}
 
 	.lumi-dropdown-item:active:not(.lumi-dropdown-item--disabled) {

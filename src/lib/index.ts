@@ -21,6 +21,7 @@ export { Dialog } from './components/Dialog';
 export type {
 	DropdownPlacement,
 	DropdownPosition,
+	DropdownItemProps,
 	DropdownProps,
 	DropdownSize,
 	DropdownTrigger
@@ -64,13 +65,7 @@ export type {
 	SidebarProps
 } from './components/Sidebar';
 export { Sidebar, SidebarHeader, SidebarItem } from './components/Sidebar';
-export type {
-	TableProps,
-	TableRow,
-	TdProps,
-	ThProps,
-	TrProps
-} from './components/Table';
+export type { TableProps, TableRow } from './components/Table';
 export { Table } from './components/Table';
 export type {
 	Tab,

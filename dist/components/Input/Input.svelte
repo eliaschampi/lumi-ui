@@ -46,14 +46,15 @@
 	let internalError = $state('');
 	let inputElement: HTMLInputElement | undefined = $state();
 
-	const inputId = `lumi-input-${crypto?.randomUUID?.().slice(0, 8) ?? Math.random().toString(36).slice(2, 10)}`;
+	const instanceId = $props.id();
+	const inputId = `lumi-input-${instanceId}`;
 	const msgId = `${inputId}-msg`;
 
 	// ── Derived state ──────────────────────────
 	const inputState = $derived.by(() => {
-		if (success) return 'success';
 		if (danger || internalError) return 'danger';
 		if (warning) return 'warning';
+		if (success) return 'success';
 		return 'default';
 	});
 
@@ -61,18 +62,29 @@
 	const activeColor = $derived(hasState ? inputState : color);
 
 	const message = $derived.by(() => {
-		if (success && successText) return successText;
-		if (danger && dangerText) return dangerText;
-		if (warning && warningText) return warningText;
-		if (internalError) return internalError;
-		return '';
+		switch (inputState) {
+			case 'success':
+				return successText;
+			case 'danger':
+				return danger ? dangerText || internalError : internalError;
+			case 'warning':
+				return warningText;
+			default:
+				return '';
+		}
 	});
 
 	const validationIcon = $derived.by(() => {
-		if (success) return valIconSuccess;
-		if (danger || internalError) return valIconDanger;
-		if (warning) return valIconWarning;
-		return '';
+		switch (inputState) {
+			case 'success':
+				return valIconSuccess;
+			case 'danger':
+				return valIconDanger;
+			case 'warning':
+				return valIconWarning;
+			default:
+				return '';
+		}
 	});
 
 	const hasPrefix = $derived(!!(icon && !iconAfter));
@@ -88,6 +100,13 @@
 	function handleActionClick(event: MouseEvent): void {
 		inputElement?.focus();
 		onActionClick?.(event);
+	}
+
+	function handleInput(event: Event): void {
+		if (internalError && inputElement) {
+			internalError = inputElement.validity.valid ? '' : inputElement.validationMessage;
+		}
+		oninput?.(event);
 	}
 
 	export function validate(): boolean {
@@ -111,9 +130,6 @@
 <div
 	class="lumi-input-container lumi-input-container--{size} {className}"
 	class:lumi-input-container--has-state={hasState}
-	class:lumi-input-container--success={inputState === 'success'}
-	class:lumi-input-container--danger={inputState === 'danger'}
-	class:lumi-input-container--warning={inputState === 'warning'}
 	class:lumi-input-container--disabled={disabled}
 	style:--input-color="var(--lumi-color-{activeColor})"
 >
@@ -130,7 +146,7 @@
 				class="lumi-input__icon lumi-input__icon--before"
 				class:lumi-input__icon--no-border={iconNoBorder}
 				aria-label={iconLabel || 'Input icon'}
-				tabindex="-1"
+				tabindex={onIconClick ? undefined : -1}
 				onclick={handleIconClick}
 			>
 				<Icon {icon} {size} />
@@ -151,15 +167,13 @@
 			{readonly}
 			{required}
 			placeholder={labelPlaceholder || placeholder}
-			aria-label={ariaLabel || label || placeholder || undefined}
+			aria-label={ariaLabel || label || labelPlaceholder || placeholder || undefined}
 			aria-invalid={inputState === 'danger' || undefined}
 			aria-describedby={hasFooter ? msgId : undefined}
 			class="lumi-input"
 			class:lumi-input--has-prefix={hasPrefix}
 			class:lumi-input--has-suffix={hasSuffix}
-			oninput={(event) => {
-				oninput?.(event);
-			}}
+			oninput={handleInput}
 			{onfocus}
 			{onblur}
 		/>
@@ -177,7 +191,6 @@
 						type="button"
 						class="lumi-input__action lumi-input__suffix-item"
 						aria-label={actionLabel || 'Input action'}
-						tabindex="-1"
 						onclick={handleActionClick}
 					>
 						<Icon icon={actionIcon} {size} />
@@ -190,7 +203,7 @@
 						class="lumi-input__icon lumi-input__icon--after lumi-input__suffix-item"
 						class:lumi-input__icon--no-border={iconNoBorder}
 						aria-label={iconLabel || 'Input icon'}
-						tabindex="-1"
+						tabindex={onIconClick ? undefined : -1}
 						onclick={handleIconClick}
 					>
 						<Icon {icon} {size} />
@@ -235,7 +248,7 @@
 	}
 
 	.lumi-input-container--disabled {
-		opacity: 0.5;
+		opacity: var(--lumi-opacity-disabled);
 		pointer-events: none;
 	}
 
@@ -293,7 +306,6 @@
 		font-family: inherit;
 		font-size: var(--lumi-font-size-base);
 		line-height: var(--lumi-line-height-normal);
-		padding: var(--lumi-space-sm);
 	}
 
 	.lumi-input--has-prefix {

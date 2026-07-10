@@ -1,27 +1,13 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { setContext } from 'svelte';
+	import { setContext, tick } from 'svelte';
 	import { scale } from 'svelte/transition';
 	import { portal } from '../../actions/portal';
 	import { createFloating } from '../../utils/floating.svelte';
 	import { LUMI_CONFIG } from '../config';
-	import type { DropdownPlacement, DropdownTrigger } from './types';
+	import type { DropdownProps } from './types';
 
-	interface Props {
-		open?: boolean;
-		placement?: DropdownPlacement;
-		position?: DropdownPlacement; // Added for backwards compatibility
-		size?: 'sm' | 'md';
-		disabled?: boolean;
-		trigger?: DropdownTrigger;
-		closeOnClickOutside?: boolean;
-		maxHeight?: number;
-		offset?: number;
-		viewportPadding?: number;
-		'aria-label'?: string;
-		class?: string;
-		onopen?: () => void;
-		onclose?: () => void;
+	interface Props extends DropdownProps {
 		children?: Snippet;
 		content?: Snippet;
 		triggerContent?: Snippet;
@@ -35,9 +21,9 @@
 		disabled = false,
 		trigger = 'click',
 		closeOnClickOutside = true,
-		maxHeight = 320,
-		offset = 8,
-		viewportPadding = 12,
+		maxHeight = LUMI_CONFIG.floating.menu.maxHeight,
+		offset = LUMI_CONFIG.floating.menu.offset,
+		viewportPadding = LUMI_CONFIG.floating.menu.viewportPadding,
 		'aria-label': ariaLabel = '',
 		class: className = '',
 		onopen,
@@ -51,6 +37,7 @@
 	const resolvedPlacement = $derived(placement ?? position ?? 'bottom-start');
 
 	let dropdownRef: HTMLDivElement | undefined = $state();
+	let triggerRef: HTMLDivElement | undefined = $state();
 	let menuRef: HTMLDivElement | undefined = $state();
 
 	const instanceId = $props.id();
@@ -59,7 +46,7 @@
 	const transitionDuration = LUMI_CONFIG.transitions.fast;
 
 	const floating = createFloating(
-		() => dropdownRef,
+		() => triggerRef,
 		() => menuRef,
 		() => ({
 			placement: resolvedPlacement,
@@ -73,15 +60,24 @@
 
 	// Sync external `open` prop with the floating controller.
 	$effect(() => {
+		if (disabled) {
+			if (open || floating.isOpen) closeDropdown();
+			return;
+		}
 		if (open && !floating.isOpen) openDropdown();
 		else if (!open && floating.isOpen) closeDropdown();
 	});
 
 	// Provide close function to child components (DropdownItem).
-	setContext('dropdownClose', closeDropdown);
+	setContext('dropdownClose', () => closeDropdown(true));
+	setContext('dropdownSubmit', () =>
+		dropdownRef?.closest('form')?.requestSubmit()
+	);
 
 	const dropdownClasses = $derived.by(() =>
-		['lumi-dropdown', open && 'lumi-dropdown--open', className].filter(Boolean).join(' ')
+		['lumi-dropdown', floating.isOpen && 'lumi-dropdown--open', className]
+			.filter(Boolean)
+			.join(' ')
 	);
 
 	const styleVars = `--dropdown-transition-duration: ${transitionDuration}ms;`;
@@ -89,31 +85,41 @@
 	// Render rule (no double-render of `children`):
 	//   trigger  -> `triggerContent`, or `children` only when no `content` is given.
 	//   menu     -> `content`, or `children` only when `triggerContent` is given.
-	const triggerSnippet = $derived(triggerContent ?? (content ? undefined : children));
-	const menuSnippet = $derived(content ?? (triggerContent ? children : undefined));
+	const triggerSnippet = $derived(
+		triggerContent ?? (content ? undefined : children)
+	);
+	const menuSnippet = $derived(
+		content ?? (triggerContent ? children : undefined)
+	);
 
-	function openDropdown(): void {
+	async function openDropdown(focusTarget?: 'first' | 'last'): Promise<void> {
 		if (disabled || floating.isOpen) return;
 		floating.open();
 		open = true;
 		onopen?.();
+		if (focusTarget) {
+			await tick();
+			focusMenuItem(focusTarget);
+		}
 	}
 
-	function closeDropdown(): void {
-		if (!floating.isOpen) return;
+	function closeDropdown(restoreFocus = false): void {
+		const wasOpen = floating.isOpen;
 		floating.close();
 		open = false;
-		onclose?.();
+		if (restoreFocus) triggerRef?.focus();
+		if (wasOpen) onclose?.();
 	}
 
 	function toggle(): void {
 		if (disabled) return;
-		if (open) closeDropdown();
+		if (floating.isOpen) closeDropdown();
 		else openDropdown();
 	}
 
 	function handleClickOutside(event: PointerEvent): void {
-		if (!closeOnClickOutside || !open || !dropdownRef || !menuRef) return;
+		if (!closeOnClickOutside || !floating.isOpen || !dropdownRef || !menuRef)
+			return;
 		const target = event.target as Element;
 		if (!dropdownRef.contains(target) && !menuRef.contains(target)) {
 			closeDropdown();
@@ -121,7 +127,10 @@
 	}
 
 	function handleEscape(event: KeyboardEvent): void {
-		if (event.key === 'Escape' && open) closeDropdown();
+		if (event.key === 'Escape' && floating.isOpen) {
+			event.preventDefault();
+			closeDropdown(true);
+		}
 	}
 
 	function handleTriggerClick(event: MouseEvent): void {
@@ -134,9 +143,63 @@
 	function handleTriggerKeydown(event: KeyboardEvent): void {
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
-			toggle();
+			if (floating.isOpen) closeDropdown(true);
+			else void openDropdown('first');
+		} else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+			event.preventDefault();
+			void openDropdown(event.key === 'ArrowDown' ? 'first' : 'last');
 		} else if (event.key === 'Escape') {
-			closeDropdown();
+			closeDropdown(true);
+		}
+	}
+
+	function getMenuItems(): HTMLElement[] {
+		if (!menuRef) return [];
+		return Array.from(
+			menuRef.querySelectorAll<HTMLElement>(
+				'[role="menuitem"]:not([aria-disabled="true"])'
+			)
+		);
+	}
+
+	function focusMenuItem(target: 'first' | 'last' | 'next' | 'previous'): void {
+		const items = getMenuItems();
+		if (!items.length) {
+			menuRef?.focus();
+			return;
+		}
+
+		const currentIndex = items.indexOf(document.activeElement as HTMLElement);
+		const nextIndex =
+			target === 'first'
+				? 0
+				: target === 'last'
+					? items.length - 1
+					: target === 'next'
+						? (currentIndex + 1 + items.length) % items.length
+						: (currentIndex - 1 + items.length) % items.length;
+		items[nextIndex].focus();
+	}
+
+	function handleMenuKeydown(event: KeyboardEvent): void {
+		switch (event.key) {
+			case 'ArrowDown':
+			case 'ArrowUp':
+				event.preventDefault();
+				focusMenuItem(event.key === 'ArrowDown' ? 'next' : 'previous');
+				break;
+			case 'Home':
+			case 'End':
+				event.preventDefault();
+				focusMenuItem(event.key === 'Home' ? 'first' : 'last');
+				break;
+			case 'Escape':
+				event.preventDefault();
+				closeDropdown(true);
+				break;
+			case 'Tab':
+				closeDropdown(true);
+				break;
 		}
 	}
 
@@ -186,7 +249,7 @@
 	// their feature is enabled. A change to `closeOnClickOutside` after mount
 	// is now honored on the next open cycle.
 	$effect(() => {
-		if (!open) return;
+		if (!floating.isOpen) return;
 		if (closeOnClickOutside) {
 			document.addEventListener('pointerdown', handleClickOutside, true);
 		}
@@ -215,11 +278,12 @@
 	role="presentation"
 >
 	<div
+		bind:this={triggerRef}
 		id={triggerId}
 		class="lumi-dropdown__trigger"
-		aria-expanded={open}
+		aria-expanded={floating.isOpen}
 		aria-haspopup="menu"
-		aria-controls={open ? menuId : undefined}
+		aria-controls={floating.isOpen ? menuId : undefined}
 		aria-disabled={disabled}
 		aria-label={ariaLabel || undefined}
 		role="button"
@@ -232,7 +296,7 @@
 		{/if}
 	</div>
 
-	{#if open}
+	{#if floating.isOpen}
 		<div
 			bind:this={menuRef}
 			use:portal
@@ -244,6 +308,7 @@
 			style={floating.styleString}
 			onmouseenter={handleMenuEnter}
 			onmouseleave={handleMenuLeave}
+			onkeydown={handleMenuKeydown}
 			transition:scale={{ duration: transitionDuration, start: 0.96 }}
 		>
 			<div class="lumi-dropdown__content">
@@ -278,7 +343,8 @@
 
 	.lumi-dropdown__menu {
 		background: var(--lumi-floating-surface-bg);
-		border: var(--lumi-border-width-thin) solid var(--lumi-floating-surface-border);
+		border: var(--lumi-border-width-thin) solid
+			var(--lumi-floating-surface-border);
 		border-radius: var(--lumi-radius-2xl);
 		box-shadow: var(--lumi-floating-surface-shadow);
 		padding: var(--lumi-space-xs);
@@ -312,7 +378,9 @@
 	}
 
 	.lumi-dropdown__menu--sm {
-		min-width: calc(var(--lumi-space-4xl) + var(--lumi-space-xl) + var(--lumi-space-sm));
+		min-width: calc(
+			var(--lumi-space-4xl) + var(--lumi-space-xl) + var(--lumi-space-sm)
+		);
 	}
 
 	.lumi-dropdown__menu--md {

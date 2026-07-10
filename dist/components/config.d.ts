@@ -48,6 +48,33 @@ export declare const LUMI_CONFIG: {
         readonly slower: 500;
     };
     /**
+     * Semantic geometry for portaled floating components.
+     * Values are consumed by Floating UI and therefore remain numeric.
+     */
+    readonly floating: {
+        readonly menu: {
+            readonly offset: 8;
+            readonly maxHeight: 320;
+            readonly viewportPadding: 12;
+        };
+        readonly select: {
+            readonly offset: 4;
+            readonly maxHeight: 250;
+            readonly viewportPadding: 16;
+        };
+        readonly context: {
+            readonly offset: 0;
+            readonly maxHeight: 300;
+            readonly viewportPadding: 12;
+        };
+        readonly tooltip: {
+            readonly offset: 10;
+            readonly maxHeight: 300;
+            readonly viewportPadding: 8;
+            readonly arrowPadding: 12;
+        };
+    };
+    /**
      * Default component props
      */
     readonly defaults: {

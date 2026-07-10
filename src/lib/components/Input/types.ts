@@ -46,7 +46,7 @@ export interface InputProps {
 	/** Label text */
 	label?: string;
 
-	/** Placeholder label (floating label) */
+	/** Placeholder used in place of the visual label */
 	labelPlaceholder?: string;
 
 	/** Placeholder text */

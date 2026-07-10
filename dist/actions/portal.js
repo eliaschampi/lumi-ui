@@ -5,6 +5,8 @@ import { tick } from 'svelte';
  */
 export function portal(node, target = 'body') {
     let activeTarget = null;
+    let updateVersion = 0;
+    let destroyed = false;
     async function resolveTarget(nextTarget) {
         const resolved = typeof nextTarget === 'string'
             ? document.querySelector(nextTarget)
@@ -17,14 +19,20 @@ export function portal(node, target = 'body') {
             : nextTarget;
     }
     async function update(nextTarget) {
+        const version = ++updateVersion;
         const resolved = await resolveTarget(nextTarget);
-        if (!resolved || resolved === activeTarget)
+        if (destroyed ||
+            version !== updateVersion ||
+            !resolved ||
+            resolved === activeTarget)
             return;
         activeTarget = resolved;
         resolved.appendChild(node);
         node.hidden = false;
     }
     function destroy() {
+        destroyed = true;
+        updateVersion += 1;
         node.parentNode?.removeChild(node);
         activeTarget = null;
     }
