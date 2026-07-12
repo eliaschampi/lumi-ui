@@ -1,1 +1,0 @@
-{"version":3,"file":"PageSidebar.svelte.d.ts","sourceRoot":"","sources":["../../../src/lib/components/PageSidebar/PageSidebar.svelte.ts"],"names":[],"mappings":"AAKA,OAAO,KAAK,EAAE,gBAAgB,EAAE,MAAM,SAAS,CAAC;AA6DhD,QAAA,MAAM,WAAW,gEAAwC,CAAC;AAC1D,KAAK,WAAW,GAAG,UAAU,CAAC,OAAO,WAAW,CAAC,CAAC;AAClD,eAAe,WAAW,CAAC"}
