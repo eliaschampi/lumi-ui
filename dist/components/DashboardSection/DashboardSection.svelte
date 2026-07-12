@@ -11,21 +11,32 @@
 		spaced = true,
 		children,
 		actions,
-		footer,
+		footer: footerContent,
 		class: className = ''
 	}: DashboardSectionProps = $props();
 
-	const classes = $derived(['lumi-dashboard-section', className].filter(Boolean).join(' '));
+	const classes = $derived(
+		['lumi-dashboard-section', className].filter(Boolean).join(' ')
+	);
 </script>
 
-<Card class={classes} {spaced}>
+<Card class={classes} {spaced} footer={footerContent}>
 	<div
 		class="lumi-flex lumi-flex--gap-sm lumi-flex--wrap lumi-justify--between lumi-align-items--start"
 	>
-		<Title {title} {subtitle} {icon} size="md" color={titleColor} iconColor="primary" />
+		<Title
+			{title}
+			{subtitle}
+			{icon}
+			size="md"
+			color={titleColor}
+			iconColor="primary"
+		/>
 
 		{#if actions}
-			<div class="lumi-flex lumi-flex--gap-sm lumi-flex--wrap lumi-justify--end">
+			<div
+				class="lumi-flex lumi-flex--gap-sm lumi-flex--wrap lumi-justify--end"
+			>
 				{@render actions()}
 			</div>
 		{/if}
@@ -34,17 +45,4 @@
 	{#if children}
 		{@render children()}
 	{/if}
-
-	{#if footer}
-		<div class="lumi-dashboard-section__footer">
-			{@render footer()}
-		</div>
-	{/if}
 </Card>
-
-<style>
-	.lumi-dashboard-section__footer {
-		padding-top: var(--lumi-space-md);
-		border-top: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
-	}
-</style>

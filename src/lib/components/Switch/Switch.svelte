@@ -90,7 +90,7 @@
 		--switch-thumb: calc(var(--switch-track-h) - var(--switch-inset) * 2);
 		--switch-travel: calc(var(--switch-track-w) - var(--switch-track-h));
 		--switch-stretch: 4px;
-		--switch-color: var(--lumi-color-primary);
+		--switch-color: var(--lumi-color-primary-solid);
 		--switch-thumb-color: var(--lumi-color-white);
 		--switch-label-size: var(--lumi-font-size-sm);
 
@@ -223,22 +223,22 @@
 
 	/* ── Color variants ───────────────────────── */
 	.lumi-switch--primary {
-		--switch-color: var(--lumi-color-primary);
+		--switch-color: var(--lumi-color-primary-solid);
 	}
 	.lumi-switch--secondary {
-		--switch-color: var(--lumi-color-secondary);
+		--switch-color: var(--lumi-color-secondary-solid);
 	}
 	.lumi-switch--success {
-		--switch-color: var(--lumi-color-success);
+		--switch-color: var(--lumi-color-success-solid);
 	}
 	.lumi-switch--warning {
-		--switch-color: var(--lumi-color-warning);
+		--switch-color: var(--lumi-color-warning-solid);
 	}
 	.lumi-switch--danger {
-		--switch-color: var(--lumi-color-danger);
+		--switch-color: var(--lumi-color-danger-solid);
 	}
 	.lumi-switch--info {
-		--switch-color: var(--lumi-color-info);
+		--switch-color: var(--lumi-color-info-solid);
 	}
 
 	/* ── Disabled state ───────────────────────── */

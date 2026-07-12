@@ -10,8 +10,8 @@
 		icon,
 		color = 'primary',
 		href,
-		hoverable = true,
-		subtitle = 'Total registrados',
+		hoverable,
+		subtitle = '',
 		class: className = ''
 	}: StatCardProps = $props();
 
@@ -20,31 +20,23 @@
 	});
 </script>
 
-{#if href}
-	<a {href} class="lumi-block lumi-text-decoration--none">
-		<Card {hoverable} class={cardClasses}>
-			<div class="lumi-stat-card__container">
-				<div class="lumi-stat-card__header">
-					<Title {title} size="sm" {color} />
-					<IconBadge {icon} {color} size="md" />
-				</div>
-				<div class="lumi-stat-card__value">{value}</div>
-				<div class="lumi-stat-card__subtitle">{subtitle}</div>
-			</div>
-		</Card>
-	</a>
-{:else}
-	<Card {hoverable} class={cardClasses}>
-		<div class="lumi-stat-card__container">
-			<div class="lumi-stat-card__header">
-				<Title {title} size="sm" {color} />
-				<IconBadge {icon} {color} size="md" />
-			</div>
-			<div class="lumi-stat-card__value">{value}</div>
-			<div class="lumi-stat-card__subtitle">{subtitle}</div>
+<Card
+	{href}
+	hoverable={hoverable ?? Boolean(href)}
+	class={cardClasses}
+	aria-label={href ? title : undefined}
+>
+	<div class="lumi-stat-card__container">
+		<div class="lumi-stat-card__header">
+			<Title {title} size="sm" {color} />
+			<IconBadge {icon} {color} size="md" />
 		</div>
-	</Card>
-{/if}
+		<div class="lumi-stat-card__value">{value}</div>
+		{#if subtitle}
+			<div class="lumi-stat-card__subtitle">{subtitle}</div>
+		{/if}
+	</div>
+</Card>
 
 <style>
 	.lumi-stat-card__container {

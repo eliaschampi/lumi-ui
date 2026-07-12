@@ -2,7 +2,7 @@
 /* Default theme: Lumi Calm Surface - Coedula identity (Cobalt x Olive) on warm paper */
 /*
  * Architecture: theme seeds own identity; semantic tokens own component behavior.
- *   Seeds       : neutral/canvas RGB, brand, status, white and black.
+ *   Seeds       : neutral/canvas RGB, accent and solid role colors, white and black.
  *   Surfaces    : warm neutral solids by default; transparency is reserved for overlays.
  *   Effects     : one restrained accent per layer, with neutral elevation shadows.
  *   Overrides   : product themes replace seeds, never component-level semantic tokens.
@@ -18,7 +18,10 @@
 	/* Identity: Coedula — warm paper neutrals, cobalt primary, olive secondary, magenta danger. */
 	--lumi-neutral-rgb: 34, 28, 26;
 	--lumi-canvas-rgb: 247, 243, 237;
-	--lumi-color-primary-rgb: 10, 110, 220;
+	/* Accents sit on surfaces; solids sit behind foreground content. */
+	--lumi-color-primary-solid-rgb: 10, 110, 220;
+	--lumi-color-primary-solid: rgb(var(--lumi-color-primary-solid-rgb));
+	--lumi-color-primary-rgb: var(--lumi-color-primary-solid-rgb);
 	--lumi-color-primary: rgb(var(--lumi-color-primary-rgb));
 	--lumi-color-primary-50: color-mix(
 		in srgb,
@@ -30,16 +33,26 @@
 		var(--lumi-color-primary) 45%,
 		var(--lumi-color-white)
 	);
-	--lumi-color-secondary-rgb: 104, 164, 24;
+	--lumi-color-secondary-solid-rgb: 77, 124, 15;
+	--lumi-color-secondary-solid: rgb(var(--lumi-color-secondary-solid-rgb));
+	--lumi-color-secondary-rgb: var(--lumi-color-secondary-solid-rgb);
 	--lumi-color-secondary: rgb(var(--lumi-color-secondary-rgb));
-	--lumi-color-success-rgb: 14, 148, 104;
+	--lumi-color-success-solid-rgb: 8, 122, 85;
+	--lumi-color-success-solid: rgb(var(--lumi-color-success-solid-rgb));
+	--lumi-color-success-rgb: var(--lumi-color-success-solid-rgb);
 	--lumi-color-success: rgb(var(--lumi-color-success-rgb));
-	--lumi-color-warning-rgb: 214, 124, 8;
+	--lumi-color-warning-solid-rgb: 166, 83, 0;
+	--lumi-color-warning-solid: rgb(var(--lumi-color-warning-solid-rgb));
+	--lumi-color-warning-rgb: var(--lumi-color-warning-solid-rgb);
 	--lumi-color-warning: rgb(var(--lumi-color-warning-rgb));
-	--lumi-color-danger-rgb: 196, 40, 108;
+	--lumi-color-danger-solid-rgb: 196, 40, 108;
+	--lumi-color-danger-solid: rgb(var(--lumi-color-danger-solid-rgb));
+	--lumi-color-danger-rgb: var(--lumi-color-danger-solid-rgb);
 	--lumi-color-danger: rgb(var(--lumi-color-danger-rgb));
 	/* Info: cobalt-sky — informational state, distinct from brand primary and danger */
-	--lumi-color-info-rgb: 12, 132, 196;
+	--lumi-color-info-solid-rgb: 8, 117, 173;
+	--lumi-color-info-solid: rgb(var(--lumi-color-info-solid-rgb));
+	--lumi-color-info-rgb: var(--lumi-color-info-solid-rgb);
 	--lumi-color-info: rgb(var(--lumi-color-info-rgb));
 	--lumi-color-gray-400: color-mix(
 		in srgb,
@@ -64,11 +77,11 @@
 	);
 	--lumi-color-text-inverse: var(--lumi-color-white);
 	--lumi-color-primary-foreground: var(--lumi-color-white);
-	--lumi-color-secondary-foreground: var(--lumi-color-black);
-	--lumi-color-success-foreground: var(--lumi-color-black);
-	--lumi-color-warning-foreground: var(--lumi-color-black);
+	--lumi-color-secondary-foreground: var(--lumi-color-white);
+	--lumi-color-success-foreground: var(--lumi-color-white);
+	--lumi-color-warning-foreground: var(--lumi-color-white);
 	--lumi-color-danger-foreground: var(--lumi-color-white);
-	--lumi-color-info-foreground: var(--lumi-color-black);
+	--lumi-color-info-foreground: var(--lumi-color-white);
 
 	--lumi-color-placeholder: color-mix(
 		in srgb,
@@ -142,7 +155,7 @@
 	/* --- DERIVED BORDERS / RINGS --------------------------------------------- */
 	--lumi-color-border: color-mix(
 		in srgb,
-		var(--lumi-color-text) 10.5%,
+		var(--lumi-color-text) 11%,
 		transparent
 	);
 	--lumi-color-border-strong: color-mix(
@@ -323,8 +336,12 @@
 	/* Table column sizing (layout="fixed"): prevents main/name column collapsing on narrow viewports */
 	--lumi-table-column-main-width: 48%;
 	--lumi-table-column-main-min-width: 10rem;
-	--lumi-table-column-actions-width: calc(var(--lumi-space-6xl) * 1.35);
-	--lumi-table-column-compact-width: calc(var(--lumi-space-6xl) * 1.05);
+	--lumi-table-column-actions-width: calc(
+		var(--lumi-space-6xl) + var(--lumi-space-xl)
+	);
+	--lumi-table-column-compact-width: calc(
+		var(--lumi-space-6xl) + var(--lumi-space-2xs)
+	);
 	/* Narrow screens: tighter auxiliary columns so horizontal scroll stays usable */
 	--lumi-table-column-compact-width-sm: calc(
 		var(--lumi-space-3xl) + var(--lumi-space-lg)
@@ -350,9 +367,9 @@
 	--lumi-line-height-snug: 1.375;
 	--lumi-line-height-normal: 1.5;
 	--lumi-line-height-relaxed: 1.625;
-	--lumi-letter-spacing-tight: 0;
-	--lumi-letter-spacing-wide: 0;
-	--lumi-letter-spacing-wider: 0;
+	--lumi-letter-spacing-tight: -0.01em;
+	--lumi-letter-spacing-wide: 0.01em;
+	--lumi-letter-spacing-wider: 0.04em;
 	--lumi-opacity-muted: 0.4;
 	--lumi-opacity-disabled: 0.5;
 	--lumi-opacity-hover: 0.8;
@@ -362,7 +379,7 @@
 	--lumi-font-family-mono: ui-monospace, Menlo, Monaco, Consolas, monospace;
 
 	/* ========================================================================== */
-	/* BORDER RADIUS SYSTEM                                                       */
+	/* BORDER RADIUS SYSTEM - 2px optical subgrid                                 */
 	/* ========================================================================== */
 	--lumi-radius-none: 0;
 	--lumi-radius-sm: 0.375rem;
@@ -475,7 +492,7 @@
 	--lumi-layout-floating-radius: var(--lumi-radius-2xl);
 	--lumi-layout-floating-radius-tablet: var(--lumi-radius-xl);
 	--lumi-layout-floating-radius-mobile: var(--lumi-radius-lg);
-	--lumi-layout-sidebar-min-width: 15.625rem;
+	--lumi-layout-sidebar-min-width: 15.5rem;
 	--lumi-grid-responsive-min: 17.5rem;
 	--lumi-grid-mobile-min: 12.5rem;
 	--lumi-sidebar-mobile-offset: var(--lumi-layout-shell-padding-tablet);
@@ -509,9 +526,9 @@
 	--lumi-control-height-md: var(--lumi-space-xxl);
 	--lumi-control-height-lg: var(--lumi-space-3xl);
 	--lumi-control-height-xl: var(--lumi-space-4xl);
-	--lumi-min-width-sm: 9.375rem;
+	--lumi-min-width-sm: 9.5rem;
 	--lumi-min-width-md: 12.5rem;
-	--lumi-min-width-lg: 15.625rem;
+	--lumi-min-width-lg: 15.5rem;
 	--lumi-min-width-xl: 18rem;
 	--lumi-container-width-sm: 40rem;
 	--lumi-container-width-md: 48rem;
@@ -541,6 +558,8 @@
 	--lumi-placeholder-tile-size-lg: 5.5rem;
 	--lumi-dashboard-card-grid-min: 17.5rem;
 	--lumi-dashboard-card-grid-max: 21rem;
+	--lumi-card-media-height: 12.5rem;
+	--lumi-card-media-hover-scale: 1.04;
 	--lumi-drive-file-grid-min-desktop: 10.5rem;
 	--lumi-drive-file-grid-min-tablet: 9.75rem;
 	--lumi-drive-file-grid-min-mobile: 8.5rem;
@@ -553,7 +572,6 @@
 	--lumi-drive-scope-control-min-width: 13.75rem;
 	--lumi-drive-scope-control-basis: 15rem;
 	--lumi-drive-search-control-min-width: 15rem;
-	--lumi-publication-gallery-image-height: 10.5rem;
 	--lumi-drive-content-min-height: 26.25rem;
 	--lumi-drive-loading-min-height: 13.75rem;
 	--lumi-page-sidebar-drawer-width: var(--lumi-sidebar-width-mobile);
@@ -569,11 +587,12 @@
 	--lumi-duration-base: 220ms;
 	--lumi-duration-slow: 300ms;
 	--lumi-duration-slower: 500ms;
+	--lumi-duration-shimmer: calc(var(--lumi-duration-slower) * 3);
 
 	--lumi-easing-default: cubic-bezier(0.22, 1, 0.36, 1);
 	--lumi-easing-in: cubic-bezier(0.4, 0, 1, 1);
 	--lumi-easing-out: cubic-bezier(0, 0, 0.2, 1);
-	--lumi-easing-in-out: var(--lumi-easing-default);
+	--lumi-easing-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 	--lumi-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
@@ -584,12 +603,11 @@
 	color-scheme: dark;
 
 	/* --- SEEDS ---------------------------------------------------------------- */
-	/* Identity: Coedula — warm ink, warm-white text, cobalt primary, lime secondary, pink danger. */
-	--lumi-neutral-rgb: 14, 12, 12;
-	--lumi-color-text: rgb(250, 248, 245);
+	/* Identity: light accents are tone-mapped for dark surfaces; solid roles remain invariant. */
+	--lumi-neutral-rgb: 250, 248, 245;
+	--lumi-canvas-rgb: 14, 12, 12;
 	--lumi-shadow-key-rgb: 0, 0, 0;
-	--lumi-color-primary-rgb: 59, 130, 246;
-	--lumi-color-primary: rgb(var(--lumi-color-primary-rgb));
+	--lumi-color-primary-rgb: 59, 139, 227;
 	--lumi-color-primary-50: color-mix(
 		in srgb,
 		var(--lumi-color-primary) 18%,
@@ -600,44 +618,25 @@
 		var(--lumi-color-primary) 50%,
 		var(--lumi-color-white)
 	);
-	--lumi-color-secondary-rgb: 101, 163, 13;
-	--lumi-color-secondary: rgb(var(--lumi-color-secondary-rgb));
-	--lumi-color-success-rgb: 16, 185, 129;
-	--lumi-color-success: rgb(var(--lumi-color-success-rgb));
-	--lumi-color-warning-rgb: 234, 88, 12;
-	--lumi-color-warning: rgb(var(--lumi-color-warning-rgb));
-	--lumi-color-danger-rgb: 239, 68, 68;
-	--lumi-color-danger: rgb(var(--lumi-color-danger-rgb));
-	/* Info: cobalt-sky on dark — clear informational state without warning/danger overlap */
-	--lumi-color-info-rgb: 14, 165, 233;
-	--lumi-color-info: rgb(var(--lumi-color-info-rgb));
+	--lumi-color-secondary-rgb: 104, 164, 24;
+	--lumi-color-success-rgb: 50, 164, 127;
+	--lumi-color-warning-rgb: 214, 124, 8;
+	--lumi-color-danger-rgb: 211, 94, 145;
+	/* Info remains cobalt-sky, distinct from both primary and danger. */
+	--lumi-color-info-rgb: 36, 144, 202;
 
 	--lumi-color-gray-400: color-mix(
 		in srgb,
 		var(--lumi-color-text) 60%,
 		var(--lumi-color-surface)
 	);
-	--lumi-color-white: rgb(255, 255, 255);
-	--lumi-color-black: rgb(0, 0, 0);
-
 	/* --- DERIVED RAMP / TEXT -------------------------------------------------- */
-	--lumi-color-primary-500: var(--lumi-color-primary);
 	--lumi-color-primary-600: color-mix(
 		in srgb,
 		var(--lumi-color-primary) 35%,
 		var(--lumi-color-white)
 	);
-	--lumi-color-text-muted: color-mix(
-		in srgb,
-		var(--lumi-color-text) 70%,
-		var(--lumi-color-surface)
-	);
-	--lumi-color-text-light: color-mix(
-		in srgb,
-		var(--lumi-color-text) 48%,
-		var(--lumi-color-surface)
-	);
-	--lumi-color-text-inverse: var(--lumi-color-white);
+	--lumi-color-text-inverse: var(--lumi-color-black);
 	--lumi-color-placeholder: color-mix(
 		in srgb,
 		var(--lumi-color-text-muted) 70%,
@@ -647,14 +646,6 @@
 	/* --- DERIVED BACKGROUND / LIFT ------------------------------------------- */
 	/* Elevation is neutral; brand color belongs to interaction, not every surface. */
 	--lumi-lift: var(--lumi-color-white);
-	--lumi-color-background: rgb(var(--lumi-neutral-rgb));
-	--lumi-color-background-rgb: var(--lumi-neutral-rgb);
-	--lumi-color-primary-foreground: var(--lumi-color-white);
-	--lumi-color-secondary-foreground: var(--lumi-color-white);
-	--lumi-color-success-foreground: var(--lumi-color-white);
-	--lumi-color-warning-foreground: var(--lumi-color-white);
-	--lumi-color-danger-foreground: var(--lumi-color-white);
-	--lumi-color-info-foreground: var(--lumi-color-white);
 	--lumi-color-background-secondary: color-mix(
 		in srgb,
 		var(--lumi-color-background) 97.5%,
@@ -702,33 +693,7 @@
 		var(--lumi-color-surface-raised) 98%,
 		transparent
 	);
-	--lumi-color-surface-glass: color-mix(
-		in srgb,
-		var(--lumi-color-surface) 88%,
-		transparent
-	);
-	--lumi-color-surface-glass-strong: color-mix(
-		in srgb,
-		var(--lumi-color-surface-raised) 94%,
-		transparent
-	);
-	--lumi-color-surface-card-glass: color-mix(
-		in srgb,
-		var(--lumi-color-surface-card) 94%,
-		transparent
-	);
-
 	/* --- DERIVED BORDERS / RINGS --------------------------------------------- */
-	--lumi-color-border: color-mix(
-		in srgb,
-		var(--lumi-color-text) 11%,
-		transparent
-	);
-	--lumi-color-border-strong: color-mix(
-		in srgb,
-		var(--lumi-color-text) 18%,
-		transparent
-	);
 	--lumi-color-border-light: color-mix(
 		in srgb,
 		var(--lumi-color-border) 64%,
@@ -751,11 +716,6 @@
 		var(--lumi-color-background) 96.5%,
 		var(--lumi-lift)
 	);
-	--lumi-color-control-border: color-mix(
-		in srgb,
-		var(--lumi-color-border) 80%,
-		transparent
-	);
 	--lumi-color-control-hover-fill: color-mix(
 		in srgb,
 		var(--lumi-color-background) 92.5%,
@@ -776,7 +736,6 @@
 	--lumi-color-danger-bg: rgba(var(--lumi-color-danger-rgb), 0.14);
 	--lumi-color-info-bg: rgba(var(--lumi-color-info-rgb), 0.13);
 	--lumi-color-primary-bg: rgba(var(--lumi-color-primary-rgb), 0.16);
-	--lumi-color-secondary-bg: rgba(var(--lumi-color-secondary-rgb), 0.12);
 	--lumi-color-overlay: rgba(var(--lumi-color-background-rgb), 0.82);
 
 	/* --- DERIVED GRADIENTS / FX ---------------------------------------------- */
@@ -791,13 +750,11 @@
 			var(--lumi-color-background) 0%,
 			var(--lumi-color-background-secondary) 100%
 		);
-	--lumi-app-background-accent: linear-gradient(transparent, transparent);
 	--lumi-app-pattern-line-color: color-mix(
 		in srgb,
 		var(--lumi-color-white) 4%,
 		transparent
 	);
-	--lumi-app-pattern-dot-color: transparent;
 	--lumi-dashboard-content-bg: color-mix(
 		in srgb,
 		color-mix(in srgb, var(--lumi-color-background) 96%, var(--lumi-lift)) 94%,
@@ -832,7 +789,6 @@
 			transparent 28%
 		),
 		var(--lumi-color-surface-glass-strong);
-	--lumi-floating-surface-border: var(--lumi-color-border-glass);
 	--lumi-floating-surface-shadow:
 		0 1px 2px rgba(var(--lumi-shadow-key-rgb), 0.3),
 		0 20px 44px -30px rgba(var(--lumi-shadow-key-rgb), 0.52);
@@ -858,12 +814,6 @@
 		transparent 46%
 	);
 	--lumi-sidebar-header-sheen-opacity: 0.42;
-	--lumi-gradient-subtle: linear-gradient(
-		145deg,
-		rgba(var(--lumi-color-primary-rgb), 0.012) 0%,
-		transparent 70%
-	);
-	--lumi-gradient-glass-sidebar: var(--lumi-gradient-subtle);
 	--lumi-gradient-glass-total-summary: linear-gradient(
 		145deg,
 		rgba(var(--lumi-color-primary-rgb), 0.022) 0%,

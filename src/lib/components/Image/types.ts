@@ -25,6 +25,12 @@ export interface ImageProps {
 	/** Loading strategy */
 	loading?: 'eager' | 'lazy';
 
+	/** Browser decoding strategy */
+	decoding?: 'async' | 'sync' | 'auto';
+
+	/** Browser fetch priority hint */
+	fetchPriority?: 'high' | 'low' | 'auto';
+
 	/** Whether to show zoomed effect on hover */
 	isZoomed?: boolean;
 
@@ -33,6 +39,9 @@ export interface ImageProps {
 
 	/** Whether to disable loading skeleton */
 	disableSkeleton?: boolean;
+
+	/** Accessible message displayed when the image cannot be loaded */
+	errorLabel?: string;
 
 	/** Custom class */
 	class?: string;

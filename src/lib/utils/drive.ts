@@ -1,4 +1,5 @@
 import type { LumiColor } from '../components/config';
+import type { IconName } from './icons';
 
 /** Supported drive file types */
 export type DriveFileType =
@@ -94,6 +95,24 @@ const DRIVE_IMAGE_VARIANT_SET: ReadonlySet<DriveImageVariant> = new Set([
 	'preview',
 	'original'
 ]);
+const DRIVE_FILE_ICONS = {
+	dir: 'folder',
+	img: 'image',
+	vid: 'video',
+	aud: 'music',
+	doc: 'fileText',
+	zip: 'file',
+	otr: 'file'
+} as const satisfies Record<DriveFileType, IconName>;
+const DRIVE_FILE_COLORS = {
+	dir: 'primary',
+	img: 'success',
+	vid: 'danger',
+	aud: 'warning',
+	doc: 'info',
+	zip: 'secondary',
+	otr: 'muted'
+} as const satisfies Record<DriveFileType, LumiColor | 'muted'>;
 
 /**
  * Images above this threshold are optimized during upload.
@@ -202,33 +221,15 @@ function hasInvalidDriveNameChars(value: string): boolean {
 /**
  * Get the Lucide icon name for a file type
  */
-export function getFileIcon(type: DriveFileType): string {
-	const icons: Record<DriveFileType, string> = {
-		dir: 'folder',
-		img: 'image',
-		vid: 'video',
-		aud: 'music',
-		doc: 'fileText',
-		zip: 'file',
-		otr: 'file'
-	};
-	return icons[type];
+export function getFileIcon(type: DriveFileType): IconName {
+	return DRIVE_FILE_ICONS[type];
 }
 
 /**
  * Get semantic Lumi color for a file type
  */
-export function getFileColor(type: DriveFileType): string {
-	const colors: Record<DriveFileType, string> = {
-		dir: 'primary',
-		img: 'success',
-		vid: 'danger',
-		aud: 'warning',
-		doc: 'info',
-		zip: 'secondary',
-		otr: 'muted'
-	};
-	return colors[type];
+export function getFileColor(type: DriveFileType) {
+	return DRIVE_FILE_COLORS[type];
 }
 
 const DRIVE_TYPE_LABELS: Record<DriveFileType, string> = {

@@ -1,20 +1,9 @@
-	<script lang="ts">
-	import type { Snippet } from 'svelte';
+<script lang="ts" generics="TRow extends object">
 	import Button from '../Button/Button.svelte';
 	import Checkbox from '../Checkbox/Checkbox.svelte';
 	import Input from '../Input/Input.svelte';
 	import Icon from '../Icon/Icon.svelte';
-	import type { TableProps, TableRow } from './types';
-
-	interface Props extends TableProps {
-		children?: Snippet;
-		header?: Snippet;
-		thead?: Snippet;
-		row?: Snippet<[{ row: TableRow; index: number }]>;
-		paginationSlot?: Snippet<
-			[{ currentPage: number; totalPages: number; itemsPerPage: number; totalItems: number }]
-		>;
-	}
+	import type { TableProps } from './types';
 
 	let {
 		layout = 'auto',
@@ -39,6 +28,7 @@
 		rowKey,
 		selected = $bindable([]),
 		class: className = '',
+		'aria-label': ariaLabel,
 		'onrow-click': onRowClick,
 		'onrow-dblclick': onRowDblClick,
 		'onrow-contextmenu': onRowContextMenu,
@@ -50,23 +40,32 @@
 		thead,
 		row,
 		paginationSlot
-	}: Props = $props();
+	}: TableProps<TRow> = $props();
 
 	let searchQuery = $state('');
 	let currentPageState = $state(1);
-	const isServerPagination = $derived(pagination && paginationMode === 'server');
+	const isServerPagination = $derived(
+		pagination && paginationMode === 'server'
+	);
 	const pageSize = $derived(
-		Number.isFinite(itemsPerPage) && itemsPerPage > 0 ? Math.floor(itemsPerPage) : 1
+		Number.isFinite(itemsPerPage) && itemsPerPage > 0
+			? Math.floor(itemsPerPage)
+			: 1
 	);
 
 	// ── Row identity ──────────────────────────
-	type TableRowIdentity = string | number | TableRow;
+	type TableRowIdentity = string | number | TRow;
 
-	function getRowIdentity(row: TableRow): TableRowIdentity {
+	function getRowIdentity(row: TRow): TableRowIdentity {
 		const customKey = rowKey?.(row);
 		if (customKey != null) return customKey;
-		if (row.id != null) return String(row.id);
-		if (row.key != null) return String(row.key);
+
+		const id = Reflect.get(row, 'id');
+		if (typeof id === 'string' || typeof id === 'number') return String(id);
+
+		const key = Reflect.get(row, 'key');
+		if (typeof key === 'string' || typeof key === 'number') return String(key);
+
 		return row;
 	}
 
@@ -77,11 +76,11 @@
 		let result = [...data];
 
 		if (searchQuery && search && !isServerPagination) {
-			const query = searchQuery
-				.toLowerCase()
-				.trim(); /* FIX(S1): trim for filtering, not for mutation */
+			const query = searchQuery.toLowerCase().trim();
 			result = result.filter((item) =>
-				Object.values(item).some((val) => String(val).toLowerCase().includes(query))
+				Object.values(item).some((val) =>
+					String(val).toLowerCase().includes(query)
+				)
 			);
 		}
 
@@ -89,12 +88,18 @@
 	});
 
 	const totalItems = $derived(
-		isServerPagination ? (totalItemsProp ?? processedData.length) : processedData.length
+		isServerPagination
+			? (totalItemsProp ?? processedData.length)
+			: processedData.length
 	);
-	const totalPages = $derived(totalItems === 0 ? 0 : Math.ceil(totalItems / pageSize));
+	const totalPages = $derived(
+		totalItems === 0 ? 0 : Math.ceil(totalItems / pageSize)
+	);
 	const activePage = $derived.by(() => {
 		if (totalPages === 0) return 1;
-		const requestedPage = isServerPagination ? controlledPage : currentPageState;
+		const requestedPage = isServerPagination
+			? controlledPage
+			: currentPageState;
 		return Math.min(Math.max(1, requestedPage), totalPages);
 	});
 
@@ -131,11 +136,21 @@
 		if (activePage >= totalPages - 2) {
 			return Array.from({ length: 5 }, (_, i) => totalPages - 4 + i);
 		}
-		return [activePage - 2, activePage - 1, activePage, activePage + 1, activePage + 2];
+		return [
+			activePage - 2,
+			activePage - 1,
+			activePage,
+			activePage + 1,
+			activePage + 2
+		];
 	});
 
-	const hasRowInteraction = $derived(!!onRowClick || !!onRowDblClick || !!onRowContextMenu);
-	const hasKeyboardRowAction = $derived(!!onRowClick);
+	const hasPrimaryRowAction = $derived(!!onRowClick || !!onRowDblClick);
+	const hasKeyboardRowAction = $derived(!!onRowClick || !!onRowContextMenu);
+	const hasSelectionState = $derived(selectable || selected.length > 0);
+	const emptyText = $derived(
+		search && searchQuery.trim() ? noResultsText : noDataText
+	);
 
 	const tableClasses = $derived(
 		[
@@ -152,7 +167,6 @@
 
 	// ── Event handlers ────────────────────────
 
-	/* FIX(S1): Don't mutate searchQuery — let user type freely including spaces */
 	function handleSearch(): void {
 		onsearch?.(searchQuery.trim());
 		if (!pagination) return;
@@ -172,9 +186,14 @@
 				(r) => !selectedKeys.has(getRowIdentity(r))
 			);
 			selected = [...selected, ...newSelections];
+			newSelections.forEach((row) => onRowSelect?.(row, true));
 		} else {
 			const pageKeys = new Set(currentPageData.map((r) => getRowIdentity(r)));
+			const removedSelections = selected.filter((item) =>
+				pageKeys.has(getRowIdentity(item))
+			);
 			selected = selected.filter((item) => !pageKeys.has(getRowIdentity(item)));
+			removedSelections.forEach((row) => onRowSelect?.(row, false));
 		}
 	}
 
@@ -183,7 +202,8 @@
 	}
 
 	function isInteractiveTarget(target: EventTarget | null): boolean {
-		if (typeof Element === 'undefined' || !(target instanceof Element)) return false;
+		if (typeof Element === 'undefined' || !(target instanceof Element))
+			return false;
 		return Boolean(
 			target.closest(
 				'button, a, input, select, textarea, summary, [role="button"], [role="link"], [contenteditable="true"]'
@@ -191,37 +211,78 @@
 		);
 	}
 
-	function handleRowClick(event: MouseEvent, row: TableRow, index: number): void {
+	function handleRowClick(event: MouseEvent, row: TRow, index: number): void {
+		if (event.defaultPrevented) return;
 		if (isInteractiveTarget(event.target)) return;
 		onRowClick?.(row, index);
 	}
 
-	function handleRowDblClick(event: MouseEvent, row: TableRow, index: number): void {
+	function handleRowDblClick(
+		event: MouseEvent,
+		row: TRow,
+		index: number
+	): void {
+		if (event.defaultPrevented) return;
 		if (isInteractiveTarget(event.target)) return;
 		onRowDblClick?.(row, index);
 	}
 
-	function handleRowContextMenu(event: MouseEvent, row: TableRow, index: number): void {
+	function handleRowContextMenu(
+		event: MouseEvent,
+		row: TRow,
+		index: number
+	): void {
 		if (!onRowContextMenu) return;
-		if (isInteractiveTarget(event.target)) return;
+		if (event.defaultPrevented) return;
 		event.preventDefault();
 		onRowContextMenu(event, row, index);
 	}
 
-	function handleRowKeydown(event: KeyboardEvent, row: TableRow, index: number): void {
-		if (!onRowClick) return;
+	function openRowContextMenuFromKeyboard(event: KeyboardEvent): void {
+		const rowElement = event.currentTarget;
+		if (!(rowElement instanceof HTMLTableRowElement)) return;
+
+		const rect = rowElement.getBoundingClientRect();
+		rowElement.dispatchEvent(
+			new MouseEvent('contextmenu', {
+				bubbles: true,
+				cancelable: true,
+				clientX: rect.left,
+				clientY: rect.bottom
+			})
+		);
+	}
+
+	function handleRowKeydown(
+		event: KeyboardEvent,
+		row: TRow,
+		index: number
+	): void {
 		if (isInteractiveTarget(event.target)) return;
+
+		if (
+			onRowContextMenu &&
+			(event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10'))
+		) {
+			event.preventDefault();
+			openRowContextMenuFromKeyboard(event);
+			return;
+		}
+
+		if (!onRowClick) return;
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
 			onRowClick?.(row, index);
 		}
 	}
 
-	function handleRowSelect(row: TableRow, checked: boolean): void {
+	function handleRowSelect(row: TRow, checked: boolean): void {
 		if (!selectable) return;
 
 		const identity = getRowIdentity(row);
-		const index = selected.findIndex((item) => getRowIdentity(item) === identity);
+		const index = selected.findIndex(
+			(item) => getRowIdentity(item) === identity
+		);
 
 		if (checked && index === -1) {
 			selected = [...selected, row];
@@ -232,8 +293,7 @@
 		onRowSelect?.(row, checked);
 	}
 
-	function isRowSelected(row: TableRow): boolean {
-		if (!selectable) return false;
+	function isRowSelected(row: TRow): boolean {
 		const identity = getRowIdentity(row);
 		return selected.some((item) => getRowIdentity(item) === identity);
 	}
@@ -283,7 +343,7 @@
 				<span>{loadingText}</span>
 			</div>
 		{:else}
-			<table class="lumi-table__content">
+			<table class="lumi-table__content" aria-label={ariaLabel}>
 				{#if selectable || thead}
 					<thead class="lumi-table__thead">
 						<tr>
@@ -311,16 +371,21 @@
 							<tr
 								class="lumi-table__row"
 								class:lumi-table__row--selected={isSelected}
-								class:lumi-table__row--clickable={hasRowInteraction}
+								class:lumi-table__row--clickable={hasPrimaryRowAction}
+								class:lumi-table__row--focusable={hasKeyboardRowAction}
 								tabindex={hasKeyboardRowAction ? 0 : undefined}
-								aria-selected={selectable ? isSelected : undefined}
+								aria-selected={hasSelectionState ? isSelected : undefined}
 								onclick={(event) => handleRowClick(event, rowData, index)}
 								ondblclick={(event) => handleRowDblClick(event, rowData, index)}
-								oncontextmenu={(event) => handleRowContextMenu(event, rowData, index)}
+								oncontextmenu={(event) =>
+									handleRowContextMenu(event, rowData, index)}
 								onkeydown={(e) => handleRowKeydown(e, rowData, index)}
 							>
 								{#if selectable}
-									<td class="lumi-table__td lumi-table__td--select" onclick={handleSelectCellClick}>
+									<td
+										class="lumi-table__td lumi-table__td--select"
+										onclick={handleSelectCellClick}
+									>
 										<Checkbox
 											aria-label={`Select row ${index + 1}`}
 											checked={isSelected}
@@ -353,7 +418,7 @@
 					<div class="lumi-table__empty-icon" aria-hidden="true">
 						<Icon icon="inbox" size="2xl" />
 					</div>
-					<span class="lumi-table__empty-text">{noDataText}</span>
+					<span class="lumi-table__empty-text">{emptyText}</span>
 				</div>
 			{/if}
 		{/if}
@@ -370,8 +435,8 @@
 							{noResultsText}
 						{:else}
 							{showingLabel}
-								{(activePage - 1) * pageSize + 1}–{Math.min(
-									activePage * pageSize,
+							{(activePage - 1) * pageSize + 1}–{Math.min(
+								activePage * pageSize,
 								totalItems
 							)}
 							{ofLabel}
@@ -381,7 +446,10 @@
 				</div>
 
 				{#if totalPages > 1}
-					<nav class="lumi-table__pagination-controls" aria-label="Page navigation">
+					<nav
+						class="lumi-table__pagination-controls"
+						aria-label="Page navigation"
+					>
 						<Button
 							size="sm"
 							type="border"
@@ -393,11 +461,11 @@
 
 						<div class="lumi-table__pagination-pages">
 							{#each pageNumbers as page (page)}
-								<!-- FIX(M1): explicit type="button" prevents form submission -->
 								<button
 									type="button"
 									class="lumi-table__pagination-page"
-									class:lumi-table__pagination-page--active={activePage === page}
+									class:lumi-table__pagination-page--active={activePage ===
+										page}
 									aria-current={activePage === page ? 'page' : undefined}
 									aria-label={`Page ${page}`}
 									onclick={() => goToPage(page)}
@@ -434,7 +502,6 @@
 		flex-direction: column;
 		gap: var(--lumi-space-md);
 		font-family: var(--lumi-font-family-sans);
-		/* FIX(C8): removed --table-row-lift (transform on <tr> is undefined per CSS spec) */
 		--table-row-hover-bg: color-mix(
 			in srgb,
 			var(--lumi-color-primary) 2%,
@@ -457,7 +524,6 @@
 		flex-wrap: wrap;
 	}
 
-	/* FIX(C4): rem instead of px */
 	.lumi-table__search {
 		flex: 1;
 		max-width: var(--lumi-centered-card-width-sm);
@@ -489,18 +555,32 @@
 		min-width: max(100%, min-content);
 	}
 
-	.lumi-table--layout-fixed .lumi-table__thead :global(.lumi-table-column--main),
-	.lumi-table--layout-fixed .lumi-table__tbody :global(.lumi-table-column--main) {
+	.lumi-table--layout-fixed
+		.lumi-table__thead
+		:global(.lumi-table-column--main),
+	.lumi-table--layout-fixed
+		.lumi-table__tbody
+		:global(.lumi-table-column--main) {
 		width: var(--lumi-table-column-main-width, 48%);
 		min-width: var(--lumi-table-column-main-min-width);
 	}
 
-	.lumi-table--layout-fixed .lumi-table__thead :global(.lumi-table-column--actions) {
-		width: var(--lumi-table-column-actions-width, calc(var(--lumi-space-6xl) * 1.35));
+	.lumi-table--layout-fixed
+		.lumi-table__thead
+		:global(.lumi-table-column--actions) {
+		width: var(
+			--lumi-table-column-actions-width,
+			calc(var(--lumi-space-6xl) + var(--lumi-space-xl))
+		);
 	}
 
-	.lumi-table--layout-fixed .lumi-table__thead :global(.lumi-table-column--compact) {
-		width: var(--lumi-table-column-compact-width, calc(var(--lumi-space-6xl) * 1.05));
+	.lumi-table--layout-fixed
+		.lumi-table__thead
+		:global(.lumi-table-column--compact) {
+		width: var(
+			--lumi-table-column-compact-width,
+			calc(var(--lumi-space-6xl) + var(--lumi-space-2xs))
+		);
 	}
 
 	/* ── Table header ─────────────────────────── */
@@ -509,24 +589,34 @@
 		background:
 			linear-gradient(
 				145deg,
-				color-mix(in srgb, var(--lumi-color-surface-glass-strong) 88%, transparent) 0%,
-				color-mix(in srgb, var(--lumi-color-background-hover) 68%, transparent) 100%
+				color-mix(
+						in srgb,
+						var(--lumi-color-surface-glass-strong) 88%,
+						transparent
+					)
+					0%,
+				color-mix(in srgb, var(--lumi-color-background-hover) 68%, transparent)
+					100%
 			),
 			var(--lumi-color-surface-glass-strong);
-		border-bottom: var(--lumi-border-width-thin) solid var(--lumi-color-border-strong);
+		border-bottom: var(--lumi-border-width-thin) solid
+			var(--lumi-color-border-strong);
 		position: sticky;
 		top: 0;
-		z-index: var(--lumi-z-base); /* FIX(C5) */
+		z-index: var(--lumi-z-base);
 	}
 
-	/* FIX(C6): letter-spacing uses token */
 	.lumi-table__th,
 	.lumi-table__thead :global(th) {
 		padding: var(--lumi-space-md) var(--lumi-space-lg);
 		text-align: left;
 		font-size: var(--lumi-font-size-xs);
 		font-weight: var(--lumi-font-weight-bold);
-		color: color-mix(in srgb, var(--lumi-color-text) 72%, var(--lumi-color-primary));
+		color: color-mix(
+			in srgb,
+			var(--lumi-color-text) 72%,
+			var(--lumi-color-primary)
+		);
 		text-transform: uppercase;
 		letter-spacing: var(--lumi-letter-spacing-wider);
 		white-space: nowrap;
@@ -535,7 +625,6 @@
 
 	/* ── Body rows ────────────────────────────── */
 
-	/* FIX(C1): tokenized transitions; FIX(C8): removed transform from transition */
 	.lumi-table__tbody .lumi-table__row {
 		border-bottom: var(--lumi-border-width-thin) solid
 			color-mix(in srgb, var(--lumi-color-border) 72%, transparent);
@@ -553,18 +642,21 @@
 		cursor: pointer;
 	}
 
-	/* FIX(C9): tokenized outline-offset */
-	.lumi-table__row--clickable:focus-visible {
+	.lumi-table__row--focusable:focus-visible {
 		outline: var(--lumi-border-width-thick) solid
 			color-mix(in srgb, var(--lumi-color-primary) 35%, transparent);
 		outline-offset: calc(var(--lumi-border-width-thick) * -1);
 		border-radius: var(--lumi-radius-sm);
 	}
 
-	/* Hover — FIX(C8): removed transform, background + border accent only */
+	/* Hover uses color and border accent; transforms are unreliable on table rows. */
 	.lumi-table--hover .lumi-table__tbody .lumi-table__row:hover {
 		background: var(--table-row-hover-bg);
-		border-left-color: color-mix(in srgb, var(--lumi-color-primary) 18%, var(--lumi-color-border));
+		border-left-color: color-mix(
+			in srgb,
+			var(--lumi-color-primary) 18%,
+			var(--lumi-color-border)
+		);
 	}
 
 	.lumi-table__tbody .lumi-table__row.lumi-table__row--selected {
@@ -574,7 +666,9 @@
 			color-mix(in srgb, var(--lumi-color-primary) 18%, transparent);
 	}
 
-	.lumi-table--hover .lumi-table__tbody .lumi-table__row.lumi-table__row--selected:hover {
+	.lumi-table--hover
+		.lumi-table__tbody
+		.lumi-table__row.lumi-table__row--selected:hover {
 		background: var(--table-row-active-bg);
 	}
 
@@ -582,7 +676,11 @@
 	.lumi-table--stripe
 		.lumi-table__tbody
 		.lumi-table__row:nth-child(even):not(.lumi-table__row--selected) {
-		background: color-mix(in srgb, var(--lumi-color-background-hover) 44%, transparent);
+		background: color-mix(
+			in srgb,
+			var(--lumi-color-background-hover) 44%,
+			transparent
+		);
 	}
 
 	/* ── Table cells ──────────────────────────── */
@@ -596,7 +694,6 @@
 		min-width: 0;
 	}
 
-	/* FIX(C2): tokenized width */
 	.lumi-table__th--select,
 	.lumi-table__td--select {
 		width: var(--lumi-space-3xl);
@@ -626,7 +723,6 @@
 		font-size: var(--lumi-font-size-sm);
 	}
 
-	/* FIX(C3): tokenized spinner size */
 	.lumi-table__spinner {
 		width: var(--lumi-icon-lg);
 		height: var(--lumi-icon-lg);
@@ -653,7 +749,6 @@
 		gap: var(--lumi-space-md);
 	}
 
-	/* FIX(C7): tokenized opacity */
 	.lumi-table__empty-icon {
 		color: var(--lumi-color-text-muted);
 		opacity: var(--lumi-opacity-muted);
@@ -697,7 +792,6 @@
 		gap: var(--lumi-space-2xs);
 	}
 
-	/* FIX(C1): tokenized transitions */
 	.lumi-table__pagination-page {
 		min-width: var(--lumi-space-xl);
 		height: var(--lumi-space-xl);
@@ -723,7 +817,6 @@
 		color: var(--lumi-color-text);
 	}
 
-	/* FIX(C9): tokenized outline-offset */
 	.lumi-table__pagination-page:focus-visible {
 		outline: var(--lumi-border-width-thick) solid
 			color-mix(in srgb, var(--lumi-color-primary) 35%, transparent);
@@ -731,14 +824,13 @@
 	}
 
 	.lumi-table__pagination-page--active {
-		background: var(--lumi-color-primary);
+		background: var(--lumi-color-primary-solid);
 		color: var(--lumi-color-primary-foreground);
 		font-weight: var(--lumi-font-weight-semibold);
-		border-color: var(--lumi-color-primary);
+		border-color: var(--lumi-color-primary-solid);
 	}
 
 	/* ── Responsive ───────────────────────────── */
-	/* NOTE(C10): 48rem is the tablet breakpoint; CSS vars can't be used in @media */
 	@media (max-width: 48rem) {
 		.lumi-table__header {
 			flex-direction: column;
@@ -759,7 +851,9 @@
 			display: none;
 		}
 
-		.lumi-table--layout-fixed .lumi-table__thead :global(.lumi-table-column--compact) {
+		.lumi-table--layout-fixed
+			.lumi-table__thead
+			:global(.lumi-table-column--compact) {
 			width: var(--lumi-table-column-compact-width-sm);
 		}
 	}

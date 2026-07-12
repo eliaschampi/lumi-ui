@@ -1,15 +1,22 @@
 <script module lang="ts">
-	// Shared across all instances — never recreated
-	const SIZE_PRESETS = new Set(['xs', 'sm', 'md', 'lg', 'xl', '2xl']);
-	const SEMANTIC_COLORS = new Set([
-		'primary',
-		'secondary',
-		'success',
-		'warning',
-		'danger',
-		'info',
-		'muted'
-	]);
+	const SIZE_TOKENS = {
+		xs: 'var(--lumi-icon-xs)',
+		sm: 'var(--lumi-icon-sm)',
+		md: 'var(--lumi-icon-md)',
+		lg: 'var(--lumi-icon-lg)',
+		xl: 'var(--lumi-icon-xl)',
+		'2xl': 'var(--lumi-icon-2xl)'
+	} as const;
+
+	const COLOR_TOKENS = {
+		primary: 'var(--lumi-color-primary)',
+		secondary: 'var(--lumi-color-secondary)',
+		success: 'var(--lumi-color-success)',
+		warning: 'var(--lumi-color-warning)',
+		danger: 'var(--lumi-color-danger)',
+		info: 'var(--lumi-color-info)',
+		muted: 'var(--lumi-color-text-muted)'
+	} as const;
 </script>
 
 <script lang="ts">
@@ -22,7 +29,7 @@
 		size = 'md',
 		stroke = 2,
 		class: className = '',
-		onclick
+		'aria-label': ariaLabel
 	}: IconProps = $props();
 
 	// String → registry lookup | Component → passthrough
@@ -33,85 +40,45 @@
 	});
 
 	const classes = $derived.by(() => {
-		const parts: string[] = ['lumi-icon'];
-		if (SIZE_PRESETS.has(size)) parts.push(`lumi-icon--${size}`);
-		if (color !== 'inherit' && SEMANTIC_COLORS.has(color)) {
-			parts.push(`lumi-icon--color-${color}`);
-		}
-		if (className) parts.push(className);
-		return parts.join(' ');
+		return ['lumi-icon', className].filter(Boolean).join(' ');
 	});
 
 	const style = $derived.by(() => {
-		const entries: string[] = [];
-		if (!SIZE_PRESETS.has(size)) {
-			entries.push(`width: ${size}`, `height: ${size}`);
+		const resolvedSize = SIZE_TOKENS[size as keyof typeof SIZE_TOKENS] ?? size;
+		const entries = [`--lumi-icon-size: ${resolvedSize}`];
+
+		if (color !== 'inherit') {
+			const resolvedColor =
+				COLOR_TOKENS[color as keyof typeof COLOR_TOKENS] ?? color;
+			entries.push(`--lumi-icon-color: ${resolvedColor}`);
 		}
-		if (color !== 'inherit' && !SEMANTIC_COLORS.has(color)) {
-			entries.push(`color: ${color}`);
-		}
-		return entries.length > 0 ? entries.join('; ') : undefined;
+
+		return entries.join('; ');
 	});
+
+	const accessibilityProps = $derived(
+		ariaLabel ? { role: 'img', 'aria-label': ariaLabel } : {}
+	);
 </script>
 
 {#if ResolvedIcon}
-	<ResolvedIcon class={classes} {style} strokeWidth={stroke} {onclick} />
+	<ResolvedIcon
+		class={classes}
+		{style}
+		strokeWidth={stroke}
+		{...accessibilityProps}
+	/>
 {/if}
 
 <style>
 	:global(.lumi-icon) {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		color: inherit;
-		transition: var(--lumi-transition-all);
+		display: inline-block;
+		width: var(--lumi-icon-size);
+		height: var(--lumi-icon-size);
+		flex-shrink: 0;
+		vertical-align: middle;
+		color: var(--lumi-icon-color, inherit);
+		transition: color var(--lumi-duration-base) var(--lumi-easing-default);
 		user-select: none;
-	}
-
-	:global(.lumi-icon--xs) {
-		width: var(--lumi-icon-xs);
-		height: var(--lumi-icon-xs);
-	}
-	:global(.lumi-icon--sm) {
-		width: var(--lumi-icon-sm);
-		height: var(--lumi-icon-sm);
-	}
-	:global(.lumi-icon--md) {
-		width: var(--lumi-icon-md);
-		height: var(--lumi-icon-md);
-	}
-	:global(.lumi-icon--lg) {
-		width: var(--lumi-icon-lg);
-		height: var(--lumi-icon-lg);
-	}
-	:global(.lumi-icon--xl) {
-		width: var(--lumi-icon-xl);
-		height: var(--lumi-icon-xl);
-	}
-	:global(.lumi-icon--2xl) {
-		width: var(--lumi-icon-2xl);
-		height: var(--lumi-icon-2xl);
-	}
-
-	:global(.lumi-icon--color-primary) {
-		color: var(--lumi-color-primary);
-	}
-	:global(.lumi-icon--color-secondary) {
-		color: var(--lumi-color-secondary);
-	}
-	:global(.lumi-icon--color-success) {
-		color: var(--lumi-color-success);
-	}
-	:global(.lumi-icon--color-warning) {
-		color: var(--lumi-color-warning);
-	}
-	:global(.lumi-icon--color-danger) {
-		color: var(--lumi-color-danger);
-	}
-	:global(.lumi-icon--color-info) {
-		color: var(--lumi-color-info);
-	}
-	:global(.lumi-icon--color-muted) {
-		color: var(--lumi-color-text-muted);
 	}
 </style>

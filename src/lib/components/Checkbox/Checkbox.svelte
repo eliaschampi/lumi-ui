@@ -49,7 +49,7 @@
 <label
 	for={checkboxId}
 	class={classes}
-	style={`--checkbox-foreground: var(--lumi-color-${color}-foreground);`}
+	style={`--checkbox-solid: var(--lumi-color-${color}-solid); --checkbox-foreground: var(--lumi-color-${color}-foreground);`}
 >
 	<!-- Hidden input -->
 	<input
@@ -182,10 +182,10 @@
 	.lumi-checkbox--checked .lumi-checkbox__visual {
 		background: linear-gradient(
 			145deg,
-			color-mix(in srgb, var(--checkbox-color) 78%, var(--lumi-color-white)),
-			var(--checkbox-color)
+			color-mix(in srgb, var(--checkbox-solid) 96%, var(--lumi-color-white)),
+			var(--checkbox-solid)
 		);
-		border-color: var(--checkbox-color);
+		border-color: var(--checkbox-solid);
 	}
 
 	.lumi-checkbox--checked :global(.lumi-checkbox__icon) {
@@ -205,7 +205,7 @@
 	}
 
 	.lumi-checkbox--checked:not(.lumi-checkbox--disabled):hover .lumi-checkbox__visual {
-		background: var(--checkbox-color);
+		background: var(--checkbox-solid);
 	}
 
 	/* Disabled state */

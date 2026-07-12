@@ -1,4 +1,4 @@
-// Lumi UI — Table Component Types
+import type { Snippet } from 'svelte';
 
 export interface TableRow {
 	id?: string | number;
@@ -6,7 +6,14 @@ export interface TableRow {
 	[key: string]: unknown;
 }
 
-export interface TableProps {
+export interface TablePaginationData {
+	currentPage: number;
+	totalPages: number;
+	itemsPerPage: number;
+	totalItems: number;
+}
+
+export interface TableProps<TRow extends object = TableRow> {
 	/** Table column sizing strategy */
 	layout?: 'auto' | 'fixed';
 	/** Compact row/cell padding */
@@ -24,7 +31,7 @@ export interface TableProps {
 	/** Pagination strategy. Client slices local data; server expects current page data. */
 	paginationMode?: 'client' | 'server';
 
-	/* ── i18n text props (FIX: was hardcoded Spanish) ── */
+	/* ── Localized text ── */
 	/** Text shown when data is empty */
 	noDataText?: string;
 	/** Search input placeholder */
@@ -39,7 +46,7 @@ export interface TableProps {
 	ofLabel?: string;
 
 	/** Data array */
-	data?: TableRow[];
+	data?: TRow[];
 	/** Items per page when pagination is enabled */
 	itemsPerPage?: number;
 	/** Current page when paginationMode is server */
@@ -49,21 +56,30 @@ export interface TableProps {
 	/** Show loading state */
 	loading?: boolean;
 	/** Stable row identity when rows do not expose id or key */
-	rowKey?: (row: TableRow) => string | number;
-	/** Currently selected rows (bindable) */
-	selected?: TableRow[];
+	rowKey?: (row: TRow) => string | number;
+	/** Selected rows (bindable); styling does not depend on checkbox controls */
+	selected?: TRow[];
 	/** Additional CSS class */
 	class?: string;
+	/** Accessible table name when no visible caption identifies it */
+	'aria-label'?: string;
+	/** Legacy table body content when data is not supplied */
+	children?: Snippet;
+	/** Header toolbar content */
+	header?: Snippet;
+	/** Column header cells */
+	thead?: Snippet;
+	/** Cells rendered for each data row */
+	row?: Snippet<[{ row: TRow; index: number }]>;
+	/** Custom pagination content */
+	paginationSlot?: Snippet<[TablePaginationData]>;
 
 	/* ── Event handlers ── */
-	'onrow-click'?: (row: TableRow, index: number) => void;
-	'onrow-dblclick'?: (row: TableRow, index: number) => void;
-	'onrow-contextmenu'?: (
-		event: MouseEvent,
-		row: TableRow,
-		index: number
-	) => void;
-	'onrow-select'?: (row: TableRow, selected: boolean) => void;
+	'onrow-click'?: (row: TRow, index: number) => void;
+	'onrow-dblclick'?: (row: TRow, index: number) => void;
+	/** Complete-row context action; supports pointer, ContextMenu and Shift+F10 */
+	'onrow-contextmenu'?: (event: MouseEvent, row: TRow, index: number) => void;
+	'onrow-select'?: (row: TRow, selected: boolean) => void;
 	onsearch?: (query: string) => void;
 	'onpage-change'?: (page: number) => void;
 }

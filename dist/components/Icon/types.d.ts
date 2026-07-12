@@ -1,16 +1,19 @@
 import type { LumiColor, LumiSize } from '../config';
+import type { IconComponent } from '../../utils/icons';
+export type IconColor = LumiColor | 'muted' | 'inherit' | `var(--lumi-${string})`;
+export type IconSource = string | IconComponent;
 export interface IconProps {
-    /** Icon name from the icon registry */
-    icon?: string;
-    /** Icon color - semantic or custom CSS color */
-    color?: LumiColor | 'muted' | string;
+    /** Registry name or a directly imported Lucide-compatible component */
+    icon?: IconSource;
+    /** Semantic color or Lumi color token */
+    color?: IconColor;
     /** Icon size - predefined or custom CSS size */
     size?: LumiSize | string;
     /** Stroke width for the icon */
     stroke?: number;
     /** Additional CSS classes */
     class?: string;
-    /** Click handler */
-    onclick?: (event: MouseEvent) => void;
+    /** Accessible name for meaningful standalone icons; omitted icons are decorative */
+    'aria-label'?: string;
 }
 //# sourceMappingURL=types.d.ts.map

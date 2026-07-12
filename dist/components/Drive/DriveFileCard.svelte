@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Icon } from "../Icon";
+  import { Image } from "../Image";
   import {
     driveTagColorCssVar,
     formatFileSize,
@@ -194,13 +195,14 @@
 >
   <div class="drive-file-card__preview">
     {#if file.type === "img"}
-      <img
+      <Image
         class="drive-file-card__image"
         src={previewUrl}
         alt={file.name}
         loading="lazy"
-        decoding="async"
-        fetchpriority="low"
+        fetchPriority="low"
+        radius="none"
+        errorLabel={file.name}
       />
     {:else}
       <div class="drive-file-card__icon-scene">
@@ -249,16 +251,10 @@
     width: 100%;
     min-width: 0;
     padding: var(--drive-file-card-padding);
-    background:
-      linear-gradient(
-        145deg,
-        rgba(var(--lumi-color-primary-rgb), 0.022) 0%,
-        transparent 68%,
-        transparent 100%
-      ),
-      var(--lumi-color-surface-card);
-    border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
-    border-radius: var(--lumi-radius-2xl);
+    background: var(--lumi-gradient-card);
+    border: var(--lumi-border-width-thin) solid
+      var(--lumi-floating-surface-border);
+    border-radius: var(--lumi-surface-radius);
     cursor: pointer;
     transition:
       transform var(--lumi-duration-fast) var(--lumi-easing-default),
@@ -272,22 +268,19 @@
   }
 
   .drive-file-card:hover {
-    transform: translateY(calc(var(--lumi-space-2xs) * -0.5));
+    transform: translateY(var(--lumi-interactive-lift));
     border-color: var(--lumi-color-border-interactive);
-    box-shadow: var(--lumi-shadow-lg);
+    background: var(--lumi-gradient-card-hover);
+    box-shadow: var(--lumi-shadow-md);
   }
 
   .drive-file-card:focus-visible {
     outline: none;
-    border-color: color-mix(
-      in srgb,
-      var(--lumi-color-primary) 40%,
-      var(--lumi-color-border)
-    );
+    border-color: var(--lumi-color-border-interactive);
     box-shadow:
       0 0 0 var(--lumi-border-width-thick)
-        color-mix(in srgb, var(--lumi-color-primary) 20%, transparent),
-      var(--lumi-shadow-lg);
+        color-mix(in srgb, var(--lumi-color-primary) 24%, transparent),
+      var(--lumi-shadow-md);
   }
 
   .drive-file-card--selected {
@@ -336,15 +329,15 @@
     overflow: hidden;
   }
 
-  .drive-file-card__image {
+  .drive-file-card__preview :global(.drive-file-card__image) {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    transition: transform var(--lumi-duration-slow) var(--lumi-easing-default);
   }
 
-  .drive-file-card:hover .drive-file-card__image {
-    transform: scale(1.04);
+  .drive-file-card:hover
+    .drive-file-card__preview
+    :global(.drive-file-card__image .lumi-image__img) {
+    transform: scale(var(--lumi-card-media-hover-scale));
   }
 
   .drive-file-card__icon-scene {
@@ -441,6 +434,19 @@
   @media (max-width: 640px) {
     .drive-file-card {
       --drive-file-card-padding: var(--lumi-drive-file-card-padding-mobile);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .drive-file-card,
+    .drive-file-card__preview :global(.lumi-image__img) {
+      transition: none;
+    }
+
+    .drive-file-card:hover
+      .drive-file-card__preview
+      :global(.drive-file-card__image .lumi-image__img) {
+      transform: none;
     }
   }
 </style>

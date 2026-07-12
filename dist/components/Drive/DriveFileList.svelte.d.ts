@@ -1,5 +1,5 @@
-import { type DriveDateFormatter } from "../../utils/drive";
-import type { DriveFileItem } from "./types";
+import { type DriveDateFormatter } from '../../utils/drive';
+import type { DriveFileItem } from './types';
 interface Props {
     files: DriveFileItem[];
     selectedFiles: string[];

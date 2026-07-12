@@ -198,7 +198,7 @@
 			return;
 		const { event, data } = pendingOpen;
 		pendingOpen = null;
-		contextMenu.focus();
+		(getItems()[0] ?? contextMenu).focus();
 		onopen?.(event, data, floating.position.top, floating.position.left);
 	});
 

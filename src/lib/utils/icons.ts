@@ -11,12 +11,12 @@
  * @module icons
  */
 
-import type { Component } from 'svelte';
+import type { LucideIcon } from '@lucide/svelte';
 
 // ─── Types ─────────────────────────────────────────────────────
 
-/** Svelte 5 compatible icon component type (replaces deprecated ComponentType) */
-export type IconComponent = Component;
+/** Lucide-compatible Svelte icon component. */
+export type IconComponent = LucideIcon;
 
 // ─── Lucide Imports ────────────────────────────────────────────
 // Alphabetically sorted. Maintain order when adding new icons.

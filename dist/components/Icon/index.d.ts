@@ -4,5 +4,5 @@
  */
 export { getAvailableIcons, getIcon, hasIcon } from '../../utils/icons';
 export { default as Icon } from './Icon.svelte';
-export type { IconProps } from './types';
+export type { IconColor, IconProps, IconSource } from './types';
 //# sourceMappingURL=index.d.ts.map

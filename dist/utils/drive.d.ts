@@ -1,4 +1,5 @@
 import type { LumiColor } from '../components/config';
+import type { IconName } from './icons';
 /** Supported drive file types */
 export type DriveFileType = 'dir' | 'img' | 'vid' | 'aud' | 'doc' | 'zip' | 'otr';
 /** Supported drive visibility scopes */
@@ -71,11 +72,11 @@ export declare function isValidDriveImageVariant(value: string): value is DriveI
 /**
  * Get the Lucide icon name for a file type
  */
-export declare function getFileIcon(type: DriveFileType): string;
+export declare function getFileIcon(type: DriveFileType): IconName;
 /**
  * Get semantic Lumi color for a file type
  */
-export declare function getFileColor(type: DriveFileType): string;
+export declare function getFileColor(type: DriveFileType): "primary" | "secondary" | "success" | "warning" | "danger" | "info" | "muted";
 /**
  * Get display label for a drive file type.
  */

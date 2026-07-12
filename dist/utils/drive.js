@@ -53,6 +53,24 @@ const DRIVE_IMAGE_VARIANT_SET = new Set([
     'preview',
     'original'
 ]);
+const DRIVE_FILE_ICONS = {
+    dir: 'folder',
+    img: 'image',
+    vid: 'video',
+    aud: 'music',
+    doc: 'fileText',
+    zip: 'file',
+    otr: 'file'
+};
+const DRIVE_FILE_COLORS = {
+    dir: 'primary',
+    img: 'success',
+    vid: 'danger',
+    aud: 'warning',
+    doc: 'info',
+    zip: 'secondary',
+    otr: 'muted'
+};
 /**
  * Images above this threshold are optimized during upload.
  */
@@ -140,31 +158,13 @@ function hasInvalidDriveNameChars(value) {
  * Get the Lucide icon name for a file type
  */
 export function getFileIcon(type) {
-    const icons = {
-        dir: 'folder',
-        img: 'image',
-        vid: 'video',
-        aud: 'music',
-        doc: 'fileText',
-        zip: 'file',
-        otr: 'file'
-    };
-    return icons[type];
+    return DRIVE_FILE_ICONS[type];
 }
 /**
  * Get semantic Lumi color for a file type
  */
 export function getFileColor(type) {
-    const colors = {
-        dir: 'primary',
-        img: 'success',
-        vid: 'danger',
-        aud: 'warning',
-        doc: 'info',
-        zip: 'secondary',
-        otr: 'muted'
-    };
-    return colors[type];
+    return DRIVE_FILE_COLORS[type];
 }
 const DRIVE_TYPE_LABELS = {
     dir: 'Carpeta',

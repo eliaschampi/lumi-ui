@@ -14,18 +14,18 @@
 		class: className = ''
 	}: QuickAccessCardProps = $props();
 
-	const cardClasses = $derived(['lumi-quick-access-card', className].filter(Boolean).join(' '));
+	const cardClasses = $derived(
+		['lumi-quick-access-card', className].filter(Boolean).join(' ')
+	);
 </script>
 
-<a {href} class="lumi-block lumi-text-decoration--none">
-	<Card {hoverable} class={cardClasses}>
-		<div class="lumi-quick-access-card__container">
-			<IconBadge {icon} {color} size="lg" />
-			<Title {title} size="md" {color} />
-			<p class="lumi-quick-access-card__description">{description}</p>
-		</div>
-	</Card>
-</a>
+<Card {href} {hoverable} class={cardClasses} aria-label={title}>
+	<div class="lumi-quick-access-card__container">
+		<IconBadge {icon} {color} size="lg" />
+		<Title {title} size="md" {color} />
+		<p class="lumi-quick-access-card__description">{description}</p>
+	</div>
+</Card>
 
 <style>
 	.lumi-quick-access-card__container {
@@ -33,7 +33,6 @@
 		flex-direction: column;
 		align-items: center;
 		text-align: center;
-		padding: var(--lumi-space-lg);
 		gap: var(--lumi-space-sm);
 	}
 

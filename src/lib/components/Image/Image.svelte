@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ImageOff } from '@lucide/svelte';
 	import type { ImageProps } from './types';
 
 	const {
@@ -10,16 +11,19 @@
 		height,
 		radius = 'lg',
 		loading = 'lazy',
+		decoding = 'async',
+		fetchPriority = 'auto',
 		isZoomed = false,
 		removeWrapper = false,
 		disableSkeleton = false,
+		errorLabel = 'Image unavailable',
 		class: className = '',
 		onload,
 		onerror
 	}: ImageProps = $props();
 
-	// svelte-ignore state_referenced_locally
-	let isLoading = $state(loading === 'lazy');
+	let currentSrc = $state<string | null>(null);
+	let isLoading = $state(true);
 	let hasError = $state(false);
 
 	const classes = $derived.by(() => {
@@ -55,14 +59,15 @@
 	};
 
 	$effect(() => {
-		if (loading === 'eager') {
-			isLoading = false;
-		}
+		if (src === currentSrc) return;
+		currentSrc = src;
+		isLoading = Boolean(src);
+		hasError = false;
 	});
 </script>
 
 {#if !removeWrapper}
-	<div class={classes} style={wrapperStyles}>
+	<div class={classes} style={wrapperStyles} aria-busy={isLoading}>
 		<!-- Main image -->
 		<img
 			{src}
@@ -73,19 +78,22 @@
 			{height}
 			class="lumi-image__img"
 			{loading}
+			{decoding}
+			fetchpriority={fetchPriority}
+			aria-hidden={hasError || undefined}
 			onload={handleImageLoad}
 			onerror={handleImageError}
 		/>
 
 		<!-- Loading skeleton -->
 		{#if !disableSkeleton && isLoading}
-			<div class="lumi-image__skeleton"></div>
+			<div class="lumi-image__skeleton" aria-hidden="true"></div>
 		{/if}
 
-		<!-- Zoomed wrapper for hover effect -->
-		{#if isZoomed}
-			<div class="lumi-image__zoomed-wrapper">
-				<img {src} {alt} class="lumi-image__zoomed" />
+		{#if hasError}
+			<div class="lumi-image__error-state" role="status">
+				<ImageOff class="lumi-image__error-icon" aria-hidden="true" />
+				<span>{errorLabel}</span>
 			</div>
 		{/if}
 	</div>
@@ -98,8 +106,11 @@
 		{sizes}
 		{width}
 		{height}
-		class="lumi-image__img"
+		class="{classes} lumi-image__img"
+		style={wrapperStyles}
 		{loading}
+		{decoding}
+		fetchpriority={fetchPriority}
 		onload={handleImageLoad}
 		onerror={handleImageError}
 	/>
@@ -118,6 +129,9 @@
 		height: 100%;
 		object-fit: cover;
 		display: block;
+		transition:
+			opacity var(--lumi-duration-base) var(--lumi-easing-default),
+			transform var(--lumi-duration-slow) var(--lumi-easing-default);
 	}
 
 	/* Radius variants */
@@ -151,58 +165,48 @@
 			var(--lumi-color-background-secondary) 75%
 		);
 		background-size: 200% 100%;
-		animation: lumi-shimmer 1.5s infinite;
+		animation: lumi-shimmer var(--lumi-duration-shimmer) linear infinite;
 	}
 
 	/* Zoom effect */
-	.lumi-image--zoomed {
-		cursor: zoom-in;
-	}
-
 	.lumi-image--zoomed:hover .lumi-image__img {
 		transform: scale(1.1);
-		transition: transform var(--lumi-duration-slow) var(--lumi-easing-default);
 	}
 
-	.lumi-image__zoomed-wrapper {
+	.lumi-image__img.lumi-image--zoomed:hover {
+		transform: scale(1.1);
+	}
+
+	.lumi-image__error-state {
 		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		overflow: hidden;
-		pointer-events: none;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: var(--lumi-space-xs);
+		padding: var(--lumi-space-md);
+		color: var(--lumi-color-text-muted);
+		font-size: var(--lumi-font-size-xs);
+		text-align: center;
 	}
 
-	.lumi-image__zoomed {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		opacity: 0;
-		transition: opacity var(--lumi-duration-slow) var(--lumi-easing-default);
-	}
-
-	.lumi-image--zoomed:hover .lumi-image__zoomed {
-		opacity: 1;
+	:global(.lumi-image__error-icon) {
+		width: var(--lumi-icon-lg);
+		height: var(--lumi-icon-lg);
 	}
 
 	/* Loading state */
-	.lumi-image--loading .lumi-image__img {
+	.lumi-image--loading .lumi-image__img,
+	.lumi-image__img.lumi-image--loading,
+	.lumi-image--error .lumi-image__img,
+	.lumi-image__img.lumi-image--error {
 		opacity: 0;
 	}
 
 	/* Error state */
 	.lumi-image--error {
 		background: var(--lumi-color-background-secondary);
-	}
-
-	.lumi-image--error::after {
-		content: '⚠️';
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		font-size: var(--lumi-font-size-2xl);
 	}
 
 	/* Animations */
@@ -217,11 +221,19 @@
 
 	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
+		.lumi-image__img {
+			transition: none;
+		}
+
 		.lumi-image__skeleton {
 			animation: none;
 		}
 
 		.lumi-image--zoomed:hover .lumi-image__img {
+			transform: none;
+		}
+
+		.lumi-image__img.lumi-image--zoomed:hover {
 			transform: none;
 		}
 	}

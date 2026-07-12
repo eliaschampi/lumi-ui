@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import Image from '../Image/Image.svelte';
 	import type { CardProps } from './types';
 
 	interface Props extends CardProps {
@@ -12,10 +13,13 @@
 
 	const {
 		clickable = false,
+		href,
+		target,
+		rel,
 		hoverable,
 		selected = false,
 		image,
-		imageHeight = 200,
+		imageHeight,
 		imageAlt,
 		title,
 		subtitle,
@@ -29,11 +33,17 @@
 		footer
 	}: Props = $props();
 
+	const isInteractive = $derived(clickable || href !== undefined);
+	const linkRel = $derived(
+		target === '_blank' ? (rel ?? 'noopener noreferrer') : rel
+	);
+
 	const cardClasses = $derived.by(() => {
 		const classes = ['lumi-card'];
-		const isHoverable = hoverable ?? Boolean(clickable || image);
+		const isHoverable = hoverable ?? Boolean(isInteractive || image);
 
 		if (clickable) classes.push('lumi-card--clickable');
+		if (isInteractive) classes.push('lumi-card--interactive');
 		if (isHoverable) classes.push('lumi-card--hoverable');
 		if (selected) classes.push('lumi-card--selected');
 		if (image) classes.push('lumi-card--with-image');
@@ -43,21 +53,27 @@
 	});
 
 	const cardStyles = $derived.by(() => {
-		const imageHeightStyle = `--card-image-height: ${imageHeight}px;`;
-		return style ? `${imageHeightStyle} ${style}` : imageHeightStyle;
+		const styles: string[] = [];
+		if (imageHeight !== undefined)
+			styles.push(`--card-image-height: ${imageHeight}px;`);
+		if (style) styles.push(style);
+		return styles.join(' ') || undefined;
 	});
 
 	function handleClick(event: MouseEvent) {
-		if (clickable && onclick) {
-			onclick(event);
-		}
+		onclick?.(event);
 	}
 </script>
 
 {#snippet cardContent()}
 	{#if image}
-		<div class="lumi-card__image">
-			<img src={image} alt={imageAlt || title || 'Card image'} />
+		<div class="lumi-card__media">
+			<Image
+				src={image}
+				alt={imageAlt ?? ''}
+				radius="none"
+				class="lumi-card__image"
+			/>
 		</div>
 	{/if}
 
@@ -76,11 +92,11 @@
 		</div>
 	{/if}
 
-	<div class="lumi-card__content">
-		{#if children}
+	{#if children}
+		<div class="lumi-card__content">
 			{@render children()}
-		{/if}
-	</div>
+		</div>
+	{/if}
 
 	{#if footer}
 		<div class="lumi-card__footer">
@@ -89,13 +105,27 @@
 	{/if}
 {/snippet}
 
-{#if clickable}
+{#if href !== undefined}
+	<a
+		{href}
+		{target}
+		rel={linkRel}
+		class={cardClasses}
+		style={cardStyles}
+		onclick={handleClick}
+		aria-label={ariaLabel || title || undefined}
+		aria-current={selected ? 'true' : undefined}
+	>
+		{@render cardContent()}
+	</a>
+{:else if clickable}
 	<button
 		type="button"
 		class={cardClasses}
 		style={cardStyles}
 		onclick={handleClick}
-		aria-label={ariaLabel || title || 'Card'}
+		aria-label={ariaLabel || title || undefined}
+		aria-pressed={selected}
 	>
 		{@render cardContent()}
 	</button>
@@ -109,7 +139,10 @@
 	.lumi-card {
 		--card-hover-lift: var(--lumi-interactive-lift);
 		--lumi-surface-bg: var(--lumi-card-surface-bg, var(--lumi-gradient-card));
-		--lumi-surface-shadow: var(--lumi-card-surface-shadow, var(--lumi-shadow-sm));
+		--lumi-surface-shadow: var(
+			--lumi-card-surface-shadow,
+			var(--lumi-shadow-sm)
+		);
 		position: relative;
 		min-width: 0;
 		overflow: hidden;
@@ -125,6 +158,7 @@
 		color: var(--lumi-color-text);
 		appearance: none;
 		font: inherit;
+		text-decoration: none;
 		padding: 0;
 		isolation: isolate;
 	}
@@ -145,17 +179,18 @@
 		z-index: 1;
 	}
 
-	/* Clickable state */
-	.lumi-card--clickable {
+	/* Interactive state */
+	.lumi-card--interactive {
 		cursor: pointer;
 	}
 
-	.lumi-card--clickable:focus-visible {
+	.lumi-card--interactive:focus-visible {
 		outline: none;
+		border-color: var(--lumi-color-border-interactive);
 		box-shadow:
 			0 0 0 var(--lumi-border-width-thick)
-				color-mix(in srgb, var(--lumi-color-primary) 18%, transparent),
-			var(--lumi-shadow-sm);
+				color-mix(in srgb, var(--lumi-color-primary) 24%, transparent),
+			var(--lumi-shadow-md);
 	}
 
 	.lumi-card--hoverable:hover {
@@ -165,14 +200,15 @@
 		box-shadow: var(--lumi-shadow-md);
 	}
 
-	.lumi-card--hoverable:active {
+	.lumi-card--interactive:active {
 		transform: translateY(0);
 		box-shadow: var(--lumi-shadow-sm);
 	}
 
 	.lumi-card--selected,
 	.lumi-card--selected:hover {
-		--lumi-surface-border: var(--lumi-border-width-base) solid var(--lumi-color-primary);
+		--lumi-surface-border: var(--lumi-border-width-base) solid
+			var(--lumi-color-primary);
 		--lumi-surface-shadow: var(--lumi-shadow-md);
 		border-color: var(--lumi-color-primary);
 	}
@@ -185,25 +221,25 @@
 	}
 
 	/* Image */
-	.lumi-card__image {
+	.lumi-card__media {
 		width: 100%;
-		height: var(--card-image-height);
+		height: var(--card-image-height, var(--lumi-card-media-height));
 		overflow: hidden;
 		flex-shrink: 0;
 		position: relative;
-		border-bottom: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
+		background: var(--lumi-color-background-secondary);
+		border-bottom: var(--lumi-border-width-thin) solid
+			var(--lumi-color-border-glass);
 	}
 
-	.lumi-card__image img {
+	.lumi-card__media :global(.lumi-card__image) {
 		width: 100%;
 		height: 100%;
-		object-fit: cover;
 		display: block;
-		transition: transform var(--lumi-duration-slow) var(--lumi-easing-default);
 	}
 
-	.lumi-card--hoverable:hover .lumi-card__image img {
-		transform: scale(1.05);
+	.lumi-card--hoverable:hover .lumi-card__media :global(.lumi-image__img) {
+		transform: scale(var(--lumi-card-media-hover-scale));
 	}
 
 	/* Sections */
@@ -228,15 +264,20 @@
 
 	/* Comfortable breathing room when content leads (no header) or follows the image,
 	   instead of relying on :first-child which fails whenever an image is rendered. */
-	.lumi-card__image + .lumi-card__content,
+	.lumi-card__media + .lumi-card__content,
 	.lumi-card__content:first-child {
 		padding-top: var(--lumi-space-lg);
 	}
 
 	.lumi-card__footer {
 		padding-top: var(--lumi-space-md);
-		border-top: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
-		background: color-mix(in srgb, var(--lumi-color-surface-glass-strong) 86%, transparent);
+		border-top: var(--lumi-border-width-thin) solid
+			var(--lumi-color-border-glass);
+		background: color-mix(
+			in srgb,
+			var(--lumi-color-surface-glass-strong) 86%,
+			transparent
+		);
 	}
 
 	/* Typography */
@@ -258,5 +299,16 @@
 	/* With Image adjustments */
 	.lumi-card--with-image .lumi-card__header {
 		padding-top: var(--lumi-space-lg);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.lumi-card,
+		.lumi-card__media :global(.lumi-image__img) {
+			transition: none;
+		}
+
+		.lumi-card--hoverable:hover .lumi-card__media :global(.lumi-image__img) {
+			transform: none;
+		}
 	}
 </style>

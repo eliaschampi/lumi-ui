@@ -22,7 +22,9 @@
 
 	let fileInputRef: HTMLInputElement | undefined = $state();
 	let isDragging = $state(false);
-	const canTriggerDialogFromDropzone = $derived(!disabled && !(multiple && files.length > 0));
+	const canTriggerDialogFromDropzone = $derived(
+		!disabled && !(multiple && files.length > 0)
+	);
 
 	const dropzoneClasses = $derived.by(() => {
 		const hasError = files.some((file) => file.status === 'error');
@@ -30,7 +32,8 @@
 			'lumi-file-upload__dropzone',
 			isDragging && 'lumi-file-upload__dropzone--dragging',
 			disabled && 'lumi-file-upload__dropzone--disabled',
-			!canTriggerDialogFromDropzone && 'lumi-file-upload__dropzone--files-added',
+			!canTriggerDialogFromDropzone &&
+				'lumi-file-upload__dropzone--files-added',
 			hasError && 'lumi-file-upload__dropzone--error'
 		]
 			.filter(Boolean)
@@ -156,7 +159,10 @@
 	}
 
 	function handleDropzoneKeydown(event: KeyboardEvent): void {
-		if (!canTriggerDialogFromDropzone || (event.key !== 'Enter' && event.key !== ' ')) {
+		if (
+			!canTriggerDialogFromDropzone ||
+			(event.key !== 'Enter' && event.key !== ' ')
+		) {
 			return;
 		}
 
@@ -216,13 +222,22 @@
 		{#if files.length === 0}
 			<div class="lumi-file-upload__placeholder">
 				<div class="lumi-file-upload__icon-wrapper">
-					<Icon icon="upload" size="xl" class="lumi-file-upload__placeholder-icon" />
+					<Icon
+						icon="upload"
+						size="xl"
+						class="lumi-file-upload__placeholder-icon"
+					/>
 				</div>
-				<span class="lumi-file-upload__placeholder-text">{placeholderText}</span>
+				<span class="lumi-file-upload__placeholder-text">{placeholderText}</span
+				>
 				<span class="lumi-file-upload__placeholder-info">{hintText}</span>
 			</div>
 		{:else}
-			<div class="lumi-file-upload__file-list" role="list" aria-label="Uploaded files">
+			<div
+				class="lumi-file-upload__file-list"
+				role="list"
+				aria-label="Uploaded files"
+			>
 				{#each files as fileWrapper (fileWrapper.id)}
 					<div
 						class="lumi-file-upload__file-item lumi-file-upload__file-item--{fileWrapper.status}"
@@ -234,7 +249,10 @@
 						</div>
 
 						<div class="lumi-file-upload__file-item-details">
-							<span class="lumi-file-upload__file-item-name" title={fileWrapper.file.name}>
+							<span
+								class="lumi-file-upload__file-item-name"
+								title={fileWrapper.file.name}
+							>
 								{fileWrapper.file.name}
 							</span>
 							<span class="lumi-file-upload__file-item-info">
@@ -251,7 +269,7 @@
 								<Loading size="sm" color="primary" />
 							{/if}
 							{#if fileWrapper.status === 'success'}
-								<Icon icon="checkCircle" color="var(--lumi-color-success)" size="md" />
+								<Icon icon="checkCircle" color="success" size="md" />
 							{/if}
 							{#if ['selected', 'error'].includes(fileWrapper.status) && !disabled}
 								<button
@@ -489,7 +507,11 @@
 
 	.lumi-file-upload__file-item--success {
 		border-color: var(--lumi-color-success);
-		background-color: color-mix(in srgb, var(--lumi-color-success) 5%, var(--lumi-color-surface));
+		background-color: color-mix(
+			in srgb,
+			var(--lumi-color-success) 5%,
+			var(--lumi-color-surface)
+		);
 	}
 
 	.lumi-file-upload__file-item--success .lumi-file-upload__file-icon {

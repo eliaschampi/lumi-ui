@@ -51,8 +51,9 @@
 	const styleVars = $derived.by(() => {
 		const colorVar = `var(--lumi-color-${color})`;
 		const colorRgb = `var(--lumi-color-${color}-rgb)`;
+		const solidVar = `var(--lumi-color-${color}-solid)`;
 		const colorForeground = `var(--lumi-color-${color}-foreground)`;
-		return `--btn-color: ${colorVar}; --btn-color-rgb: ${colorRgb}; --btn-foreground: ${colorForeground};`;
+		return `--btn-color: ${colorVar}; --btn-color-rgb: ${colorRgb}; --btn-solid: ${solidVar}; --btn-foreground: ${colorForeground};`;
 	});
 
 	function handleClick(event: MouseEvent) {
@@ -100,6 +101,12 @@
 
 	.lumi-button {
 		--button-hover-lift: 0;
+		--button-color-shadow: 0 var(--lumi-space-xs) var(--lumi-space-lg)
+			calc(var(--lumi-space-xs) * -1)
+			color-mix(in srgb, var(--btn-solid) 22%, transparent);
+		--button-color-shadow-hover: 0 var(--lumi-space-sm) var(--lumi-space-xl)
+			calc(var(--lumi-space-xs) * -1)
+			color-mix(in srgb, var(--btn-solid) 28%, transparent);
 		/* Base Layout */
 		display: inline-flex;
 		align-items: center;
@@ -220,20 +227,22 @@
 	/* FILLED - tactile primary action */
 	.lumi-button--filled {
 		--button-hover-lift: var(--lumi-interactive-lift);
-		background: var(--btn-color);
+		background: var(--btn-solid);
 		color: var(--btn-foreground);
-		border-color: color-mix(in srgb, var(--btn-color) 48%, transparent);
+		border-color: color-mix(in srgb, var(--btn-solid) 48%, transparent);
 		box-shadow:
 			inset 0 var(--lumi-border-width-thin) 0
 				color-mix(in srgb, var(--lumi-color-white) 26%, transparent),
+			var(--button-color-shadow),
 			var(--lumi-shadow-sm);
 	}
 
 	.lumi-button--filled:hover:not(:disabled) {
-		background: color-mix(in srgb, var(--btn-color) 94%, var(--lumi-color-black));
+		background: color-mix(in srgb, var(--btn-solid) 90%, var(--lumi-color-black));
 		box-shadow:
 			inset 0 var(--lumi-border-width-thin) 0
 				color-mix(in srgb, var(--lumi-color-white) 32%, transparent),
+			var(--button-color-shadow-hover),
 			var(--lumi-shadow-md);
 	}
 
@@ -296,22 +305,24 @@
 		--button-hover-lift: var(--lumi-interactive-lift);
 		background: linear-gradient(
 			145deg,
-			color-mix(in srgb, var(--btn-color) 99%, var(--lumi-color-white)) 0%,
-			var(--btn-color) 100%
+			color-mix(in srgb, var(--btn-solid) 96%, var(--lumi-color-white)) 0%,
+			var(--btn-solid) 100%
 		);
 		color: var(--btn-foreground);
-		border-color: color-mix(in srgb, var(--btn-color) 45%, transparent);
+		border-color: color-mix(in srgb, var(--btn-solid) 45%, transparent);
 		box-shadow:
 			inset 0 var(--lumi-border-width-thin) 0
 				color-mix(in srgb, var(--lumi-color-white) 18%, transparent),
+			var(--button-color-shadow),
 			var(--lumi-shadow-sm);
 	}
 
 	.lumi-button--gradient:hover:not(:disabled) {
-		border-color: color-mix(in srgb, var(--btn-color) 60%, transparent);
+		border-color: color-mix(in srgb, var(--btn-solid) 60%, transparent);
 		box-shadow:
 			inset 0 var(--lumi-border-width-thin) 0
 				color-mix(in srgb, var(--lumi-color-white) 22%, transparent),
+			var(--button-color-shadow-hover),
 			var(--lumi-shadow-md);
 	}
 

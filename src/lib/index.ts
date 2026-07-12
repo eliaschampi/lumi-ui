@@ -27,7 +27,7 @@ export type {
 	DropdownTrigger
 } from './components/Dropdown';
 export { Dropdown, DropdownItem } from './components/Dropdown';
-export type { IconProps } from './components/Icon';
+export type { IconColor, IconProps, IconSource } from './components/Icon';
 export { getAvailableIcons, getIcon, hasIcon, Icon } from './components/Icon';
 export type {
 	InputColor,
@@ -65,7 +65,11 @@ export type {
 	SidebarProps
 } from './components/Sidebar';
 export { Sidebar, SidebarHeader, SidebarItem } from './components/Sidebar';
-export type { TableProps, TableRow } from './components/Table';
+export type {
+	TablePaginationData,
+	TableProps,
+	TableRow
+} from './components/Table';
 export { Table } from './components/Table';
 export type {
 	Tab,

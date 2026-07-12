@@ -72,7 +72,7 @@
 
 <div
 	class={classes}
-	style={`--avatar-foreground: var(--lumi-color-${color}-foreground);`}
+	style={`--avatar-solid: var(--lumi-color-${color}-solid); --avatar-foreground: var(--lumi-color-${color}-foreground);`}
 	aria-label={alt || text || 'Avatar'}
 >
 	{#if imageSrc && !imageError}
@@ -101,6 +101,7 @@
 		font-weight: var(--lumi-font-weight-semibold);
 		line-height: var(--lumi-line-height-none);
 		white-space: nowrap;
+		background: var(--avatar-solid);
 		color: var(--avatar-foreground);
 		user-select: none;
 		overflow: hidden;
@@ -130,31 +131,6 @@
 		width: var(--lumi-space-4xl);
 		height: var(--lumi-space-4xl);
 		font-size: var(--lumi-font-size-lg);
-	}
-
-	/* Color variants */
-	.lumi-avatar--primary {
-		background-color: var(--lumi-color-primary);
-	}
-
-	.lumi-avatar--secondary {
-		background-color: var(--lumi-color-secondary);
-	}
-
-	.lumi-avatar--success {
-		background-color: var(--lumi-color-success);
-	}
-
-	.lumi-avatar--warning {
-		background-color: var(--lumi-color-warning);
-	}
-
-	.lumi-avatar--danger {
-		background-color: var(--lumi-color-danger);
-	}
-
-	.lumi-avatar--info {
-		background-color: var(--lumi-color-info);
 	}
 
 	/* Text styling */

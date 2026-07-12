@@ -15,12 +15,18 @@ export interface ImageProps {
     radius?: 'none' | 'sm' | 'md' | 'lg' | 'full';
     /** Loading strategy */
     loading?: 'eager' | 'lazy';
+    /** Browser decoding strategy */
+    decoding?: 'async' | 'sync' | 'auto';
+    /** Browser fetch priority hint */
+    fetchPriority?: 'high' | 'low' | 'auto';
     /** Whether to show zoomed effect on hover */
     isZoomed?: boolean;
     /** Whether to remove the wrapper div */
     removeWrapper?: boolean;
     /** Whether to disable loading skeleton */
     disableSkeleton?: boolean;
+    /** Accessible message displayed when the image cannot be loaded */
+    errorLabel?: string;
     /** Custom class */
     class?: string;
     /** Load handler */

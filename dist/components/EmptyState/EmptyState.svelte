@@ -23,7 +23,9 @@
 		actions
 	}: Props = $props();
 
-	const classes = $derived(['lumi-empty-state', className].filter(Boolean).join(' '));
+	const classes = $derived(
+		['lumi-empty-state', className].filter(Boolean).join(' ')
+	);
 
 	const imageUrl = $derived.by(() => {
 		if (!image) return '';
@@ -44,14 +46,18 @@
 		{#if visual}
 			{@render visual()}
 		{:else if image}
-			<img src={imageUrl} alt={title || 'Empty state'} class="lumi-empty-state__image" />
+			<img
+				src={imageUrl}
+				alt={title || 'Empty state'}
+				class="lumi-empty-state__image"
+			/>
 		{:else if icon}
 			<div class="lumi-empty-state__icon">
-				<Icon {icon} size="2xl" color={`var(--lumi-color-${iconColor})`} />
+				<Icon {icon} size="2xl" color={iconColor} />
 			</div>
 		{:else}
 			<div class="lumi-empty-state__default-icon">
-				<Icon icon="inbox" size="2xl" color="var(--lumi-color-text-muted)" />
+				<Icon icon="inbox" size="2xl" color="muted" />
 			</div>
 		{/if}
 	</div>

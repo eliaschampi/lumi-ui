@@ -3,8 +3,17 @@
  */
 
 export interface CardProps {
-	/** Whether card is clickable */
+	/** Renders the card as a button. Children must not contain interactive controls. */
 	clickable?: boolean;
+
+	/** Optional link destination; renders the card as an anchor */
+	href?: string;
+
+	/** Link browsing context */
+	target?: string;
+
+	/** Link relationship metadata */
+	rel?: string;
 
 	/** Whether card shows hover effects (shadow/transform) */
 	hoverable?: boolean;
@@ -18,7 +27,7 @@ export interface CardProps {
 	/** Image height in pixels */
 	imageHeight?: number;
 
-	/** Image alt text */
+	/** Image alt text. Omit for decorative card media. */
 	imageAlt?: string;
 
 	/** Card title */
