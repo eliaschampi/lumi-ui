@@ -244,7 +244,28 @@
 {/if}
 
 <style>
+	/*
+	 * Layout contract on the portal root. Children inherit.
+	 * Tokens must not live only on `.lumi-dialog` — overlay padding and
+	 * size vars are consumed by the parent and would resolve as invalid.
+	 */
 	.lumi-dialog-overlay {
+		--lumi-dialog-width-sm: 25rem;
+		--lumi-dialog-width-md: 31.25rem;
+		--lumi-dialog-width-lg: 43.75rem;
+		--lumi-dialog-width-xl: 56.25rem;
+		--lumi-dialog-max-height: 90vh;
+		--lumi-dialog-content-max-height: 60vh;
+		--lumi-dialog-full-width: 100vw;
+		--lumi-dialog-full-height: 100vh;
+		--lumi-dialog-overlay-padding: var(--lumi-space-lg);
+		--lumi-dialog-overlay-padding-mobile: var(--lumi-space-sm);
+		--lumi-dialog-mobile-max-width: calc(
+			100vw - (var(--lumi-dialog-overlay-padding-mobile) * 2)
+		);
+		--lumi-dialog-mobile-max-height: calc(
+			100dvh - (var(--lumi-dialog-overlay-padding-mobile) * 2)
+		);
 		position: fixed;
 		inset: 0;
 		background: var(--lumi-color-overlay);

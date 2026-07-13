@@ -39,23 +39,23 @@ import type { ButtonProps } from '@lumi-ui/svelte';
 
 ## Actions and Forms
 
-| Export                                | Use                                                 | Contract                                                                                                  |
-| ------------------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `Button`                              | Action, icon action, or submit                      | [`types`](../src/lib/components/Button/types.ts), [`.svelte`](../src/lib/components/Button/Button.svelte) |
-| `Input`                               | Text and native input types                         | [`Input/types.ts`](../src/lib/components/Input/types.ts)                                                  |
-| `NumberInput`                         | Constrained numeric input                           | [`NumberInput/types.ts`](../src/lib/components/NumberInput/types.ts)                                      |
-| `Textarea`                            | Multiline with hint/error/count                     | [`Textarea/types.ts`](../src/lib/components/Textarea/types.ts)                                            |
-| `Checkbox`                            | Independent boolean form choice                     | [`Checkbox/types.ts`](../src/lib/components/Checkbox/types.ts)                                            |
-| `Radio`                               | One labeled choice in a group                       | [`Radio/types.ts`](../src/lib/components/Radio/types.ts)                                                  |
-| `Switch`                              | Immediate on/off preference                         | [`Switch/types.ts`](../src/lib/components/Switch/types.ts)                                                |
-| `Slider`                              | Numeric range selection                             | [`Slider/types.ts`](../src/lib/components/Slider/types.ts)                                                |
-| `Select`                              | Single choice; optional client/server search mode   | [`Select/types.ts`](../src/lib/components/Select/types.ts)                                                |
-| `RemoteSelect`                        | Debounced, cancellable endpoint search with mappers | [`RemoteSelect.svelte`](../src/lib/components/Select/RemoteSelect.svelte)                                 |
-| `SegmentedControl`                    | Short visible exclusive choice                      | [`SegmentedControl/types.ts`](../src/lib/components/SegmentedControl/types.ts)                            |
-| `FileUpload`                          | Selection, validation, queue, removal               | [`FileUpload/types.ts`](../src/lib/components/FileUpload/types.ts)                                        |
-| `DateRangeFilter`, `DateRangeToolbar` | Same from/to implementation; toolbar is an alias    | [`DateRangeFilter.svelte`](../src/lib/components/DateRangeFilter/DateRangeFilter.svelte)                  |
-| `Fieldset`                            | Semantic grouping for related controls              | [`Fieldset/types.ts`](../src/lib/components/Fieldset/types.ts)                                            |
-| `TagOption`                           | Compact semantic tag choice                         | [`TagOption/types.ts`](../src/lib/components/TagOption/types.ts)                                          |
+| Export             | Use                                                 | Contract                                                                                                  |
+| ------------------ | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `Button`           | Action, icon action, or submit                      | [`types`](../src/lib/components/Button/types.ts), [`.svelte`](../src/lib/components/Button/Button.svelte) |
+| `Input`            | Text and native input types                         | [`Input/types.ts`](../src/lib/components/Input/types.ts)                                                  |
+| `NumberInput`      | Constrained numeric input                           | [`NumberInput/types.ts`](../src/lib/components/NumberInput/types.ts)                                      |
+| `Textarea`         | Multiline with hint/error/count                     | [`Textarea/types.ts`](../src/lib/components/Textarea/types.ts)                                            |
+| `Checkbox`         | Independent boolean form choice                     | [`Checkbox/types.ts`](../src/lib/components/Checkbox/types.ts)                                            |
+| `Radio`            | One labeled choice in a group                       | [`Radio/types.ts`](../src/lib/components/Radio/types.ts)                                                  |
+| `Switch`           | Immediate on/off preference                         | [`Switch/types.ts`](../src/lib/components/Switch/types.ts)                                                |
+| `Slider`           | Numeric range selection                             | [`Slider/types.ts`](../src/lib/components/Slider/types.ts)                                                |
+| `Select`           | Single choice; optional client/server search mode   | [`Select/types.ts`](../src/lib/components/Select/types.ts)                                                |
+| `RemoteSelect`     | Debounced, cancellable endpoint search with mappers | [`RemoteSelect.svelte`](../src/lib/components/Select/RemoteSelect.svelte)                                 |
+| `SegmentedControl` | Short visible exclusive choice                      | [`SegmentedControl/types.ts`](../src/lib/components/SegmentedControl/types.ts)                            |
+| `FileUpload`       | Selection, validation, queue, removal               | [`FileUpload/types.ts`](../src/lib/components/FileUpload/types.ts)                                        |
+| `DateRangeFilter`  | From/to date range with preset shortcuts            | [`DateRangeFilter.svelte`](../src/lib/components/DateRangeFilter/DateRangeFilter.svelte)                  |
+| `Fieldset`         | Semantic grouping for related controls              | [`Fieldset/types.ts`](../src/lib/components/Fieldset/types.ts)                                            |
+| `TagOption`        | Compact semantic tag choice                         | [`TagOption/types.ts`](../src/lib/components/TagOption/types.ts)                                          |
 
 ## Surfaces and Feedback
 

@@ -155,7 +155,7 @@
 <Dialog bind:open title="Subir archivos" size="md" persistent={uploading}>
   <div class="lumi-stack lumi-stack--md">
     {#if errorMessage}
-      <Alert type="warning" closable onclose={() => (errorMessage = "")}
+      <Alert color="warning" closable onclose={() => (errorMessage = "")}
         >{errorMessage}</Alert
       >
     {/if}
@@ -180,11 +180,11 @@
   </div>
 
   {#snippet footer()}
-    <Button type="border" onclick={closeDialog} disabled={uploading}
+    <Button variant="border" onclick={closeDialog} disabled={uploading}
       >Cancelar</Button
     >
     <Button
-      type="filled"
+      variant="filled"
       color="primary"
       icon="upload"
       loading={uploading}

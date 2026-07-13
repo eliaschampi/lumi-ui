@@ -61,6 +61,7 @@
 		},
 		"./styles": "./dist/styles/index.css",
 		"./styles/core.css": "./dist/styles/core.css",
+		"./styles/patterns.css": "./dist/styles/patterns.css",
 		"./styles/tokens.base.css": "./dist/styles/tokens.base.css"
 	},
 	"peerDependencies": {

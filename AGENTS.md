@@ -7,7 +7,7 @@ Shared Lumi UI source of truth for Coedula and Faztore.
 Progressive disclosure—do not load the entire repository:
 
 1. Read [`docs/AGENT_GUIDE.md`](./docs/AGENT_GUIDE.md).
-2. Open **one** [Guide](./docs/GUIDE.md) section **or** [Components](./docs/COMPONENTS.md).
+2. Open **one** [Guide](./docs/GUIDE.md) section, [Components](./docs/COMPONENTS.md), **or** [Component authoring](./docs/COMPONENT_AUTHORING.md).
 3. Inspect the exact `types.ts`, `index.ts`, component, or stylesheet involved.
 
 Documentation explains intent; exports, TypeScript contracts, component source, and styles remain authoritative. Hub: [`docs/README.md`](./docs/README.md).
@@ -32,7 +32,7 @@ Documentation explains intent; exports, TypeScript contracts, component source, 
 | `src/lib/styles/core.css`          | Domain-neutral layout, surface, and utility classes                                                         |
 | `src/lib/actions`, `src/lib/utils` | Internal primitives shared by components                                                                    |
 
-Entry points, ownership, principles: [Guide §6](./docs/GUIDE.md#6-library-design).
+Entry points, ownership, principles: [Guide §7](./docs/GUIDE.md#7-library-design).
 
 ## Quality Bar
 

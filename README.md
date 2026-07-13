@@ -16,25 +16,26 @@ pnpm add @lumi-ui/svelte
 
 <Card title="Profile" spaced>
 	<Input label="Display name" />
-	<Button type="filled">Save</Button>
+	<Button variant="filled">Save</Button>
 </Card>
 ```
 
 ## Documentation
 
-| Document                               | Covers                                                     |
-| -------------------------------------- | ---------------------------------------------------------- |
-| **[Guide](./docs/GUIDE.md)**           | Install, theming, layouts, core CSS, architecture, release |
-| **[Components](./docs/COMPONENTS.md)** | Component catalog and selection                            |
-| **[docs hub](./docs/README.md)**       | Authority map                                              |
-| **[AGENTS.md](./AGENTS.md)**           | Agent rules → [Agent Guide](./docs/AGENT_GUIDE.md)         |
+| Document                                                 | Covers                                                                        |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| **[Guide](./docs/GUIDE.md)**                             | Install, theming, layouts, core CSS, design language, library design, release |
+| **[Components](./docs/COMPONENTS.md)**                   | Component catalog and selection                                               |
+| **[Component authoring](./docs/COMPONENT_AUTHORING.md)** | How to build or change a component                                            |
+| **[docs hub](./docs/README.md)**                         | Authority map                                                                 |
+| **[AGENTS.md](./AGENTS.md)**                             | Agent rules → [Agent Guide](./docs/AGENT_GUIDE.md)                            |
 
 ## Entry Points
 
 | Import                                   | Purpose                                                                |
 | ---------------------------------------- | ---------------------------------------------------------------------- |
 | `@lumi-ui/svelte`                        | Root components, public types, config, icons, charts, portal, Drive UI |
-| `@lumi-ui/svelte/styles`                 | Tokens + core CSS (import once)                                        |
+| `@lumi-ui/svelte/styles`                 | Tokens + core + patterns CSS (import once)                             |
 | `@lumi-ui/svelte/color-scheme`           | Optional light/dark/system controller and pre-paint script             |
 | `@lumi-ui/svelte/drive`                  | Pure Drive helpers and types                                           |
 | `@lumi-ui/svelte/styles/tokens.base.css` | Tokens without core                                                    |
@@ -54,4 +55,4 @@ pnpm run check
 pnpm run package
 ```
 
-Full release checklist: [Guide §7](./docs/GUIDE.md#7-release-verification).
+Full release checklist: [Guide §8](./docs/GUIDE.md#8-release-verification).

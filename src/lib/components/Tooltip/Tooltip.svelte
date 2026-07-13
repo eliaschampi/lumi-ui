@@ -4,7 +4,7 @@
 	import { portal } from '../../actions/portal';
 	import { createFloating } from '../../utils/floating.svelte';
 	import { LUMI_CONFIG } from '../config';
-	import type { TooltipPosition, TooltipProps } from './types';
+	import type { TooltipPlacement, TooltipProps } from './types';
 
 	interface Props extends TooltipProps {
 		children?: Snippet;
@@ -14,7 +14,7 @@
 	const {
 		text = '',
 		color = 'primary',
-		position = 'top',
+		placement = 'top',
 		delay = 0,
 		class: className = '',
 		children,
@@ -39,7 +39,7 @@
 		() => triggerRef,
 		() => tooltipRef,
 		() => ({
-			placement: position,
+			placement: placement,
 			offset: LUMI_CONFIG.floating.tooltip.offset,
 			maxHeight: LUMI_CONFIG.floating.tooltip.maxHeight,
 			viewportPadding: LUMI_CONFIG.floating.tooltip.viewportPadding,
@@ -55,7 +55,7 @@
 	);
 
 	const resolvedPosition = $derived(
-		floating.resolvedPlacement.split('-')[0] as TooltipPosition
+		floating.resolvedPlacement.split('-')[0] as TooltipPlacement
 	);
 
 	const tooltipClasses = $derived.by(() =>

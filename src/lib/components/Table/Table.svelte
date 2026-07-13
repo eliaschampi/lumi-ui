@@ -452,7 +452,7 @@
 					>
 						<Button
 							size="sm"
-							type="border"
+							variant="border"
 							icon="chevronLeft"
 							disabled={activePage === 1}
 							onclick={() => goToPage(activePage - 1)}
@@ -477,7 +477,7 @@
 
 						<Button
 							size="sm"
-							type="border"
+							variant="border"
 							icon="chevronRight"
 							disabled={activePage === totalPages}
 							onclick={() => goToPage(activePage + 1)}
@@ -497,6 +497,17 @@
 	 * ============================================================================ */
 
 	.lumi-table {
+		--lumi-table-column-main-width: 48%;
+		--lumi-table-column-main-min-width: 10rem;
+		--lumi-table-column-actions-width: calc(
+			var(--lumi-space-6xl) + var(--lumi-space-xl)
+		);
+		--lumi-table-column-compact-width: calc(
+			var(--lumi-space-6xl) + var(--lumi-space-2xs)
+		);
+		--lumi-table-column-compact-width-sm: calc(
+			var(--lumi-space-3xl) + var(--lumi-space-lg)
+		);
 		width: 100%;
 		display: flex;
 		flex-direction: column;

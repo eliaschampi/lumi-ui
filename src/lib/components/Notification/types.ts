@@ -3,8 +3,8 @@
  * Toast notifications with positioning and queue management
  */
 
-export type NotificationType =
-	'success' | 'warning' | 'error' | 'info' | 'primary';
+export type NotificationColor =
+	'success' | 'warning' | 'danger' | 'info' | 'primary';
 export type NotificationPosition =
 	| 'top-left'
 	| 'top-right'
@@ -15,10 +15,10 @@ export type NotificationPosition =
 
 export interface NotificationProps {
 	/**
-	 * Notification type
+	 * Semantic accent color
 	 * @default "primary"
 	 */
-	type?: NotificationType;
+	color?: NotificationColor;
 
 	/**
 	 * Notification title

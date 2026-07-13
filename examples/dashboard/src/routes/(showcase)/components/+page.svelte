@@ -20,7 +20,7 @@
 		Image,
 		Loading,
 		Notification,
-		type NotificationType,
+		type NotificationColor,
 		PageHeader,
 		PageSidebar,
 		Progress,
@@ -39,19 +39,19 @@
 
 	// Status & feedback demo state.
 	let notificationVisible = $state(false);
-	let notificationType = $state<NotificationType>('success');
+	let notificationColor = $state<NotificationColor>('success');
 	let notificationTitle = $state('Datos guardados');
-	const NOTIFICATION_TYPES: { value: NotificationType; label: string }[] = [
+	const NOTIFICATION_TYPES: { value: NotificationColor; label: string }[] = [
 		{ value: 'success', label: 'Éxito' },
 		{ value: 'warning', label: 'Advertencia' },
 		{ value: 'info', label: 'Info' },
-		{ value: 'error', label: 'Error' },
+		{ value: 'danger', label: 'Error' },
 		{ value: 'primary', label: 'Primario' }
 	];
 
-	function triggerNotification(type: NotificationType): void {
-		const match = NOTIFICATION_TYPES.find((item) => item.value === type);
-		notificationType = type;
+	function triggerNotification(color: NotificationColor): void {
+		const match = NOTIFICATION_TYPES.find((item) => item.value === color);
+		notificationColor = color;
 		notificationTitle = match?.label ?? 'Notificación';
 		notificationVisible = true;
 	}
@@ -145,11 +145,11 @@
 		<div class="lumi-grid lumi-grid--columns-2 lumi-grid--gap-lg">
 			<Card title="Botones" subtitle="Variantes por jerarquía de acción" spaced>
 				<div class="lumi-flex lumi-flex--wrap lumi-flex--gap-sm">
-					<Button type="filled" icon="plus">Crear</Button>
-					<Button type="border" icon="edit">Editar</Button>
-					<Button type="flat" icon="refreshCw">Actualizar</Button>
-					<Button type="ghost" icon="trash" color="danger">Eliminar</Button>
-					<Button type="filled" loading>Procesando</Button>
+					<Button variant="filled" icon="plus">Crear</Button>
+					<Button variant="border" icon="edit">Editar</Button>
+					<Button variant="flat" icon="refreshCw">Actualizar</Button>
+					<Button variant="ghost" icon="trash" color="danger">Eliminar</Button>
+					<Button variant="filled" loading>Procesando</Button>
 				</div>
 			</Card>
 
@@ -167,9 +167,9 @@
 			<Card title="Ayuda contextual" subtitle="Tooltip portaled y controles accesibles" spaced>
 				<div class="lumi-flex lumi-align-items--center lumi-flex--gap-sm">
 					<Tooltip text="Este contenido se posiciona fuera de ancestros recortados">
-						<Button type="border" icon="info">Mostrar ayuda</Button>
+						<Button variant="border" icon="info">Mostrar ayuda</Button>
 					</Tooltip>
-					<Button type="filled" icon="settings" aria-label="Configurar" />
+					<Button variant="filled" icon="settings" aria-label="Configurar" />
 				</div>
 			</Card>
 
@@ -255,7 +255,7 @@
 	{:else if activeTab === 'status'}
 		<div class="lumi-stack lumi-stack--lg">
 			{#if alertVisible}
-				<Alert type="info" title="Estado informativo" closable bind:active={alertVisible}>
+				<Alert color="info" title="Estado informativo" closable bind:active={alertVisible}>
 					Una alerta permanece dentro del flujo hasta que deja de ser relevante.
 				</Alert>
 			{/if}
@@ -290,7 +290,7 @@
 					<div class="lumi-stack lumi-stack--md">
 						<div class="lumi-flex lumi-flex--wrap lumi-flex--gap-sm">
 							{#each NOTIFICATION_TYPES as type (type.value)}
-								<Button type="border" size="sm" onclick={() => triggerNotification(type.value)}>
+								<Button variant="border" size="sm" onclick={() => triggerNotification(type.value)}>
 									{type.label}
 								</Button>
 							{/each}
@@ -301,7 +301,7 @@
 						</p>
 						{#if notificationVisible}
 							<Notification
-								type={notificationType}
+								color={notificationColor}
 								title={notificationTitle}
 								message="Resumen local de la interacción reciente."
 								closable
@@ -405,7 +405,7 @@
 			<PageHeader title="Workspaces" subtitle="Demostración del contrato de filtros laterales">
 				{#snippet actions()}
 					<Button
-						type="border"
+						variant="border"
 						class="lumi-page-sidebar__mobile-trigger"
 						onclick={() => (filtersOpen = true)}
 					>

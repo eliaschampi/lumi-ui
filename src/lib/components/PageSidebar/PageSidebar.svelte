@@ -9,6 +9,7 @@
 		mobileAriaLabel = 'Cerrar panel lateral',
 		hideMobileHeader = false,
 		class: className = '',
+		variant = '',
 		sidebar,
 		drawer,
 		onclose
@@ -24,7 +25,7 @@
 	}
 </script>
 
-<aside class="lumi-layout--sidebar-left lumi-page-sidebar__desktop">
+<aside class="lumi-layout--sidebar-left lumi-page-sidebar__desktop" data-variant={variant || undefined}>
 	<Card spaced class={cardClasses}>
 		<div class="lumi-page-sidebar__content">
 			{#if sidebar}
@@ -41,12 +42,12 @@
 		onclick={closeMobileSidebar}
 		aria-label={mobileAriaLabel}
 	></button>
-	<aside class="lumi-page-sidebar__drawer">
+	<aside class="lumi-page-sidebar__drawer" data-variant={variant || undefined}>
 		<Card spaced class={cardClasses}>
 			{#if !hideMobileHeader}
 				<div class="lumi-page-sidebar__drawer-header">
 					<p class="lumi-margin--none lumi-font--semibold">{mobileTitle}</p>
-					<Button type="flat" size="sm" icon="x" onclick={closeMobileSidebar} />
+					<Button variant="flat" size="sm" icon="x" onclick={closeMobileSidebar} />
 				</div>
 			{/if}
 			<div class="lumi-page-sidebar__content">

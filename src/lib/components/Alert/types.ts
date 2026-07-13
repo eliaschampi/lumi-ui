@@ -4,12 +4,14 @@
 
 import type { LumiColor } from '../config';
 
+export type AlertColor = LumiColor;
+
 export interface AlertProps {
 	/** Whether alert is visible */
 	active?: boolean;
 
-	/** Alert type variant */
-	type?: LumiColor;
+	/** Semantic accent color */
+	color?: AlertColor;
 
 	/** Alert title */
 	title?: string;

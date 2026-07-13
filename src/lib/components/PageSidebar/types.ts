@@ -16,6 +16,12 @@ export interface PageSidebarProps {
 	/** Additional class names applied to the internal card */
 	class?: string;
 
+	/**
+	 * Optional semantic variant applied as `data-variant` on the root aside.
+	 * Consumers can target `[data-variant="..."]` for per-section styling.
+	 */
+	variant?: string;
+
 	/** Sidebar content rendered in desktop and mobile (fallback) */
 	sidebar?: Snippet;
 

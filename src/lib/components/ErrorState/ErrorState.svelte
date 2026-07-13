@@ -120,7 +120,7 @@
 			{#snippet actions()}
 				<div class="lumi-flex lumi-flex--center lumi-flex--wrap lumi-flex--gap-sm">
 					<Button
-						type="filled"
+						variant="filled"
 						color={content.color}
 						icon={content.status === 500 ? 'refresh' : 'house'}
 						onclick={runPrimaryAction}
@@ -128,7 +128,7 @@
 						{content.primaryAction}
 					</Button>
 					<Button
-						type="border"
+						variant="border"
 						color="primary"
 						icon={content.status === 404 ? 'arrowLeft' : 'house'}
 						onclick={runSecondaryAction}

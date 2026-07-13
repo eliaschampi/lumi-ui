@@ -4,4 +4,4 @@
  */
 
 export { default as Tabs } from './Tabs.svelte';
-export type { Tab, TabsColor, TabsPosition, TabsProps } from './types';
+export type { Tab, TabsColor, TabsOrientation, TabsProps } from './types';

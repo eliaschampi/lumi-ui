@@ -3,10 +3,10 @@
 	import { fly } from 'svelte/transition';
 	import { Icon } from '../Icon';
 	import { LUMI_CONFIG } from '../config';
-	import type { NotificationProps, NotificationType } from './types';
+	import type { NotificationProps, NotificationColor } from './types';
 
 	let {
-		type = 'primary',
+		color = 'primary',
 		title = '',
 		message = '',
 		closable = true,
@@ -17,22 +17,22 @@
 		onclose
 	}: NotificationProps = $props();
 
-	const iconMap: Record<NotificationType, string> = {
+	const iconMap: Record<NotificationColor, string> = {
 		success: 'checkCircle',
 		warning: 'alertTriangle',
-		error: 'xCircle',
+		danger: 'xCircle',
 		info: 'info',
 		primary: 'bell'
 	};
 
 	const transitionDuration = LUMI_CONFIG.transitions.base;
 
-	const role = $derived(type === 'error' || type === 'warning' ? 'alert' : 'status');
+	const role = $derived(color === 'danger' || color === 'warning' ? 'alert' : 'status');
 
 	const classes = $derived.by(() => {
 		const classList = [
 			'lumi-notification',
-			`lumi-notification--${type}`,
+			`lumi-notification--${color}`,
 			`lumi-notification--position-${position}`,
 			duration > 0 && 'lumi-notification--timed'
 		];
@@ -73,7 +73,7 @@
 		transition:fly={{ y: 12, duration: transitionDuration, easing: cubicOut }}
 	>
 		<div class="lumi-notification__icon" aria-hidden="true">
-			<Icon icon={iconMap[type]} size="md" />
+			<Icon icon={iconMap[color]} size="md" />
 		</div>
 
 		<div class="lumi-notification__content">
@@ -100,6 +100,7 @@
 
 <style>
 	.lumi-notification {
+		--lumi-notification-max-inline-size: calc(var(--lumi-space-6xl) * 5);
 		--notification-color: var(--lumi-color-primary);
 		--notification-bg: var(--lumi-color-primary-bg);
 
@@ -145,7 +146,7 @@
 		--notification-bg: var(--lumi-color-warning-bg);
 	}
 
-	.lumi-notification--error {
+	.lumi-notification--danger {
 		--notification-color: var(--lumi-color-danger);
 		--notification-bg: var(--lumi-color-danger-bg);
 	}

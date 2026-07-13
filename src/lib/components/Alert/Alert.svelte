@@ -11,7 +11,7 @@
 	};
 
 	let {
-		type = 'info',
+		color = 'info',
 		title,
 		icon = true,
 		closable = false,
@@ -21,7 +21,7 @@
 		active = $bindable(true)
 	}: Props = $props();
 
-	// Icon mapping for alert types
+	// Icon mapping for alert colors
 	const iconMap: Record<string, string> = {
 		success: 'checkCircle',
 		warning: 'alertTriangle',
@@ -31,11 +31,11 @@
 		secondary: 'info'
 	};
 
-	const alertIcon = $derived(iconMap[type] || 'info');
+	const alertIcon = $derived(iconMap[color] || 'info');
 	const transitionDuration = LUMI_CONFIG.transitions.base;
 
 	const alertClasses = $derived.by(() => {
-		const classes = ['lumi-alert', `lumi-alert--${type}`];
+		const classes = ['lumi-alert', `lumi-alert--${color}`];
 		if (className) classes.push(className);
 		return classes.join(' ');
 	});

@@ -352,20 +352,6 @@
 	--lumi-space-5xl: 5rem;
 	--lumi-space-6xl: 6rem;
 
-	/* Table column sizing (layout="fixed"): prevents main/name column collapsing on narrow viewports */
-	--lumi-table-column-main-width: 48%;
-	--lumi-table-column-main-min-width: 10rem;
-	--lumi-table-column-actions-width: calc(
-		var(--lumi-space-6xl) + var(--lumi-space-xl)
-	);
-	--lumi-table-column-compact-width: calc(
-		var(--lumi-space-6xl) + var(--lumi-space-2xs)
-	);
-	/* Narrow screens: tighter auxiliary columns so horizontal scroll stays usable */
-	--lumi-table-column-compact-width-sm: calc(
-		var(--lumi-space-3xl) + var(--lumi-space-lg)
-	);
-
 	/* ========================================================================== */
 	/* TYPOGRAPHY SYSTEM                                                          */
 	/* ========================================================================== */
@@ -481,14 +467,6 @@
 	--lumi-z-tooltip: 2050;
 	--lumi-z-toast: 2060;
 	--lumi-z-max: 999999;
-	--lumi-dialog-width-sm: 25rem;
-	--lumi-dialog-width-md: 31.25rem;
-	--lumi-dialog-width-lg: 43.75rem;
-	--lumi-dialog-width-xl: 56.25rem;
-	--lumi-dialog-max-height: 90vh;
-	--lumi-dialog-content-max-height: 60vh;
-	--lumi-dialog-full-width: 100vw;
-	--lumi-dialog-full-height: 100vh;
 	--lumi-sidebar-width: 16.25rem;
 	--lumi-sidebar-width-collapsed: 5rem;
 	--lumi-sidebar-width-mobile: 20rem;
@@ -525,15 +503,6 @@
 	--lumi-sidebar-mobile-closed-shift: calc(
 		-100% - var(--lumi-sidebar-mobile-offset)
 	);
-	--lumi-dialog-overlay-padding: var(--lumi-space-lg);
-	--lumi-dialog-overlay-padding-mobile: var(--lumi-space-sm);
-	--lumi-dialog-mobile-max-width: calc(
-		100vw - (var(--lumi-dialog-overlay-padding-mobile) * 2)
-	);
-	--lumi-dialog-mobile-max-height: calc(
-		100dvh - (var(--lumi-dialog-overlay-padding-mobile) * 2)
-	);
-	--lumi-notification-max-inline-size: calc(var(--lumi-space-6xl) * 5);
 	--lumi-toast-portal-max-width: 23.75rem;
 	--lumi-navbar-branch-max-width: min(10rem, 34vw);
 	--lumi-navbar-branch-text-max-width: 7rem;
@@ -573,8 +542,6 @@
 	--lumi-max-width-5xl: 64rem;
 	--lumi-max-width-6xl: 72rem;
 	--lumi-prose-max-width: 58ch;
-	--lumi-placeholder-tile-size-md: 4rem;
-	--lumi-placeholder-tile-size-lg: 5.5rem;
 	--lumi-dashboard-card-grid-min: 17.5rem;
 	--lumi-dashboard-card-grid-max: 21rem;
 	--lumi-card-media-height: 12.5rem;

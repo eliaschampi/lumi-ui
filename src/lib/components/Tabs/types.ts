@@ -1,7 +1,7 @@
 import type { LumiColor } from '../config';
 
 export type TabsColor = LumiColor;
-export type TabsPosition = 'horizontal' | 'vertical';
+export type TabsOrientation = 'horizontal' | 'vertical';
 
 export interface Tab {
 	/**
@@ -44,10 +44,10 @@ export interface TabsProps {
 	color?: TabsColor;
 
 	/**
-	 * Tab position
+	 * Tab orientation
 	 * @default "horizontal"
 	 */
-	position?: TabsPosition;
+	orientation?: TabsOrientation;
 
 	/**
 	 * Custom CSS class

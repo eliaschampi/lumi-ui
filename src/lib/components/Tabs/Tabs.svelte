@@ -13,7 +13,7 @@
 		value = $bindable(),
 		tabs = [],
 		color = 'primary',
-		position = 'horizontal',
+		orientation = 'horizontal',
 		'aria-label': ariaLabel = '',
 		class: className = '',
 		children,
@@ -39,7 +39,7 @@
 	});
 
 	const classes = $derived(
-		['lumi-tabs', `lumi-tabs--${position}`, `lumi-tabs--${color}`, className]
+		['lumi-tabs', `lumi-tabs--${orientation}`, `lumi-tabs--${color}`, className]
 			.filter(Boolean)
 			.join(' ')
 	);
@@ -59,7 +59,7 @@
 
 		let nextIndex = currentIndex;
 
-		if (position === 'horizontal') {
+		if (orientation === 'horizontal') {
 			if (event.key === 'ArrowLeft') {
 				event.preventDefault();
 				nextIndex = currentIndex > 0 ? currentIndex - 1 : enabledTabs.length - 1;
@@ -88,7 +88,7 @@
 	<div
 		class="lumi-tabs__nav"
 		role="tablist"
-		aria-orientation={position}
+		aria-orientation={orientation}
 		aria-label={ariaLabel || 'Tabs'}
 	>
 		{#each tabs as tab (tab.value)}

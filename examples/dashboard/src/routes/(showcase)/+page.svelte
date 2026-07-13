@@ -35,7 +35,7 @@
 		size="xl"
 	>
 		{#snippet actions()}
-			<Button type="filled" icon="chartBar" onclick={() => (reportOpen = true)}>
+			<Button variant="filled" icon="chartBar" onclick={() => (reportOpen = true)}>
 				Crear reporte
 			</Button>
 		{/snippet}
@@ -187,7 +187,7 @@
 	</div>
 
 	{#snippet footer()}
-		<Button type="flat" onclick={() => (reportOpen = false)}>Cancelar</Button>
-		<Button type="filled" icon="download" onclick={() => (reportOpen = false)}>Generar</Button>
+		<Button variant="flat" onclick={() => (reportOpen = false)}>Cancelar</Button>
+		<Button variant="filled" icon="download" onclick={() => (reportOpen = false)}>Generar</Button>
 	{/snippet}
 </Dialog>

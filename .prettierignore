@@ -1,2 +1,5 @@
 dist
 .svelte-kit
+node_modules
+examples/dashboard/build
+examples/dashboard/.svelte-kit

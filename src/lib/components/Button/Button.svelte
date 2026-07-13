@@ -11,7 +11,7 @@
 	}
 
 	const {
-		type = 'filled',
+		variant = 'filled',
 		color = 'primary',
 		size = 'md',
 		icon,
@@ -19,7 +19,7 @@
 		radius = false,
 		loading = false,
 		disabled = false,
-		button = 'button',
+		type = 'button',
 		'aria-label': ariaLabel = '',
 		class: className,
 		onclick,
@@ -37,7 +37,7 @@
 	});
 
 	const buttonClasses = $derived.by(() => {
-		const classes = ['lumi-button', `lumi-button--${type}`, `lumi-button--${size}`];
+		const classes = ['lumi-button', `lumi-button--${variant}`, `lumi-button--${size}`];
 
 		if (radius) classes.push('lumi-button--radius');
 		if (icon && !children) classes.push('lumi-button--icon-only');
@@ -64,7 +64,7 @@
 
 <button
 	class={buttonClasses}
-	type={button}
+	type={type}
 	disabled={disabled || loading}
 	aria-label={ariaLabel || (icon && !children ? icon : undefined)}
 	onclick={handleClick}

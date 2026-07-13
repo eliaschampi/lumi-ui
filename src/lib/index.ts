@@ -1,6 +1,6 @@
 export type { AvatarColor, AvatarProps, AvatarSize } from './components/Avatar';
 export { Avatar } from './components/Avatar';
-export type { ButtonProps } from './components/Button';
+export type { ButtonProps, ButtonVariant } from './components/Button';
 export { Button } from './components/Button';
 export type { CardProps } from './components/Card';
 export { Card } from './components/Card';
@@ -20,7 +20,6 @@ export type { DialogProps, DialogSize } from './components/Dialog';
 export { Dialog } from './components/Dialog';
 export type {
 	DropdownPlacement,
-	DropdownPosition,
 	DropdownItemProps,
 	DropdownProps,
 	DropdownSize,
@@ -74,7 +73,7 @@ export { Table } from './components/Table';
 export type {
 	Tab,
 	TabsColor,
-	TabsPosition,
+	TabsOrientation,
 	TabsProps
 } from './components/Tabs';
 export { Tabs } from './components/Tabs';
@@ -85,7 +84,7 @@ export type {
 } from './components/Textarea';
 export { Textarea } from './components/Textarea';
 
-export type { AlertProps } from './components/Alert';
+export type { AlertColor, AlertProps } from './components/Alert';
 export { Alert } from './components/Alert';
 export type {
 	AvatarGroupItem,
@@ -116,10 +115,7 @@ export type {
 export { DashboardChart } from './components/DashboardChart';
 export type { DashboardSectionProps } from './components/DashboardSection';
 export { DashboardSection } from './components/DashboardSection';
-export {
-	DateRangeFilter,
-	DateRangeToolbar
-} from './components/DateRangeFilter';
+export { DateRangeFilter } from './components/DateRangeFilter';
 export type { DividerPosition, DividerProps } from './components/Divider';
 export { Divider } from './components/Divider';
 export type { DriveFileItem } from './components/Drive';
@@ -173,7 +169,7 @@ export { Loading } from './components/Loading';
 export type {
 	NotificationPosition,
 	NotificationProps,
-	NotificationType
+	NotificationColor
 } from './components/Notification';
 export { Notification } from './components/Notification';
 export type { PageHeaderProps } from './components/PageHeader';
@@ -212,7 +208,7 @@ export type {
 export { Title } from './components/Title';
 export type {
 	TooltipColor,
-	TooltipPosition,
+	TooltipPlacement,
 	TooltipProps
 } from './components/Tooltip';
 export { Tooltip } from './components/Tooltip';

@@ -118,9 +118,9 @@
   {/if}
 
   {#snippet footer()}
-    <Button type="border" onclick={() => (open = false)}>Cerrar</Button>
+    <Button variant="border" onclick={() => (open = false)}>Cerrar</Button>
     {#if file}
-      <Button type="filled" icon="download" onclick={() => ondownload?.(file)}
+      <Button variant="filled" icon="download" onclick={() => ondownload?.(file)}
         >Descargar</Button
       >
     {/if}

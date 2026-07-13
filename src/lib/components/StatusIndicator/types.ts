@@ -5,7 +5,6 @@ export type StatusIndicatorStatus =
 	| 'active'
 	| 'inactive'
 	| 'pending'
-	| 'error'
 	| 'primary'
 	| 'secondary'
 	| 'success'

@@ -47,7 +47,7 @@
 	/>
 
 	{#if submitted}
-		<Alert type="success" title="Preferencias guardadas" closable>
+		<Alert color="success" title="Preferencias guardadas" closable>
 			La demostración actualizó su estado local correctamente.
 		</Alert>
 	{/if}
@@ -98,8 +98,13 @@
 			<Textarea bind:value={notes} name="notes" label="Notas" rows={4} maxlength={240} showCount />
 
 			<div class="lumi-flex lumi-flex--wrap lumi-justify--end lumi-flex--gap-sm">
-				<Button type="flat" onclick={() => (submitted = false)}>Cancelar</Button>
-				<Button type="filled" icon="check" button="submit" disabled={!name.trim() || !email.trim()}>
+				<Button variant="flat" onclick={() => (submitted = false)}>Cancelar</Button>
+				<Button
+					variant="filled"
+					icon="check"
+					type="submit"
+					disabled={!name.trim() || !email.trim()}
+				>
 					Guardar cambios
 				</Button>
 			</div>

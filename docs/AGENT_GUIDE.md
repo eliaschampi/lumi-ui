@@ -4,14 +4,16 @@
 
 ## Route the Task
 
-| Task                                         | Read                                                   |
-| -------------------------------------------- | ------------------------------------------------------ |
-| Install / integrate                          | [GUIDE §1–2](./GUIDE.md#1-install)                     |
-| Brand or light/dark                          | [GUIDE §3](./GUIDE.md#3-theming-and-color-scheme)      |
-| Shells, grids, page composition              | [GUIDE §4](./GUIDE.md#4-layouts-and-composition)       |
-| CSS class family or utility                  | [GUIDE §5](./GUIDE.md#5-core-css-reference)            |
-| Entry points, ownership, “does this belong?” | [GUIDE §6](./GUIDE.md#6-library-design)                |
-| Choose or change a component                 | [Components](./COMPONENTS.md) → `types.ts` → `.svelte` |
+| Task                                         | Read                                                     |
+| -------------------------------------------- | -------------------------------------------------------- |
+| Install / integrate                          | [GUIDE §1–2](./GUIDE.md#1-install)                       |
+| Brand or light/dark                          | [GUIDE §3](./GUIDE.md#3-theming-and-color-scheme)        |
+| Shells, grids, page composition              | [GUIDE §4](./GUIDE.md#4-layouts-and-composition)         |
+| CSS class family or utility                  | [GUIDE §5](./GUIDE.md#5-core-css-reference)              |
+| Visual language, interaction, minimalism     | [GUIDE §6](./GUIDE.md#6-design-language)                 |
+| Entry points, ownership, “does this belong?” | [GUIDE §7](./GUIDE.md#7-library-design)                  |
+| Choose or change a component                 | [Components](./COMPONENTS.md) → `types.ts` → `.svelte`   |
+| Build, fix, or refactor a component          | [Component authoring](./COMPONENT_AUTHORING.md) → source |
 
 ## Workflow
 
@@ -39,7 +41,7 @@ rg '\$props|Snippet|aria-|role=' src/lib/components/Button
 | CSS, tokens, or layout      | `pnpm run check`; visual check only if behavior changed  |
 | Overlay interaction         | Checks + keyboard, focus, dismissal, clipping, collision |
 
-Do not start a duplicate dev server. Release checklist: [GUIDE §7](./GUIDE.md#7-release-verification).
+Do not start a duplicate dev server. Release checklist: [GUIDE §8](./GUIDE.md#8-release-verification).
 
 ## Done When
 

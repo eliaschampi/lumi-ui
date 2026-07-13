@@ -3,4 +3,4 @@
  */
 
 export { default as Alert } from './Alert.svelte';
-export type { AlertProps } from './types';
+export type { AlertColor, AlertProps } from './types';

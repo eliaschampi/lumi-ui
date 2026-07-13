@@ -61,13 +61,13 @@
 	{#if showReset || showApply}
 		<div class="lumi-form-action-row__actions">
 			{#if showReset}
-				<Button type="border" size={buttonSize} onclick={onreset} {disabled}>
+				<Button variant="border" size={buttonSize} onclick={onreset} {disabled}>
 					{resetLabel}
 				</Button>
 			{/if}
 			{#if showApply}
 				<Button
-					type="flat"
+					variant="flat"
 					color="info"
 					icon="search"
 					size={buttonSize}

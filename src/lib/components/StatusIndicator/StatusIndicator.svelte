@@ -21,7 +21,6 @@
 		'active',
 		'inactive',
 		'pending',
-		'error',
 		'primary',
 		'secondary',
 		'success',
@@ -87,10 +86,6 @@
 
 	.lumi-status-indicator--pending {
 		background: var(--lumi-color-warning);
-	}
-
-	.lumi-status-indicator--error {
-		background: var(--lumi-color-danger);
 	}
 
 	.lumi-status-indicator--primary {

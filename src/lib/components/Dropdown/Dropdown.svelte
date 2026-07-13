@@ -16,7 +16,6 @@
 	let {
 		open = $bindable(false),
 		placement,
-		position,
 		size = 'md',
 		disabled = false,
 		trigger = 'click',
@@ -33,8 +32,7 @@
 		triggerContent
 	}: Props = $props();
 
-	// Support both placement and position (deprecated) with fallback to default
-	const resolvedPlacement = $derived(placement ?? position ?? 'bottom-start');
+	const resolvedPlacement = $derived(placement ?? 'bottom-start');
 
 	let dropdownRef: HTMLDivElement | undefined = $state();
 	let triggerRef: HTMLDivElement | undefined = $state();

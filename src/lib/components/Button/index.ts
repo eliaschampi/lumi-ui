@@ -4,4 +4,4 @@
  */
 
 export { default as Button } from './Button.svelte';
-export type { ButtonProps } from './types';
+export type { ButtonProps, ButtonVariant } from './types';

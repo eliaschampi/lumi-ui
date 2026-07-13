@@ -1,7 +1,7 @@
 import type { LumiColor } from '../config';
 
 export type TooltipColor = LumiColor;
-export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
+export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
 
 export interface TooltipProps {
 	/** Tooltip text */
@@ -10,8 +10,8 @@ export interface TooltipProps {
 	/** Tooltip color */
 	color?: TooltipColor;
 
-	/** Tooltip position */
-	position?: TooltipPosition;
+	/** Tooltip placement relative to trigger */
+	placement?: TooltipPlacement;
 
 	/** Delay before showing (ms) */
 	delay?: number;

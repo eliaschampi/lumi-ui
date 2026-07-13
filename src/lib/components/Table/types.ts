@@ -63,7 +63,7 @@ export interface TableProps<TRow extends object = TableRow> {
 	class?: string;
 	/** Accessible table name when no visible caption identifies it */
 	'aria-label'?: string;
-	/** Legacy table body content when data is not supplied */
+	/** Table body content when data is not supplied */
 	children?: Snippet;
 	/** Header toolbar content */
 	header?: Snippet;

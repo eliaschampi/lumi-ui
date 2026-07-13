@@ -2,7 +2,7 @@
 
 Complete product documentation. Component selection lives in [Components](./COMPONENTS.md). Source (`types.ts`, `.svelte`, CSS) is authoritative for exact APIs.
 
-**Contents:** [Install](#1-install) · [First page](#2-first-page) · [Theming](#3-theming-and-color-scheme) · [Layouts](#4-layouts-and-composition) · [Core CSS](#5-core-css-reference) · [Library design](#6-library-design) · [Release](#7-release-verification)
+**Contents:** [Install](#1-install) · [First page](#2-first-page) · [Theming](#3-theming-and-color-scheme) · [Layouts](#4-layouts-and-composition) · [Core CSS](#5-core-css-reference) · [Design language](#6-design-language) · [Library design](#7-library-design) · [Release](#8-release-verification)
 
 ---
 
@@ -77,13 +77,13 @@ Repackage after public export changes. Runnable integration: [`examples/dashboar
 
 <div class="lumi-stack lumi-stack--lg">
 	<PageHeader title="Workspace" subtitle="A clean starting point">
-		{#snippet actions()}<Button type="filled">Create</Button>{/snippet}
+		{#snippet actions()}<Button variant="filled">Create</Button>{/snippet}
 	</PageHeader>
 
 	<div class="lumi-grid lumi-grid--responsive">
 		<Card title="Profile" spaced>
 			<Input bind:value={name} name="name" label="Display name" />
-			<Button type="filled" disabled={!name.trim()}>Save</Button>
+			<Button variant="filled" disabled={!name.trim()}>Save</Button>
 		</Card>
 		<Card title="Status">Use components for behavior and utilities for composition.</Card>
 	</div>
@@ -272,7 +272,7 @@ At `64rem` and below, core switches the shell to navbar/content. `Sidebar` separ
 ```svelte
 <div class="lumi-stack lumi-stack--lg">
 	<PageHeader title="Records" subtitle="Current workspace">
-		{#snippet actions()}<Button type="filled">Create</Button>{/snippet}
+		{#snippet actions()}<Button variant="filled">Create</Button>{/snippet}
 	</PageHeader>
 
 	<DashboardSection title="Directory">
@@ -292,7 +292,7 @@ At `64rem` and below, core switches the shell to navbar/content. `Sidebar` separ
 	{#snippet actions()}
 		<div class="lumi-page-sidebar__header-actions">
 			<Button
-				type="border"
+				variant="border"
 				class="lumi-page-sidebar__mobile-trigger"
 				onclick={() => (filtersOpen = true)}
 			>
@@ -338,7 +338,7 @@ Tokenized gaps: `2xs`–`xxl`. Responsive collapse differs by family—see [grid
 ```
 
 - **Flex** — direction, wrap, alignment, justification, gaps, item growth, mobile stacking.
-- **Stack** — canonical vertical rhythm (`.lumi-space--*` is deprecated).
+- **Stack** — canonical vertical rhythm via `.lumi-stack` + `.lumi-stack--*`.
 - **Container** — sizes `sm`–`2xl` always; `wide` / `ultrawide` only from `80rem` / `96rem`.
 
 ### Composition rules
@@ -353,15 +353,15 @@ Tokenized gaps: `2xs`–`xxl`. Responsive collapse differs by family—see [grid
 
 ## 5. Core CSS reference
 
-Family-level map of [`core.css`](../src/lib/styles/core.css). Find the family here, then inspect that section for exact declarations.
+Family-level map of composition CSS. Shells and utilities: [`core.css`](../src/lib/styles/core.css). Product-composition patterns: [`patterns.css`](../src/lib/styles/patterns.css). Find the family here, then inspect the owning file for exact declarations.
 
 ### Import and scope
 
 ```ts
-import '@lumi-ui/svelte/styles'; // tokens.base.css then core.css
+import '@lumi-ui/svelte/styles'; // tokens.base.css → core.css → patterns.css
 ```
 
-Direct subpaths exist when a build needs control; tokens must precede core. Importing core also applies global box-sizing, `html`/`body`/`#app`, selection, reduced-motion, and responsive heading rules.
+Direct subpaths exist when a build needs control; tokens must precede core. The default styles entry also includes patterns. Importing core also applies global box-sizing, `html`/`body`/`#app`, selection, reduced-motion, and responsive heading rules.
 
 Classes below are supported composition hooks. Other selectors style component internals—use component props, not those selectors. Braces `{…}` mean alternatives, not literal class names.
 
@@ -396,7 +396,7 @@ At exactly `64rem`, both max-width shell rules and min-width `*-lg` grid rules a
 
 ### Shared CSS patterns
 
-Domain-neutral compositions (not Svelte components). Use documented BEM children; do not invent modifiers.
+Domain-neutral compositions in [`patterns.css`](../src/lib/styles/patterns.css) (not Svelte components; included by `@lumi-ui/svelte/styles`). Use documented BEM children; do not invent modifiers.
 
 | Pattern                | Families and variants                                                                                                                                                       |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -443,14 +443,89 @@ Mobile-only content: combine `.lumi-hidden` with `.lumi-visible-mobile`.
 
 ### CSS compatibility
 
-- Prefer `.lumi-dashboard-layout__content`, `.lumi-width--fit`, `.lumi-position--relative` / `--absolute` over aliases `.lumi-dashboard__content`, `.lumi-fit-content`, `.lumi-relative`, `.lumi-absolute`.
-- `.lumi-space--*` is deprecated → `.lumi-stack` + `.lumi-stack--*`.
-- Do not copy core declarations into app CSS; compose the public class or its `--lumi-*` token.
-- Narrow search: `rg -n "lumi-filter-summary" src/lib/styles/core.css`.
+- Do not copy core or pattern declarations into app CSS; compose the public class or its `--lumi-*` token.
+- Narrow search: `rg -n "lumi-filter-summary" src/lib/styles/patterns.css`.
 
 ---
 
-## 6. Library design
+## 6. Design language
+
+Visual and interaction intent. Structural ownership: [§7 Library design](#7-library-design). Exact tokens: [`tokens.base.css`](../src/lib/styles/tokens.base.css).
+
+### Calm glass
+
+Lumi is a premium, minimal product shell—not a generic kit and not loud SaaS gradients. North star: _if you remove one more line of decoration and the UI still feels complete, you are closer to Lumi._
+
+1. **Layered light, not heavy chrome.** Surfaces float over a softly tinted canvas; borders are thin and low-contrast.
+2. **Elevation is quiet.** Shadows use the neutral ink key (`--lumi-shadow-key-rgb`) with contact + ambient layers; avoid pure-black blobs.
+3. **Glass is restrained.** Blur and translucency appear on overlays, sidebars, and cards—never as a noisy texture soup.
+4. **145° gradients.** Card and app washes tilt consistently (`145deg`) with tiny primary/info tints—subtle, not neon.
+5. **Sheen is optional polish.** Top-edge inset highlights simulate liquid glass; keep opacity low.
+6. **No arbitrary decoration.** No confetti backgrounds, no multi-colored borders, no bounce-heavy motion.
+
+### Surface ladder
+
+From recessed to floating:
+
+```txt
+inset → surface → card → elevated → raised / overlay / glass
+```
+
+- **Inset / control-fill** — fields, wells, segmented tracks
+- **Surface / card** — content panels
+- **Elevated / raised** — sticky headers, highlighted panels
+- **Glass / floating** — dialogs, dropdowns, context menus, tooltips
+
+Dashboard content background is intentionally translucent so cards stay visibly elevated above the shell. Do not solid-fill the main content until cards disappear into a flat slab.
+
+### Contrast and semantics
+
+- Text: full ink (`--lumi-color-text`) on surfaces; muted/light for secondary copy.
+- Focus: tokenized control ring (`--lumi-control-focus-shadow`).
+- Semantic states pair color with icon or text—never color alone.
+
+Components must not invent `purple`, `teal`, or product names as colors. The public color API is `primary | secondary | success | warning | danger | info` ([§3](#3-theming-and-color-scheme)).
+
+### Geometry — space, type, radius, motion
+
+| Concern      | Tokens                                                                                                     | Rule                                                                                     |
+| ------------ | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Spacing      | `--lumi-space-2xs` … `--lumi-space-6xl` (4px base)                                                         | Compose from tokens; no magic numbers unless a `calc()` of tokens                        |
+| Typography   | Inter + system stack; scale `xs`→`4xl`; weights normal→bold                                                | Prefer medium/semibold for UI chrome; base app size is compact `sm` for dense product UI |
+| Radius       | `--lumi-control-radius` (controls), `--lumi-surface-radius` (large surfaces), `--lumi-radius-full` (pills) | One radius per role; do not invent per component                                         |
+| Motion       | `--lumi-duration-fast` (150ms), `--lumi-duration-base` (220ms), `--lumi-duration-slow` / `slower`          | Fast = micro (hover, color); base = default UI; slow/slower = overlay enter/exit only    |
+| Easing       | `--lumi-easing-default`                                                                                    | Primary smooth-decelerate curve                                                          |
+| Press / lift | `--lumi-interactive-press-scale`, `--lumi-interactive-lift`                                                | Subtle; never jump                                                                       |
+
+Align form controls to `--lumi-control-height-sm|md|lg|xl` so buttons, inputs, selects, and segmented controls feel like one family at each size. Match JS transition durations to `LUMI_CONFIG.transitions` when coordinating Svelte transitions.
+
+### Interaction patterns
+
+| Pattern     | Expectation                                                    |
+| ----------- | -------------------------------------------------------------- |
+| Hover       | Soft fill/border shift; optional 1px lift—never jump           |
+| Focus       | Visible ring from tokens; keyboard-first                       |
+| Disabled    | Reduced opacity (`--lumi-opacity-disabled`), no pointer events |
+| Loading     | Spinner or progress; block double-submit                       |
+| Selection   | Primary-tinted border/bg; clear selected vs hover              |
+| Destructive | `danger` color; confirm in app logic, not red styling alone    |
+| Overlays    | Portal + Floating UI; Escape closes unless `persistent`        |
+
+### Minimalism checklist
+
+Before shipping a visual change:
+
+1. Can this use an existing token instead of a new one?
+2. Does this introduce a second way to do the same thing? (If yes, stop.)
+3. Would both products want this by default?
+4. Is the default quieter than the custom case?
+5. Did you remove something unused while adding something new?
+
+Good minimalism: fewer props, fewer CSS branches, shared sizes. Bad minimalism: removing a11y, contrast, or empty states.
+
+---
+
+## 7. Library design
 
 Lumi is a semantic Svelte 5 system shared by unrelated products—not a business-component collection.
 
@@ -571,7 +646,7 @@ Avoid import-time DOM mutation. Listeners, observers, timers, requests, and port
 
 ---
 
-## 7. Release verification
+## 8. Release verification
 
 ```bash
 pnpm install --ignore-scripts

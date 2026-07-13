@@ -5,14 +5,16 @@
 
 import type { LumiColor, LumiDisplaySize } from '../config';
 
-export interface ButtonProps {
-	/** Button type variant */
-	type?: 'filled' | 'border' | 'flat' | 'ghost' | 'gradient';
+export type ButtonVariant = 'filled' | 'border' | 'flat' | 'ghost' | 'gradient';
 
-	/** Color variant */
+export interface ButtonProps {
+	/** Visual style variant */
+	variant?: ButtonVariant;
+
+	/** Semantic accent color */
 	color?: LumiColor;
 
-	/** Size variant */
+	/** Size on the shared display scale */
 	size?: LumiDisplaySize;
 
 	/** Icon name to display */
@@ -31,7 +33,7 @@ export interface ButtonProps {
 	disabled?: boolean;
 
 	/** HTML button type */
-	button?: 'button' | 'submit' | 'reset';
+	type?: 'button' | 'submit' | 'reset';
 
 	/** Accessible label for icon-only buttons */
 	'aria-label'?: string;

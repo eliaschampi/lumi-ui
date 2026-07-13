@@ -46,11 +46,11 @@
 		size="xl"
 	>
 		{#snippet actions()}
-			<Button type="border" icon="refresh" onclick={resetPreferences}>Restablecer</Button>
+			<Button variant="border" icon="refresh" onclick={resetPreferences}>Restablecer</Button>
 		{/snippet}
 	</PageHeader>
 
-	<Alert type="info" title="Separación de responsabilidades">
+	<Alert color="info" title="Separación de responsabilidades">
 		La identidad primary/secondary pertenece al desarrollador. El usuario final solo elige sistema,
 		claro u oscuro.
 	</Alert>

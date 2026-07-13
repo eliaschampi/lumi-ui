@@ -23,7 +23,7 @@
 	<div class="lumi-navbar__left">
 		<div class="lumi-navbar__menu-btn">
 			<Button
-				type="ghost"
+				variant="ghost"
 				size="md"
 				icon="menu"
 				aria-label="Toggle sidebar"
