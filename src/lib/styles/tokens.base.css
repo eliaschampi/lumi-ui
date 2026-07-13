@@ -1,11 +1,11 @@
 /* Lumi UI - Base Design Tokens */
-/* Default theme: Lumi Calm Surface - Coedula identity (Cobalt x Olive) on warm paper */
+/* Default theme: Lumi Calm Surface identity (Cobalt x Olive) on warm paper */
 /*
  * Architecture: theme seeds own identity; semantic tokens own component behavior.
  *   Seeds       : neutral/canvas RGB, accent and solid role colors, white and black.
  *   Surfaces    : warm neutral solids by default; transparency is reserved for overlays.
  *   Effects     : one restrained accent per layer, with neutral elevation shadows.
- *   Overrides   : product themes replace seeds, never component-level semantic tokens.
+ *   Overrides   : consumer themes replace brand seeds, never component semantic tokens.
  */
 :root {
 	color-scheme: light;
@@ -15,14 +15,27 @@
 	/* ========================================================================== */
 
 	/* --- SEEDS (curated; everything below is derived from these) -------------- */
-	/* Identity: Coedula — warm paper neutrals, cobalt primary, olive secondary, magenta danger. */
+	/* Public identity contract: override these two colors after importing Lumi styles. */
 	--lumi-neutral-rgb: 34, 28, 26;
 	--lumi-canvas-rgb: 247, 243, 237;
+	--lumi-brand-primary: rgb(10, 110, 220);
+	--lumi-brand-secondary: rgb(77, 124, 15);
+	/* Advanced overrides remain derived unless a brand needs manual calibration. */
+	--lumi-brand-primary-dark: color-mix(
+		in srgb,
+		var(--lumi-brand-primary) 80%,
+		white
+	);
+	--lumi-brand-secondary-dark: color-mix(
+		in oklch,
+		var(--lumi-brand-secondary) 78%,
+		white
+	);
+	--lumi-brand-primary-foreground: var(--lumi-color-white);
+	--lumi-brand-secondary-foreground: var(--lumi-color-white);
 	/* Accents sit on surfaces; solids sit behind foreground content. */
-	--lumi-color-primary-solid-rgb: 10, 110, 220;
-	--lumi-color-primary-solid: rgb(var(--lumi-color-primary-solid-rgb));
-	--lumi-color-primary-rgb: var(--lumi-color-primary-solid-rgb);
-	--lumi-color-primary: rgb(var(--lumi-color-primary-rgb));
+	--lumi-color-primary-solid: var(--lumi-brand-primary);
+	--lumi-color-primary: var(--lumi-brand-primary);
 	--lumi-color-primary-50: color-mix(
 		in srgb,
 		var(--lumi-color-primary) 10%,
@@ -33,10 +46,8 @@
 		var(--lumi-color-primary) 45%,
 		var(--lumi-color-white)
 	);
-	--lumi-color-secondary-solid-rgb: 77, 124, 15;
-	--lumi-color-secondary-solid: rgb(var(--lumi-color-secondary-solid-rgb));
-	--lumi-color-secondary-rgb: var(--lumi-color-secondary-solid-rgb);
-	--lumi-color-secondary: rgb(var(--lumi-color-secondary-rgb));
+	--lumi-color-secondary-solid: var(--lumi-brand-secondary);
+	--lumi-color-secondary: var(--lumi-brand-secondary);
 	--lumi-color-success-solid-rgb: 8, 122, 85;
 	--lumi-color-success-solid: rgb(var(--lumi-color-success-solid-rgb));
 	--lumi-color-success-rgb: var(--lumi-color-success-solid-rgb);
@@ -76,8 +87,8 @@
 		var(--lumi-color-surface)
 	);
 	--lumi-color-text-inverse: var(--lumi-color-white);
-	--lumi-color-primary-foreground: var(--lumi-color-white);
-	--lumi-color-secondary-foreground: var(--lumi-color-white);
+	--lumi-color-primary-foreground: var(--lumi-brand-primary-foreground);
+	--lumi-color-secondary-foreground: var(--lumi-brand-secondary-foreground);
 	--lumi-color-success-foreground: var(--lumi-color-white);
 	--lumi-color-warning-foreground: var(--lumi-color-white);
 	--lumi-color-danger-foreground: var(--lumi-color-white);
@@ -200,14 +211,22 @@
 	--lumi-color-warning-bg: rgba(var(--lumi-color-warning-rgb), 0.12);
 	--lumi-color-danger-bg: rgba(var(--lumi-color-danger-rgb), 0.1);
 	--lumi-color-info-bg: rgba(var(--lumi-color-info-rgb), 0.1);
-	--lumi-color-primary-bg: rgba(var(--lumi-color-primary-rgb), 0.1);
-	--lumi-color-secondary-bg: rgba(var(--lumi-color-secondary-rgb), 0.12);
+	--lumi-color-primary-bg: color-mix(
+		in srgb,
+		var(--lumi-color-primary) 10%,
+		transparent
+	);
+	--lumi-color-secondary-bg: color-mix(
+		in srgb,
+		var(--lumi-color-secondary) 12%,
+		transparent
+	);
 
 	/* --- DERIVED GRADIENTS / FX ---------------------------------------------- */
 	--lumi-gradient-app:
 		radial-gradient(
 			circle at 8% 0%,
-			rgba(var(--lumi-color-primary-rgb), 0.04),
+			color-mix(in srgb, var(--lumi-color-primary) 4%, transparent),
 			transparent 36%
 		),
 		linear-gradient(
@@ -234,7 +253,7 @@
 	--lumi-gradient-card:
 		linear-gradient(
 			145deg,
-			rgba(var(--lumi-color-primary-rgb), 0.012) 0%,
+			color-mix(in srgb, var(--lumi-color-primary) 1.2%, transparent) 0%,
 			transparent 68%,
 			transparent 100%
 		),
@@ -242,7 +261,7 @@
 	--lumi-gradient-card-hover:
 		linear-gradient(
 			145deg,
-			rgba(var(--lumi-color-primary-rgb), 0.022) 0%,
+			color-mix(in srgb, var(--lumi-color-primary) 2.2%, transparent) 0%,
 			transparent 68%,
 			transparent 100%
 		),
@@ -256,7 +275,7 @@
 	--lumi-floating-surface-bg:
 		linear-gradient(
 			145deg,
-			rgba(var(--lumi-color-primary-rgb), 0.018) 0%,
+			color-mix(in srgb, var(--lumi-color-primary) 1.8%, transparent) 0%,
 			transparent 28%
 		),
 		var(--lumi-color-surface-glass-strong);
@@ -297,7 +316,7 @@
 	);
 	--lumi-gradient-subtle: linear-gradient(
 		145deg,
-		rgba(var(--lumi-color-primary-rgb), 0.012) 0%,
+		color-mix(in srgb, var(--lumi-color-primary) 1.2%, transparent) 0%,
 		transparent 70%
 	);
 	--lumi-gradient-glass-sidebar: var(--lumi-gradient-subtle);
@@ -314,7 +333,7 @@
 	--lumi-sidebar-header-sheen-opacity: 0.52;
 	--lumi-gradient-glass-total-summary: linear-gradient(
 		145deg,
-		rgba(var(--lumi-color-primary-rgb), 0.025) 0%,
+		color-mix(in srgb, var(--lumi-color-primary) 2.5%, transparent) 0%,
 		transparent 70%
 	);
 	/* ========================================================================== */
@@ -596,6 +615,16 @@
 	--lumi-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
+/* Progressive enhancement: modern browsers choose black/white brand foregrounds. */
+@supports (color: contrast-color(red)) {
+	:root {
+		--lumi-brand-primary-foreground: contrast-color(var(--lumi-brand-primary));
+		--lumi-brand-secondary-foreground: contrast-color(
+			var(--lumi-brand-secondary)
+		);
+	}
+}
+
 /* ========================================================================== */
 /* DARK THEME - LUMI CALM SURFACE                                           */
 /* ========================================================================== */
@@ -603,11 +632,11 @@
 	color-scheme: dark;
 
 	/* --- SEEDS ---------------------------------------------------------------- */
-	/* Identity: light accents are tone-mapped for dark surfaces; solid roles remain invariant. */
+	/* Identity: dark accents derive from the same two public brand seeds. */
 	--lumi-neutral-rgb: 250, 248, 245;
 	--lumi-canvas-rgb: 14, 12, 12;
 	--lumi-shadow-key-rgb: 0, 0, 0;
-	--lumi-color-primary-rgb: 59, 139, 227;
+	--lumi-color-primary: var(--lumi-brand-primary-dark);
 	--lumi-color-primary-50: color-mix(
 		in srgb,
 		var(--lumi-color-primary) 18%,
@@ -618,7 +647,7 @@
 		var(--lumi-color-primary) 50%,
 		var(--lumi-color-white)
 	);
-	--lumi-color-secondary-rgb: 104, 164, 24;
+	--lumi-color-secondary: var(--lumi-brand-secondary-dark);
 	--lumi-color-success-rgb: 50, 164, 127;
 	--lumi-color-warning-rgb: 214, 124, 8;
 	--lumi-color-danger-rgb: 211, 94, 145;
@@ -735,14 +764,18 @@
 	--lumi-color-warning-bg: rgba(var(--lumi-color-warning-rgb), 0.15);
 	--lumi-color-danger-bg: rgba(var(--lumi-color-danger-rgb), 0.14);
 	--lumi-color-info-bg: rgba(var(--lumi-color-info-rgb), 0.13);
-	--lumi-color-primary-bg: rgba(var(--lumi-color-primary-rgb), 0.16);
+	--lumi-color-primary-bg: color-mix(
+		in srgb,
+		var(--lumi-color-primary) 16%,
+		transparent
+	);
 	--lumi-color-overlay: rgba(var(--lumi-color-background-rgb), 0.82);
 
 	/* --- DERIVED GRADIENTS / FX ---------------------------------------------- */
 	--lumi-gradient-app:
 		radial-gradient(
 			circle at 8% 0%,
-			rgba(var(--lumi-color-primary-rgb), 0.035),
+			color-mix(in srgb, var(--lumi-color-primary) 3.5%, transparent),
 			transparent 36%
 		),
 		linear-gradient(
@@ -763,7 +796,7 @@
 	--lumi-gradient-card:
 		linear-gradient(
 			145deg,
-			rgba(var(--lumi-color-primary-rgb), 0.01) 0%,
+			color-mix(in srgb, var(--lumi-color-primary) 1%, transparent) 0%,
 			transparent 68%,
 			transparent 100%
 		),
@@ -771,7 +804,7 @@
 	--lumi-gradient-card-hover:
 		linear-gradient(
 			145deg,
-			rgba(var(--lumi-color-primary-rgb), 0.018) 0%,
+			color-mix(in srgb, var(--lumi-color-primary) 1.8%, transparent) 0%,
 			transparent 68%,
 			transparent 100%
 		),
@@ -785,7 +818,7 @@
 	--lumi-floating-surface-bg:
 		linear-gradient(
 			145deg,
-			rgba(var(--lumi-color-primary-rgb), 0.015) 0%,
+			color-mix(in srgb, var(--lumi-color-primary) 1.5%, transparent) 0%,
 			transparent 28%
 		),
 		var(--lumi-color-surface-glass-strong);
@@ -816,7 +849,7 @@
 	--lumi-sidebar-header-sheen-opacity: 0.42;
 	--lumi-gradient-glass-total-summary: linear-gradient(
 		145deg,
-		rgba(var(--lumi-color-primary-rgb), 0.022) 0%,
+		color-mix(in srgb, var(--lumi-color-primary) 2.2%, transparent) 0%,
 		transparent 70%
 	);
 	--lumi-shadow-sm:

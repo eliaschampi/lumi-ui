@@ -82,8 +82,8 @@
 		--sidebar-item-hover-bg: color-mix(in srgb, var(--lumi-color-primary) 9%, transparent);
 		--sidebar-item-active-bg: linear-gradient(
 			145deg,
-			rgba(var(--lumi-color-primary-rgb), 0.055),
-			rgba(var(--lumi-color-primary-rgb), 0.018)
+			color-mix(in srgb, var(--lumi-color-primary) 5.5%, transparent),
+			color-mix(in srgb, var(--lumi-color-primary) 1.8%, transparent)
 		);
 		--sidebar-item-focus-ring: color-mix(in srgb, var(--lumi-color-primary) 20%, transparent);
 		position: relative;

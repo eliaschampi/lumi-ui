@@ -50,10 +50,9 @@
 	// Map colors to CSS variables dynamically
 	const styleVars = $derived.by(() => {
 		const colorVar = `var(--lumi-color-${color})`;
-		const colorRgb = `var(--lumi-color-${color}-rgb)`;
 		const solidVar = `var(--lumi-color-${color}-solid)`;
 		const colorForeground = `var(--lumi-color-${color}-foreground)`;
-		return `--btn-color: ${colorVar}; --btn-color-rgb: ${colorRgb}; --btn-solid: ${solidVar}; --btn-foreground: ${colorForeground};`;
+		return `--btn-color: ${colorVar}; --btn-solid: ${solidVar}; --btn-foreground: ${colorForeground};`;
 	});
 
 	function handleClick(event: MouseEvent) {
@@ -263,7 +262,7 @@
 	}
 
 	.lumi-button--border:active:not(:disabled) {
-		background: rgba(var(--btn-color-rgb), 0.15);
+		background: color-mix(in srgb, var(--btn-color) 15%, transparent);
 	}
 
 	/* FLAT - tinted low-emphasis action */
@@ -274,12 +273,12 @@
 	}
 
 	.lumi-button--flat:hover:not(:disabled) {
-		background: rgba(var(--btn-color-rgb), 0.15);
-		border-color: rgba(var(--btn-color-rgb), 0.32);
+		background: color-mix(in srgb, var(--btn-color) 15%, transparent);
+		border-color: color-mix(in srgb, var(--btn-color) 32%, transparent);
 	}
 
 	.lumi-button--flat:active:not(:disabled) {
-		background: rgba(var(--btn-color-rgb), 0.18);
+		background: color-mix(in srgb, var(--btn-color) 18%, transparent);
 	}
 
 	/* GHOST - transparent low-emphasis action */

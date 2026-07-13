@@ -69,8 +69,7 @@
 			floating.styleString,
 			`--lumi-tooltip-arrow-x: ${floating.position.arrowX ?? 0}px`,
 			`--lumi-tooltip-arrow-y: ${floating.position.arrowY ?? 0}px`,
-			`--tooltip-accent: var(--lumi-color-${color})`,
-			`--tooltip-accent-rgb: var(--lumi-color-${color}-rgb)`
+			`--tooltip-accent: var(--lumi-color-${color})`
 		].join('; ')
 	);
 
@@ -194,8 +193,8 @@
 		background:
 			linear-gradient(
 				145deg,
-				rgba(var(--tooltip-accent-rgb, var(--lumi-color-primary-rgb)), 0.04) 0%,
-				rgba(var(--tooltip-accent-rgb, var(--lumi-color-primary-rgb)), 0) 30%
+				color-mix(in srgb, var(--tooltip-accent) 4%, transparent) 0%,
+				transparent 30%
 			),
 			var(--lumi-color-surface-glass-strong);
 		border: var(--lumi-border-width-thin) solid
