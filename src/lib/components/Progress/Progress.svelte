@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { LUMI_CONFIG } from '../config';
 	import type { ProgressProps } from './types';
 
 	interface Props extends ProgressProps {
@@ -25,10 +24,9 @@
 	let completionNotified = $state(false);
 
 	const clampedValue = $derived(Math.min(Math.max(value, 0), 100));
-	const transitionDuration = `${LUMI_CONFIG.transitions.base}ms`;
 	const styleVars = $derived.by(
 		() =>
-			`--progress-color: var(--lumi-color-${color}); --progress-foreground: var(--lumi-color-${color}-foreground); --progress-transition-duration: ${transitionDuration};`
+			`--progress-color: var(--lumi-color-${color}); --progress-foreground: var(--lumi-color-${color}-foreground);`
 	);
 	const progressStyle = $derived(indeterminate ? '' : `width: ${clampedValue}%`);
 
@@ -99,25 +97,30 @@
 		align-items: center;
 		gap: var(--lumi-space-sm);
 		width: 100%;
-		--progress-track-bg: color-mix(
-			in srgb,
-			var(--lumi-color-background-hover) 65%,
-			var(--lumi-color-surface) 35%
-		);
+		--progress-track-bg: var(--lumi-color-surface-inset);
 		--progress-indeterminate-width: 30%;
 		--progress-stripe-color: color-mix(
 			in srgb,
-			var(--progress-foreground) 15%,
+			var(--progress-foreground) 32%,
 			transparent
 		);
+		--progress-stripe-size: var(--lumi-space-md);
+		--progress-highlight: color-mix(
+			in srgb,
+			var(--lumi-color-white) 18%,
+			transparent
+		);
+		--progress-track-shadow: inset 0 1px 2px
+			color-mix(in srgb, var(--lumi-color-black) 8%, transparent);
 	}
 
 	.lumi-progress__track {
 		flex: 1;
-		height: var(--lumi-space-md);
+		height: var(--lumi-space-sm);
 		background: var(--progress-track-bg);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
 		border-radius: var(--lumi-radius-full);
+		box-shadow: var(--progress-track-shadow);
 		overflow: hidden;
 		position: relative;
 	}
@@ -125,12 +128,13 @@
 	.lumi-progress__bar {
 		height: 100%;
 		background: linear-gradient(
-			90deg,
-			color-mix(in srgb, var(--progress-color) 85%, var(--progress-foreground)) 0%,
+			180deg,
+			color-mix(in srgb, var(--progress-color) 82%, var(--progress-foreground)) 0%,
 			var(--progress-color) 100%
 		);
 		border-radius: var(--lumi-radius-full);
-		transition: width var(--progress-transition-duration) var(--lumi-easing-default);
+		box-shadow: inset 0 1px 0 var(--progress-highlight);
+		transition: width var(--lumi-duration-slow) var(--lumi-easing-default);
 		position: relative;
 		overflow: hidden;
 	}
@@ -138,8 +142,11 @@
 	.lumi-progress__bar--indeterminate {
 		width: var(--progress-indeterminate-width);
 		position: absolute;
-		animation: lumi-progress-indeterminate var(--lumi-duration-slower) var(--lumi-easing-default)
+		inset-block: 0;
+		left: 0;
+		animation: lumi-progress-indeterminate var(--lumi-duration-shimmer) var(--lumi-easing-default)
 			infinite;
+		will-change: left;
 	}
 
 	.lumi-progress__stripes {
@@ -155,11 +162,11 @@
 			transparent 75%,
 			transparent
 		);
-		background-size: var(--lumi-space-md) var(--lumi-space-md);
+		background-size: var(--progress-stripe-size) var(--progress-stripe-size);
 	}
 
 	.lumi-progress--animated .lumi-progress__stripes {
-		animation: lumi-progress-stripes var(--lumi-duration-slower) linear infinite;
+		animation: lumi-progress-stripes var(--lumi-duration-shimmer) linear infinite;
 	}
 
 	.lumi-progress__label {
@@ -174,44 +181,43 @@
 	/* Size Variants */
 	.lumi-progress--xs .lumi-progress__track {
 		height: var(--lumi-space-2xs);
+		--progress-stripe-size: var(--lumi-space-xs);
 	}
 
 	.lumi-progress--sm .lumi-progress__track {
 		height: var(--lumi-space-xs);
+		--progress-stripe-size: var(--lumi-space-sm);
 	}
 
 	.lumi-progress--md .lumi-progress__track {
 		height: var(--lumi-space-sm);
+		--progress-stripe-size: var(--lumi-space-md);
 	}
 
 	.lumi-progress--lg .lumi-progress__track {
 		height: var(--lumi-space-md);
+		--progress-stripe-size: var(--lumi-space-lg);
 	}
 
 	.lumi-progress--xl .lumi-progress__track {
 		height: var(--lumi-space-lg);
+		--progress-stripe-size: var(--lumi-space-xl);
 	}
 
 	@keyframes lumi-progress-indeterminate {
-		0% {
-			left: -35%;
-			right: 100%;
+		from {
+			left: calc(var(--progress-indeterminate-width) * -1);
 		}
-		60% {
+		to {
 			left: 100%;
-			right: -90%;
-		}
-		100% {
-			left: 100%;
-			right: -90%;
 		}
 	}
 
 	@keyframes lumi-progress-stripes {
-		0% {
-			background-position: var(--lumi-space-md) 0;
+		from {
+			background-position: var(--progress-stripe-size) 0;
 		}
-		100% {
+		to {
 			background-position: 0 0;
 		}
 	}

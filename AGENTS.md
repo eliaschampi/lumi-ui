@@ -1,40 +1,49 @@
 # Lumi UI Agent Instructions
 
-This package is the shared Lumi UI source of truth for Coedula and Faztore.
+Shared Lumi UI source of truth for Coedula and Faztore.
+
+## Documentation Routing
+
+Progressive disclosure—do not load the entire repository:
+
+1. Read [`docs/AGENT_GUIDE.md`](./docs/AGENT_GUIDE.md).
+2. Open **one** [Guide](./docs/GUIDE.md) section **or** [Components](./docs/COMPONENTS.md).
+3. Inspect the exact `types.ts`, `index.ts`, component, or stylesheet involved.
+
+Documentation explains intent; exports, TypeScript contracts, component source, and styles remain authoritative. Hub: [`docs/README.md`](./docs/README.md).
 
 ## Non-Negotiable Rules
 
-1. Use Svelte 5 Runes only: `$state`, `$derived`, `$props`, `$effect`, `$bindable`.
-2. Components must be domain-neutral. Never add education, inventory, sales, student, product, enrollment, or cashbox concepts to core components.
-3. Use `var(--lumi-...)` tokens for color, spacing, radius, shadow, z-index, layout sizing, and motion.
-4. Do not add Tailwind, Bootstrap, inline colors, raw design palettes, or one-off CSS frameworks.
-5. Keep internal imports relative inside the package. Do not use `$lib` or `$app`.
-6. Prefer semantic APIs: `tone`, `color`, `size`, `variant`, `orientation`, `clearable`, `selected`, `disabled`, `loading`, `aria-*`.
-7. Overlay components must portal out of clipped parents and preserve keyboard/focus behavior.
-8. If a pattern is reusable but not primitive, place it under a future `patterns/` module instead of `components/`.
+1. Svelte 5 Runes only: `$state`, `$derived`, `$props`, `$effect`, `$bindable`.
+2. Domain-neutral components—never education, inventory, sales, student, product, enrollment, or cashbox concepts in core.
+3. `var(--lumi-...)` tokens for color, spacing, radius, shadow, z-index, layout sizing, and motion.
+4. No Tailwind, Bootstrap, inline colors, raw design palettes, or one-off CSS frameworks.
+5. Internal imports relative only—no `$lib` or `$app` inside the package.
+6. Semantic APIs: `tone`, `color`, `size`, `variant`, `orientation`, `clearable`, `selected`, `disabled`, `loading`, `aria-*`.
+7. Overlays portal out of clipped parents and preserve keyboard/focus behavior.
+8. Reusable non-primitives → future `patterns/`; not `components/`.
 
 ## Library Layers
 
-- `src/lib/components`: primitive, reusable Svelte components.
-- `src/lib/styles/tokens.base.css`: complete default token contract and product identity (Coedula — cobalt primary, olive secondary, warm-paper neutrals).
-- `src/lib/styles/core.css`: domain-neutral layout, surface, and utility classes.
-- `src/lib/actions` and `src/lib/utils`: internal primitives shared by components.
+| Path                               | Role                                                                                                        |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `src/lib/components`               | Public Svelte surface; new entries must be primitive and reusable                                           |
+| `src/lib/styles/tokens.base.css`   | Default token contract and product identity (Coedula: cobalt primary, olive secondary, warm-paper neutrals) |
+| `src/lib/styles/core.css`          | Domain-neutral layout, surface, and utility classes                                                         |
+| `src/lib/actions`, `src/lib/utils` | Internal primitives shared by components                                                                    |
+
+Entry points, ownership, principles: [Guide §6](./docs/GUIDE.md#6-library-design).
 
 ## Quality Bar
 
-Every new component must include:
+Every new component: `Component.svelte`, `types.ts`, `index.ts`, tokenized CSS only, a11y labels/states where behavior requires them, no app/domain imports.
 
-- `Component.svelte`
-- `types.ts`
-- `index.ts`
-- tokenized CSS only
-- accessibility labels/states where behavior requires them
-- no app/domain imports
-
-Before release, run:
+Before release:
 
 ```bash
 pnpm install --ignore-scripts
+pnpm run lint
 pnpm run check
 pnpm run package
+git diff --check
 ```
