@@ -28,5 +28,5 @@ Open `http://localhost:5174`.
 - One global `@lumi-ui/svelte/styles` import.
 - Optional color-scheme controller from its subpath.
 - Actual SvelteKit pages behind one responsive shell.
-- Layout composed exclusively with Lumi components and `core.css` classes.
+- Layout composed exclusively with Lumi components and public classes from `core.css` and `patterns.css`.
 - No local `<style>`, inline style, raw color, or CSS framework.

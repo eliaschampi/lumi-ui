@@ -12,14 +12,14 @@ Coding agents: [AGENTS.md](../AGENTS.md) → [Agent Guide](./AGENT_GUIDE.md). Wo
 
 ## Authority
 
-| Question                    | Source of truth                                                                                  |
-| --------------------------- | ------------------------------------------------------------------------------------------------ |
-| Repository rules            | [`AGENTS.md`](../AGENTS.md)                                                                      |
-| Entry points, peer versions | [`package.json`](../package.json)                                                                |
-| Exported symbols            | Root or subpath `index.ts`                                                                       |
-| Props and snippets          | Component `types.ts` **and** `.svelte` (`types.ts` is not always exhaustive)                     |
-| Tokens and CSS classes      | [`tokens.base.css`](../src/lib/styles/tokens.base.css), [`core.css`](../src/lib/styles/core.css) |
-| Intent and composition      | [Guide](./GUIDE.md)                                                                              |
+| Question                    | Source of truth                                                                                                                                    |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repository rules            | [`AGENTS.md`](../AGENTS.md)                                                                                                                        |
+| Entry points, peer versions | [`package.json`](../package.json)                                                                                                                  |
+| Exported symbols            | Root or subpath `index.ts`                                                                                                                         |
+| Props and snippets          | Component `types.ts` **and** `.svelte` (`types.ts` is not always exhaustive)                                                                       |
+| Tokens and CSS classes      | [`tokens.base.css`](../src/lib/styles/tokens.base.css), [`core.css`](../src/lib/styles/core.css), [`patterns.css`](../src/lib/styles/patterns.css) |
+| Intent and composition      | [Guide](./GUIDE.md)                                                                                                                                |
 
 ## When Public Behavior Changes
 

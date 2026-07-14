@@ -22,8 +22,9 @@ Supported Svelte versions: [`peerDependencies`](../package.json). No Tailwind, B
 | ---------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `@lumi-ui/svelte`                        | [`src/lib/index.ts`](../src/lib/index.ts)                   | Components, public shared types, icon registry, portal action, config, chart types, six Drive UI components |
 | `@lumi-ui/svelte/styles`                 | [`styles/index.css`](../src/lib/styles/index.css)           | Tokens then reset, layouts, patterns, utilities                                                             |
-| `@lumi-ui/svelte/styles/tokens.base.css` | [`tokens.base.css`](../src/lib/styles/tokens.base.css)      | Token contract without core                                                                                 |
-| `@lumi-ui/svelte/styles/core.css`        | [`core.css`](../src/lib/styles/core.css)                    | Core without implicit tokens                                                                                |
+| `@lumi-ui/svelte/styles/tokens.base.css` | [`tokens.base.css`](../src/lib/styles/tokens.base.css)      | Token contract only                                                                                         |
+| `@lumi-ui/svelte/styles/core.css`        | [`core.css`](../src/lib/styles/core.css)                    | Reset, shells, and utilities without implicit tokens                                                        |
+| `@lumi-ui/svelte/styles/patterns.css`    | [`patterns.css`](../src/lib/styles/patterns.css)            | Reusable composition patterns without implicit tokens or core                                               |
 | `@lumi-ui/svelte/color-scheme`           | [`color-scheme/index.ts`](../src/lib/color-scheme/index.ts) | Pre-paint script, controller, pure policy, types                                                            |
 | `@lumi-ui/svelte/drive`                  | [`drive.ts`](../src/lib/drive.ts)                           | Pure Drive helpers and types (not the UI components)                                                        |
 
@@ -115,12 +116,13 @@ Most products set only the first two. With advanced seeds, test foreground contr
 
 [`tokens.base.css`](../src/lib/styles/tokens.base.css) flows brand/neutral seeds → semantic colors, surfaces, borders, shadows, geometry, layout sizing, motion, and dark overrides.
 
-| Layer           | Owns                                                       |
-| --------------- | ---------------------------------------------------------- |
-| Consumer        | Brand seeds; may consume public `--lumi-*` semantic tokens |
-| Components      | Semantic tokens only (not application palettes)            |
-| `core.css`      | Shared composition ([§5](#5-core-css-reference))           |
-| Application CSS | Product-specific page layout (tokenized)                   |
+| Layer           | Owns                                                                |
+| --------------- | ------------------------------------------------------------------- |
+| Consumer        | Brand seeds; may consume public `--lumi-*` semantic tokens          |
+| Components      | Semantic tokens only (not application palettes)                     |
+| `core.css`      | Reset, shells, layouts, and utilities ([§5](#5-core-css-reference)) |
+| `patterns.css`  | Reusable composition patterns ([§5](#shared-css-patterns))          |
+| Application CSS | Product-specific page layout (tokenized)                            |
 
 Do not target component selectors. Do not redefine success/warning/danger/info as brand.
 
@@ -213,7 +215,7 @@ Source: [`color-scheme/index.ts`](../src/lib/color-scheme/index.ts).
 
 ## 4. Layouts and composition
 
-Recipes for shells and pages. Exhaustive class families and breakpoints: [§5](#5-core-css-reference). Declarations: [`core.css`](../src/lib/styles/core.css).
+Recipes for shells and pages. Exhaustive class families and breakpoints: [§5](#5-core-css-reference). Declarations: [`core.css`](../src/lib/styles/core.css) and [`patterns.css`](../src/lib/styles/patterns.css).
 
 Components own behavior and accessibility. CSS classes own page composition—do not patch component-private selectors.
 
@@ -580,7 +582,7 @@ src/lib/
 ├── actions/        focused DOM behavior
 ├── utils/          shared internal and pure helpers
 ├── types/          cross-component public types
-├── styles/         token graph + core CSS
+├── styles/         token graph + core and patterns CSS
 ├── drive.ts        Drive helper/type subpath
 └── index.ts        root API
 ```
@@ -605,7 +607,7 @@ components/Name/
 └── index.ts
 ```
 
-The root surface includes historical compositions (dashboard, Drive). Do not use that precedent for new configuration-heavy work under `components/`: reusable non-primitives → future `patterns/`; domain workflow → consumer app.
+The root surface includes historical compositions (dashboard, Drive). Do not use that precedent for new configuration-heavy work under `components/`: reusable non-primitives → future `src/lib/patterns/`; domain workflow → consumer app. This future component layer is distinct from `src/lib/styles/patterns.css`.
 
 ### Ownership
 
@@ -622,11 +624,12 @@ An exported helper or class family is a compatibility promise. Prefer semantic p
 ### CSS ownership
 
 ```text
-tokens.base.css → core.css → consumer brand CSS → consumer page CSS
+tokens.base.css → core.css → patterns.css → consumer brand CSS → consumer page CSS
 ```
 
 - Tokens: reusable visual values
-- Core CSS ([§5](#5-core-css-reference)): global reset, shells, patterns, utilities
+- Core CSS ([§5](#5-core-css-reference)): global reset, shells, layouts, utilities
+- Patterns CSS ([§5](#shared-css-patterns)): reusable domain-neutral compositions
 - Component-local CSS: non-public selectors
 - Consumer CSS: compose with public tokens; never patch component internals
 

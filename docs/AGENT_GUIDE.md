@@ -17,7 +17,7 @@
 
 ## Workflow
 
-1. Classify ownership: component, CSS composition, optional entry point, future `patterns/`, or consumer app.
+1. Classify ownership: component, CSS composition, optional entry point, future `src/lib/patterns/`, or consumer app.
 2. Search for an existing symbol, utility, token, or nearby implementation.
 3. Read barrel → contract → implementation → only the CSS it uses.
 4. Preserve `AGENTS.md` invariants and existing public behavior.

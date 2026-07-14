@@ -13,7 +13,7 @@ Run the [decision filter in GUIDE §7](./GUIDE.md#7-library-design) first: usefu
 Then, for authoring specifically:
 
 - Compose `Button`, `Icon`, `Card`, `Input`, etc. before adding a new primitive.
-- Reusable but not primitive → do not force into `components/`; promote to `patterns/` only when proven in both products.
+- Reusable but not primitive → do not force into `components/`; promote to a future `src/lib/patterns/` component layer only when proven in both products. Do not confuse that layer with `src/lib/styles/patterns.css`.
 - If you cannot name every prop without product vocabulary, redesign the API.
 
 ---
@@ -177,7 +177,7 @@ oninput?: (event: Event) => void;
 | HTML input type                 | `type?: 'text' \| 'email' \| ...`        |
 | Semantic status for Alert/Toast | Prefer `color` over `type`               |
 
-**Do not copy** historical `Button` (`type` = visual, `button` = HTML). Migrate toward this contract when touching those components.
+`Button` follows this contract: `variant` selects the visual treatment and `type` preserves the native HTML meaning.
 
 ---
 

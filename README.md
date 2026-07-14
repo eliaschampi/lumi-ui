@@ -38,8 +38,9 @@ pnpm add @lumi-ui/svelte
 | `@lumi-ui/svelte/styles`                 | Tokens + core + patterns CSS (import once)                             |
 | `@lumi-ui/svelte/color-scheme`           | Optional light/dark/system controller and pre-paint script             |
 | `@lumi-ui/svelte/drive`                  | Pure Drive helpers and types                                           |
-| `@lumi-ui/svelte/styles/tokens.base.css` | Tokens without core                                                    |
-| `@lumi-ui/svelte/styles/core.css`        | Core without implicit tokens                                           |
+| `@lumi-ui/svelte/styles/tokens.base.css` | Token contract only                                                    |
+| `@lumi-ui/svelte/styles/core.css`        | Reset, shells, and utilities without implicit tokens                   |
+| `@lumi-ui/svelte/styles/patterns.css`    | Reusable composition patterns without implicit tokens or core          |
 
 Brand seeds and color scheme: [Guide §3](./docs/GUIDE.md#3-theming-and-color-scheme).
 
