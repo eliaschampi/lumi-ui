@@ -51,6 +51,12 @@ At the application root, import Lumi styles, then brand overrides:
 :root {
 	--lumi-brand-primary: #7c3aed;
 	--lumi-brand-secondary: #0f766e;
+
+	/* Optional: retune status colors (defaults ship calibrated) */
+	--lumi-status-success: #0b7a53;
+	--lumi-status-warning: #a85a06;
+	--lumi-status-danger: #c52a55;
+	--lumi-status-info: #0a75ac;
 }
 ```
 
@@ -111,6 +117,19 @@ Brand identity is CSS data. Light/dark/system preference is optional behavior fr
 | `--lumi-brand-secondary-foreground` | Optional secondary foreground calibration                |
 
 Most products set only the first two. With advanced seeds, test foreground contrast and dark surfaces.
+
+### Status seeds
+
+Feedback states are seeds too — one color each, overridable exactly like brand. Set the seed; Lumi derives the solid fill, the soft `-bg` tint, and a brightened dark-mode accent. Never reassign the derived `--lumi-color-*` tokens directly.
+
+| Seed                    | Default   | Role                                              |
+| ----------------------- | --------- | ------------------------------------------------- |
+| `--lumi-status-success` | `#0b7a53` | Confirmations, positive state                     |
+| `--lumi-status-warning` | `#a85a06` | Caution, needs attention                          |
+| `--lumi-status-danger`  | `#c52a55` | Destructive actions, errors, blocking             |
+| `--lumi-status-info`    | `#0a75ac` | Neutral information (distinct from brand primary) |
+
+Keep each seed dark enough for white foreground text on filled surfaces, and keep `info` distinct from `--lumi-brand-primary` so information never reads as a primary action.
 
 ### Token ownership
 

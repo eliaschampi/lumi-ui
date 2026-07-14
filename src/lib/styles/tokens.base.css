@@ -48,23 +48,31 @@
 	);
 	--lumi-color-secondary-solid: var(--lumi-brand-secondary);
 	--lumi-color-secondary: var(--lumi-brand-secondary);
-	--lumi-color-success-solid-rgb: 8, 122, 85;
-	--lumi-color-success-solid: rgb(var(--lumi-color-success-solid-rgb));
-	--lumi-color-success-rgb: var(--lumi-color-success-solid-rgb);
-	--lumi-color-success: rgb(var(--lumi-color-success-rgb));
-	--lumi-color-warning-solid-rgb: 166, 83, 0;
-	--lumi-color-warning-solid: rgb(var(--lumi-color-warning-solid-rgb));
-	--lumi-color-warning-rgb: var(--lumi-color-warning-solid-rgb);
-	--lumi-color-warning: rgb(var(--lumi-color-warning-rgb));
-	--lumi-color-danger-solid-rgb: 196, 40, 108;
-	--lumi-color-danger-solid: rgb(var(--lumi-color-danger-solid-rgb));
-	--lumi-color-danger-rgb: var(--lumi-color-danger-solid-rgb);
-	--lumi-color-danger: rgb(var(--lumi-color-danger-rgb));
-	/* Info: cobalt-sky — informational state, distinct from brand primary and danger */
-	--lumi-color-info-solid-rgb: 8, 117, 173;
-	--lumi-color-info-solid: rgb(var(--lumi-color-info-solid-rgb));
-	--lumi-color-info-rgb: var(--lumi-color-info-solid-rgb);
-	--lumi-color-info: rgb(var(--lumi-color-info-rgb));
+
+	/* --- STATUS SEEDS -------------------------------------------------------- */
+	/* Public status contract: override any of these four seeds after importing
+	   Lumi styles — one color per state, exactly like the brand seeds above.
+	   Each seed flows into its consumed color, its solid fill, its soft tint,
+	   and its brightened dark-mode accent, so a single override recolours the
+	   whole state across light and dark. Do not reassign the derived
+	   --lumi-color-* tokens directly; set the seed and let Lumi calibrate.
+	   Tuned as one family: even perceptual weight, aligned to the cobalt/olive
+	   identity, and dark enough for white foreground text on filled surfaces. */
+	--lumi-status-success: #0b7a53; /* emerald — confirmations, positive state    */
+	--lumi-status-warning: #a85a06; /* amber   — caution, needs attention         */
+	--lumi-status-danger: #c52a55; /*  crimson — destructive, errors, blocking    */
+	--lumi-status-info: #0a75ac; /*    cobalt-sky — neutral information (≠ primary) */
+
+	/* Consumed accents (used by components). Light = seed; dark brightens below. */
+	--lumi-color-success: var(--lumi-status-success);
+	--lumi-color-warning: var(--lumi-status-warning);
+	--lumi-color-danger: var(--lumi-status-danger);
+	--lumi-color-info: var(--lumi-status-info);
+	/* Solid = a filled surface sized for white foreground text. */
+	--lumi-color-success-solid: var(--lumi-color-success);
+	--lumi-color-warning-solid: var(--lumi-color-warning);
+	--lumi-color-danger-solid: var(--lumi-color-danger);
+	--lumi-color-info-solid: var(--lumi-color-info);
 	--lumi-color-gray-400: color-mix(
 		in srgb,
 		var(--lumi-color-text) 45%,
@@ -207,10 +215,27 @@
 		var(--lumi-color-surface) 20%
 	);
 	/* --- DERIVED STATE BACKGROUNDS ------------------------------------------- */
-	--lumi-color-success-bg: rgba(var(--lumi-color-success-rgb), 0.1);
-	--lumi-color-warning-bg: rgba(var(--lumi-color-warning-rgb), 0.12);
-	--lumi-color-danger-bg: rgba(var(--lumi-color-danger-rgb), 0.1);
-	--lumi-color-info-bg: rgba(var(--lumi-color-info-rgb), 0.1);
+	/* Soft tints for badges, alerts, and status pills — derived from each seed. */
+	--lumi-color-success-bg: color-mix(
+		in srgb,
+		var(--lumi-color-success) 10%,
+		transparent
+	);
+	--lumi-color-warning-bg: color-mix(
+		in srgb,
+		var(--lumi-color-warning) 12%,
+		transparent
+	);
+	--lumi-color-danger-bg: color-mix(
+		in srgb,
+		var(--lumi-color-danger) 10%,
+		transparent
+	);
+	--lumi-color-info-bg: color-mix(
+		in srgb,
+		var(--lumi-color-info) 10%,
+		transparent
+	);
 	--lumi-color-primary-bg: color-mix(
 		in srgb,
 		var(--lumi-color-primary) 10%,
@@ -615,11 +640,31 @@
 		var(--lumi-color-white)
 	);
 	--lumi-color-secondary: var(--lumi-brand-secondary-dark);
-	--lumi-color-success-rgb: 50, 164, 127;
-	--lumi-color-warning-rgb: 214, 124, 8;
-	--lumi-color-danger-rgb: 211, 94, 145;
-	/* Info remains cobalt-sky, distinct from both primary and danger. */
-	--lumi-color-info-rgb: 36, 144, 202;
+	/* Brighten each status seed for legibility on the dark canvas, mirroring the
+	   brand-*-dark derivation. Override the light seed above and dark tracks it. */
+	--lumi-color-success: color-mix(
+		in oklch,
+		var(--lumi-status-success) 62%,
+		white
+	);
+	--lumi-color-warning: color-mix(
+		in oklch,
+		var(--lumi-status-warning) 66%,
+		white
+	);
+	--lumi-color-danger: color-mix(
+		in oklch,
+		var(--lumi-status-danger) 60%,
+		white
+	);
+	/* Info stays cobalt-sky, distinct from both primary and danger. */
+	--lumi-color-info: color-mix(in oklch, var(--lumi-status-info) 60%, white);
+	/* Solid fills carry white foreground text, so they hold the deep seed —
+	   the brightened accent above is for text, borders, and icons only. */
+	--lumi-color-success-solid: var(--lumi-status-success);
+	--lumi-color-warning-solid: var(--lumi-status-warning);
+	--lumi-color-danger-solid: var(--lumi-status-danger);
+	--lumi-color-info-solid: var(--lumi-status-info);
 
 	--lumi-color-gray-400: color-mix(
 		in srgb,
@@ -727,10 +772,26 @@
 		inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 7%, transparent);
 
 	/* --- DERIVED STATE BACKGROUNDS / OVERLAY --------------------------------- */
-	--lumi-color-success-bg: rgba(var(--lumi-color-success-rgb), 0.14);
-	--lumi-color-warning-bg: rgba(var(--lumi-color-warning-rgb), 0.15);
-	--lumi-color-danger-bg: rgba(var(--lumi-color-danger-rgb), 0.14);
-	--lumi-color-info-bg: rgba(var(--lumi-color-info-rgb), 0.13);
+	--lumi-color-success-bg: color-mix(
+		in srgb,
+		var(--lumi-color-success) 14%,
+		transparent
+	);
+	--lumi-color-warning-bg: color-mix(
+		in srgb,
+		var(--lumi-color-warning) 15%,
+		transparent
+	);
+	--lumi-color-danger-bg: color-mix(
+		in srgb,
+		var(--lumi-color-danger) 14%,
+		transparent
+	);
+	--lumi-color-info-bg: color-mix(
+		in srgb,
+		var(--lumi-color-info) 13%,
+		transparent
+	);
 	--lumi-color-primary-bg: color-mix(
 		in srgb,
 		var(--lumi-color-primary) 16%,
