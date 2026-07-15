@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ImageOff } from '@lucide/svelte';
+	import ImageOff from '@lucide/svelte/icons/image-off';
 	import type { ImageProps } from './types';
 
 	const {
