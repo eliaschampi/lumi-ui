@@ -2,7 +2,7 @@ node_modules
 .svelte-kit
 .DS_Store
 package-lock.json
-
+.claude
 # Build output (regenerated on publish via `prepack` -> svelte-package)
 dist
 
