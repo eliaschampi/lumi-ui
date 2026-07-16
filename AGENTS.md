@@ -28,7 +28,7 @@ Documentation explains intent; exports, TypeScript contracts, component source, 
 | Path                               | Role                                                                                                        |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `src/lib/components`               | Public Svelte surface; new entries must be primitive and reusable                                           |
-| `src/lib/styles/tokens.base.css`   | Default token contract and product identity (Coedula: cobalt primary, olive secondary, warm-paper neutrals) |
+| `src/lib/styles/tokens.base.css`   | Default token contract and product identity (cobalt primary, olive secondary, warm-paper neutrals; OKLCH seeds) |
 | `src/lib/styles/core.css`          | Domain-neutral layout, surface, and utility classes                                                         |
 | `src/lib/styles/patterns.css`      | Domain-neutral reusable composition patterns                                                                |
 | `src/lib/actions`, `src/lib/utils` | Internal primitives shared by components                                                                    |

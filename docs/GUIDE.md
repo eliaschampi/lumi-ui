@@ -52,11 +52,11 @@ At the application root, import Lumi styles, then brand overrides:
 	--lumi-brand-primary: #7c3aed;
 	--lumi-brand-secondary: #0f766e;
 
-	/* Optional: retune status colors (defaults ship calibrated) */
-	--lumi-status-success: #0b7a53;
-	--lumi-status-warning: #a85a06;
-	--lumi-status-danger: #c52a55;
-	--lumi-status-info: #0a75ac;
+	/* Optional: retune status colors (defaults ship calibrated in OKLCH) */
+	--lumi-status-success: #0d7a3e;
+	--lumi-status-warning: #9e5300;
+	--lumi-status-danger: #b92846;
+	--lumi-status-info: #1870a1;
 }
 ```
 
@@ -122,14 +122,16 @@ Most products set only the first two. With advanced seeds, test foreground contr
 
 Feedback states are seeds too — one color each, overridable exactly like brand. Set the seed; Lumi derives the solid fill, the soft `-bg` tint, and a brightened dark-mode accent. Never reassign the derived `--lumi-color-*` tokens directly.
 
-| Seed                    | Default   | Role                                              |
-| ----------------------- | --------- | ------------------------------------------------- |
-| `--lumi-status-success` | `#0b7a53` | Confirmations, positive state                     |
-| `--lumi-status-warning` | `#a85a06` | Caution, needs attention                          |
-| `--lumi-status-danger`  | `#c52a55` | Destructive actions, errors, blocking             |
-| `--lumi-status-info`    | `#0a75ac` | Neutral information (distinct from brand primary) |
+| Seed                    | Default (sRGB approx.) | Role                                              |
+| ----------------------- | ---------------------- | ------------------------------------------------- |
+| `--lumi-status-success` | `#0d7a3e`              | Confirmations, positive state                     |
+| `--lumi-status-warning` | `#9e5300`              | Caution, needs attention                          |
+| `--lumi-status-danger`  | `#b92846`              | Destructive actions, errors, blocking             |
+| `--lumi-status-info`    | `#1870a1`              | Neutral information (distinct from brand primary) |
 
-Keep each seed dark enough for white foreground text on filled surfaces, and keep `info` distinct from `--lumi-brand-primary` so information never reads as a primary action.
+Defaults are defined in OKLCH in [`tokens.base.css`](../src/lib/styles/tokens.base.css); hex values above are sRGB approximations for authoring. Keep each seed dark enough for white foreground text on filled surfaces, and keep `info` distinct from `--lumi-brand-primary` so information never reads as a primary action.
+
+Default brand identity: cobalt primary (`oklch(0.52 0.17 255)` ≈ `#0267c7`), olive secondary (`oklch(0.5 0.1 132)` ≈ `#4d6f2f`), warm-paper neutrals.
 
 ### Token ownership
 
@@ -478,7 +480,7 @@ Visual and interaction intent. Structural ownership: [§7 Library design](#7-lib
 Lumi is a premium, minimal product shell—not a generic kit and not loud SaaS gradients. North star: _if you remove one more line of decoration and the UI still feels complete, you are closer to Lumi._
 
 1. **Layered light, not heavy chrome.** Surfaces float over a softly tinted canvas; borders are thin and low-contrast.
-2. **Elevation is quiet.** Shadows use the neutral ink key (`--lumi-shadow-key-rgb`) with contact + ambient layers; avoid pure-black blobs.
+2. **Elevation is quiet.** Shadows use the neutral ink key (`--lumi-color-shadow-key`) with contact + ambient layers; avoid pure-black blobs.
 3. **Glass is restrained.** Blur and translucency appear on overlays, sidebars, and cards—never as a noisy texture soup.
 4. **145° gradients.** Card and app washes tilt consistently (`145deg`) with tiny primary/info tints—subtle, not neon.
 5. **Sheen is optional polish.** Top-edge inset highlights simulate liquid glass; keep opacity low.
