@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Chip from '../Chip/Chip.svelte';
 	import { Avatar } from '../Avatar';
 	import type { AvatarGroupProps } from './types';
 
@@ -19,13 +18,11 @@
 			.filter(Boolean)
 			.join(', ')
 	);
-
 	const classes = $derived(
 		['lumi-avatar-group', `lumi-avatar-group--${size}`, className].filter(Boolean).join(' ')
 	);
-
 	const ariaLabel = $derived(
-		`${items.length} miembro${items.length === 1 ? '' : 's'}${names ? `: ${names}` : ''}`
+		`${items.length} avatar${items.length === 1 ? '' : 's'}${names ? `: ${names}` : ''}`
 	);
 </script>
 
@@ -36,44 +33,64 @@
 		</div>
 	{/each}
 	{#if overflow > 0}
-		<Chip color="info" size="sm" class="lumi-avatar-group__overflow">+{overflow}</Chip>
+		<div class="lumi-avatar-group__item lumi-avatar-group__overflow" aria-hidden="true">
+			+{overflow}
+		</div>
 	{/if}
 </div>
 
 <style>
 	.lumi-avatar-group {
+		--lumi-avatar-group-overlap: calc(var(--lumi-space-xs) * -1);
+		--lumi-avatar-group-size: var(--lumi-space-xl);
+		--lumi-avatar-group-font: var(--lumi-font-size-xs);
 		display: inline-flex;
 		align-items: center;
-		min-width: 0;
+	}
+
+	.lumi-avatar-group--md {
+		--lumi-avatar-group-overlap: calc(var(--lumi-space-sm) * -1);
+		--lumi-avatar-group-size: var(--lumi-space-xxl);
+		--lumi-avatar-group-font: var(--lumi-font-size-sm);
+	}
+
+	.lumi-avatar-group--lg {
+		--lumi-avatar-group-overlap: calc(var(--lumi-space-sm) * -1);
+		--lumi-avatar-group-size: var(--lumi-space-3xl);
+		--lumi-avatar-group-font: var(--lumi-font-size-base);
+	}
+
+	.lumi-avatar-group--xl {
+		--lumi-avatar-group-overlap: calc(var(--lumi-space-md) * -1);
+		--lumi-avatar-group-size: var(--lumi-space-4xl);
+		--lumi-avatar-group-font: var(--lumi-font-size-lg);
 	}
 
 	.lumi-avatar-group__item {
 		display: inline-flex;
-		align-items: center;
-		justify-content: center;
 		border-radius: var(--lumi-radius-full);
-		border: var(--lumi-border-width-thin) solid var(--lumi-color-surface);
-		background: var(--lumi-color-surface);
-		box-shadow: var(--lumi-shadow-sm);
+		box-shadow: 0 0 0 var(--lumi-border-width-thick) var(--lumi-color-surface);
 	}
 
 	.lumi-avatar-group__item:not(:first-child) {
-		margin-inline-start: calc(-1 * var(--lumi-space-xs));
+		margin-inline-start: var(--lumi-avatar-group-overlap);
 	}
 
-	.lumi-avatar-group--md .lumi-avatar-group__item:not(:first-child) {
-		margin-inline-start: calc(-1 * var(--lumi-space-sm));
-	}
-
-	.lumi-avatar-group--lg .lumi-avatar-group__item:not(:first-child) {
-		margin-inline-start: calc(-1 * var(--lumi-space-sm));
-	}
-
-	.lumi-avatar-group--xl .lumi-avatar-group__item:not(:first-child) {
-		margin-inline-start: calc(-1 * var(--lumi-space-md));
-	}
-
+	/* Same diameter as Avatar; only the +N badge needs explicit size. */
 	.lumi-avatar-group__overflow {
-		margin-inline-start: var(--lumi-space-xs);
+		inline-size: var(--lumi-avatar-group-size);
+		block-size: var(--lumi-avatar-group-size);
+		align-items: center;
+		justify-content: center;
+		font-size: var(--lumi-avatar-group-font);
+		font-weight: var(--lumi-font-weight-semibold);
+		line-height: 1;
+		color: var(--lumi-color-text-muted);
+		background: color-mix(
+			in oklch,
+			var(--lumi-color-surface-inset) 88%,
+			var(--lumi-color-text) 12%
+		);
+		user-select: none;
 	}
 </style>

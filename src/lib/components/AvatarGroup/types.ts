@@ -24,7 +24,7 @@ export interface AvatarGroupProps {
 	items: AvatarGroupItem[];
 
 	/**
-	 * Maximum number of avatars to display before collapsing into an overflow chip
+	 * Maximum number of avatars to display before collapsing into a +N badge
 	 * @default 4
 	 */
 	max?: number;

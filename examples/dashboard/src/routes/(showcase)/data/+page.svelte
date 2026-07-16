@@ -81,7 +81,7 @@
 		size="xl"
 	/>
 
-	<div class="lumi-grid lumi-grid--columns-4 lumi-grid--gap-md">
+	<div class="lumi-grid lumi-grid--columns-2 lumi-grid--columns-4-lg lumi-grid--gap-md">
 		<StatCard title="Registros" value={records.length} icon="list" color="primary" />
 		<StatCard
 			title="Activos"

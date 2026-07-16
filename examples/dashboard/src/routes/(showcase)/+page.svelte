@@ -41,7 +41,9 @@
 		{/snippet}
 	</PageHeader>
 
-	<div class="lumi-grid lumi-grid--columns-4 lumi-grid--gap-md lumi-min-width--0">
+	<div
+		class="lumi-grid lumi-grid--columns-2 lumi-grid--columns-4-lg lumi-grid--gap-md lumi-min-width--0"
+	>
 		<StatCard
 			title="Ingresos"
 			value="S/ 48,240"
@@ -80,7 +82,9 @@
 			size="md"
 		/>
 
-		<div class="lumi-grid lumi-grid--columns-4 lumi-grid--gap-md lumi-min-width--0">
+		<div
+			class="lumi-grid lumi-grid--columns-2 lumi-grid--columns-4-lg lumi-grid--gap-md lumi-min-width--0"
+		>
 			<QuickAccessCard
 				href="/components"
 				title="Componentes"

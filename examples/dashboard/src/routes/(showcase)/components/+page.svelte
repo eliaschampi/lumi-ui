@@ -18,21 +18,22 @@
 		IconBadge,
 		type FileUploadFile,
 		Image,
+		Input,
 		Loading,
 		Notification,
 		type NotificationColor,
 		PageHeader,
 		PageSidebar,
 		Progress,
+		Radio,
 		RemoteSelect,
+		Select,
 		StatusIndicator,
 		TagOption,
-		Title,
 		Tabs,
 		Tooltip,
 		UserInfo
 	} from '@lumi-ui/svelte';
-	import type { Snippet } from 'svelte';
 
 	let activeTab = $state<string | number>('actions');
 	let alertVisible = $state(true);
@@ -71,8 +72,47 @@
 
 	let remoteWorkspace = $state<{ id: number; name: string } | null>(null);
 
-	// Card to navigate with PageSidebar.
+	// PageSidebar layout demo (page-level, never nested in a Card).
 	let filtersOpen = $state(false);
+	let filterStatus = $state('all');
+	let filterOwner = $state<string | number | Record<string, unknown> | null>('all');
+	let filterQuery = $state('');
+
+	const FILTER_STATUS = [
+		{ value: 'all', label: 'Todos' },
+		{ value: 'active', label: 'Activos' },
+		{ value: 'pending', label: 'Pendientes' },
+		{ value: 'paused', label: 'Pausados' }
+	] as const;
+
+	const FILTER_OWNERS = [
+		{ value: 'all', label: 'Cualquiera' },
+		{ value: 'ana', label: 'Ana Torres' },
+		{ value: 'bruno', label: 'Bruno Díaz' },
+		{ value: 'carla', label: 'Carla Ruiz' }
+	];
+
+	const WORKSPACE_ROWS = [
+		{ name: 'Atlas Workspace', owner: 'Ana Torres', status: 'active' as const },
+		{ name: 'Northwind Lab', owner: 'Bruno Díaz', status: 'pending' as const },
+		{ name: 'Nexus Portal', owner: 'Carla Ruiz', status: 'active' as const },
+		{ name: 'Orbit Studio', owner: 'Ana Torres', status: 'paused' as const }
+	];
+
+	const filteredWorkspaces = $derived(
+		WORKSPACE_ROWS.filter((row) => {
+			if (filterStatus !== 'all' && row.status !== filterStatus) return false;
+			if (filterOwner && filterOwner !== 'all') {
+				const owner = FILTER_OWNERS.find((item) => item.value === filterOwner)?.label;
+				if (owner && row.owner !== owner) return false;
+			}
+			const q = filterQuery.trim().toLowerCase();
+			if (q && !row.name.toLowerCase().includes(q) && !row.owner.toLowerCase().includes(q)) {
+				return false;
+			}
+			return true;
+		})
+	);
 
 	// Context menu demo state.
 	let contextMenu = $state<Context>();
@@ -81,6 +121,22 @@
 	function openWorkspaceContext(event: MouseEvent, name: string): void {
 		contextTarget = name;
 		contextMenu?.open(event, name);
+	}
+
+	function applyFiltersAndClose(): void {
+		filtersOpen = false;
+	}
+
+	function statusChipColor(status: 'active' | 'pending' | 'paused'): 'success' | 'warning' | 'secondary' {
+		if (status === 'active') return 'success';
+		if (status === 'pending') return 'warning';
+		return 'secondary';
+	}
+
+	function statusChipLabel(status: 'active' | 'pending' | 'paused'): string {
+		if (status === 'active') return 'Activo';
+		if (status === 'pending') return 'Pendiente';
+		return 'Pausado';
 	}
 
 	const tabs = [
@@ -121,14 +177,6 @@
 		{ status: 'secondary', label: 'Auxiliar' }
 	];
 
-	const FILTER_SECTIONS = [
-		'Estado',
-		'Visibilidad',
-		'Miembro responsable',
-		'Estrategia de archivo',
-		'Etiquetas recientes',
-		'Creado dentro de'
-	] as const;
 </script>
 
 <div class="lumi-stack lumi-stack--xl lumi-min-width--0">
@@ -401,43 +449,143 @@
 			</Card>
 		</div>
 	{:else if activeTab === 'navigation'}
-		<Card title="PageSidebar" subtitle="Superficie lateral con drawer móvil reutilizable" spaced>
-			<PageHeader title="Workspaces" subtitle="Demostración del contrato de filtros laterales">
+		<div class="lumi-stack lumi-stack--md lumi-min-width--0">
+			<PageHeader
+				title="Workspaces"
+				subtitle="PageSidebar es la columna de filtros del page layout, no un demo dentro de Card"
+				icon="folders"
+			>
 				{#snippet actions()}
-					<Button
-						variant="border"
-						class="lumi-page-sidebar__mobile-trigger"
-						onclick={() => (filtersOpen = true)}
+					<div
+						class="lumi-flex lumi-flex--gap-sm lumi-align-items--center lumi-page-sidebar__header-actions"
 					>
-						Filtros
-					</Button>
+						<Button
+							variant="ghost"
+							size="sm"
+							icon="slidersHorizontal"
+							class="lumi-page-sidebar__mobile-trigger"
+							onclick={() => (filtersOpen = true)}
+							aria-label="Abrir filtros"
+						/>
+						<Button variant="filled" size="sm" icon="plus">Nuevo</Button>
+					</div>
 				{/snippet}
 			</PageHeader>
 
 			<div class="lumi-layout--two-columns lumi-page-sidebar-layout">
-				<PageSidebar bind:mobileOpen={filtersOpen} mobileTitle="Filtros">
+				<PageSidebar
+					bind:mobileOpen={filtersOpen}
+					mobileTitle="Filtros"
+					mobileAriaLabel="Cerrar filtros"
+				>
 					{#snippet sidebar()}
 						<div class="lumi-page-sidebar__section">
-							{#each FILTER_SECTIONS as section (section)}
-								<div class="lumi-stack lumi-stack--xs">
-									<span class="lumi-page-sidebar__label">{section}</span>
-									<p class="lumi-text--sm lumi-text--muted">Sin límites aplicados.</p>
-								</div>
-							{/each}
+							<div
+								class="lumi-filter-summary lumi-filter-summary--compact lumi-filter-summary--secondary"
+							>
+								<p class="lumi-filter-summary__eyebrow">Vista de listado</p>
+								<h2 class="lumi-filter-summary__title">Workspaces</h2>
+								<p class="lumi-filter-summary__subtitle">
+									Filtra por estado, responsable y texto.
+								</p>
+							</div>
+						</div>
+
+						<div class="lumi-page-sidebar__section">
+							<p class="lumi-page-sidebar__label">Estado</p>
+							<div class="lumi-page-sidebar__radio-group">
+								{#each FILTER_STATUS as option (option.value)}
+									<Radio
+										bind:group={filterStatus}
+										value={option.value}
+										label={option.label}
+										name="workspace-status"
+									/>
+								{/each}
+							</div>
+						</div>
+
+						<div class="lumi-page-sidebar__section">
+							<p class="lumi-page-sidebar__label">Responsable</p>
+							<Select
+								bind:value={filterOwner}
+								name="workspace-owner"
+								label="Persona"
+								options={FILTER_OWNERS}
+							/>
+						</div>
+
+						<div class="lumi-page-sidebar__section">
+							<Input
+								bind:value={filterQuery}
+								name="workspace-search"
+								label="Buscar"
+								placeholder="Nombre o responsable"
+								icon="search"
+							/>
+						</div>
+
+						<div class="lumi-page-sidebar__section lumi-stack lumi-stack--xs">
+							<Button variant="border" icon="search" onclick={applyFiltersAndClose}>
+								Aplicar filtros
+							</Button>
 						</div>
 					{/snippet}
 				</PageSidebar>
 
 				<section class="lumi-layout--content-right">
-					<Title
-						title="Resultados"
-						subtitle="El contenido principal convive con la superficie lateral."
-						icon="list"
-						size="md"
-					/>
+					<div class="lumi-stack lumi-stack--sm">
+						<Card spaced>
+							<div class="lumi-stack lumi-stack--md">
+								<div class="lumi-filter-summary lumi-filter-summary--secondary">
+									<p class="lumi-filter-summary__eyebrow">Resultados</p>
+									<h2 class="lumi-filter-summary__title">Workspaces</h2>
+									<p class="lumi-filter-summary__subtitle">
+										El contenido principal vive a la derecha; los Cards van aquí, no alrededor del
+										layout.
+									</p>
+									<div class="lumi-filter-summary__meta">
+										<Chip color="primary" size="sm">Total {filteredWorkspaces.length}</Chip>
+										{#if filterStatus !== 'all'}
+											<Chip color="secondary" size="sm">
+												{FILTER_STATUS.find((s) => s.value === filterStatus)?.label}
+											</Chip>
+										{/if}
+										{#if filterQuery.trim()}
+											<Chip color="info" size="sm" icon="search">{filterQuery.trim()}</Chip>
+										{/if}
+									</div>
+								</div>
+
+								{#if filteredWorkspaces.length === 0}
+									<EmptyState
+										icon="slidersHorizontal"
+										title="Sin resultados"
+										description="Ajusta los filtros del panel izquierdo."
+									/>
+								{:else}
+									<div class="lumi-stack lumi-stack--sm">
+										{#each filteredWorkspaces as row (row.name)}
+											<div
+												class="lumi-flex lumi-justify--between lumi-align-items--center lumi-flex--gap-sm"
+											>
+												<div class="lumi-stack lumi-stack--2xs">
+													<span class="lumi-font--medium">{row.name}</span>
+													<span class="lumi-text--sm lumi-text--muted">{row.owner}</span>
+												</div>
+												<Chip color={statusChipColor(row.status)} size="sm">
+													{statusChipLabel(row.status)}
+												</Chip>
+											</div>
+										{/each}
+									</div>
+								{/if}
+							</div>
+						</Card>
+					</div>
 				</section>
 			</div>
-		</Card>
+		</div>
 	{:else if activeTab === 'overlays'}
 		<div class="lumi-grid lumi-grid--columns-2 lumi-grid--gap-lg">
 			<Card title="Menu contextual" subtitle="Menú por puntero con datos adjuntos" spaced>
@@ -458,7 +606,7 @@
 				<Context bind:this={contextMenu} aria-label="Menú workspace de demostración">
 					{#snippet children({ data })}
 						<ContextItem
-							icon="folders"
+							icon="folder"
 							title="Abrir"
 							onclick={() => (contextTarget = `Abrir: ${data}`)}
 						/>
