@@ -127,7 +127,9 @@
 		filtersOpen = false;
 	}
 
-	function statusChipColor(status: 'active' | 'pending' | 'paused'): 'success' | 'warning' | 'secondary' {
+	function statusChipColor(
+		status: 'active' | 'pending' | 'paused'
+	): 'success' | 'warning' | 'secondary' {
 		if (status === 'active') return 'success';
 		if (status === 'pending') return 'warning';
 		return 'secondary';
@@ -176,7 +178,6 @@
 		{ status: 'primary', label: 'Disponible' },
 		{ status: 'secondary', label: 'Auxiliar' }
 	];
-
 </script>
 
 <div class="lumi-stack lumi-stack--xl lumi-min-width--0">
@@ -485,9 +486,7 @@
 							>
 								<p class="lumi-filter-summary__eyebrow">Vista de listado</p>
 								<h2 class="lumi-filter-summary__title">Workspaces</h2>
-								<p class="lumi-filter-summary__subtitle">
-									Filtra por estado, responsable y texto.
-								</p>
+								<p class="lumi-filter-summary__subtitle">Filtra por estado, responsable y texto.</p>
 							</div>
 						</div>
 
