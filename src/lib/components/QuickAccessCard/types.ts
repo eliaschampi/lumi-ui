@@ -11,7 +11,7 @@ export interface QuickAccessCardProps {
 	color?: LumiColor;
 	/** Whether card shows hover effects */
 	hoverable?: boolean;
-	/** Link href */
+	/** Link destination (progressive enhancement; SPA routers intercept same-origin clicks) */
 	href: string;
 	/** Additional CSS classes */
 	class?: string;

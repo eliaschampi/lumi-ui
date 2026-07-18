@@ -714,20 +714,19 @@ body {
 	);
 }
 
-/* Capped-width columns: fills with as many cards as fit; tracks do not grow past max */
+/* Fluid card columns: as many as fit, tracks grow evenly, incomplete rows stay left-aligned */
 .lumi-grid--cards {
 	grid-template-columns: repeat(
 		auto-fill,
-		minmax(
-			min(100%, var(--lumi-dashboard-card-grid-min)),
-			var(--lumi-dashboard-card-grid-max)
-		)
+		minmax(min(100%, var(--lumi-dashboard-card-grid-min)), 1fr)
 	);
-	justify-content: safe center;
+	justify-content: start;
+	justify-items: stretch;
 }
 
 .lumi-grid--cards > * {
 	min-width: 0;
+	max-width: 100%;
 }
 
 .lumi-grid--identity-split {

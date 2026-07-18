@@ -34,7 +34,7 @@ export interface SidebarItemProps {
 	class?: string;
 
 	/** Click event handler */
-	onclick?: () => void;
+	onclick?: (event: MouseEvent) => void;
 }
 
 export interface SidebarHeaderProps {

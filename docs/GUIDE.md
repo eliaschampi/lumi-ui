@@ -248,7 +248,7 @@ Components own behavior and accessibility. CSS classes own page composition—do
 | Standard page rhythm   | `.lumi-stack` + `PageHeader` + `Card` / `DashboardSection` |
 | Filters beside results | `.lumi-layout--two-columns` + `PageSidebar`                |
 | Fluid cards            | `.lumi-grid .lumi-grid--responsive`                        |
-| Capped dashboard cards | `.lumi-grid .lumi-grid--cards`                             |
+| Dashboard card grid    | `.lumi-grid .lumi-grid--cards`                             |
 | Fixed desktop columns  | `.lumi-grid` + `--columns-2-lg` … `--columns-4-lg`         |
 | Focused / auth task    | `.lumi-centered-layout` + `.lumi-centered-card`            |
 | Bounded content        | `.lumi-container` + one size modifier                      |
@@ -404,16 +404,16 @@ Classes below are supported composition hooks. Other selectors style component i
 
 Always combine modifiers with `.lumi-grid`.
 
-| Family                                     | Behavior                                                                    |
-| ------------------------------------------ | --------------------------------------------------------------------------- |
-| `.lumi-grid--responsive`                   | Auto-fit from `--lumi-grid-responsive-min`; one column at `48rem`           |
-| `.lumi-grid--auto-{fit,fill}`              | Fluid tracks from `--lumi-grid-auto-min`; one column at `30rem`             |
-| `.lumi-grid--cards`                        | Centered, capped card tracks; not forced to one column by a breakpoint      |
-| `.lumi-grid--identity-split`               | Weighted identity/content split; one column at `64rem`                      |
-| `.lumi-grid--columns-{1,2,3,4,5,6}`        | Exact count; `2–4` → auto-fit at `48rem`; all `2–6` → one column at `30rem` |
-| `.lumi-grid--columns-{2,3,4}-lg`           | Explicit columns from `64rem` up                                            |
-| `.lumi-grid--gap-{2xs,xs,sm,md,lg,xl,xxl}` | Tokenized gap                                                               |
-| `.lumi-grid-item--span-all`                | Span all columns                                                            |
+| Family                                     | Behavior                                                                                             |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| `.lumi-grid--responsive`                   | Auto-fit from `--lumi-grid-responsive-min`; one column at `48rem`                                    |
+| `.lumi-grid--auto-{fit,fill}`              | Fluid tracks from `--lumi-grid-auto-min`; one column at `30rem`                                      |
+| `.lumi-grid--cards`                        | Fluid auto-fill from `--lumi-dashboard-card-grid-min`; left-aligned; no forced one-column breakpoint |
+| `.lumi-grid--identity-split`               | Weighted identity/content split; one column at `64rem`                                               |
+| `.lumi-grid--columns-{1,2,3,4,5,6}`        | Exact count; `2–4` → auto-fit at `48rem`; all `2–6` → one column at `30rem`                          |
+| `.lumi-grid--columns-{2,3,4}-lg`           | Explicit columns from `64rem` up                                                                     |
+| `.lumi-grid--gap-{2xs,xs,sm,md,lg,xl,xxl}` | Tokenized gap                                                                                        |
+| `.lumi-grid-item--span-all`                | Span all columns                                                                                     |
 
 At exactly `64rem`, both max-width shell rules and min-width `*-lg` grid rules apply.
 
