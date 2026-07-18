@@ -122,7 +122,7 @@
 		background: var(--lumi-color-border-strong);
 		box-shadow: inset 0 0 0 var(--lumi-border-width-thin)
 			color-mix(in srgb, var(--lumi-color-border) 60%, transparent);
-		border-radius: var(--lumi-control-radius);
+		border-radius: var(--lumi-radius-full);
 		transition:
 			background-color var(--lumi-duration-base) var(--lumi-easing-default),
 			box-shadow var(--lumi-duration-base) var(--lumi-easing-default);

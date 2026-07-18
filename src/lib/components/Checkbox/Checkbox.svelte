@@ -90,7 +90,7 @@
 	.lumi-checkbox {
 		--checkbox-size: var(--lumi-icon-md);
 		--checkbox-label-size: var(--lumi-font-size-base);
-		--checkbox-radius: var(--lumi-radius-sm);
+		--checkbox-radius: var(--lumi-radius-base);
 		position: relative;
 		display: inline-flex;
 		align-items: center;
@@ -121,8 +121,8 @@
 		border: var(--lumi-border-width-thick) solid var(--lumi-color-border);
 		border-radius: var(--checkbox-radius);
 		background: var(--lumi-color-control-fill);
-		box-shadow: inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 20%, transparent);
-		transition: var(--lumi-transition-all);
+		box-shadow: var(--lumi-control-shadow);
+		transition: var(--lumi-transition-colors);
 		flex-shrink: 0;
 		overflow: hidden;
 	}
@@ -155,7 +155,6 @@
 	.lumi-checkbox--md {
 		--checkbox-size: var(--lumi-icon-md);
 		--checkbox-label-size: var(--lumi-font-size-base);
-		--checkbox-radius: var(--lumi-radius-sm);
 	}
 
 	/* Color variants */
@@ -182,7 +181,7 @@
 	.lumi-checkbox--checked .lumi-checkbox__visual {
 		background: linear-gradient(
 			145deg,
-			color-mix(in srgb, var(--checkbox-solid) 96%, var(--lumi-color-white)),
+			color-mix(in srgb, var(--checkbox-solid) 82%, var(--lumi-color-white)),
 			var(--checkbox-solid)
 		);
 		border-color: var(--checkbox-solid);
@@ -199,13 +198,10 @@
 			0 0 0 calc(var(--lumi-border-width-thick) * 2) var(--checkbox-color);
 	}
 
-	.lumi-checkbox:not(.lumi-checkbox--disabled):hover .lumi-checkbox__visual {
+	.lumi-checkbox:not(.lumi-checkbox--checked):not(.lumi-checkbox--disabled):hover
+		.lumi-checkbox__visual {
 		border-color: var(--checkbox-color);
 		background: color-mix(in srgb, var(--checkbox-color) 9%, var(--lumi-color-control-fill));
-	}
-
-	.lumi-checkbox--checked:not(.lumi-checkbox--disabled):hover .lumi-checkbox__visual {
-		background: var(--checkbox-solid);
 	}
 
 	/* Disabled state */
