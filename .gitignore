@@ -5,6 +5,7 @@ package-lock.json
 .claude
 # Build output (regenerated on publish via `prepack` -> svelte-package)
 dist
+.qoder
 
 # Example app build artifacts
 examples/dashboard/build

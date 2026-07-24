@@ -778,7 +778,7 @@
 	}
 
 	.lumi-select__option--disabled {
-		opacity: 0.5;
+		opacity: var(--lumi-opacity-disabled);
 		cursor: not-allowed;
 	}
 
@@ -875,7 +875,7 @@
 
 	/* ── States ───────────────────────────────── */
 	.lumi-select--disabled {
-		opacity: 0.5;
+		opacity: var(--lumi-opacity-disabled);
 		pointer-events: none;
 	}
 

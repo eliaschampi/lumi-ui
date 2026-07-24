@@ -268,7 +268,7 @@
 
 	.lumi-radio--disabled {
 		cursor: not-allowed;
-		opacity: 0.5;
+		opacity: var(--lumi-opacity-disabled);
 	}
 
 	.lumi-radio--disabled .lumi-radio__visual {

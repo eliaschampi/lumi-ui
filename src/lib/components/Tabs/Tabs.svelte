@@ -253,7 +253,7 @@
 	}
 
 	.lumi-tabs__tab--disabled {
-		opacity: 0.5;
+		opacity: var(--lumi-opacity-disabled);
 		cursor: not-allowed;
 		pointer-events: none;
 	}

@@ -244,7 +244,7 @@
 	/* ── Disabled state ───────────────────────── */
 	.lumi-switch--disabled {
 		cursor: not-allowed;
-		opacity: 0.5;
+		opacity: var(--lumi-opacity-disabled);
 	}
 
 	.lumi-switch--disabled .lumi-switch__label {
