@@ -421,19 +421,19 @@ At exactly `64rem`, both max-width shell rules and min-width `*-lg` grid rules a
 
 Domain-neutral compositions in [`patterns.css`](../src/lib/styles/patterns.css) (not Svelte components; included by `@lumi-ui/svelte/styles`). Use documented BEM children; do not invent modifiers.
 
-| Pattern                | Families and variants                                                                                                                                                       |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Surfaces and auth      | `.lumi-surface`, `.lumi-auth-mark`; apply `.lumi-card--ambient` and `.lumi-auth-card` via `Card class`                                                                      |
-| Filter summary         | `.lumi-filter-summary` + `__eyebrow`, `__title`, `__subtitle`, `__title-row`, `__meta`, `__actions`; `--compact`, `--centered`, semantic color variants                     |
-| Section actions        | `.lumi-section-toolbar`, `.lumi-toolbar-field`, `.lumi-form-action-row`, `.lumi-inline-filters` (each has existing child/compact variants)                                  |
-| Ranked metrics         | `.lumi-metric-rank-list` / `.lumi-metric-rank-row`; list `--dense`, `--accent-secondary`, `--scroll-capped`                                                                 |
-| Identity and selection | `.lumi-person-cell`, `.lumi-selected-panel`, `.lumi-result-list`, `.lumi-result-option`, `.lumi-placeholder-tile`                                                           |
-| Context panels         | `.lumi-hero-panel`, `.lumi-search-panel` + BEM children                                                                                                                     |
-| Collections            | `.lumi-history-list`/`item`, `.lumi-item-row`, `.lumi-item-list`; interactive/active row variants                                                                           |
-| Summaries              | `.lumi-total-box`, `.lumi-scan-result`                                                                                                                                      |
-| Small helpers          | `.lumi-cluster--pull-next-up`, `.lumi-container-responsive`, `.lumi-scrollbar`, `.lumi-list-item--stack-actions`                                                            |
-| Toast stack            | `.lumi-toast-portal` — consumer-owned fixed wrapper for `Notification` children                                                                                             |
-| Specialized hooks      | `.lumi-drive-toolbar-card` via `Card class`; `.lumi-drive-content`, `.lumi-drive-loading`, `.lumi-navbar-branch`, `.lumi-navbar-user-dropdown`, `.lumi-brand-logo-wordmark` |
+| Pattern                | Families and variants                                                                                                                                                        |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Surfaces and auth      | `.lumi-surface`, `.lumi-auth-mark`; apply `.lumi-card--ambient` and `.lumi-auth-card` via `Card class`                                                                       |
+| Filter summary         | `.lumi-filter-summary` + `__copy`, `__eyebrow`, `__title`, `__subtitle`, `__title-row`, `__meta`, `__actions`; `--compact`, `--split`, `--centered`, semantic color variants |
+| Section actions        | `.lumi-section-toolbar`, `.lumi-toolbar-field`, `.lumi-form-action-row`, `.lumi-inline-filters` (each has existing child/compact variants)                                   |
+| Ranked metrics         | `.lumi-metric-rank-list` / `.lumi-metric-rank-row`; list `--dense`, `--accent-secondary`, `--scroll-capped`                                                                  |
+| Identity and selection | `.lumi-person-cell`, `.lumi-selected-panel`, `.lumi-result-list`, `.lumi-result-option`, `.lumi-placeholder-tile`                                                            |
+| Context panels         | `.lumi-hero-panel`, `.lumi-search-panel` + BEM children                                                                                                                      |
+| Collections            | `.lumi-history-list`/`item`, `.lumi-item-row`, `.lumi-item-list`; interactive/active row variants                                                                            |
+| Summaries              | `.lumi-total-box`, `.lumi-scan-result`                                                                                                                                       |
+| Small helpers          | `.lumi-cluster--pull-next-up`, `.lumi-container-responsive`, `.lumi-scrollbar`, `.lumi-list-item--stack-actions`                                                             |
+| Toast stack            | `.lumi-toast-portal` — consumer-owned fixed wrapper for `Notification` children                                                                                              |
+| Specialized hooks      | `.lumi-drive-toolbar-card` via `Card class`; `.lumi-drive-content`, `.lumi-drive-loading`, `.lumi-navbar-branch`, `.lumi-navbar-user-dropdown`, `.lumi-brand-logo-wordmark`  |
 
 Chart-tooltip support and base component selectors are component-owned even when styles live in core.
 
