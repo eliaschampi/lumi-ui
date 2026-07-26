@@ -361,7 +361,7 @@ import type { ButtonProps, LumiColor, LumiSize } from '@lumi-ui/svelte';
 
 | Component | Key props | Notes |
 |-----------|-----------|-------|
-| `Card` | `title`, `spaced`, `href`, `class` | Generic / link / button card |
+| `Card` | `title`, `spaced`, `href`, `class`; snippet `media` | Generic / link / button card |
 | `DashboardSection` | `title`, snippet `actions`, snippet `footer` | Titled section with chrome |
 | `Alert` | `color`, `title`, `dismissible` | Persistent inline message |
 | `Notification` | `color`, `title`, `duration`, `position` | Transient; wrap in `.lumi-toast-portal` |
@@ -391,7 +391,7 @@ import type { ButtonProps, LumiColor, LumiSize } from '@lumi-ui/svelte';
 | Component | Key props / snippets | Notes |
 |-----------|---------------------|-------|
 | `Navbar` | snippets: `left`, `center`, `right`; `ontoggle-sidebar` | Dashboard top bar |
-| `Sidebar` / `SidebarHeader` / `SidebarItem` | `collapsed`, `mobileOpen`, `active` | Responsive primary nav |
+| `Sidebar` / `SidebarHeader` / `SidebarItem` | `collapsed`, `mobileOpen`, `active`; `SidebarHeader` snippet `cover` | Responsive primary nav |
 | `PageHeader` | `title`, `subtitle`, snippet `actions` | Page identity + actions |
 | `PageSidebar` | `bind:mobileOpen`, `mobileTitle`, snippet `sidebar` | Desktop aside + mobile drawer |
 | `Tabs` | `tabs`, `bind:active`, `color`, `orientation` | Tablist for related panels |

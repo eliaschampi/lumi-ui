@@ -1,5 +1,7 @@
 // Lumi UI - Sidebar Component Types
 
+import type { Snippet } from 'svelte';
+
 export interface SidebarProps {
 	/** Whether sidebar is collapsed */
 	collapsed?: boolean;
@@ -46,6 +48,9 @@ export interface SidebarHeaderProps {
 
 	/** Header cover image alternative text */
 	coverAlt?: string;
+
+	/** Custom cover content; takes precedence over coverSrc */
+	cover?: Snippet;
 
 	/** Primary user or account label */
 	userName: string;

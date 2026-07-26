@@ -6,6 +6,7 @@
 		collapsed = false,
 		coverSrc = '',
 		coverAlt = '',
+		cover,
 		userName,
 		userMeta = '',
 		avatarText = '',
@@ -14,7 +15,12 @@
 	}: SidebarHeaderProps = $props();
 
 	const rootClasses = $derived(
-		['lumi-sidebar-header', collapsed && 'lumi-sidebar-header--collapsed', className]
+		[
+			'lumi-sidebar-header',
+			collapsed && 'lumi-sidebar-header--collapsed',
+			cover && 'lumi-sidebar-header--custom-cover',
+			className
+		]
 			.filter(Boolean)
 			.join(' ')
 	);
@@ -33,7 +39,9 @@
 		</div>
 	{:else}
 		<div class="lumi-sidebar-header__cover">
-			{#if coverSrc}
+			{#if cover}
+				{@render cover()}
+			{:else if coverSrc}
 				<img src={coverSrc} alt={coverAlt} />
 			{/if}
 		</div>
@@ -78,7 +86,8 @@
 		overflow: hidden;
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
 		border-radius: var(--lumi-radius-xl);
-		background: var(--lumi-gradient-sidebar-header), var(--lumi-color-surface-card);
+		background:
+			var(--lumi-gradient-sidebar-header), var(--lumi-color-surface-card);
 		box-shadow: var(--lumi-shadow-sm);
 	}
 
@@ -88,6 +97,10 @@
 		inset: 0;
 		background: var(--lumi-sidebar-header-veil);
 		pointer-events: none;
+	}
+
+	.lumi-sidebar-header--custom-cover .lumi-sidebar-header__cover::after {
+		display: none;
 	}
 
 	.lumi-sidebar-header__cover img {

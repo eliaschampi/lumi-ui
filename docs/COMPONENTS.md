@@ -61,7 +61,7 @@ import type { ButtonProps } from '@lumi-ui/svelte';
 
 | Export         | Use                                             | Contract                                                                                                                    |
 | -------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `Card`         | Generic surface, link card, or button card      | [`types`](../src/lib/components/Card/types.ts), [`.svelte`](../src/lib/components/Card/Card.svelte)                         |
+| `Card`         | Generic surface with optional media slot        | [`types`](../src/lib/components/Card/types.ts), [`.svelte`](../src/lib/components/Card/Card.svelte)                         |
 | `Alert`        | Persistent inline semantic message              | [`Alert/types.ts`](../src/lib/components/Alert/types.ts)                                                                    |
 | `Chip`         | Compact label, status, or removable token       | [`Chip/types.ts`](../src/lib/components/Chip/types.ts)                                                                      |
 | `Collapse`     | Expandable disclosure                           | [`Collapse/types.ts`](../src/lib/components/Collapse/types.ts)                                                              |
@@ -91,7 +91,7 @@ import type { ButtonProps } from '@lumi-ui/svelte';
 | Export                                    | Use                                     | Contract                                                                                                                 |
 | ----------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `Navbar`                                  | Dashboard top navigation slots          | [`types`](../src/lib/components/Navbar/types.ts), [`.svelte`](../src/lib/components/Navbar/Navbar.svelte)                |
-| `Sidebar`, `SidebarHeader`, `SidebarItem` | Responsive primary nav + identity/items | [`Sidebar/types.ts`](../src/lib/components/Sidebar/types.ts)                                                             |
+| `Sidebar`, `SidebarHeader`, `SidebarItem` | Responsive primary nav + optional cover | [`Sidebar/types.ts`](../src/lib/components/Sidebar/types.ts)                                                             |
 | `PageHeader`                              | Page identity and actions               | [`types`](../src/lib/components/PageHeader/types.ts), [`.svelte`](../src/lib/components/PageHeader/PageHeader.svelte)    |
 | `PageSidebar`                             | Desktop side surface + mobile drawer    | [`types`](../src/lib/components/PageSidebar/types.ts), [`.svelte`](../src/lib/components/PageSidebar/PageSidebar.svelte) |
 | `Tabs`                                    | Tablist for related panels              | [`types`](../src/lib/components/Tabs/types.ts), [`.svelte`](../src/lib/components/Tabs/Tabs.svelte)                      |

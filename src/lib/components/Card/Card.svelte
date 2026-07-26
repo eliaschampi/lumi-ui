@@ -5,6 +5,7 @@
 
 	interface Props extends CardProps {
 		children?: Snippet;
+		media?: Snippet;
 		header?: Snippet;
 		footer?: Snippet;
 		onclick?: (event: MouseEvent) => void;
@@ -29,24 +30,26 @@
 		'aria-label': ariaLabel = '',
 		onclick,
 		children,
+		media,
 		header,
 		footer
 	}: Props = $props();
 
 	const isInteractive = $derived(clickable || href !== undefined);
+	const hasMedia = $derived(Boolean(media || image));
 	const linkRel = $derived(
 		target === '_blank' ? (rel ?? 'noopener noreferrer') : rel
 	);
 
 	const cardClasses = $derived.by(() => {
 		const classes = ['lumi-card'];
-		const isHoverable = hoverable ?? Boolean(isInteractive || image);
+		const isHoverable = hoverable ?? Boolean(isInteractive || hasMedia);
 
 		if (clickable) classes.push('lumi-card--clickable');
 		if (isInteractive) classes.push('lumi-card--interactive');
 		if (isHoverable) classes.push('lumi-card--hoverable');
 		if (selected) classes.push('lumi-card--selected');
-		if (image) classes.push('lumi-card--with-image');
+		if (hasMedia) classes.push('lumi-card--with-image');
 		if (spaced) classes.push('lumi-card--spaced');
 		if (className) classes.push(className);
 		return classes.join(' ');
@@ -66,14 +69,18 @@
 </script>
 
 {#snippet cardContent()}
-	{#if image}
+	{#if hasMedia}
 		<div class="lumi-card__media">
-			<Image
-				src={image}
-				alt={imageAlt ?? ''}
-				radius="none"
-				class="lumi-card__image"
-			/>
+			{#if media}
+				{@render media()}
+			{:else if image}
+				<Image
+					src={image}
+					alt={imageAlt ?? ''}
+					radius="none"
+					class="lumi-card__image"
+				/>
+			{/if}
 		</div>
 	{/if}
 
