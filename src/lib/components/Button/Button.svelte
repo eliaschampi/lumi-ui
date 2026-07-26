@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { ButtonProps } from './types';
+	import type { ButtonProps, ButtonVariant } from './types';
 	import Icon from '../Icon/Icon.svelte';
 	import { getIconSize, type LumiDisplaySize } from '../config';
 
@@ -11,7 +11,7 @@
 	}
 
 	const {
-		variant = 'filled',
+		variant,
 		color = 'primary',
 		size = 'md',
 		icon,
@@ -20,11 +20,29 @@
 		loading = false,
 		disabled = false,
 		type = 'button',
+		button,
 		'aria-label': ariaLabel = '',
 		class: className,
 		onclick,
 		children
 	}: Props = $props();
+
+	const visualVariant = $derived<ButtonVariant>(
+		variant ??
+			(type === 'filled' ||
+			type === 'border' ||
+			type === 'flat' ||
+			type === 'ghost' ||
+			type === 'gradient'
+				? type
+				: 'filled')
+	);
+	const nativeType = $derived<'button' | 'submit' | 'reset'>(
+		button ??
+			(type === 'button' || type === 'submit' || type === 'reset'
+				? type
+				: 'button')
+	);
 
 	const iconPixelSize = $derived.by(() => {
 		const sizeOffsets: Record<LumiDisplaySize, number> = {
@@ -37,7 +55,11 @@
 	});
 
 	const buttonClasses = $derived.by(() => {
-		const classes = ['lumi-button', `lumi-button--${variant}`, `lumi-button--${size}`];
+		const classes = [
+			'lumi-button',
+			`lumi-button--${visualVariant}`,
+			`lumi-button--${size}`
+		];
 
 		if (radius) classes.push('lumi-button--radius');
 		if (icon && !children) classes.push('lumi-button--icon-only');
@@ -64,8 +86,9 @@
 
 <button
 	class={buttonClasses}
-	type={type}
+	type={nativeType}
 	disabled={disabled || loading}
+	aria-busy={loading || undefined}
 	aria-label={ariaLabel || (icon && !children ? icon : undefined)}
 	onclick={handleClick}
 	style={styleVars}
@@ -100,12 +123,22 @@
 
 	.lumi-button {
 		--button-hover-lift: 0;
+		--button-shadow-strength: 22%;
+		--button-shadow-hover-strength: 28%;
 		--button-color-shadow: 0 var(--lumi-space-xs) var(--lumi-space-lg)
 			calc(var(--lumi-space-xs) * -1)
-			color-mix(in srgb, var(--btn-solid) 22%, transparent);
+			color-mix(
+				in srgb,
+				var(--btn-solid) var(--button-shadow-strength),
+				transparent
+			);
 		--button-color-shadow-hover: 0 var(--lumi-space-sm) var(--lumi-space-xl)
 			calc(var(--lumi-space-xs) * -1)
-			color-mix(in srgb, var(--btn-solid) 28%, transparent);
+			color-mix(
+				in srgb,
+				var(--btn-solid) var(--button-shadow-hover-strength),
+				transparent
+			);
 		/* Base Layout */
 		display: inline-flex;
 		align-items: center;
@@ -127,7 +160,7 @@
 		user-select: none;
 		position: relative;
 		overflow: hidden;
-		outline: none;
+		outline: var(--lumi-border-width-thick) solid transparent;
 		isolation: isolate;
 
 		transition:
@@ -140,7 +173,7 @@
 
 	/* Focus visible */
 	.lumi-button:focus-visible {
-		outline: none;
+		outline-color: transparent;
 		box-shadow:
 			0 0 0 var(--lumi-border-width-thick)
 				color-mix(in srgb, var(--lumi-color-background) 88%, transparent),
@@ -149,10 +182,13 @@
 
 	/* Disabled - Elegant fade */
 	.lumi-button:disabled {
-		opacity: var(--lumi-opacity-disabled);
 		cursor: not-allowed;
 		pointer-events: none;
 		transform: none;
+	}
+
+	.lumi-button:disabled:not(.lumi-button--loading) {
+		opacity: var(--lumi-opacity-disabled);
 	}
 
 	/* Hover lift effect */
@@ -237,7 +273,11 @@
 	}
 
 	.lumi-button--filled:hover:not(:disabled) {
-		background: color-mix(in srgb, var(--btn-solid) 90%, var(--lumi-color-black));
+		background: color-mix(
+			in srgb,
+			var(--btn-solid) 90%,
+			var(--lumi-color-black)
+		);
 		box-shadow:
 			inset 0 var(--lumi-border-width-thin) 0
 				color-mix(in srgb, var(--lumi-color-white) 32%, transparent),
@@ -253,12 +293,20 @@
 	.lumi-button--border {
 		background: var(--lumi-color-surface-glass);
 		color: var(--btn-color);
-		border-color: color-mix(in srgb, var(--btn-color) 34%, var(--lumi-color-border));
+		border-color: color-mix(
+			in srgb,
+			var(--btn-color) 34%,
+			var(--lumi-color-border)
+		);
 	}
 
 	.lumi-button--border:hover:not(:disabled) {
 		background: var(--lumi-color-surface-glass-strong);
-		border-color: color-mix(in srgb, var(--btn-color) 48%, var(--lumi-color-border));
+		border-color: color-mix(
+			in srgb,
+			var(--btn-color) 48%,
+			var(--lumi-color-border)
+		);
 	}
 
 	.lumi-button--border:active:not(:disabled) {
@@ -302,10 +350,14 @@
 	/* GRADIENT - expressive tactile action */
 	.lumi-button--gradient {
 		--button-hover-lift: var(--lumi-interactive-lift);
+		--button-shadow-strength: 30%;
+		--button-shadow-hover-strength: 36%;
+		background: var(--btn-solid);
 		background: linear-gradient(
-			145deg,
-			color-mix(in srgb, var(--btn-solid) 96%, var(--lumi-color-white)) 0%,
-			var(--btn-solid) 100%
+			135deg,
+			var(--btn-solid) 0%,
+			color-mix(in srgb, var(--btn-solid) 90%, var(--lumi-color-black)) 52%,
+			color-mix(in srgb, var(--btn-solid) 76%, var(--lumi-color-black)) 100%
 		);
 		color: var(--btn-foreground);
 		border-color: color-mix(in srgb, var(--btn-solid) 45%, transparent);
@@ -348,6 +400,7 @@
 
 	.lumi-button--loading {
 		color: transparent !important;
+		opacity: 1;
 		pointer-events: none;
 	}
 
@@ -387,6 +440,12 @@
 		.lumi-button__spinner {
 			transition: none;
 			animation: none;
+		}
+	}
+
+	@media (forced-colors: active) {
+		.lumi-button:focus-visible {
+			outline-color: Highlight;
 		}
 	}
 </style>

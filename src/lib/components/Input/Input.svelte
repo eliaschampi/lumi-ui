@@ -88,7 +88,9 @@
 	});
 
 	const hasPrefix = $derived(!!(icon && !iconAfter));
-	const hasSuffix = $derived(!!(validationIcon || actionIcon || (icon && iconAfter)));
+	const hasSuffix = $derived(
+		!!(validationIcon || actionIcon || (icon && iconAfter))
+	);
 	const hasFooter = $derived(!!(message || descriptionText));
 
 	// ── Methods ────────────────────────────────
@@ -104,7 +106,9 @@
 
 	function handleInput(event: Event): void {
 		if (internalError && inputElement) {
-			internalError = inputElement.validity.valid ? '' : inputElement.validationMessage;
+			internalError = inputElement.validity.valid
+				? ''
+				: inputElement.validationMessage;
 		}
 		oninput?.(event);
 	}
@@ -141,16 +145,26 @@
 
 	<div class="lumi-input__wrapper">
 		{#if hasPrefix}
-			<button
-				type="button"
-				class="lumi-input__icon lumi-input__icon--before"
-				class:lumi-input__icon--no-border={iconNoBorder}
-				aria-label={iconLabel || 'Input icon'}
-				tabindex={onIconClick ? undefined : -1}
-				onclick={handleIconClick}
-			>
-				<Icon {icon} {size} />
-			</button>
+			{#if onIconClick}
+				<button
+					type="button"
+					class="lumi-input__icon lumi-input__icon--before"
+					class:lumi-input__icon--no-border={iconNoBorder}
+					aria-label={iconLabel || 'Input icon'}
+					{disabled}
+					onclick={handleIconClick}
+				>
+					<Icon {icon} {size} />
+				</button>
+			{:else}
+				<span
+					class="lumi-input__icon lumi-input__icon--before"
+					class:lumi-input__icon--no-border={iconNoBorder}
+					aria-hidden="true"
+				>
+					<Icon {icon} {size} />
+				</span>
+			{/if}
 		{/if}
 
 		<input
@@ -167,7 +181,11 @@
 			{readonly}
 			{required}
 			placeholder={labelPlaceholder || placeholder}
-			aria-label={ariaLabel || label || labelPlaceholder || placeholder || undefined}
+			aria-label={ariaLabel ||
+				label ||
+				labelPlaceholder ||
+				placeholder ||
+				undefined}
 			aria-invalid={inputState === 'danger' || undefined}
 			aria-describedby={hasFooter ? msgId : undefined}
 			class="lumi-input"
@@ -181,7 +199,10 @@
 		{#if hasSuffix}
 			<div class="lumi-input__suffix">
 				{#if validationIcon}
-					<div class="lumi-input__validation-icon lumi-input__suffix-item" aria-hidden="true">
+					<div
+						class="lumi-input__validation-icon lumi-input__suffix-item"
+						aria-hidden="true"
+					>
 						<Icon icon={validationIcon} {size} />
 					</div>
 				{/if}
@@ -191,6 +212,7 @@
 						type="button"
 						class="lumi-input__action lumi-input__suffix-item"
 						aria-label={actionLabel || 'Input action'}
+						{disabled}
 						onclick={handleActionClick}
 					>
 						<Icon icon={actionIcon} {size} />
@@ -198,16 +220,26 @@
 				{/if}
 
 				{#if icon && iconAfter}
-					<button
-						type="button"
-						class="lumi-input__icon lumi-input__icon--after lumi-input__suffix-item"
-						class:lumi-input__icon--no-border={iconNoBorder}
-						aria-label={iconLabel || 'Input icon'}
-						tabindex={onIconClick ? undefined : -1}
-						onclick={handleIconClick}
-					>
-						<Icon {icon} {size} />
-					</button>
+					{#if onIconClick}
+						<button
+							type="button"
+							class="lumi-input__icon lumi-input__icon--after lumi-input__suffix-item"
+							class:lumi-input__icon--no-border={iconNoBorder}
+							aria-label={iconLabel || 'Input icon'}
+							{disabled}
+							onclick={handleIconClick}
+						>
+							<Icon {icon} {size} />
+						</button>
+					{:else}
+						<span
+							class="lumi-input__icon lumi-input__icon--after lumi-input__suffix-item"
+							class:lumi-input__icon--no-border={iconNoBorder}
+							aria-hidden="true"
+						>
+							<Icon {icon} {size} />
+						</span>
+					{/if}
 				{/if}
 			</div>
 		{/if}
@@ -410,6 +442,10 @@
 		flex-shrink: 0;
 	}
 
+	.lumi-input__icon[aria-hidden='true'] {
+		cursor: default;
+	}
+
 	.lumi-input-container:focus-within .lumi-input__icon,
 	.lumi-input-container:focus-within .lumi-input__action {
 		color: var(--input-color);
@@ -428,10 +464,12 @@
 	}
 
 	.lumi-input__icon--before:not(.lumi-input__icon--no-border) {
-		border-right: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
+		border-right: var(--lumi-border-width-thin) solid
+			var(--lumi-color-border-light);
 	}
 	.lumi-input__icon--after:not(.lumi-input__icon--no-border) {
-		border-left: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
+		border-left: var(--lumi-border-width-thin) solid
+			var(--lumi-color-border-light);
 	}
 
 	/* Icon padding per size */
@@ -487,6 +525,7 @@
 
 	.lumi-input__message {
 		color: var(--input-color);
+		font-weight: var(--lumi-font-weight-medium);
 	}
 
 	.lumi-input__description {

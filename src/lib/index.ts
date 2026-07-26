@@ -20,6 +20,7 @@ export type { DialogProps, DialogSize } from './components/Dialog';
 export { Dialog } from './components/Dialog';
 export type {
 	DropdownPlacement,
+	DropdownPosition,
 	DropdownItemProps,
 	DropdownProps,
 	DropdownSize,
@@ -168,6 +169,7 @@ export type { LoadingColor, LoadingProps } from './components/Loading';
 export { Loading } from './components/Loading';
 export type {
 	NotificationPosition,
+	NotificationType,
 	NotificationProps,
 	NotificationColor
 } from './components/Notification';
@@ -209,6 +211,7 @@ export { Title } from './components/Title';
 export type {
 	TooltipColor,
 	TooltipPlacement,
+	TooltipPosition,
 	TooltipProps
 } from './components/Tooltip';
 export { Tooltip } from './components/Tooltip';

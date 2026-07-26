@@ -23,12 +23,16 @@
 
 	let completionNotified = $state(false);
 
-	const clampedValue = $derived(Math.min(Math.max(value, 0), 100));
+	const clampedValue = $derived(
+		Number.isFinite(value) ? Math.min(Math.max(value, 0), 100) : 0
+	);
 	const styleVars = $derived.by(
 		() =>
 			`--progress-color: var(--lumi-color-${color}); --progress-foreground: var(--lumi-color-${color}-foreground);`
 	);
-	const progressStyle = $derived(indeterminate ? '' : `width: ${clampedValue}%`);
+	const progressStyle = $derived(
+		indeterminate ? '' : `width: ${clampedValue}%`
+	);
 
 	const progressClasses = $derived(
 		[
@@ -127,11 +131,7 @@
 
 	.lumi-progress__bar {
 		height: 100%;
-		background: linear-gradient(
-			180deg,
-			color-mix(in srgb, var(--progress-color) 82%, var(--progress-foreground)) 0%,
-			var(--progress-color) 100%
-		);
+		background: var(--progress-color);
 		border-radius: var(--lumi-radius-full);
 		box-shadow: inset 0 1px 0 var(--progress-highlight);
 		transition: width var(--lumi-duration-slow) var(--lumi-easing-default);
@@ -144,8 +144,8 @@
 		position: absolute;
 		inset-block: 0;
 		left: 0;
-		animation: lumi-progress-indeterminate var(--lumi-duration-shimmer) var(--lumi-easing-default)
-			infinite;
+		animation: lumi-progress-indeterminate var(--lumi-duration-shimmer)
+			var(--lumi-easing-default) infinite;
 		will-change: left;
 	}
 
@@ -166,7 +166,8 @@
 	}
 
 	.lumi-progress--animated .lumi-progress__stripes {
-		animation: lumi-progress-stripes var(--lumi-duration-shimmer) linear infinite;
+		animation: lumi-progress-stripes var(--lumi-duration-shimmer) linear
+			infinite;
 	}
 
 	.lumi-progress__label {
@@ -230,6 +231,17 @@
 		.lumi-progress__bar--indeterminate,
 		.lumi-progress__stripes {
 			animation: none;
+		}
+
+		.lumi-progress__bar--indeterminate {
+			left: 0;
+			width: 100%;
+			background: color-mix(
+				in srgb,
+				var(--progress-color) 35%,
+				var(--progress-track-bg)
+			);
+			will-change: auto;
 		}
 	}
 </style>

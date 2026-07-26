@@ -18,12 +18,13 @@
 		onchange
 	}: SliderProps = $props();
 
-	const uniqueId = crypto.randomUUID().slice(0, 8);
-	const sliderId = $derived(id ?? (name ? `lumi-slider-${name}` : `lumi-slider-${uniqueId}`));
+	const instanceId = $props.id();
+	const sliderId = $derived(id ?? `lumi-slider-${instanceId}`);
 
 	const percentage = $derived.by(() => {
 		const range = max - min;
-		if (range <= 0) return 0;
+		if (!Number.isFinite(value) || !Number.isFinite(range) || range <= 0)
+			return 0;
 		return Math.min(100, Math.max(0, ((value - min) / range) * 100));
 	});
 
@@ -32,7 +33,12 @@
 	);
 
 	const classes = $derived(
-		['lumi-slider', `lumi-slider--${size}`, disabled && 'lumi-slider--disabled', className]
+		[
+			'lumi-slider',
+			`lumi-slider--${size}`,
+			disabled && 'lumi-slider--disabled',
+			className
+		]
 			.filter(Boolean)
 			.join(' ')
 	);
@@ -43,7 +49,7 @@
 </script>
 
 <div class={classes} style={styleVars}>
-	{#if label || (showValue && label)}
+	{#if label}
 		<div class="lumi-slider__header">
 			{#if label}
 				<label class="lumi-slider__label" for={sliderId}>{label}</label>
@@ -70,7 +76,7 @@
 		/>
 
 		{#if showTooltip}
-			<span class="lumi-slider__tooltip" role="tooltip">{value}</span>
+			<span class="lumi-slider__tooltip" aria-hidden="true">{value}</span>
 		{/if}
 
 		<div class="lumi-slider__range-labels" aria-hidden="true">
@@ -85,9 +91,6 @@
 </div>
 
 <style>
-	/* LUMI SLIDER — Redesigned 2026 edition */
-	/* Minimal, beautiful, native-driven range component • 100% token consistency */
-
 	.lumi-slider {
 		display: flex;
 		flex-direction: column;
@@ -96,6 +99,11 @@
 
 		--slider-accent: var(--lumi-color-primary);
 		--slider-fill: 0%;
+		--slider-track: color-mix(
+			in srgb,
+			var(--lumi-color-border-strong) 68%,
+			var(--lumi-color-surface)
+		);
 		--_track-h: var(--lumi-space-2xs);
 		--_thumb-size: var(--lumi-icon-md);
 	}
@@ -122,6 +130,10 @@
 		color: var(--lumi-color-text);
 	}
 
+	.lumi-slider:focus-within .lumi-slider__label {
+		color: var(--slider-accent);
+	}
+
 	.lumi-slider__value-inline {
 		font-family: var(--lumi-font-family-mono);
 		font-size: var(--lumi-font-size-xs);
@@ -140,7 +152,7 @@
 
 	.lumi-slider__input {
 		width: 100%;
-		height: calc(var(--_track-h) + var(--lumi-space-sm)); /* larger hit area */
+		height: var(--lumi-control-height-sm);
 		margin: 0;
 		appearance: none;
 		-webkit-appearance: none;
@@ -148,15 +160,16 @@
 			to right,
 			var(--slider-accent) 0%,
 			var(--slider-accent) var(--slider-fill),
-			color-mix(in srgb, var(--lumi-color-border-strong) 68%, var(--lumi-color-surface))
-				var(--slider-fill),
-			color-mix(in srgb, var(--lumi-color-border-strong) 68%, var(--lumi-color-surface)) 100%
+			var(--slider-track) var(--slider-fill),
+			var(--slider-track) 100%
 		);
+		background-position: center;
+		background-repeat: no-repeat;
+		background-size: 100% var(--_track-h);
 		border-radius: var(--lumi-radius-full);
-		outline: none;
+		outline: var(--lumi-border-width-thick) solid transparent;
+		outline-offset: var(--lumi-space-2xs);
 		cursor: pointer;
-		box-shadow: inset 0 var(--lumi-border-width-thin) 3px
-			color-mix(in srgb, var(--lumi-color-black) 10%, transparent);
 	}
 
 	/* Webkit thumb styling */
@@ -169,11 +182,12 @@
 		border: var(--lumi-border-width-thick) solid var(--slider-accent);
 		border-radius: var(--lumi-radius-full);
 		box-shadow:
-			var(--lumi-shadow-md),
-			0 0 0 var(--lumi-space-2xs) color-mix(in srgb, var(--slider-accent) 18%, transparent);
+			var(--lumi-shadow-sm),
+			0 0 0 var(--lumi-border-width-thin)
+				color-mix(in srgb, var(--slider-accent) 18%, transparent);
 		transition:
-			transform var(--lumi-duration-base) var(--lumi-easing-bounce),
-			box-shadow var(--lumi-duration-base) var(--lumi-easing-default);
+			transform var(--lumi-duration-fast) var(--lumi-easing-default),
+			box-shadow var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
 	/* Mozilla thumb styling */
@@ -184,48 +198,62 @@
 		border: var(--lumi-border-width-thick) solid var(--slider-accent);
 		border-radius: var(--lumi-radius-full);
 		box-shadow:
-			var(--lumi-shadow-md),
-			0 0 0 var(--lumi-space-2xs) color-mix(in srgb, var(--slider-accent) 18%, transparent);
+			var(--lumi-shadow-sm),
+			0 0 0 var(--lumi-border-width-thin)
+				color-mix(in srgb, var(--slider-accent) 18%, transparent);
 		transition:
-			transform var(--lumi-duration-base) var(--lumi-easing-bounce),
-			box-shadow var(--lumi-duration-base) var(--lumi-easing-default);
+			transform var(--lumi-duration-fast) var(--lumi-easing-default),
+			box-shadow var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
-	/* Hover and Focus-visible states */
-	.lumi-slider__input:hover::-webkit-slider-thumb,
+	/* Hover */
+	.lumi-slider__input:hover::-webkit-slider-thumb {
+		transform: scale(1.08);
+		box-shadow:
+			var(--lumi-shadow-md),
+			0 0 0 var(--lumi-space-2xs)
+				color-mix(in srgb, var(--slider-accent) 22%, transparent);
+	}
+
+	.lumi-slider__input:hover::-moz-range-thumb {
+		transform: scale(1.08);
+		box-shadow:
+			var(--lumi-shadow-md),
+			0 0 0 var(--lumi-space-2xs)
+				color-mix(in srgb, var(--slider-accent) 22%, transparent);
+	}
+
+	/* Keyboard focus */
 	.lumi-slider__input:focus-visible::-webkit-slider-thumb {
-		transform: scale(1.16);
 		box-shadow:
-			var(--lumi-shadow-lg),
-			0 0 0 calc(var(--lumi-space-xs) + var(--lumi-border-width-thin))
-				color-mix(in srgb, var(--slider-accent) 24%, transparent);
+			var(--lumi-shadow-md),
+			0 0 0 var(--lumi-space-2xs)
+				color-mix(in srgb, var(--slider-accent) 28%, transparent);
 	}
 
-	.lumi-slider__input:hover::-moz-range-thumb,
 	.lumi-slider__input:focus-visible::-moz-range-thumb {
-		transform: scale(1.16);
 		box-shadow:
-			var(--lumi-shadow-lg),
-			0 0 0 calc(var(--lumi-space-xs) + var(--lumi-border-width-thin))
-				color-mix(in srgb, var(--slider-accent) 24%, transparent);
+			var(--lumi-shadow-md),
+			0 0 0 var(--lumi-space-2xs)
+				color-mix(in srgb, var(--slider-accent) 28%, transparent);
 	}
 
 	/* Active dragging states (using :active pseudo-class!) */
 	.lumi-slider__input:active::-webkit-slider-thumb {
-		transform: scale(1.26);
+		transform: scale(1.1);
 		box-shadow:
-			var(--lumi-shadow-xl),
-			0 0 0 calc(var(--lumi-space-sm) + var(--lumi-border-width-thick))
-				color-mix(in srgb, var(--slider-accent) 30%, transparent);
+			var(--lumi-shadow-md),
+			0 0 0 var(--lumi-space-xs)
+				color-mix(in srgb, var(--slider-accent) 26%, transparent);
 		transition: none;
 	}
 
 	.lumi-slider__input:active::-moz-range-thumb {
-		transform: scale(1.26);
+		transform: scale(1.1);
 		box-shadow:
-			var(--lumi-shadow-xl),
-			0 0 0 calc(var(--lumi-space-sm) + var(--lumi-border-width-thick))
-				color-mix(in srgb, var(--slider-accent) 30%, transparent);
+			var(--lumi-shadow-md),
+			0 0 0 var(--lumi-space-xs)
+				color-mix(in srgb, var(--slider-accent) 26%, transparent);
 		transition: none;
 	}
 
@@ -233,8 +261,8 @@
 	.lumi-slider__tooltip {
 		position: absolute;
 		left: var(--slider-fill);
-		bottom: 100%;
-		transform: translate(-50%, var(--lumi-space-xs));
+		bottom: calc(100% + var(--lumi-space-xs));
+		transform: translate(calc(-1 * var(--slider-fill)), var(--lumi-space-xs));
 		padding: var(--lumi-space-2xs) var(--lumi-space-sm);
 		background: var(--lumi-color-surface-overlay);
 		border: var(--lumi-border-width-thin) solid
@@ -249,8 +277,8 @@
 		opacity: 0;
 		pointer-events: none;
 		transition:
-			opacity var(--lumi-duration-base) var(--lumi-easing-bounce),
-			transform var(--lumi-duration-base) var(--lumi-easing-bounce);
+			opacity var(--lumi-duration-fast) var(--lumi-easing-default),
+			transform var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
 	/* Show tooltip on hover or active of input, or hover of control */
@@ -258,7 +286,7 @@
 	.lumi-slider__input:focus-visible ~ .lumi-slider__tooltip,
 	.lumi-slider__input:active ~ .lumi-slider__tooltip {
 		opacity: 1;
-		transform: translate(-50%, -10px);
+		transform: translate(calc(-1 * var(--slider-fill)), 0);
 	}
 
 	.lumi-slider__range-labels {
@@ -290,6 +318,12 @@
 		.lumi-slider__input::-moz-range-thumb,
 		.lumi-slider__tooltip {
 			transition: none;
+		}
+	}
+
+	@media (forced-colors: active) {
+		.lumi-slider__input:focus-visible {
+			outline-color: Highlight;
 		}
 	}
 </style>

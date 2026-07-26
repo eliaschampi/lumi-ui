@@ -14,12 +14,14 @@
 	const {
 		text = '',
 		color = 'primary',
-		placement = 'top',
+		placement,
+		position,
 		delay = 0,
 		class: className = '',
 		children,
 		content
 	}: Props = $props();
+	const resolvedPlacement = $derived(placement ?? position ?? 'top');
 
 	const instanceId = $props.id();
 	const tooltipId = `lumi-tooltip-${instanceId}`;
@@ -34,27 +36,40 @@
 		() => triggerRef,
 		() => tooltipRef,
 		() => ({
-			placement,
+			placement: resolvedPlacement,
 			offset: LUMI_CONFIG.floating.tooltip.offset,
 			maxHeight: LUMI_CONFIG.floating.tooltip.maxHeight,
 			viewportPadding: LUMI_CONFIG.floating.tooltip.viewportPadding,
 			zIndex: 'var(--lumi-z-tooltip)',
 			strategy: 'fixed' as const,
 			arrow: arrowRef
-				? { element: arrowRef, padding: LUMI_CONFIG.floating.tooltip.arrowPadding }
+				? {
+						element: arrowRef,
+						padding: LUMI_CONFIG.floating.tooltip.arrowPadding
+					}
 				: undefined
 		})
 	);
 
-	const side = $derived(floating.resolvedPlacement.split('-')[0] as TooltipPlacement);
+	const side = $derived(
+		floating.resolvedPlacement.split('-')[0] as TooltipPlacement
+	);
 	const tooltipClasses = $derived(
-		['lumi-tooltip__content', `lumi-tooltip--${side}`, className].filter(Boolean).join(' ')
+		['lumi-tooltip__content', `lumi-tooltip--${side}`, className]
+			.filter(Boolean)
+			.join(' ')
 	);
 
 	const tooltipStyles = $derived.by(() => {
 		const { arrowX, arrowY } = floating.position;
-		const x = arrowX != null ? `${arrowX}px` : 'calc(50% - var(--lumi-tooltip-arrow) / 2)';
-		const y = arrowY != null ? `${arrowY}px` : 'calc(50% - var(--lumi-tooltip-arrow) / 2)';
+		const x =
+			arrowX != null
+				? `${arrowX}px`
+				: 'calc(50% - var(--lumi-tooltip-arrow) / 2)';
+		const y =
+			arrowY != null
+				? `${arrowY}px`
+				: 'calc(50% - var(--lumi-tooltip-arrow) / 2)';
 		return [
 			floating.styleString,
 			`--lumi-tooltip-arrow-x: ${x}`,
@@ -147,7 +162,8 @@
 		{:else}
 			{text}
 		{/if}
-		<span bind:this={arrowRef} class="lumi-tooltip__arrow" aria-hidden="true"></span>
+		<span bind:this={arrowRef} class="lumi-tooltip__arrow" aria-hidden="true"
+		></span>
 	</div>
 {/if}
 

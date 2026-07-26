@@ -5,6 +5,9 @@
 
 export type NotificationColor =
 	'success' | 'warning' | 'danger' | 'info' | 'primary';
+/** @deprecated Use `NotificationColor`; legacy `error` maps to `danger`. */
+export type NotificationType =
+	'success' | 'warning' | 'error' | 'info' | 'primary';
 export type NotificationPosition =
 	| 'top-left'
 	| 'top-right'
@@ -19,6 +22,9 @@ export interface NotificationProps {
 	 * @default "primary"
 	 */
 	color?: NotificationColor;
+
+	/** @deprecated Use `color` instead. */
+	type?: NotificationType;
 
 	/**
 	 * Notification title

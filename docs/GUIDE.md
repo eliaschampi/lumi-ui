@@ -131,7 +131,7 @@ Feedback states are seeds too — one color each, overridable exactly like brand
 
 Defaults are defined in OKLCH in [`tokens.base.css`](../src/lib/styles/tokens.base.css); hex values above are sRGB approximations for authoring. Keep each seed dark enough for white foreground text on filled surfaces, and keep `info` distinct from `--lumi-brand-primary` so information never reads as a primary action.
 
-Default brand identity: cobalt primary (`oklch(0.52 0.17 255)` ≈ `#0267c7`), olive secondary (`oklch(0.5 0.1 132)` ≈ `#4d6f2f`), warm-paper neutrals.
+Default brand identity: cobalt primary (`oklch(0.52 0.17 255)`), restrained violet secondary (`oklch(0.5 0.16 300)`), and neutral-porcelain surfaces. Green remains reserved for semantic success states.
 
 ### Token ownership
 

@@ -1,12 +1,19 @@
 <script lang="ts">
+	import Bell from '@lucide/svelte/icons/bell';
+	import CircleCheck from '@lucide/svelte/icons/circle-check';
+	import CircleX from '@lucide/svelte/icons/circle-x';
+	import Info from '@lucide/svelte/icons/info';
+	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
+	import X from '@lucide/svelte/icons/x';
 	import { cubicOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
-	import { Icon } from '../Icon';
 	import { LUMI_CONFIG } from '../config';
+	import type { IconComponent } from '../../utils/icons';
 	import type { NotificationProps, NotificationColor } from './types';
 
 	let {
-		color = 'primary',
+		color,
+		type,
 		title = '',
 		message = '',
 		closable = true,
@@ -16,23 +23,30 @@
 		class: className = '',
 		onclose
 	}: NotificationProps = $props();
+	const resolvedColor = $derived(
+		color ?? (type === 'error' ? 'danger' : type) ?? 'primary'
+	);
 
-	const iconMap: Record<NotificationColor, string> = {
-		success: 'checkCircle',
-		warning: 'alertTriangle',
-		danger: 'xCircle',
-		info: 'info',
-		primary: 'bell'
+	const iconMap: Record<NotificationColor, IconComponent> = {
+		success: CircleCheck,
+		warning: TriangleAlert,
+		danger: CircleX,
+		info: Info,
+		primary: Bell
 	};
 
 	const transitionDuration = LUMI_CONFIG.transitions.base;
 
-	const role = $derived(color === 'danger' || color === 'warning' ? 'alert' : 'status');
+	const role = $derived(
+		resolvedColor === 'danger' || resolvedColor === 'warning'
+			? 'alert'
+			: 'status'
+	);
 
 	const classes = $derived.by(() => {
 		const classList = [
 			'lumi-notification',
-			`lumi-notification--${color}`,
+			`lumi-notification--${resolvedColor}`,
 			`lumi-notification--position-${position}`,
 			duration > 0 && 'lumi-notification--timed'
 		];
@@ -41,7 +55,10 @@
 		return classList.filter(Boolean).join(' ');
 	});
 
-	const styleVars = $derived(`--notification-duration: ${duration}ms;`);
+	const NotificationIcon = $derived(iconMap[resolvedColor]);
+	const styleVars = $derived(
+		`--notification-color: var(--lumi-color-${resolvedColor}); --notification-bg: var(--lumi-color-${resolvedColor}-bg); --notification-duration: ${duration}ms;`
+	);
 
 	$effect(() => {
 		if (!active || duration <= 0) return;
@@ -73,12 +90,12 @@
 		transition:fly={{ y: 12, duration: transitionDuration, easing: cubicOut }}
 	>
 		<div class="lumi-notification__icon" aria-hidden="true">
-			<Icon icon={iconMap[color]} size="md" />
+			<NotificationIcon size="var(--lumi-icon-md)" />
 		</div>
 
 		<div class="lumi-notification__content">
 			{#if title}
-				<h4 class="lumi-notification__title">{title}</h4>
+				<div class="lumi-notification__title">{title}</div>
 			{/if}
 			{#if message}
 				<p class="lumi-notification__text">{message}</p>
@@ -92,7 +109,7 @@
 				aria-label="Close notification"
 				onclick={handleClose}
 			>
-				<Icon icon="x" size="sm" />
+				<X size="var(--lumi-icon-sm)" />
 			</button>
 		{/if}
 	</div>
@@ -109,14 +126,8 @@
 		gap: var(--lumi-space-md);
 		inline-size: min(100%, var(--lumi-notification-max-inline-size));
 		padding: var(--lumi-space-md);
-		background:
-			linear-gradient(
-				145deg,
-				var(--notification-bg),
-				transparent 60%
-			),
-			var(--lumi-color-surface-glass-strong);
-		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
+		background: var(--notification-bg);
+		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
 		border-inline-start: var(--lumi-space-2xs) solid var(--notification-color);
 		border-radius: var(--lumi-layout-floating-radius);
 		box-shadow: var(--lumi-shadow-lg);
@@ -131,29 +142,14 @@
 		inset-inline: 0;
 		bottom: 0;
 		height: var(--lumi-border-width-thick);
-		background: color-mix(in srgb, var(--notification-color) 70%, var(--lumi-color-surface));
+		background: color-mix(
+			in srgb,
+			var(--notification-color) 70%,
+			var(--lumi-color-surface)
+		);
 		transform-origin: left;
-		animation: lumi-notification-timeout var(--notification-duration) linear forwards;
-	}
-
-	.lumi-notification--success {
-		--notification-color: var(--lumi-color-success);
-		--notification-bg: var(--lumi-color-success-bg);
-	}
-
-	.lumi-notification--warning {
-		--notification-color: var(--lumi-color-warning);
-		--notification-bg: var(--lumi-color-warning-bg);
-	}
-
-	.lumi-notification--danger {
-		--notification-color: var(--lumi-color-danger);
-		--notification-bg: var(--lumi-color-danger-bg);
-	}
-
-	.lumi-notification--info {
-		--notification-color: var(--lumi-color-info);
-		--notification-bg: var(--lumi-color-info-bg);
+		animation: lumi-notification-timeout var(--notification-duration) linear
+			forwards;
 	}
 
 	.lumi-notification__icon {
@@ -165,7 +161,11 @@
 		height: var(--lumi-space-xxl);
 		border-radius: var(--lumi-radius-full);
 		color: var(--notification-color);
-		background-color: color-mix(in srgb, var(--notification-bg) 90%, var(--lumi-color-surface));
+		background-color: color-mix(
+			in srgb,
+			var(--notification-color) 10%,
+			var(--lumi-color-surface-raised)
+		);
 		border: var(--lumi-border-width-thin) solid
 			color-mix(in srgb, var(--notification-color) 16%, transparent);
 		position: relative;
@@ -202,12 +202,12 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: var(--lumi-space-lg);
-		height: var(--lumi-space-lg);
+		width: var(--lumi-space-xl);
+		height: var(--lumi-space-xl);
 		padding: 0;
 		background: transparent;
 		border: var(--lumi-border-width-thin) solid transparent;
-		border-radius: var(--lumi-radius-md);
+		border-radius: var(--lumi-radius-full);
 		color: var(--lumi-color-text-muted);
 		cursor: pointer;
 		transition: var(--lumi-transition-all);
@@ -217,7 +217,11 @@
 	}
 
 	.lumi-notification__close:hover {
-		background-color: color-mix(in srgb, var(--lumi-color-background-hover) 85%, transparent);
+		background-color: color-mix(
+			in srgb,
+			var(--lumi-color-background-hover) 85%,
+			transparent
+		);
 		color: var(--lumi-color-text);
 		border-color: var(--lumi-color-border-light);
 	}

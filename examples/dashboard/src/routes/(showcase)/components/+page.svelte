@@ -37,6 +37,7 @@
 
 	let activeTab = $state<string | number>('actions');
 	let alertVisible = $state(true);
+	let infoChipVisible = $state(true);
 
 	// Status & feedback demo state.
 	let notificationVisible = $state(false);
@@ -198,6 +199,7 @@
 					<Button variant="border" icon="edit">Editar</Button>
 					<Button variant="flat" icon="refreshCw">Actualizar</Button>
 					<Button variant="ghost" icon="trash" color="danger">Eliminar</Button>
+					<Button variant="gradient" icon="sparkles">Gradiente</Button>
 					<Button variant="filled" loading>Procesando</Button>
 				</div>
 			</Card>
@@ -209,7 +211,9 @@
 					<Chip color="success" icon="check">Completado</Chip>
 					<Chip color="warning" icon="clock">Pendiente</Chip>
 					<Chip color="danger" icon="alertTriangle">Bloqueado</Chip>
-					<Chip color="info" closable>Información</Chip>
+					{#if infoChipVisible}
+						<Chip color="info" closable onclose={() => (infoChipVisible = false)}>Información</Chip>
+					{/if}
 				</div>
 			</Card>
 

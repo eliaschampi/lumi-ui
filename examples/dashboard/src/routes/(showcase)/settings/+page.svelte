@@ -101,12 +101,14 @@
 					<div class="lumi-stack lumi-stack--sm">
 						<Radio
 							bind:group={navigationMode}
+							name="navigation-mode"
 							value="expanded"
 							label="Expandida"
 							description="Muestra texto e iconos."
 						/>
 						<Radio
 							bind:group={navigationMode}
+							name="navigation-mode"
 							value="collapsed"
 							label="Compacta"
 							description="Prioriza el contenido principal."

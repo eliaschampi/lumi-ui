@@ -189,10 +189,11 @@
 	/* Interactive state */
 	.lumi-card--interactive {
 		cursor: pointer;
+		outline: var(--lumi-border-width-thick) solid transparent;
 	}
 
 	.lumi-card--interactive:focus-visible {
-		outline: none;
+		outline-color: transparent;
 		border-color: var(--lumi-color-border-interactive);
 		box-shadow:
 			0 0 0 var(--lumi-border-width-thick)
@@ -316,6 +317,13 @@
 
 		.lumi-card--hoverable:hover .lumi-card__media :global(.lumi-image__img) {
 			transform: none;
+		}
+	}
+
+	@media (forced-colors: active) {
+		.lumi-card--interactive:focus-visible {
+			outline-color: CanvasText;
+			box-shadow: none;
 		}
 	}
 </style>

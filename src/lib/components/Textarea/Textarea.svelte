@@ -27,8 +27,10 @@
 	let textareaRef: HTMLTextAreaElement | undefined = $state();
 	let isFocused = $state(false);
 
-	const id = `lumi-textarea-${crypto.randomUUID().slice(0, 8)}`;
+	const instanceId = $props.id();
+	const id = `lumi-textarea-${instanceId}`;
 	const hasError = $derived(Boolean(error && typeof error === 'string'));
+	const activeColor = $derived(error ? 'danger' : color);
 	const describedBy = $derived.by(() => {
 		const ids: string[] = [];
 		if (hasError) ids.push(`${id}-error`);
@@ -77,7 +79,7 @@
 	export const blur = () => textareaRef?.blur();
 </script>
 
-<div class={classes}>
+<div class={classes} style:--textarea-color="var(--lumi-color-{activeColor})">
 	{#if label}
 		<label for={id} class="lumi-textarea__label">
 			{label}
@@ -115,7 +117,9 @@
 	</div>
 
 	{#if hasError}
-		<div id={`${id}-error`} class="lumi-textarea__error">{error}</div>
+		<div id={`${id}-error`} class="lumi-textarea__error" aria-live="polite">
+			{error}
+		</div>
 	{/if}
 
 	{#if hint}
@@ -146,6 +150,11 @@
 	.lumi-textarea__required {
 		color: var(--lumi-color-danger);
 		margin-left: var(--lumi-space-2xs);
+	}
+
+	.lumi-textarea--focused .lumi-textarea__label,
+	.lumi-textarea--error .lumi-textarea__label {
+		color: var(--textarea-color);
 	}
 
 	.lumi-textarea__wrapper {
@@ -189,13 +198,6 @@
 	.lumi-textarea__input:hover:not(:focus):not(:disabled) {
 		border-color: var(--lumi-color-border-strong);
 		background: var(--lumi-color-control-hover-fill);
-	}
-
-	.lumi-textarea__input:disabled {
-		opacity: var(--lumi-opacity-disabled);
-		cursor: not-allowed;
-		background: var(--lumi-color-background-secondary);
-		border-color: var(--lumi-color-border);
 	}
 
 	.lumi-textarea__input:read-only {
@@ -265,23 +267,6 @@
 		font-size: var(--lumi-font-size-lg);
 	}
 
-	/* Color variants */
-	.lumi-textarea--secondary {
-		--textarea-color: var(--lumi-color-secondary);
-	}
-	.lumi-textarea--success {
-		--textarea-color: var(--lumi-color-success);
-	}
-	.lumi-textarea--warning {
-		--textarea-color: var(--lumi-color-warning);
-	}
-	.lumi-textarea--danger {
-		--textarea-color: var(--lumi-color-danger);
-	}
-	.lumi-textarea--info {
-		--textarea-color: var(--lumi-color-info);
-	}
-
 	/* State variants */
 	.lumi-textarea--focused .lumi-textarea__input {
 		border-color: var(--textarea-color);
@@ -289,22 +274,27 @@
 	}
 
 	.lumi-textarea--error .lumi-textarea__input {
-		border-color: var(--lumi-color-danger);
-	}
-
-	.lumi-textarea--error .lumi-textarea__input:focus {
-		border-color: var(--lumi-color-danger);
+		border-color: var(--textarea-color);
 	}
 
 	.lumi-textarea--disabled .lumi-textarea__input {
-		opacity: var(--lumi-opacity-disabled);
 		cursor: not-allowed;
-		background: var(--lumi-color-background-secondary);
-		border-color: var(--lumi-color-border);
+	}
+
+	.lumi-textarea--disabled {
+		opacity: var(--lumi-opacity-disabled);
+		pointer-events: none;
 	}
 
 	.lumi-textarea--readonly .lumi-textarea__input {
 		cursor: default;
 		background: var(--textarea-bg);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.lumi-textarea__label,
+		.lumi-textarea__input {
+			transition: none;
+		}
 	}
 </style>

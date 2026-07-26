@@ -7,7 +7,7 @@ export interface SliderProps {
 	/** Form field name */
 	name?: string;
 
-	/** Input id; falls back to a stable id derived from name/label */
+	/** Input id; falls back to a stable component instance id */
 	id?: string;
 
 	/** Current value of the slider (bindable) */

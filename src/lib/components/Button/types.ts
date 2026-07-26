@@ -10,6 +10,11 @@ export type ButtonVariant = 'filled' | 'border' | 'flat' | 'ghost' | 'gradient';
 export interface ButtonProps {
 	/** Visual style variant */
 	variant?: ButtonVariant;
+	/** Native button type, or legacy visual variant when `variant` is omitted */
+	type?: 'button' | 'submit' | 'reset' | ButtonVariant;
+
+	/** Legacy native button type used with the visual `type` API */
+	button?: 'button' | 'submit' | 'reset';
 
 	/** Semantic accent color */
 	color?: LumiColor;
@@ -31,9 +36,6 @@ export interface ButtonProps {
 
 	/** Whether button is disabled */
 	disabled?: boolean;
-
-	/** HTML button type */
-	type?: 'button' | 'submit' | 'reset';
 
 	/** Accessible label for icon-only buttons */
 	'aria-label'?: string;

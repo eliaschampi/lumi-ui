@@ -13,6 +13,9 @@ export interface AlertProps {
 	/** Semantic accent color */
 	color?: AlertColor;
 
+	/** @deprecated Use `color` instead. */
+	type?: AlertColor;
+
 	/** Alert title */
 	title?: string;
 

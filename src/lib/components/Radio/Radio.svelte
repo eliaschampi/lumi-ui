@@ -18,15 +18,14 @@
 		'aria-label': ariaLabel = ''
 	}: RadioProps = $props();
 
-	const radioId = $derived(
-		name ? `lumi-radio-${name}-${String(value)}` : `lumi-radio-${String(value)}`
-	);
+	const instanceId = $props.id();
+	const radioId = `lumi-radio-${instanceId}`;
 
 	const isChecked = $derived(group === value);
 	const isOptionCard = $derived(!!description || option);
 
 	function handleChange(event: Event): void {
-		if (disabled || group === value) return;
+		if (disabled || busy || group === value) return;
 		group = value;
 		onchange?.(value, event);
 	}
@@ -39,6 +38,8 @@
 	class:lumi-radio--checked={isChecked}
 	class:lumi-radio--disabled={disabled}
 	class:lumi-radio--card={!!description}
+	style:--radio-color="var(--lumi-color-{color})"
+	aria-busy={busy || undefined}
 >
 	<input
 		id={radioId}
@@ -46,7 +47,7 @@
 		{name}
 		{value}
 		checked={isChecked}
-		{disabled}
+		disabled={disabled || busy}
 		aria-label={ariaLabel || label || description || undefined}
 		class="lumi-radio__input"
 		onchange={handleChange}
@@ -92,6 +93,7 @@
 		--radio-dot-size: var(--lumi-space-sm);
 		--radio-label-size: var(--lumi-font-size-base);
 		--radio-color: var(--lumi-color-primary);
+		--lumi-control-accent: var(--radio-color);
 
 		position: relative;
 		display: inline-flex;
@@ -117,10 +119,10 @@
 		justify-content: center;
 		width: var(--radio-size);
 		height: var(--radio-size);
-		border: var(--lumi-border-width-thick) solid var(--lumi-color-border);
+		border: var(--lumi-border-width-base) solid var(--lumi-color-control-border);
 		border-radius: var(--lumi-radius-full);
 		background: var(--lumi-color-control-fill);
-		box-shadow: inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 20%, transparent);
+		box-shadow: var(--lumi-control-shadow);
 		flex-shrink: 0;
 		transition:
 			border-color var(--lumi-duration-base) var(--lumi-easing-default),
@@ -173,16 +175,18 @@
 	}
 
 	@media (hover: hover) {
-		.lumi-radio.lumi-radio-option:not(.lumi-radio--disabled):not(.lumi-radio--checked):hover {
-			border-color: var(--lumi-color-border-interactive);
-			background: color-mix(in srgb, var(--radio-color) 8%, var(--lumi-color-surface-card));
+		.lumi-radio.lumi-radio-option:not(.lumi-radio--disabled):not(
+				.lumi-radio--checked
+			):hover {
+			border-color: var(--lumi-control-active-border);
+			background: var(--lumi-control-active-fill);
 		}
 	}
 
 	.lumi-radio.lumi-radio-option.lumi-radio--checked {
-		border-color: var(--lumi-color-border-interactive);
-		background: color-mix(in srgb, var(--radio-color) 12%, var(--lumi-color-surface-card));
-		box-shadow: var(--lumi-shadow-sm);
+		border-color: var(--lumi-control-active-border);
+		background: var(--lumi-control-active-fill);
+		box-shadow: var(--lumi-control-active-shadow);
 	}
 
 	.lumi-radio.lumi-radio-option--busy {
@@ -222,36 +226,20 @@
 		--radio-label-size: var(--lumi-font-size-lg);
 	}
 
-	/* ── Color variants ───────────────────────────────────────── */
-	.lumi-radio--secondary {
-		--radio-color: var(--lumi-color-secondary);
-	}
-	.lumi-radio--success {
-		--radio-color: var(--lumi-color-success);
-	}
-	.lumi-radio--warning {
-		--radio-color: var(--lumi-color-warning);
-	}
-	.lumi-radio--danger {
-		--radio-color: var(--lumi-color-danger);
-	}
-	.lumi-radio--info {
-		--radio-color: var(--lumi-color-info);
-	}
-
 	/* ── States ───────────────────────────────────────────────── */
 	.lumi-radio:not(.lumi-radio--disabled):hover .lumi-radio__visual {
-		border-color: var(--radio-color);
-		background: color-mix(in srgb, var(--radio-color) 9%, var(--lumi-color-control-fill));
+		border-color: var(--lumi-control-active-border);
+		background: var(--lumi-control-active-fill);
 	}
 
 	.lumi-radio--checked:not(.lumi-radio--disabled):hover .lumi-radio__visual {
-		background: color-mix(in srgb, var(--radio-color) 8%, var(--lumi-color-control-fill));
+		background: var(--lumi-control-active-fill);
 	}
 
 	.lumi-radio--checked .lumi-radio__visual {
-		border-color: var(--radio-color);
-		background: color-mix(in srgb, var(--radio-color) 7%, var(--lumi-color-control-fill));
+		border-color: var(--lumi-control-active-border);
+		background: var(--lumi-control-active-fill);
+		box-shadow: var(--lumi-control-active-shadow);
 	}
 
 	.lumi-radio--checked .lumi-radio__circle {
@@ -261,9 +249,7 @@
 
 	.lumi-radio__input:focus-visible + .lumi-radio__visual,
 	.lumi-radio__input:focus-visible ~ .lumi-radio__header .lumi-radio__visual {
-		box-shadow:
-			0 0 0 var(--lumi-border-width-thick) var(--lumi-color-background),
-			0 0 0 calc(var(--lumi-border-width-thick) * 2) var(--radio-color);
+		box-shadow: var(--lumi-control-focus-shadow);
 	}
 
 	.lumi-radio--disabled {

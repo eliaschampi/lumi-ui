@@ -18,19 +18,30 @@
 	const transitionDuration = `${LUMI_CONFIG.transitions.base}ms`;
 
 	const classes = $derived.by(() => {
-		const baseClasses = ['lumi-loading', `lumi-loading--${size}`, `lumi-loading--${color}`];
+		const baseClasses = [
+			'lumi-loading',
+			`lumi-loading--${size}`,
+			`lumi-loading--${color}`
+		];
 
-		if (text || children) baseClasses.push('lumi-loading--with-text');
 		if (className) baseClasses.push(className);
 
 		return baseClasses.join(' ');
 	});
 
-	const styleVars = $derived(`--loading-transition-duration: ${transitionDuration};`);
-	const ariaLabel = $derived(text || 'Loading');
+	const styleVars = $derived(
+		`--loading-color: var(--lumi-color-${color}); --loading-transition-duration: ${transitionDuration};`
+	);
+	const ariaLabel = $derived(text || (children ? undefined : 'Loading'));
 </script>
 
-<div class={classes} style={styleVars} role="status" aria-live="polite" aria-label={ariaLabel}>
+<div
+	class={classes}
+	style={styleVars}
+	role="status"
+	aria-live="polite"
+	aria-label={ariaLabel}
+>
 	<div class="lumi-loading__indicator" aria-hidden="true">
 		<span class="lumi-loading__ring"></span>
 		<span class="lumi-loading__core"></span>
@@ -55,10 +66,9 @@
 		justify-content: center;
 		gap: var(--lumi-space-md);
 		font-family: var(--lumi-font-family-sans);
-		color: var(--lumi-color-primary);
-		transition:
-			color var(--loading-transition-duration) var(--lumi-easing-default),
-			transform var(--loading-transition-duration) var(--lumi-easing-default);
+		color: var(--loading-color);
+		transition: color var(--loading-transition-duration)
+			var(--lumi-easing-default);
 		--loading-ring-size: var(--lumi-space-3xl);
 		--loading-core-size: var(--lumi-space-lg);
 	}
@@ -75,9 +85,11 @@
 		position: absolute;
 		inset: 0;
 		border-radius: var(--lumi-radius-full);
-		border: var(--lumi-border-width-thick) solid color-mix(in srgb, currentColor 18%, transparent);
+		border: var(--lumi-border-width-thick) solid
+			color-mix(in srgb, currentColor 18%, transparent);
 		border-top-color: currentColor;
-		animation: lumi-loading-spin var(--lumi-duration-slower) linear infinite;
+		animation: lumi-loading-spin calc(var(--lumi-duration-slower) * 2) linear
+			infinite;
 	}
 
 	.lumi-loading__core {
@@ -85,8 +97,10 @@
 		block-size: var(--loading-core-size);
 		border-radius: var(--lumi-radius-full);
 		background: currentColor;
-		box-shadow: 0 0 var(--lumi-space-md) color-mix(in srgb, currentColor 35%, transparent);
-		animation: lumi-loading-pulse var(--lumi-duration-base) var(--lumi-easing-in-out) infinite;
+		box-shadow: 0 0 var(--lumi-space-md)
+			color-mix(in srgb, currentColor 35%, transparent);
+		animation: lumi-loading-pulse calc(var(--lumi-duration-slower) * 3)
+			var(--lumi-easing-in-out) infinite;
 	}
 
 	.lumi-loading__text {
@@ -107,30 +121,6 @@
 		--loading-ring-size: var(--lumi-space-4xl);
 		--loading-core-size: var(--lumi-space-xl);
 		gap: var(--lumi-space-lg);
-	}
-
-	.lumi-loading--primary {
-		color: var(--lumi-color-primary);
-	}
-
-	.lumi-loading--secondary {
-		color: var(--lumi-color-secondary);
-	}
-
-	.lumi-loading--success {
-		color: var(--lumi-color-success);
-	}
-
-	.lumi-loading--warning {
-		color: var(--lumi-color-warning);
-	}
-
-	.lumi-loading--danger {
-		color: var(--lumi-color-danger);
-	}
-
-	.lumi-loading--info {
-		color: var(--lumi-color-info);
 	}
 
 	@keyframes lumi-loading-spin {

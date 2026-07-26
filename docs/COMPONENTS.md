@@ -134,13 +134,23 @@ Non-component root exports from `@lumi-ui/svelte`. Use these to compose custom U
 
 Contracts: [`config.ts`](../src/lib/components/config.ts), [`portal.ts`](../src/lib/actions/portal.ts), [`icons.ts`](../src/lib/utils/icons.ts), [`charts.ts`](../src/lib/types/charts.ts).
 
-The string icon registry imports every registered Lucide icon at build time. For minimum bundle size, pass an imported Lucide component directly to `<Icon icon={...}/>` instead of a name.
+The string icon registry imports every registered Lucide icon when `Icon` enters a bundle. Passing a direct Lucide component through `<Icon>` preserves the common sizing/color API, but the current wrapper still retains that registry. For the smallest custom icon path, render the deep-imported Lucide component directly; Lumi components with dynamic string-icon props retain the registry by contract.
 
 ## Behavioral Checks
 
 - Read `.svelte` when snippets/callbacks matter; several are local, not in exported `*Props`.
 - `RemoteSelect` needs endpoint/query and mapping inputs from its source.
+- Prefer `Button.variant` for visual hierarchy and `Button.type` for native semantics. Legacy visual `type` plus native `button` remains supported; `variant` wins visually and `button` wins natively when both forms are present. The gradient remains within the selected semantic hue and preserves its solid foreground contrast.
+- `Card` derives its depth from the neutral surface ladder. A clickable card renders as a button and must not contain nested interactive controls.
+- `Input`, `NumberInput`, `Select`, and `Textarea` share the same control fill, border, focus ring, radius, and motion tokens.
+- Radios bound to the same `group` must also share a non-empty `name` for native arrow-key navigation and form semantics. `busy` temporarily disables interaction.
+- `SegmentedControl.iconOnly` applies compact tokenized padding. With `clearable`, activating the selected option emits the empty string (`''`).
+- `Chip` uses a native button for `onclick`; when it is also `closable`, the action and close control remain siblings rather than nested controls.
+- `Progress.animated` implies stripes. When using `labelSnippet`, provide `aria-label` if the visible snippet is not a sufficient accessible name.
+- `Alert.color` and `Notification.color` supersede legacy `type`; exported `NotificationType` remains compatible and legacy `error` maps to semantic `danger`.
+- `Dropdown.placement` and `Tooltip.placement` supersede legacy `position`; exported `DropdownPosition` and `TooltipPosition` remain compatible.
 - Supply `Table.rowKey` when records lack stable `id` or `key`.
+- `Table` suppresses row click/double-click/context actions when the pointer originates from a nested interactive control.
 - `Notification` renders in place; wrap in `.lumi-toast-portal` for a fixed toast stack.
 - Icon-only controls need an accessible name; decorative nested icons do not.
 - Preserve focus, dismissal, and roles when composing overlays.

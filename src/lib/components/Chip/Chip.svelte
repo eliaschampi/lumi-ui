@@ -20,7 +20,15 @@
 
 	// Computed classes
 	const classes = $derived(
-		['lumi-chip', `lumi-chip--${color}`, `lumi-chip--${size}`, className].filter(Boolean).join(' ')
+		[
+			'lumi-chip',
+			`lumi-chip--${color}`,
+			`lumi-chip--${size}`,
+			onclick && 'lumi-chip--interactive',
+			className
+		]
+			.filter(Boolean)
+			.join(' ')
 	);
 
 	const iconSize = $derived(size === 'sm' ? 'xs' : 'sm');
@@ -34,38 +42,43 @@
 	const handleClick = (event: MouseEvent) => {
 		if (onclick) onclick(event);
 	};
-
-	const handleKeyDown = (event: KeyboardEvent) => {
-		if (onclick && (event.key === 'Enter' || event.key === ' ')) {
-			event.preventDefault();
-			onclick(event as unknown as MouseEvent);
-		}
-	};
 </script>
 
-<div
-	class={classes}
-	role={onclick ? 'button' : 'status'}
-	onclick={handleClick}
-	onkeydown={handleKeyDown}
->
+{#snippet content()}
 	{#if icon}
-		<!-- Icon -->
 		<span class="lumi-chip__icon">
 			<Icon {icon} size={iconSize} />
 		</span>
 	{/if}
 
-	<!-- Chip text -->
 	<span class="lumi-chip__text">
 		{#if children}
 			{@render children()}
 		{/if}
 	</span>
+{/snippet}
+
+<div
+	class={classes}
+	style:--chip-color="var(--lumi-color-{color})"
+	style:--chip-bg="var(--lumi-color-{color}-bg)"
+>
+	{#if onclick}
+		<button type="button" class="lumi-chip__action" onclick={handleClick}>
+			{@render content()}
+		</button>
+	{:else}
+		{@render content()}
+	{/if}
 
 	{#if closable}
 		<!-- Close button -->
-		<button type="button" class="lumi-chip__close" aria-label="Close chip" onclick={handleClose}>
+		<button
+			type="button"
+			class="lumi-chip__close"
+			aria-label="Close chip"
+			onclick={handleClose}
+		>
 			<Icon icon="x" size="sm" />
 		</button>
 	{/if}
@@ -84,8 +97,7 @@
 		--lumi-chip-min-height: var(--lumi-control-height-sm);
 		--lumi-chip-close-size: var(--lumi-space-md);
 		--chip-color: var(--lumi-color-primary);
-		--chip-bg-strength: 17%;
-		--chip-border-strength: 20%;
+		--chip-bg: var(--lumi-color-primary-bg);
 		display: inline-flex;
 		align-items: center;
 		align-self: flex-start;
@@ -106,11 +118,12 @@
 		white-space: nowrap;
 		cursor: default;
 		user-select: none;
-		background: color-mix(in srgb, var(--chip-color) var(--chip-bg-strength), transparent);
+		background: var(--chip-bg);
 		color: var(--chip-color);
 		border: var(--lumi-border-width-thin) solid
-			color-mix(in srgb, var(--chip-color) var(--chip-border-strength), transparent);
-		box-shadow: inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 18%, transparent);
+			color-mix(in srgb, var(--chip-color) 24%, transparent);
+		box-shadow: inset 0 var(--lumi-border-width-thin) 0
+			color-mix(in srgb, var(--lumi-color-white) 18%, transparent);
 	}
 
 	/* Size variants */
@@ -123,39 +136,17 @@
 		--lumi-chip-close-size: var(--lumi-space-sm);
 	}
 
-	.lumi-chip--md {
-		--lumi-chip-padding-block: var(--lumi-space-xs);
-		--lumi-chip-padding-inline: var(--lumi-space-sm);
-		--lumi-chip-gap: var(--lumi-space-xs);
-		--lumi-chip-font-size: var(--lumi-font-size-sm);
-		--lumi-chip-min-height: var(--lumi-control-height-sm);
-		--lumi-chip-close-size: var(--lumi-space-md);
-	}
-
-	/* Color variants - Flat style like button flat */
-	.lumi-chip--primary {
-		--chip-color: var(--lumi-color-primary);
-	}
-
-	.lumi-chip--secondary {
-		--chip-color: var(--lumi-color-secondary);
-	}
-
-	.lumi-chip--success {
-		--chip-color: var(--lumi-color-success);
-	}
-
-	.lumi-chip--warning {
-		--chip-color: var(--lumi-color-warning);
-		--chip-bg-strength: 18%;
-	}
-
-	.lumi-chip--danger {
-		--chip-color: var(--lumi-color-danger);
-	}
-
-	.lumi-chip--info {
-		--chip-color: var(--lumi-color-info);
+	.lumi-chip__action {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--lumi-chip-gap);
+		min-width: 0;
+		padding: 0;
+		background: transparent;
+		border: 0;
+		color: inherit;
+		font: inherit;
+		cursor: pointer;
 	}
 
 	/* Icon styling */
@@ -194,8 +185,7 @@
 		cursor: pointer;
 		transition:
 			opacity var(--lumi-duration-fast) var(--lumi-easing-default),
-			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			transform var(--lumi-duration-fast) var(--lumi-easing-default);
+			background-color var(--lumi-duration-fast) var(--lumi-easing-default);
 		flex-shrink: 0;
 		opacity: 0.7;
 	}
@@ -203,7 +193,6 @@
 	.lumi-chip__close:hover {
 		opacity: 1;
 		background: color-mix(in srgb, currentColor 15%, transparent);
-		transform: scale(1.1);
 	}
 
 	.lumi-chip__close:focus-visible {
@@ -211,15 +200,19 @@
 		outline-offset: var(--lumi-space-2xs);
 	}
 
-	/* Hover effects */
-	.lumi-chip:hover {
-		opacity: var(--lumi-opacity-hover);
+	.lumi-chip--interactive:hover {
+		background: color-mix(
+			in srgb,
+			var(--chip-color) 16%,
+			var(--lumi-color-surface-card)
+		);
+		border-color: color-mix(in srgb, var(--chip-color) 34%, transparent);
 	}
 
-	/* Focus styles */
-	.lumi-chip:focus-visible {
+	.lumi-chip__action:focus-visible {
 		outline: var(--lumi-border-width-thick) solid currentColor;
 		outline-offset: var(--lumi-space-2xs);
+		border-radius: var(--lumi-radius-full);
 	}
 
 	/* Accessibility */
@@ -227,11 +220,6 @@
 		.lumi-chip,
 		.lumi-chip__close {
 			transition: none;
-		}
-
-		.lumi-chip:hover,
-		.lumi-chip__close:hover {
-			transform: none;
 		}
 	}
 </style>

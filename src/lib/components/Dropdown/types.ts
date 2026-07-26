@@ -2,6 +2,8 @@ import type { FloatingPlacement } from '../../utils/floating.svelte';
 import type { LumiColor, LumiCompactSize } from '../config';
 
 export type DropdownPlacement = FloatingPlacement;
+/** @deprecated Use `DropdownPlacement` instead. */
+export type DropdownPosition = DropdownPlacement;
 export type DropdownSize = LumiCompactSize;
 export type DropdownTrigger = 'click' | 'hover';
 
@@ -11,6 +13,9 @@ export interface DropdownProps {
 
 	/** Dropdown placement relative to trigger */
 	placement?: DropdownPlacement;
+
+	/** @deprecated Use `placement` instead. */
+	position?: DropdownPosition;
 
 	/** Size variant */
 	size?: DropdownSize;

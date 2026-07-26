@@ -16,6 +16,7 @@
 	let {
 		open = $bindable(false),
 		placement,
+		position,
 		size = 'md',
 		disabled = false,
 		trigger = 'click',
@@ -32,7 +33,7 @@
 		triggerContent
 	}: Props = $props();
 
-	const resolvedPlacement = $derived(placement ?? 'bottom-start');
+	const resolvedPlacement = $derived(placement ?? position ?? 'bottom-start');
 
 	let dropdownRef: HTMLDivElement | undefined = $state();
 	let triggerRef: HTMLDivElement | undefined = $state();

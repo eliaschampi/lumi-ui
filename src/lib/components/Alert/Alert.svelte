@@ -1,9 +1,14 @@
 <script lang="ts">
+	import CircleCheck from '@lucide/svelte/icons/circle-check';
+	import CircleX from '@lucide/svelte/icons/circle-x';
+	import Info from '@lucide/svelte/icons/info';
+	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
+	import X from '@lucide/svelte/icons/x';
 	import type { Snippet } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import type { AlertProps } from './types';
-	import { Icon } from '../Icon';
 	import { LUMI_CONFIG } from '../config';
+	import type { IconComponent } from '../../utils/icons';
+	import type { AlertColor, AlertProps } from './types';
 
 	type Props = AlertProps & {
 		children?: Snippet;
@@ -11,7 +16,8 @@
 	};
 
 	let {
-		color = 'info',
+		color,
+		type,
 		title,
 		icon = true,
 		closable = false,
@@ -20,22 +26,31 @@
 		children,
 		active = $bindable(true)
 	}: Props = $props();
+	const resolvedColor = $derived(color ?? type ?? 'info');
 
 	// Icon mapping for alert colors
-	const iconMap: Record<string, string> = {
-		success: 'checkCircle',
-		warning: 'alertTriangle',
-		danger: 'xCircle',
-		info: 'info',
-		primary: 'info',
-		secondary: 'info'
+	const iconMap: Record<AlertColor, IconComponent> = {
+		success: CircleCheck,
+		warning: TriangleAlert,
+		danger: CircleX,
+		info: Info,
+		primary: Info,
+		secondary: Info
 	};
 
-	const alertIcon = $derived(iconMap[color] || 'info');
+	const AlertIcon = $derived(iconMap[resolvedColor]);
+	const role = $derived(
+		resolvedColor === 'danger' || resolvedColor === 'warning'
+			? 'alert'
+			: 'status'
+	);
+	const styleVars = $derived(
+		`--alert-color: var(--lumi-color-${resolvedColor}); --alert-bg: var(--lumi-color-${resolvedColor}-bg);`
+	);
 	const transitionDuration = LUMI_CONFIG.transitions.base;
 
 	const alertClasses = $derived.by(() => {
-		const classes = ['lumi-alert', `lumi-alert--${color}`];
+		const classes = ['lumi-alert', `lumi-alert--${resolvedColor}`];
 		if (className) classes.push(className);
 		return classes.join(' ');
 	});
@@ -49,13 +64,20 @@
 </script>
 
 {#if active}
-	<div class={alertClasses} transition:fade={{ duration: transitionDuration }}>
+	<div
+		class={alertClasses}
+		style={styleVars}
+		{role}
+		aria-live={role === 'alert' ? 'assertive' : 'polite'}
+		aria-atomic="true"
+		transition:fade={{ duration: transitionDuration }}
+	>
 		<!-- Alert content -->
 		<div class="lumi-alert__content">
 			<!-- Icon -->
 			{#if icon}
 				<div class="lumi-alert__icon">
-					<Icon icon={alertIcon} size="md" />
+					<AlertIcon size="var(--lumi-icon-md)" />
 				</div>
 			{/if}
 
@@ -63,7 +85,7 @@
 			<div class="lumi-alert__body">
 				<!-- Title -->
 				{#if title}
-					<h4 class="lumi-alert__title">{title}</h4>
+					<div class="lumi-alert__title">{title}</div>
 				{/if}
 
 				<!-- Message -->
@@ -83,7 +105,7 @@
 				aria-label="Close alert"
 				onclick={handleClose}
 			>
-				<Icon icon="x" size="sm" />
+				<X size="var(--lumi-icon-sm)" />
 			</button>
 		{/if}
 	</div>
@@ -100,11 +122,9 @@
 		gap: var(--lumi-space-sm);
 		padding: var(--lumi-space-md);
 		border-radius: var(--lumi-radius-2xl);
-		border: var(--lumi-border-width-thin) solid
-			color-mix(in srgb, var(--alert-color) 20%, transparent);
-		border-left-width: var(--lumi-space-2xs);
-		background:
-			linear-gradient(145deg, var(--alert-bg), transparent), var(--lumi-color-surface-card);
+		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
+		border-inline-start: var(--lumi-space-2xs) solid var(--alert-color);
+		background: var(--alert-bg);
 		box-shadow: var(--lumi-shadow-sm);
 	}
 
@@ -160,55 +180,22 @@
 		height: var(--lumi-space-xl);
 		padding: 0;
 		background: transparent;
-		border: none;
+		border: var(--lumi-border-width-thin) solid transparent;
 		border-radius: var(--lumi-radius-full);
 		color: var(--lumi-color-text-muted);
 		cursor: pointer;
 		transition: var(--lumi-transition-all);
 		flex-shrink: 0;
-		opacity: 0.7;
 	}
 
 	.lumi-alert__close:hover {
-		opacity: 1;
 		background: var(--lumi-color-background-hover);
+		border-color: var(--lumi-color-border-light);
 		color: var(--lumi-color-text);
-		transform: scale(1.1);
 	}
 
 	.lumi-alert__close:focus-visible {
 		outline: var(--lumi-border-width-thick) solid var(--lumi-color-primary);
 		outline-offset: var(--lumi-space-2xs);
-	}
-
-	/* Color variants */
-	.lumi-alert--primary {
-		--alert-color: var(--lumi-color-primary);
-		--alert-bg: var(--lumi-color-primary-bg);
-	}
-
-	.lumi-alert--secondary {
-		--alert-color: var(--lumi-color-secondary);
-		--alert-bg: var(--lumi-color-secondary-bg);
-	}
-
-	.lumi-alert--success {
-		--alert-color: var(--lumi-color-success);
-		--alert-bg: var(--lumi-color-success-bg);
-	}
-
-	.lumi-alert--warning {
-		--alert-color: var(--lumi-color-warning);
-		--alert-bg: var(--lumi-color-warning-bg);
-	}
-
-	.lumi-alert--danger {
-		--alert-color: var(--lumi-color-danger);
-		--alert-bg: var(--lumi-color-danger-bg);
-	}
-
-	.lumi-alert--info {
-		--alert-color: var(--lumi-color-info);
-		--alert-bg: var(--lumi-color-info-bg);
 	}
 </style>

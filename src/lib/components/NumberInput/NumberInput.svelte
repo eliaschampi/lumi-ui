@@ -19,7 +19,8 @@
 		onchange
 	}: NumberInputProps = $props();
 
-	const inputId = `lumi-number-${crypto.randomUUID().slice(0, 8)}`;
+	const instanceId = $props.id();
+	const inputId = `lumi-number-${instanceId}`;
 	const styleVars = $derived(`--input-accent: var(--lumi-color-${color});`);
 	const normalizedStep = $derived(step > 0 ? step : 1);
 
@@ -39,7 +40,8 @@
 		if (min !== undefined) v = Math.max(min, v);
 		if (max !== undefined) v = Math.min(max, v);
 		const precision = String(normalizedStep).split('.')[1]?.length ?? 0;
-		const snapped = min + Math.round((v - min) / normalizedStep) * normalizedStep;
+		const snapped =
+			min + Math.round((v - min) / normalizedStep) * normalizedStep;
 		return Number(snapped.toFixed(precision));
 	}
 
@@ -142,9 +144,14 @@
 	.lumi-number-input__label {
 		font-family: var(--lumi-font-family-sans);
 		font-size: var(--lumi-font-size-sm);
-		font-weight: var(--lumi-font-weight-medium);
+		font-weight: var(--lumi-font-weight-semibold);
 		color: var(--lumi-color-text);
 		margin-block-end: var(--lumi-space-xs);
+		transition: color var(--lumi-duration-base) var(--lumi-easing-default);
+	}
+
+	.lumi-number-input:focus-within .lumi-number-input__label {
+		color: var(--input-accent);
 	}
 
 	.lumi-number-input__wrapper {
@@ -165,6 +172,7 @@
 
 	.lumi-number-input__wrapper:hover:not(:focus-within) {
 		border-color: var(--lumi-color-border-strong);
+		background: var(--lumi-color-control-hover-fill);
 	}
 
 	.lumi-number-input__wrapper:focus-within {
@@ -198,7 +206,11 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		background: color-mix(in srgb, var(--number-bg) 88%, var(--lumi-color-surface) 12%);
+		background: color-mix(
+			in srgb,
+			var(--number-bg) 88%,
+			var(--lumi-color-surface) 12%
+		);
 		border: none;
 		color: var(--lumi-color-text-muted);
 		cursor: pointer;
@@ -209,11 +221,13 @@
 	}
 
 	.lumi-number-input__btn--decrement {
-		border-right: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
+		border-right: var(--lumi-border-width-thin) solid
+			var(--lumi-color-border-glass);
 	}
 
 	.lumi-number-input__btn--increment {
-		border-left: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
+		border-left: var(--lumi-border-width-thin) solid
+			var(--lumi-color-border-glass);
 	}
 
 	.lumi-number-input__btn:hover:not(:disabled) {

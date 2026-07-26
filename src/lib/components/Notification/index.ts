@@ -7,5 +7,6 @@ export { default as Notification } from './Notification.svelte';
 export type {
 	NotificationColor,
 	NotificationPosition,
-	NotificationProps
+	NotificationProps,
+	NotificationType
 } from './types';

@@ -1,6 +1,6 @@
 # Lumi UI
 
-Domain-neutral Svelte 5 components, semantic tokens, and responsive CSS composition shared by Coedula and Faztore.
+Domain-neutral Svelte 5 components, semantic tokens, and responsive CSS composition shared by Coedula, Aeduca, and Faztore.
 
 ## Install
 
@@ -45,6 +45,29 @@ pnpm add @lumi-ui/svelte
 Brand seeds and color scheme: [Guide §3](./docs/GUIDE.md#3-theming-and-color-scheme).
 
 Components consume semantic `--lumi-*` tokens. Business rules, routes, persistence, copy, and localization stay in the application.
+
+New code should use semantic `variant`, `color`, and `placement` props. Historical `type`, `button`, and `position` aliases remain supported where Coedula, Aeduca, or Faztore still depend on them. For `Button`, `variant` wins visually and `button` wins natively; other canonical props take precedence over their aliases.
+
+## Lightweight Contract
+
+The published artifact and browser payload are different measurements. The current `0.2.0` snapshot is:
+
+| Surface                                                                               |        Current | Release budget |
+| ------------------------------------------------------------------------------------- | -------------: | -------------: |
+| npm tarball                                                                           |      149.5 KiB |      ≤ 200 KiB |
+| npm unpacked                                                                          |      739.1 KiB |        ≤ 1 MiB |
+| All CSS (`tokens` + `core` + `patterns`)                                              | 10.70 KiB gzip |  ≤ 12 KiB gzip |
+| `Switch` + `Radio` + `Textarea` + `Checkbox` + `SegmentedControl` + `Input` + `Table` | 22.57 KiB gzip |  ≤ 25 KiB gzip |
+| Standalone `Checkbox`                                                                 |  2.47 KiB gzip |              — |
+
+Browser figures use a production Vite bundle with Svelte externalized because it is a shared peer dependency. Root imports tree-shake to the same runtime bytes as direct barrels. Components with arbitrary string-icon props retain the Lucide registry by contract; fixed internal icons should use deep Lucide imports so simple controls do not pay for that registry.
+
+Verify the publish footprint on every release:
+
+```bash
+pnpm run package
+npm pack --dry-run --ignore-scripts --json
+```
 
 ## Example and Development
 

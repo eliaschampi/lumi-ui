@@ -14,7 +14,8 @@
 		'aria-label': ariaLabel = ''
 	}: SwitchProps = $props();
 
-	const switchId = `lumi-switch-${crypto.randomUUID().slice(0, 8)}`;
+	const instanceId = $props.id();
+	const switchId = `lumi-switch-${instanceId}`;
 
 	const classes = $derived(
 		[
@@ -40,6 +41,7 @@
 <label
 	for={switchId}
 	class={classes}
+	style:--switch-color="var(--lumi-color-{color}-solid)"
 >
 	<input
 		id={switchId}
@@ -70,29 +72,17 @@
 </label>
 
 <style>
-	/* ============================================================================
-	 * SWITCH COMPONENT
-	 *
-	 * Arquitectura de dimensiones:
-	 * - track-w/track-h: dimensiones externas del track
-	 * - switch-inset: espacio entre borde del track y thumb
-	 * - thumb = track-h - 2*inset (automático, siempre centrado)
-	 * - travel = track-w - track-h (distancia de desplazamiento)
-	 * - Se usa box-shadow inset como "borde" para evitar cálculos con border-box
-	 * ============================================================================ */
-
 	.lumi-switch {
-		/* Track dimensions using design tokens */
-		/* md size: 44px x 24px using closest token values */
 		--switch-track-w: calc(var(--lumi-space-xxl) + var(--lumi-space-2xs));
 		--switch-track-h: var(--lumi-space-lg);
 		--switch-inset: var(--lumi-border-width-thick);
 		--switch-thumb: calc(var(--switch-track-h) - var(--switch-inset) * 2);
 		--switch-travel: calc(var(--switch-track-w) - var(--switch-track-h));
-		--switch-stretch: 4px;
+		--switch-stretch: var(--lumi-space-2xs);
 		--switch-color: var(--lumi-color-primary-solid);
 		--switch-thumb-color: var(--lumi-color-white);
-		--switch-label-size: var(--lumi-font-size-sm);
+		--switch-label-size: var(--lumi-font-size-base);
+		--lumi-control-accent: var(--switch-color);
 
 		position: relative;
 		display: inline-flex;
@@ -111,7 +101,6 @@
 		height: 0;
 	}
 
-	/* ── Track ────────────────────────────────── */
 	.lumi-switch__track {
 		display: flex;
 		align-items: center;
@@ -119,9 +108,10 @@
 		height: var(--switch-track-h);
 		padding: var(--switch-inset);
 		box-sizing: border-box;
-		background: var(--lumi-color-border-strong);
-		box-shadow: inset 0 0 0 var(--lumi-border-width-thin)
-			color-mix(in srgb, var(--lumi-color-border) 60%, transparent);
+		background: var(--lumi-color-control-fill);
+		box-shadow:
+			inset 0 0 0 var(--lumi-border-width-base) var(--lumi-color-control-border),
+			var(--lumi-control-shadow);
 		border-radius: var(--lumi-radius-full);
 		transition:
 			background-color var(--lumi-duration-base) var(--lumi-easing-default),
@@ -129,11 +119,13 @@
 		flex-shrink: 0;
 	}
 
-	/* Thumb */
 	.lumi-switch__thumb {
 		width: var(--switch-thumb);
 		height: var(--switch-thumb);
 		background: var(--lumi-color-white);
+		box-sizing: border-box;
+		border: var(--lumi-border-width-thin) solid
+			color-mix(in srgb, var(--lumi-color-text) 10%, transparent);
 		border-radius: var(--lumi-radius-full);
 		box-shadow: var(--lumi-shadow-sm);
 		flex-shrink: 0;
@@ -142,21 +134,16 @@
 			width var(--lumi-duration-base) var(--lumi-easing-default);
 	}
 
-	/* ── Label ────────────────────────────────── */
 	.lumi-switch__label {
 		color: var(--lumi-color-text);
 		font-size: var(--switch-label-size);
 		font-weight: var(--lumi-font-weight-medium);
-		line-height: var(--lumi-line-height-normal);
+		line-height: var(--lumi-line-height-tight);
 	}
 
-	/* ── Checked state ────────────────────────── */
 	.lumi-switch--checked .lumi-switch__track {
 		background: var(--switch-color);
-		box-shadow:
-			inset 0 0 0 var(--lumi-border-width-thin)
-				color-mix(in srgb, var(--switch-color) 80%, transparent),
-			0 0 0 var(--lumi-border-width-thin) color-mix(in srgb, var(--switch-color) 20%, transparent);
+		box-shadow: var(--lumi-control-active-shadow);
 	}
 
 	.lumi-switch--checked .lumi-switch__thumb {
@@ -164,27 +151,23 @@
 		transform: translateX(var(--switch-travel));
 	}
 
-	/* ── Hover ────────────────────────────────── */
-	.lumi-switch:not(.lumi-switch--disabled):hover .lumi-switch__track {
+	.lumi-switch:not(.lumi-switch--checked):not(.lumi-switch--disabled):hover
+		.lumi-switch__track {
 		box-shadow:
-			inset 0 0 0 var(--lumi-border-width-thin)
-				color-mix(in srgb, var(--switch-color) 40%, transparent),
-			0 0 8px color-mix(in srgb, var(--switch-color) 12%, transparent);
+			inset 0 0 0 var(--lumi-border-width-base)
+				var(--lumi-control-active-border),
+			var(--lumi-control-shadow);
+		background: var(--lumi-control-active-fill);
 	}
 
 	.lumi-switch--checked:not(.lumi-switch--disabled):hover .lumi-switch__track {
-		background: color-mix(in srgb, var(--switch-color) 88%, var(--lumi-color-white));
-		box-shadow:
-			inset 0 0 0 var(--lumi-border-width-thin)
-				color-mix(in srgb, var(--switch-color) 80%, transparent),
-			0 0 12px color-mix(in srgb, var(--switch-color) 22%, transparent);
+		box-shadow: var(--lumi-control-active-shadow);
 	}
 
 	.lumi-switch:not(.lumi-switch--disabled):hover .lumi-switch__thumb {
 		box-shadow: var(--lumi-shadow-md);
 	}
 
-	/* ── Active / pressed ─────────────────────── */
 	.lumi-switch:not(.lumi-switch--disabled):active .lumi-switch__thumb {
 		width: calc(var(--switch-thumb) + var(--switch-stretch));
 	}
@@ -193,55 +176,24 @@
 		transform: translateX(calc(var(--switch-travel) - var(--switch-stretch)));
 	}
 
-	/* ── Focus visible ────────────────────────── */
 	.lumi-switch__input:focus-visible + .lumi-switch__track {
-		box-shadow:
-			0 0 0 var(--lumi-border-width-thick) var(--lumi-color-background),
-			0 0 0 calc(var(--lumi-border-width-thick) * 2) var(--switch-color);
+		box-shadow: var(--lumi-control-focus-shadow);
 	}
 
-	/* ── Size variants ────────────────────────── */
 	.lumi-switch--sm {
-		/* 36px x 20px track using tokens */
 		--switch-track-w: calc(var(--lumi-space-xl) + var(--lumi-space-2xs));
 		--switch-track-h: var(--lumi-icon-md);
-		--switch-stretch: 3px;
-		--switch-label-size: var(--lumi-font-size-xs);
+		--switch-label-size: var(--lumi-font-size-sm);
 		gap: var(--lumi-space-xs);
 	}
 
-	/* md size uses base values from .lumi-switch */
-
 	.lumi-switch--lg {
-		/* 52px x 28px track using tokens */
 		--switch-track-w: calc(var(--lumi-space-3xl) + var(--lumi-space-2xs));
 		--switch-track-h: calc(var(--lumi-space-lg) + var(--lumi-space-2xs));
-		--switch-stretch: 5px;
-		--switch-label-size: var(--lumi-font-size-base);
+		--switch-label-size: var(--lumi-font-size-lg);
 		gap: var(--lumi-space-md);
 	}
 
-	/* ── Color variants ───────────────────────── */
-	.lumi-switch--primary {
-		--switch-color: var(--lumi-color-primary-solid);
-	}
-	.lumi-switch--secondary {
-		--switch-color: var(--lumi-color-secondary-solid);
-	}
-	.lumi-switch--success {
-		--switch-color: var(--lumi-color-success-solid);
-	}
-	.lumi-switch--warning {
-		--switch-color: var(--lumi-color-warning-solid);
-	}
-	.lumi-switch--danger {
-		--switch-color: var(--lumi-color-danger-solid);
-	}
-	.lumi-switch--info {
-		--switch-color: var(--lumi-color-info-solid);
-	}
-
-	/* ── Disabled state ───────────────────────── */
 	.lumi-switch--disabled {
 		cursor: not-allowed;
 		opacity: var(--lumi-opacity-disabled);
@@ -252,7 +204,11 @@
 	}
 
 	.lumi-switch--disabled.lumi-switch--checked .lumi-switch__track {
-		background: color-mix(in srgb, var(--switch-color) 55%, var(--lumi-color-border));
+		background: color-mix(
+			in srgb,
+			var(--switch-color) 55%,
+			var(--lumi-color-border)
+		);
 	}
 
 	.lumi-switch--disabled:not(.lumi-switch--checked) .lumi-switch__track {
@@ -260,7 +216,6 @@
 		box-shadow: none;
 	}
 
-	/* ── Reduced motion ───────────────────────── */
 	@media (prefers-reduced-motion: reduce) {
 		.lumi-switch__thumb,
 		.lumi-switch__track {

@@ -53,8 +53,13 @@
 	});
 </script>
 
-<div class="lumi-status-container" title={tooltip}>
-	<span class={classes} style={customStyle}></span>
+<div
+	class="lumi-status-container"
+	title={tooltip}
+	role={tooltip ? 'status' : undefined}
+	aria-label={tooltip || undefined}
+>
+	<span class={classes} style={customStyle} aria-hidden="true"></span>
 </div>
 
 <style>
@@ -117,7 +122,8 @@
 	}
 
 	.lumi-status-indicator--pulse {
-		animation: lumi-status-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+		animation: lumi-status-pulse calc(var(--lumi-duration-slower) * 4)
+			var(--lumi-easing-in-out) infinite;
 	}
 
 	@keyframes lumi-status-pulse {
