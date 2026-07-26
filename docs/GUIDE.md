@@ -482,7 +482,7 @@ Lumi is a premium, minimal product shell—not a generic kit and not loud SaaS g
 1. **Layered light, not heavy chrome.** Surfaces float over a softly tinted canvas; borders are thin and low-contrast.
 2. **Elevation is quiet.** Shadows use the neutral ink key (`--lumi-color-shadow-key`) with contact + ambient layers; avoid pure-black blobs.
 3. **Glass is restrained.** Blur and translucency appear on overlays, sidebars, and cards—never as a noisy texture soup.
-4. **145° gradients.** Card and app washes tilt consistently (`145deg`) with tiny primary/info tints—subtle, not neon.
+4. **Disciplined gradients.** Card washes keep the `145deg` axis; the app canvas may layer faint primary and secondary radial accents over its neutral gradient—subtle, not neon.
 5. **Sheen is optional polish.** Top-edge inset highlights simulate liquid glass; keep opacity low.
 6. **No arbitrary decoration.** No confetti backgrounds, no multi-colored borders, no bounce-heavy motion.
 

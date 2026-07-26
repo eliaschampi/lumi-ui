@@ -92,7 +92,7 @@ pnpm add @lumi-ui/svelte
 
 Set the seed; Lumi derives solid fill, soft `-bg` tint, and dark-mode accent. Never reassign derived `--lumi-color-*` tokens directly.
 
-`--lumi-color-canvas` and `--lumi-color-neutral` are the optional page/ink seeds. When overriding them, calibrate both `:root` and `[data-theme='dark']`; backgrounds and Cards derive from the neutral surface ladder rather than a brand tint.
+`--lumi-color-canvas` and `--lumi-color-neutral` are the optional page/ink seeds. When overriding them, calibrate both `:root` and `[data-theme='dark']`; base backgrounds and Cards derive from the neutral surface ladder, while the app canvas may add restrained brand accents.
 
 ### Color-scheme controller (optional dark/light)
 

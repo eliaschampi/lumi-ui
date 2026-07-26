@@ -16,7 +16,7 @@
 	--lumi-brand-secondary: oklch(0.5 0.16 300); /* restrained violet */
 	/* Surface seeds: one source of truth for ink + page canvas. */
 	--lumi-color-neutral: oklch(0.29 0.008 260); /* neutral slate ink */
-	--lumi-color-canvas: oklch(0.985 0.003 250); /* clean porcelain */
+	--lumi-color-canvas: oklch(0.978 0.004 250); /* soft porcelain */
 	/* Single dark-mode accent lift (escape hatch: --lumi-brand-*-dark). */
 	--lumi-dark-accent-mix: 70%;
 	--lumi-brand-primary-dark: color-mix(
@@ -238,8 +238,13 @@
 	--lumi-gradient-app:
 		radial-gradient(
 			circle at 8% 0%,
-			color-mix(in oklch, var(--lumi-color-primary) 4%, transparent),
+			color-mix(in oklch, var(--lumi-color-primary) 3.5%, transparent),
 			transparent 36%
+		),
+		radial-gradient(
+			circle at 92% 10%,
+			color-mix(in oklch, var(--lumi-color-secondary) 1.75%, transparent),
+			transparent 32%
 		),
 		linear-gradient(
 			145deg,
@@ -791,6 +796,11 @@
 			circle at 8% 0%,
 			color-mix(in oklch, var(--lumi-color-primary) 3.5%, transparent),
 			transparent 36%
+		),
+		radial-gradient(
+			circle at 92% 10%,
+			color-mix(in oklch, var(--lumi-color-secondary) 1.5%, transparent),
+			transparent 32%
 		),
 		linear-gradient(
 			145deg,
