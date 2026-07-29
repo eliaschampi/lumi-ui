@@ -152,27 +152,27 @@
 	/* --- DERIVED BORDERS / RINGS --------------------------------------------- */
 	--lumi-color-border: color-mix(
 		in srgb,
-		var(--lumi-color-text) 11%,
+		var(--lumi-color-text) 10%,
 		transparent
 	);
 	--lumi-color-border-strong: color-mix(
 		in srgb,
-		var(--lumi-color-text) 18%,
+		var(--lumi-color-text) 16%,
 		transparent
 	);
 	--lumi-color-border-light: color-mix(
 		in srgb,
-		var(--lumi-color-border) 68%,
+		var(--lumi-color-border) 60%,
 		transparent
 	);
 	--lumi-color-border-glass: color-mix(
 		in srgb,
-		var(--lumi-color-border-strong) 44%,
-		var(--lumi-color-surface-inset)
+		var(--lumi-color-border) 82%,
+		transparent
 	);
 	--lumi-color-border-interactive: color-mix(
 		in srgb,
-		var(--lumi-color-primary) 32%,
+		var(--lumi-color-primary) 28%,
 		var(--lumi-color-border)
 	);
 
@@ -713,17 +713,17 @@
 	/* --- DERIVED BORDERS / RINGS --------------------------------------------- */
 	--lumi-color-border-light: color-mix(
 		in srgb,
-		var(--lumi-color-border) 64%,
+		var(--lumi-color-border) 56%,
 		transparent
 	);
 	--lumi-color-border-glass: color-mix(
 		in srgb,
-		var(--lumi-color-text) 10%,
+		var(--lumi-color-text) 8%,
 		transparent
 	);
 	--lumi-color-border-interactive: color-mix(
 		in srgb,
-		var(--lumi-color-primary) 42%,
+		var(--lumi-color-primary) 36%,
 		var(--lumi-color-border)
 	);
 
@@ -741,9 +741,9 @@
 	--lumi-control-focus-ring-strength: 26%;
 	--lumi-control-shadow:
 		inset 0 1px 0 color-mix(in oklch, var(--lumi-color-white) 8%, transparent),
-		0 1px 2px color-mix(in oklch, var(--lumi-color-shadow-key) 28%, transparent),
+		0 1px 2px color-mix(in oklch, var(--lumi-color-shadow-key) 20%, transparent),
 		0 6px 14px -10px
-			color-mix(in oklch, var(--lumi-color-shadow-key) 36%, transparent);
+			color-mix(in oklch, var(--lumi-color-shadow-key) 28%, transparent);
 	--lumi-control-focus-shadow:
 		0 0 0 var(--lumi-border-width-thick)
 			color-mix(
@@ -798,9 +798,9 @@
 		),
 		var(--lumi-color-surface-glass-strong);
 	--lumi-floating-surface-shadow:
-		0 1px 2px color-mix(in oklch, var(--lumi-color-shadow-key) 30%, transparent),
-		0 24px 52px -30px
-			color-mix(in oklch, var(--lumi-color-shadow-key) 50%, transparent);
+		0 1px 2px color-mix(in oklch, var(--lumi-color-shadow-key) 22%, transparent),
+		0 18px 42px -28px
+			color-mix(in oklch, var(--lumi-color-shadow-key) 36%, transparent);
 	--lumi-gradient-sidebar-header: linear-gradient(
 		145deg,
 		color-mix(
@@ -829,21 +829,21 @@
 		transparent 70%
 	);
 	--lumi-shadow-sm:
-		0 1px 2px color-mix(in oklch, var(--lumi-color-shadow-key) 28%, transparent),
-		0 12px 26px -20px
-			color-mix(in oklch, var(--lumi-color-shadow-key) 38%, transparent);
+		0 1px 2px color-mix(in oklch, var(--lumi-color-shadow-key) 18%, transparent),
+		0 8px 18px -14px
+			color-mix(in oklch, var(--lumi-color-shadow-key) 26%, transparent);
 	--lumi-shadow-md:
-		0 2px 5px color-mix(in oklch, var(--lumi-color-shadow-key) 32%, transparent),
-		0 22px 48px -28px
-			color-mix(in oklch, var(--lumi-color-shadow-key) 42%, transparent);
+		0 2px 5px color-mix(in oklch, var(--lumi-color-shadow-key) 21%, transparent),
+		0 16px 34px -20px
+			color-mix(in oklch, var(--lumi-color-shadow-key) 30%, transparent);
 	--lumi-shadow-lg:
 		0 4px 10px
-			color-mix(in oklch, var(--lumi-color-shadow-key) 36%, transparent),
-		0 30px 64px -34px
-			color-mix(in oklch, var(--lumi-color-shadow-key) 48%, transparent);
+			color-mix(in oklch, var(--lumi-color-shadow-key) 24%, transparent),
+		0 24px 48px -26px
+			color-mix(in oklch, var(--lumi-color-shadow-key) 34%, transparent);
 	--lumi-shadow-xl:
-		0 7px 18px
-			color-mix(in oklch, var(--lumi-color-shadow-key) 40%, transparent),
-		0 40px 82px -38px
-			color-mix(in oklch, var(--lumi-color-shadow-key) 52%, transparent);
+		0 8px 20px
+			color-mix(in oklch, var(--lumi-color-shadow-key) 27%, transparent),
+		0 32px 64px -30px
+			color-mix(in oklch, var(--lumi-color-shadow-key) 38%, transparent);
 }
