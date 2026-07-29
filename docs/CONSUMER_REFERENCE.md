@@ -68,18 +68,6 @@ pnpm add @lumi-ui/svelte
 	/* Most products override only these two */
 	--lumi-brand-primary: #7c3aed;
 	--lumi-brand-secondary: #0f766e;
-
-	/* Optional: filled surfaces (inherit their matching brand by default) */
-	--lumi-brand-primary-solid: #7c3aed;
-	--lumi-brand-secondary-solid: #0f766e;
-
-	/* Optional: dark-mode calibration */
-	--lumi-brand-primary-dark: oklch(0.72 0.14 295);
-	--lumi-brand-secondary-dark: oklch(0.7 0.12 175);
-
-	/* Optional: foreground calibration */
-	--lumi-brand-primary-foreground: #fff;
-	--lumi-brand-secondary-foreground: #fff;
 }
 ```
 
@@ -87,22 +75,10 @@ pnpm add @lumi-ui/svelte
 
 ```css
 :root {
-	--lumi-status-success: #0b7653;
-	--lumi-status-warning: #985806;
-	--lumi-status-danger: #be2769;
-	--lumi-status-info: #0a6ea3;
-
-	/* Optional filled-surface calibration; defaults inherit each status */
-	--lumi-status-success-solid: #0b7653;
-	--lumi-status-warning-solid: #985806;
-	--lumi-status-danger-solid: #be2769;
-	--lumi-status-info-solid: #0a6ea3;
-
-	/* Optional when a custom status needs a different on-solid ink */
-	--lumi-status-success-foreground: #fff;
-	--lumi-status-warning-foreground: #fff;
-	--lumi-status-danger-foreground: #fff;
-	--lumi-status-info-foreground: #fff;
+	--lumi-status-success: #008647;
+	--lumi-status-warning: #f6c330;
+	--lumi-status-danger: #df202e;
+	--lumi-status-info: #007dab;
 }
 ```
 
@@ -117,17 +93,7 @@ Every semantic role has one predictable family:
 | Content on filled           | `--lumi-color-{role}-foreground` |
 | Tinted background           | `--lumi-color-{role}-bg`         |
 
-For a bright brand, declare `accent + solid + foreground` together after Lumi:
-
-```css
-:root {
-	--lumi-brand-secondary: #68a418;
-	--lumi-brand-secondary-solid: #507e12;
-	--lumi-brand-secondary-foreground: #fff;
-}
-```
-
-If white is required, choose a deeper solid instead of forcing white over a bright accent. Do not create light/dark foreground overrides for the same solid.
+Choose brand and status seeds that pass with their semantic foreground. The default foreground is white except warning, which uses black.
 
 ### Migrating older color overrides
 

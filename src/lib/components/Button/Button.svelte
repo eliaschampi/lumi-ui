@@ -125,7 +125,7 @@
 		--button-hover-lift: 0;
 		--button-shadow-strength: 22%;
 		--button-shadow-hover-strength: 28%;
-		--btn-solid-shade: var(--btn-solid);
+		--btn-solid-shade: var(--lumi-color-black);
 		--button-color-shadow: 0 var(--lumi-space-xs) var(--lumi-space-lg)
 			calc(var(--lumi-space-xs) * -1)
 			color-mix(
@@ -358,7 +358,7 @@
 			135deg,
 			var(--btn-solid) 0%,
 			color-mix(in srgb, var(--btn-solid) 90%, var(--btn-solid-shade)) 52%,
-			color-mix(in srgb, var(--btn-solid) 76%, var(--btn-solid-shade)) 100%
+			color-mix(in srgb, var(--btn-solid) 75%, var(--btn-solid-shade)) 100%
 		);
 		color: var(--btn-foreground);
 		border-color: color-mix(in srgb, var(--btn-solid) 45%, transparent);

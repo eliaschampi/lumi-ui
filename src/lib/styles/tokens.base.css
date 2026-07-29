@@ -1,5 +1,5 @@
 /* Lumi UI - Base Design Tokens */
-/* Default theme: Cobalt × Olive on warm paper.
+/* Default theme: Fresh Blue × Violet on warm paper.
    Architecture: curated seeds own identity; semantic tokens own component behavior.
    Override brand/status/neutral seeds — never reassign derived --lumi-color-* tokens.
    Neutral ramps and semantic tints use sRGB to preserve the warm surface character. */
@@ -12,31 +12,15 @@
 
 	/* --- SEEDS --------------------------------------------------------------- */
 	/* Public identity: brand primary + secondary after importing Lumi styles. */
-	--lumi-brand-primary: rgb(9 101 202); /* cobalt */
-	--lumi-brand-secondary: rgb(73 115 17); /* olive */
+	--lumi-brand-primary: oklch(55% 0.21 255); /* fresh blue */
+	--lumi-brand-secondary: oklch(57% 0.19 300); /* fresh violet */
 	/* Surface seeds: one source of truth for ink + page canvas. */
 	--lumi-color-neutral: rgb(34 28 26); /* warm ink */
 	--lumi-color-canvas: rgb(247 243 237); /* warm paper */
-	/* Single dark-mode accent lift (escape hatch: --lumi-brand-*-dark). */
+	/* Single dark-mode accent lift. */
 	--lumi-dark-accent-mix: 70%;
-	--lumi-brand-primary-dark: color-mix(
-		in oklch,
-		var(--lumi-brand-primary) var(--lumi-dark-accent-mix),
-		white
-	);
-	--lumi-brand-secondary-dark: color-mix(
-		in oklch,
-		var(--lumi-brand-secondary) var(--lumi-dark-accent-mix),
-		white
-	);
-	/* Default accents are contrast-safe as ink and filled surfaces.
-	   Bright consumer brands can calibrate their solid seed independently. */
-	--lumi-brand-primary-solid: var(--lumi-brand-primary);
-	--lumi-brand-secondary-solid: var(--lumi-brand-secondary);
-	--lumi-brand-primary-foreground: var(--lumi-color-white);
-	--lumi-brand-secondary-foreground: var(--lumi-color-white);
 	--lumi-color-primary: var(--lumi-brand-primary);
-	--lumi-color-primary-solid: var(--lumi-brand-primary-solid);
+	--lumi-color-primary-solid: var(--lumi-brand-primary);
 	--lumi-color-primary-50: color-mix(
 		in srgb,
 		var(--lumi-color-primary) 10%,
@@ -48,33 +32,29 @@
 		var(--lumi-color-white)
 	);
 	--lumi-color-secondary: var(--lumi-brand-secondary);
-	--lumi-color-secondary-solid: var(--lumi-brand-secondary-solid);
+	--lumi-color-secondary-solid: var(--lumi-brand-secondary);
 
 	/* --- STATUS SEEDS -------------------------------------------------------- */
-	/* Status defaults meet text contrast on both neutral and soft surfaces. */
-	--lumi-status-success: rgb(11 118 83); /* emerald */
-	--lumi-status-warning: rgb(152 88 6); /* amber */
-	--lumi-status-danger: rgb(190 39 105); /* magenta-crimson */
-	--lumi-status-info: rgb(10 110 163); /* cobalt-sky (≠ primary) */
-	--lumi-status-success-solid: var(--lumi-status-success);
-	--lumi-status-warning-solid: var(--lumi-status-warning);
-	--lumi-status-danger-solid: var(--lumi-status-danger);
-	--lumi-status-info-solid: var(--lumi-status-info);
-	--lumi-status-success-foreground: var(--lumi-color-white);
-	--lumi-status-warning-foreground: var(--lumi-color-white);
-	--lumi-status-danger-foreground: var(--lumi-color-white);
-	--lumi-status-info-foreground: var(--lumi-color-white);
+	/* Perceptually balanced OKLCH roles; hue carries semantic identity. */
+	--lumi-status-success: oklch(54% 0.145 155); /* emerald */
+	--lumi-status-warning: oklch(84% 0.16 88); /* light golden */
+	--lumi-status-danger: oklch(58% 0.22 25); /* coral red */
+	--lumi-status-info: oklch(54% 0.14 225); /* cyan-blue (≠ primary) */
 
 	/* Consumed accents: light = seed; dark applies --lumi-dark-accent-mix. */
 	--lumi-color-success: var(--lumi-status-success);
-	--lumi-color-warning: var(--lumi-status-warning);
+	--lumi-color-warning: color-mix(
+		in oklch,
+		var(--lumi-status-warning) 76%,
+		var(--lumi-color-black)
+	);
 	--lumi-color-danger: var(--lumi-status-danger);
 	--lumi-color-info: var(--lumi-status-info);
 	/* Calibrated solids stay invariant while dark-mode accents may brighten. */
-	--lumi-color-success-solid: var(--lumi-status-success-solid);
-	--lumi-color-warning-solid: var(--lumi-status-warning-solid);
-	--lumi-color-danger-solid: var(--lumi-status-danger-solid);
-	--lumi-color-info-solid: var(--lumi-status-info-solid);
+	--lumi-color-success-solid: var(--lumi-status-success);
+	--lumi-color-warning-solid: var(--lumi-status-warning);
+	--lumi-color-danger-solid: var(--lumi-status-danger);
+	--lumi-color-info-solid: var(--lumi-status-info);
 	--lumi-color-gray-400: color-mix(
 		in srgb,
 		var(--lumi-color-text) 45%,
@@ -98,12 +78,12 @@
 		var(--lumi-color-surface)
 	);
 	--lumi-color-text-inverse: var(--lumi-color-white);
-	--lumi-color-primary-foreground: var(--lumi-brand-primary-foreground);
-	--lumi-color-secondary-foreground: var(--lumi-brand-secondary-foreground);
-	--lumi-color-success-foreground: var(--lumi-status-success-foreground);
-	--lumi-color-warning-foreground: var(--lumi-status-warning-foreground);
-	--lumi-color-danger-foreground: var(--lumi-status-danger-foreground);
-	--lumi-color-info-foreground: var(--lumi-status-info-foreground);
+	--lumi-color-primary-foreground: var(--lumi-color-white);
+	--lumi-color-secondary-foreground: var(--lumi-color-white);
+	--lumi-color-success-foreground: var(--lumi-color-white);
+	--lumi-color-warning-foreground: var(--lumi-color-black);
+	--lumi-color-danger-foreground: var(--lumi-color-white);
+	--lumi-color-info-foreground: var(--lumi-color-white);
 
 	--lumi-color-placeholder: color-mix(
 		in srgb,
@@ -610,18 +590,6 @@
 	--lumi-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* Progressive enhancement: modern browsers choose black/white brand foregrounds. */
-@supports (color: contrast-color(red)) {
-	:root {
-		--lumi-brand-primary-foreground: contrast-color(
-			var(--lumi-color-primary-solid)
-		);
-		--lumi-brand-secondary-foreground: contrast-color(
-			var(--lumi-color-secondary-solid)
-		);
-	}
-}
-
 /* ========================================================================== */
 /* DARK THEME                                                                  */
 /* ========================================================================== */
@@ -633,7 +601,11 @@
 	--lumi-color-canvas: rgb(14 12 12); /* warm black */
 	/* Dark elevation sits on black for depth without muddy shadows. */
 	--lumi-color-shadow-key: var(--lumi-color-black);
-	--lumi-color-primary: var(--lumi-brand-primary-dark);
+	--lumi-color-primary: color-mix(
+		in oklch,
+		var(--lumi-brand-primary) var(--lumi-dark-accent-mix),
+		var(--lumi-color-white)
+	);
 	--lumi-color-primary-50: color-mix(
 		in srgb,
 		var(--lumi-color-primary) 18%,
@@ -644,27 +616,31 @@
 		var(--lumi-color-primary) 50%,
 		var(--lumi-color-white)
 	);
-	--lumi-color-secondary: var(--lumi-brand-secondary-dark);
+	--lumi-color-secondary: color-mix(
+		in oklch,
+		var(--lumi-brand-secondary) var(--lumi-dark-accent-mix),
+		var(--lumi-color-white)
+	);
 	/* Accents brighten by --lumi-dark-accent-mix; override a light seed and dark tracks it. */
 	--lumi-color-success: color-mix(
 		in oklch,
 		var(--lumi-status-success) var(--lumi-dark-accent-mix),
-		white
+		var(--lumi-color-white)
 	);
 	--lumi-color-warning: color-mix(
 		in oklch,
 		var(--lumi-status-warning) var(--lumi-dark-accent-mix),
-		white
+		var(--lumi-color-white)
 	);
 	--lumi-color-danger: color-mix(
 		in oklch,
 		var(--lumi-status-danger) var(--lumi-dark-accent-mix),
-		white
+		var(--lumi-color-white)
 	);
 	--lumi-color-info: color-mix(
 		in oklch,
 		var(--lumi-status-info) var(--lumi-dark-accent-mix),
-		white
+		var(--lumi-color-white)
 	);
 	--lumi-color-gray-400: color-mix(
 		in srgb,

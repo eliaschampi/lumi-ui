@@ -51,12 +51,6 @@ At the application root, import Lumi styles, then brand overrides:
 :root {
 	--lumi-brand-primary: #7c3aed;
 	--lumi-brand-secondary: #0f766e;
-
-	/* Optional: retune the curated status seeds */
-	--lumi-status-success: #0b7653;
-	--lumi-status-warning: #985806;
-	--lumi-status-danger: #be2769;
-	--lumi-status-info: #0a6ea3;
 }
 ```
 
@@ -107,41 +101,27 @@ Brand identity is CSS data. Light/dark/system preference is optional behavior fr
 
 ### Brand seeds
 
-| Seed                                | Role                                                     |
-| ----------------------------------- | -------------------------------------------------------- |
-| `--lumi-brand-primary`              | Primary actions, focus, active navigation                |
-| `--lumi-brand-secondary`            | Supporting identity and controlled contrast              |
-| `--lumi-brand-primary-dark`         | Optional calibrated primary in dark mode                 |
-| `--lumi-brand-secondary-dark`       | Optional calibrated secondary in dark mode               |
-| `--lumi-brand-primary-solid`        | Optional primary filled surface                          |
-| `--lumi-brand-secondary-solid`      | Optional secondary filled surface                        |
-| `--lumi-brand-primary-foreground`   | Optional foreground when auto contrast needs calibration |
-| `--lumi-brand-secondary-foreground` | Optional secondary foreground calibration                |
+| Seed                     | Role                                      |
+| ------------------------ | ----------------------------------------- |
+| `--lumi-brand-primary`   | Primary actions, focus, active navigation |
+| `--lumi-brand-secondary` | Supporting identity and contrast          |
 
-Most products set only the first two; default solids inherit their matching, contrast-safe brand accents. A custom bright brand must declare and test the complete `accent + solid + foreground` tuple instead of forcing white or black from the current theme.
+Brand seeds also provide the stable filled surface. Dark mode derives a brighter accent without changing that solid.
 
 ### Status seeds
 
-Feedback states are seeds too. Set the accent and, when needed, its paired solid and foreground. Lumi derives the soft `-bg` and a brightened dark-mode accent. Never reassign the derived `--lumi-color-*` tokens directly.
+Feedback states are seeds too. Lumi derives the soft `-bg` and a brighter dark-mode accent from them.
 
-| Seed                               | Default (sRGB approx.) | Role                                              |
-| ---------------------------------- | ---------------------- | ------------------------------------------------- |
-| `--lumi-status-success`            | `#0b7653`              | Confirmations, positive state                     |
-| `--lumi-status-warning`            | `#985806`              | Caution, needs attention                          |
-| `--lumi-status-danger`             | `#be2769`              | Destructive actions, errors, blocking             |
-| `--lumi-status-info`               | `#0a6ea3`              | Neutral information (distinct from brand primary) |
-| `--lumi-status-success-solid`      | inherits success       | Filled success surface                            |
-| `--lumi-status-warning-solid`      | inherits warning       | Filled warning surface                            |
-| `--lumi-status-danger-solid`       | inherits danger        | Filled danger surface                             |
-| `--lumi-status-info-solid`         | inherits info          | Filled information surface                        |
-| `--lumi-status-success-foreground` | white                  | Content on the success solid                      |
-| `--lumi-status-warning-foreground` | white                  | Content on the warning solid                      |
-| `--lumi-status-danger-foreground`  | white                  | Content on the danger solid                       |
-| `--lumi-status-info-foreground`    | white                  | Content on the info solid                         |
+| Seed                    | Default   | Role                                              |
+| ----------------------- | --------- | ------------------------------------------------- |
+| `--lumi-status-success` | `#008647` | Confirmations, positive state                     |
+| `--lumi-status-warning` | `#f6c330` | Caution, needs attention                          |
+| `--lumi-status-danger`  | `#df202e` | Destructive actions, errors, blocking             |
+| `--lumi-status-info`    | `#007dab` | Neutral information (distinct from brand primary) |
 
-Defaults are curated sRGB seeds in [`tokens.base.css`](../src/lib/styles/tokens.base.css). Each light-mode accent passes text contrast on the default neutral and soft surfaces and also works as its default filled solid with white content. Keep `info` distinct from `--lumi-brand-primary` so information never reads as a primary action.
+Defaults share a fresh, perceptually balanced OKLCH system in [`tokens.base.css`](../src/lib/styles/tokens.base.css). Warning uses a darker accent for indicators and keeps its light golden seed as the solid with dark content.
 
-Default identity: cobalt primary (`#0965ca`), olive secondary (`#497311`), warm ink (`#221c1a`), and warm-paper canvas (`#f7f3ed`).
+Default identity: fresh-blue primary (`#006ce7`), fresh-violet secondary (`#8b54d4`), warm ink (`#221c1a`), and warm-paper canvas (`#f7f3ed`).
 
 ### Semantic background/foreground contract
 
@@ -154,18 +134,7 @@ The foreground belongs to the effective background, not to light or dark mode. E
 | `--lumi-color-{role}-foreground` | Content on `solid`                        |
 | `--lumi-color-{role}-bg`         | Low-intensity soft surface                |
 
-Brand foregrounds use `contrast-color()` progressively against the exact solid; explicit brand and status foreground seeds loaded after Lumi remain authoritative.
-
-```css
-/* lumi-theme.css — always load after Lumi */
-:root {
-	--lumi-brand-secondary: #68a418;
-	--lumi-brand-secondary-solid: #507e12;
-	--lumi-brand-secondary-foreground: #fff;
-}
-```
-
-Use `solid + foreground` for filled surfaces. Existing low-intensity states keep their established `bg` and accent recipes, so this contract does not redesign component tints.
+Components consume the semantic family while products override only brand or status seeds. Use `solid + foreground` for filled surfaces; the default foreground is white except warning, which uses black.
 
 ### Token ownership
 
@@ -264,7 +233,7 @@ Source: [`color-scheme/index.ts`](../src/lib/color-scheme/index.ts).
 - Brand CSS loads after Lumi styles.
 - Every `solid + foreground` pair passes 4.5:1 in light and dark.
 - Required indicators, checks, thumbs, focus, and borders pass 3:1 against adjacent colors.
-- Bright brands declare `accent + solid + foreground`; no foreground changes only because the theme changed.
+- Brand and status seeds pass with their paired solid foreground.
 - System preference tracks the OS; preference persists without flash on SSR navigation/reload.
 - Exactly one pre-paint script; selector a11y and localization are app-owned.
 
