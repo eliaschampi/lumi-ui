@@ -717,21 +717,21 @@ body {
 .lumi-grid--auto-fit {
 	grid-template-columns: repeat(
 		auto-fit,
-		minmax(var(--lumi-grid-auto-min), 1fr)
+		minmax(min(100%, var(--lumi-grid-auto-min)), 1fr)
 	);
 }
 
 .lumi-grid--auto-fill {
 	grid-template-columns: repeat(
 		auto-fill,
-		minmax(var(--lumi-grid-auto-min), 1fr)
+		minmax(min(100%, var(--lumi-grid-auto-min)), 1fr)
 	);
 }
 
 .lumi-grid--responsive {
 	grid-template-columns: repeat(
 		auto-fit,
-		minmax(var(--lumi-grid-responsive-min), 1fr)
+		minmax(min(100%, var(--lumi-grid-responsive-min)), 1fr)
 	);
 }
 
@@ -745,7 +745,13 @@ body {
 	justify-items: stretch;
 }
 
-.lumi-grid--cards > * {
+:is(
+		.lumi-grid--auto-fit,
+		.lumi-grid--auto-fill,
+		.lumi-grid--responsive,
+		.lumi-grid--cards
+	)
+	> * {
 	min-width: 0;
 	max-width: 100%;
 }
@@ -1117,6 +1123,15 @@ body {
 .lumi-bg--glass {
 	background: var(--lumi-color-surface-glass);
 	border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
+}
+
+:where(
+	.lumi-bg--surface,
+	.lumi-bg--control,
+	.lumi-bg--background,
+	.lumi-bg--glass
+) {
+	color: var(--lumi-color-text);
 }
 
 /* ========================================================================== */

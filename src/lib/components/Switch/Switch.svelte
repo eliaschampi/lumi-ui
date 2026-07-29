@@ -42,6 +42,7 @@
 	for={switchId}
 	class={classes}
 	style:--switch-color="var(--lumi-color-{color}-solid)"
+	style:--switch-thumb-color="var(--lumi-color-{color}-foreground)"
 >
 	<input
 		id={switchId}
@@ -80,7 +81,7 @@
 		--switch-travel: calc(var(--switch-track-w) - var(--switch-track-h));
 		--switch-stretch: var(--lumi-space-2xs);
 		--switch-color: var(--lumi-color-primary-solid);
-		--switch-thumb-color: var(--lumi-color-white);
+		--switch-thumb-color: var(--lumi-color-primary-foreground);
 		--switch-label-size: var(--lumi-font-size-base);
 		--lumi-control-accent: var(--switch-color);
 

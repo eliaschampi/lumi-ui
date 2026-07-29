@@ -55,7 +55,10 @@
 		claro u oscuro.
 	</Alert>
 
-	<div class="lumi-grid lumi-grid--columns-2 lumi-grid--gap-lg">
+	<div
+		class="lumi-grid lumi-grid--responsive lumi-grid--gap-lg"
+		style="--lumi-grid-responsive-min: var(--lumi-centered-card-width-md)"
+	>
 		<Card
 			title="Apariencia"
 			subtitle="Preferencia persistente y sincronizada con el sistema"

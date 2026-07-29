@@ -140,13 +140,14 @@ The string icon registry imports every registered Lucide icon when `Icon` enters
 
 - Read `.svelte` when snippets/callbacks matter; several are local, not in exported `*Props`.
 - `RemoteSelect` needs endpoint/query and mapping inputs from its source.
-- Prefer `Button.variant` for visual hierarchy and `Button.type` for native semantics. Legacy visual `type` plus native `button` remains supported; `variant` wins visually and `button` wins natively when both forms are present. The gradient remains within the selected semantic hue and preserves its solid foreground contrast.
+- Prefer `Button.variant` for visual hierarchy and `Button.type` for native semantics. Legacy visual `type` plus native `button` remains supported; `variant` wins visually and `button` wins natively when both forms are present. `filled` and `gradient` consume `solid + foreground`; the gradient shades away from the foreground when `contrast-color()` is supported and safely degrades to the calibrated solid otherwise.
 - `Card` derives its depth from the neutral surface ladder. A clickable card renders as a button and must not contain nested interactive controls.
 - `Input`, `NumberInput`, `Select`, and `Textarea` share the same control fill, border, focus ring, radius, and motion tokens.
 - Radios bound to the same `group` must also share a non-empty `name` for native arrow-key navigation and form semantics. `busy` temporarily disables interaction.
 - `SegmentedControl.iconOnly` applies compact tokenized padding. With `clearable`, activating the selected option emits the empty string (`''`).
-- `Chip` uses a native button for `onclick`; when it is also `closable`, the action and close control remain siblings rather than nested controls.
-- `Progress.animated` implies stripes. When using `labelSnippet`, provide `aria-label` if the visible snippet is not a sufficient accessible name.
+- `Chip` uses a native button for `onclick`; when it is also `closable`, the action and close control remain siblings rather than nested controls. Its close control keeps full opacity for functional contrast.
+- `Switch` pairs its checked track solid with that role's foreground thumb.
+- `Progress.animated` implies stripes. Its bar keeps the lively accent and its decorative stripe uses neutral white rather than the foreground paired to a different solid surface. When using `labelSnippet`, provide `aria-label` if the visible snippet is not a sufficient accessible name.
 - `Alert.color` and `Notification.color` supersede legacy `type`; exported `NotificationType` remains compatible and legacy `error` maps to semantic `danger`.
 - `Dropdown.placement` and `Tooltip.placement` supersede legacy `position`; exported `DropdownPosition` and `TooltipPosition` remain compatible.
 - Supply `Table.rowKey` when records lack stable `id` or `key`.

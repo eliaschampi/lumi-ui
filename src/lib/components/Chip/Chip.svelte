@@ -113,7 +113,6 @@
 		transition:
 			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
 			color var(--lumi-duration-fast) var(--lumi-easing-default),
-			opacity var(--lumi-duration-fast) var(--lumi-easing-default),
 			border-color var(--lumi-duration-fast) var(--lumi-easing-default);
 		white-space: nowrap;
 		cursor: default;
@@ -183,15 +182,12 @@
 		border-radius: var(--lumi-radius-full);
 		color: currentColor;
 		cursor: pointer;
-		transition:
-			opacity var(--lumi-duration-fast) var(--lumi-easing-default),
-			background-color var(--lumi-duration-fast) var(--lumi-easing-default);
+		transition: background-color var(--lumi-duration-fast)
+			var(--lumi-easing-default);
 		flex-shrink: 0;
-		opacity: 0.7;
 	}
 
 	.lumi-chip__close:hover {
-		opacity: 1;
 		background: color-mix(in srgb, currentColor 15%, transparent);
 	}
 

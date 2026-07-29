@@ -105,7 +105,7 @@ Use size aliases from `config.ts` intentionally:
 	);
 
 	const styleVars = $derived(
-		`--lumi-my-accent: var(--lumi-color-${color}); --lumi-my-accent-rgb: var(--lumi-color-${color}-rgb);`
+		`--lumi-my-accent: var(--lumi-color-${color}); --lumi-my-solid: var(--lumi-color-${color}-solid); --lumi-my-foreground: var(--lumi-color-${color}-foreground);`
 	);
 </script>
 
@@ -216,6 +216,20 @@ color: #0b1220;
 
 Prefer setting accent vars from the semantic `color` prop (see Button `styleVars` pattern) instead of generating huge modifier matrices for every color.
 
+### Background/foreground contract
+
+When a component owns a filled chromatic surface, bind both
+`--lumi-color-{role}-solid` and its paired `--lumi-color-{role}-foreground`.
+Keep accent for the component's existing borders, focus rings, and indicators.
+
+Rules:
+
+- Foreground belongs to the effective background, never to light/dark mode alone.
+- Do not change a solid or gradient stop after resolving foreground unless every resulting background is validated.
+- Do not force black/white as functional content. Pairing belongs to public seeds and semantic tokens; decorative neutral effects may consume the corresponding neutral token.
+- Preserve established soft-surface recipes unless a measured defect requires a shared contract.
+- Text on a background must pass 4.5:1. Functional icons, checks, thumbs, focus, and required borders must pass 3:1.
+
 ### Motion
 
 ```css
@@ -297,6 +311,8 @@ For every touched component:
 - [ ] Tokens only—no raw hex, rgba, or magic numbers
 - [ ] Defaults language-neutral (empty or neutral English; apps localize)
 - [ ] Interactive → keyboard operable + accessible name
+- [ ] Every filled chromatic surface uses its paired solid foreground
+- [ ] Text ≥ 4.5:1; required non-text indicators/focus/borders ≥ 3:1
 - [ ] Overlay → portal + focus trap/restore + dismissal
 - [ ] Visual: light theme, and dark seeds if colors touched
 - [ ] `pnpm run check` clean
@@ -344,3 +360,5 @@ Rate 1–5. Ship only if each ≥ 4.
 2. Silent a11y regressions (icon-only control with no accessible name)
 3. Scope-creep refactors unrelated to the task
 4. Exporting internal helpers as public API without a consumer contract
+5. Filled surface using accent without its paired solid foreground
+6. Theme-only black/white foreground rules or per-role corrective percentages

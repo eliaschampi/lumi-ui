@@ -27,8 +27,7 @@
 		Number.isFinite(value) ? Math.min(Math.max(value, 0), 100) : 0
 	);
 	const styleVars = $derived.by(
-		() =>
-			`--progress-color: var(--lumi-color-${color}); --progress-foreground: var(--lumi-color-${color}-foreground);`
+		() => `--progress-color: var(--lumi-color-${color});`
 	);
 	const progressStyle = $derived(
 		indeterminate ? '' : `width: ${clampedValue}%`
@@ -105,7 +104,7 @@
 		--progress-indeterminate-width: 30%;
 		--progress-stripe-color: color-mix(
 			in srgb,
-			var(--progress-foreground) 32%,
+			var(--lumi-color-white) 32%,
 			transparent
 		);
 		--progress-stripe-size: var(--lumi-space-md);

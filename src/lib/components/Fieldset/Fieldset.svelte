@@ -28,6 +28,7 @@
 		border-radius: var(--lumi-radius-2xl);
 		padding: var(--lumi-space-md);
 		margin: 0;
+		min-width: 0;
 		background:
 			var(--lumi-gradient-subtle),
 			color-mix(in srgb, var(--lumi-color-surface-inset) 22%, var(--lumi-color-surface-card));

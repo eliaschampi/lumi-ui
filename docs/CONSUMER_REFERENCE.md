@@ -69,6 +69,10 @@ pnpm add @lumi-ui/svelte
 	--lumi-brand-primary: #7c3aed;
 	--lumi-brand-secondary: #0f766e;
 
+	/* Optional: filled surfaces (inherit their matching brand by default) */
+	--lumi-brand-primary-solid: #7c3aed;
+	--lumi-brand-secondary-solid: #0f766e;
+
 	/* Optional: dark-mode calibration */
 	--lumi-brand-primary-dark: oklch(0.72 0.14 295);
 	--lumi-brand-secondary-dark: oklch(0.7 0.12 175);
@@ -83,14 +87,58 @@ pnpm add @lumi-ui/svelte
 
 ```css
 :root {
-	--lumi-status-success: #0d7a3e;
-	--lumi-status-warning: #9e5300;
-	--lumi-status-danger: #b92846;
-	--lumi-status-info: #1870a1;
+	--lumi-status-success: #0b7653;
+	--lumi-status-warning: #985806;
+	--lumi-status-danger: #be2769;
+	--lumi-status-info: #0a6ea3;
+
+	/* Optional filled-surface calibration; defaults inherit each status */
+	--lumi-status-success-solid: #0b7653;
+	--lumi-status-warning-solid: #985806;
+	--lumi-status-danger-solid: #be2769;
+	--lumi-status-info-solid: #0a6ea3;
+
+	/* Optional when a custom status needs a different on-solid ink */
+	--lumi-status-success-foreground: #fff;
+	--lumi-status-warning-foreground: #fff;
+	--lumi-status-danger-foreground: #fff;
+	--lumi-status-info-foreground: #fff;
 }
 ```
 
-Set the seed; Lumi derives solid fill, soft `-bg` tint, and dark-mode accent. Never reassign derived `--lumi-color-*` tokens directly.
+Set the seed; Lumi derives accent, solid fill, paired foreground, soft `-bg`, and dark-mode accent. Never reassign derived `--lumi-color-*` tokens directly.
+
+Every semantic role has one predictable family:
+
+| Use                         | Token                            |
+| --------------------------- | -------------------------------- |
+| Border, focus, icon, marker | `--lumi-color-{role}`            |
+| Filled background           | `--lumi-color-{role}-solid`      |
+| Content on filled           | `--lumi-color-{role}-foreground` |
+| Tinted background           | `--lumi-color-{role}-bg`         |
+
+For a bright brand, declare `accent + solid + foreground` together after Lumi:
+
+```css
+:root {
+	--lumi-brand-secondary: #68a418;
+	--lumi-brand-secondary-solid: #507e12;
+	--lumi-brand-secondary-foreground: #fff;
+}
+```
+
+If white is required, choose a deeper solid instead of forcing white over a bright accent. Do not create light/dark foreground overrides for the same solid.
+
+### Migrating older color overrides
+
+Remove direct assignments such as `--lumi-color-secondary`, `--lumi-color-secondary-solid`, or `--lumi-color-secondary-foreground`. Replace them with the owning brand/status seeds above, and keep the theme file after the Lumi import.
+
+Check both themes before adopting:
+
+- Filled text is at least 4.5:1 against every solid and gradient stop.
+- Required icons, thumbs, checks, focus rings, and borders are at least 3:1.
+- Hover/active states do not change to an unpaired background.
+- Neutral `.lumi-bg--surface`, `--control`, `--background`, and `--glass` utilities restore neutral ink inside a solid ancestor.
 
 `--lumi-color-canvas` and `--lumi-color-neutral` are the optional page/ink seeds. When overriding them, calibrate both `:root` and `[data-theme='dark']`; base backgrounds and Cards derive from the neutral surface ladder, while the app canvas may add restrained brand accents.
 
@@ -256,6 +304,8 @@ Always include `.lumi-grid`; modifiers alone don't set `display:grid`.
 | `--columns-{2,3,4}-lg`           | Explicit columns only ≥ 64rem                                                           |
 | `--gap-{2xs,xs,sm,md,lg,xl,xxl}` | Tokenized gap                                                                           |
 | `.lumi-grid-item--span-all`      | Child spans all columns                                                                 |
+
+Fluid families clamp their minimum track to the containing block. Use `--auto-fit` for a fixed row that should fill its width and `--cards` for variable-length card collections.
 
 ### Flex / Stack / Container
 

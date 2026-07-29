@@ -196,10 +196,11 @@
 			<Card title="Botones" subtitle="Variantes por jerarquía de acción" spaced>
 				<div class="lumi-flex lumi-flex--wrap lumi-flex--gap-sm">
 					<Button variant="filled" icon="plus">Crear</Button>
+					<Button variant="filled" color="success" icon="check">Confirmar</Button>
 					<Button variant="border" icon="edit">Editar</Button>
 					<Button variant="flat" icon="refreshCw">Actualizar</Button>
 					<Button variant="ghost" icon="trash" color="danger">Eliminar</Button>
-					<Button variant="gradient" icon="sparkles">Gradiente</Button>
+					<Button color="warning" variant="gradient" icon="sparkles">Gradiente</Button>
 					<Button variant="filled" loading>Procesando</Button>
 				</div>
 			</Card>

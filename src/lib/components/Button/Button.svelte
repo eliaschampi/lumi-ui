@@ -125,6 +125,7 @@
 		--button-hover-lift: 0;
 		--button-shadow-strength: 22%;
 		--button-shadow-hover-strength: 28%;
+		--btn-solid-shade: var(--btn-solid);
 		--button-color-shadow: 0 var(--lumi-space-xs) var(--lumi-space-lg)
 			calc(var(--lumi-space-xs) * -1)
 			color-mix(
@@ -276,7 +277,7 @@
 		background: color-mix(
 			in srgb,
 			var(--btn-solid) 90%,
-			var(--lumi-color-black)
+			var(--btn-solid-shade)
 		);
 		box-shadow:
 			inset 0 var(--lumi-border-width-thin) 0
@@ -356,8 +357,8 @@
 		background: linear-gradient(
 			135deg,
 			var(--btn-solid) 0%,
-			color-mix(in srgb, var(--btn-solid) 90%, var(--lumi-color-black)) 52%,
-			color-mix(in srgb, var(--btn-solid) 76%, var(--lumi-color-black)) 100%
+			color-mix(in srgb, var(--btn-solid) 90%, var(--btn-solid-shade)) 52%,
+			color-mix(in srgb, var(--btn-solid) 76%, var(--btn-solid-shade)) 100%
 		);
 		color: var(--btn-foreground);
 		border-color: color-mix(in srgb, var(--btn-solid) 45%, transparent);
@@ -366,6 +367,12 @@
 				color-mix(in srgb, var(--lumi-color-white) 18%, transparent),
 			var(--button-color-shadow),
 			var(--lumi-shadow-sm);
+	}
+
+	@supports (color: contrast-color(red)) {
+		.lumi-button {
+			--btn-solid-shade: contrast-color(var(--btn-foreground));
+		}
 	}
 
 	.lumi-button--gradient:hover:not(:disabled) {
