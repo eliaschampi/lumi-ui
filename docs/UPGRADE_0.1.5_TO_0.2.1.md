@@ -17,7 +17,7 @@ Step-by-step migration guide for Faztore, Coedula, and other Lumi consumers.
 | Root exports removed         | None                                                       |
 | New root type exports        | `DropdownPosition`, `NotificationType`, `TooltipPosition`  |
 
-This guide covers committed changes through `0.2.1`. Commit `8c1c4bc` subsequently refines borders and shadows. That change is visual-only and is **not** part of the published `0.2.1` package; consumers receive it only from local Lumi source or a later release.
+This guide covers committed changes through `0.2.1`. Commit `8c1c4bc` subsequently refines borders and shadows. That change is visual-only, is **not** part of the published `0.2.1` package, and ships in `0.2.2`.
 
 Faztore had existing uncommitted work during this audit. The consumer inspection was read-only and no Faztore or Coedula source file was changed.
 
@@ -269,7 +269,7 @@ The audited consumers resolve Lumi differently:
 | Faztore  | `"@lumi-ui/svelte": "0.2.1"`           | Published registry |
 | Coedula  | `"@lumi-ui/svelte": "link:../lumi-ui"` | Live local link    |
 
-The Coedula link resolves Lumi's current `dist`, so record the Lumi commit hash used for each linked upgrade. Faztore receives only the published registry package and therefore needs a later release for post-`0.2.1` refinements such as `8c1c4bc`.
+The Coedula link resolves Lumi's current `dist`, so record the Lumi commit hash used for each linked upgrade. Faztore receives only the published registry package and therefore needs `0.2.2` for the post-`0.2.1` refinements in `8c1c4bc`.
 
 ### Step 2 — keep one root style import
 

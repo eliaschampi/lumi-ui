@@ -518,14 +518,14 @@ Components must not invent `purple`, `teal`, or product names as colors. The pub
 
 ### Geometry — space, type, radius, motion
 
-| Concern      | Tokens                                                                                                     | Rule                                                                                     |
-| ------------ | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| Spacing      | `--lumi-space-2xs` … `--lumi-space-6xl` (4px base)                                                         | Compose from tokens; no magic numbers unless a `calc()` of tokens                        |
-| Typography   | Inter + system stack; scale `xs`→`4xl`; weights normal→bold                                                | Prefer medium/semibold for UI chrome; base app size is compact `sm` for dense product UI |
-| Radius       | `--lumi-control-radius` (controls), `--lumi-surface-radius` (large surfaces), `--lumi-radius-full` (pills) | One radius per role; do not invent per component                                         |
-| Motion       | `--lumi-duration-fast` (150ms), `--lumi-duration-base` (220ms), `--lumi-duration-slow` / `slower`          | Fast = micro (hover, color); base = default UI; slow/slower = overlay enter/exit only    |
-| Easing       | `--lumi-easing-default`                                                                                    | Primary smooth-decelerate curve                                                          |
-| Press / lift | `--lumi-interactive-press-scale`, `--lumi-interactive-lift`                                                | Subtle; never jump                                                                       |
+| Concern      | Tokens                                                                                                     | Rule                                                                                  |
+| ------------ | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Spacing      | `--lumi-space-2xs` … `--lumi-space-6xl` (quarter-rem base)                                                 | Compose from tokens; no magic numbers unless a `calc()` of tokens                     |
+| Typography   | Inter + system stack; scale `xs`→`4xl`; weights normal→bold                                                | Root uses compact `sm`; body inherits it for dense product UI                         |
+| Radius       | `--lumi-control-radius` (controls), `--lumi-surface-radius` (large surfaces), `--lumi-radius-full` (pills) | One radius per role; do not invent per component                                      |
+| Motion       | `--lumi-duration-fast` (150ms), `--lumi-duration-base` (220ms), `--lumi-duration-slow` / `slower`          | Fast = micro (hover, color); base = default UI; slow/slower = overlay enter/exit only |
+| Easing       | `--lumi-easing-default`                                                                                    | Primary smooth-decelerate curve                                                       |
+| Press / lift | `--lumi-interactive-press-scale`, `--lumi-interactive-lift`                                                | Subtle; never jump                                                                    |
 
 Align form controls to `--lumi-control-height-sm|md|lg|xl` so buttons, inputs, selects, and segmented controls feel like one family at each size. Match JS transition durations to `LUMI_CONFIG.transitions` when coordinating Svelte transitions.
 

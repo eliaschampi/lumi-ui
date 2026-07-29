@@ -16,7 +16,7 @@
 
 html {
 	font-family: var(--lumi-font-family-sans);
-	font-size: var(--lumi-font-size-base);
+	font-size: var(--lumi-font-size-sm);
 	line-height: var(--lumi-line-height-normal);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -33,7 +33,6 @@ html {
 
 body {
 	min-height: 100dvh;
-	font-size: var(--lumi-font-size-sm);
 	color: var(--lumi-color-text);
 	background:
 		var(--lumi-app-background-accent) center / auto no-repeat,
