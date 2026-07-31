@@ -329,7 +329,9 @@
 		border: var(--lumi-border-width-thick) dashed var(--lumi-color-border);
 		border-radius: var(--lumi-radius-lg);
 		background-color: var(--lumi-color-surface);
-		transition: var(--lumi-transition-all);
+		transition:
+			var(--lumi-transition-control),
+			transform var(--lumi-duration-fast) var(--lumi-easing-default);
 		position: relative;
 		overflow: hidden;
 		cursor: pointer;
@@ -343,9 +345,9 @@
 	}
 
 	.lumi-file-upload__dropzone:focus-visible {
-		outline: none;
 		border-color: var(--lumi-color-primary);
-		box-shadow: 0 0 0 var(--lumi-space-2xs) var(--lumi-color-primary-bg);
+		outline: var(--lumi-focus-outline);
+		outline-offset: var(--lumi-space-2xs);
 	}
 
 	.lumi-file-upload__dropzone--dragging {
@@ -391,7 +393,9 @@
 		border-radius: var(--lumi-radius-full);
 		background-color: var(--lumi-color-background-secondary);
 		color: var(--lumi-color-text-muted);
-		transition: var(--lumi-transition-all);
+		transition:
+			var(--lumi-transition-control),
+			transform var(--lumi-duration-fast) var(--lumi-easing-default);
 		margin-bottom: var(--lumi-space-xs);
 	}
 
@@ -433,7 +437,7 @@
 		background-color: var(--lumi-color-background);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border);
 		border-radius: var(--lumi-radius-md);
-		transition: var(--lumi-transition-all);
+		transition: var(--lumi-transition-control);
 		position: relative;
 		overflow: hidden;
 		cursor: default;
@@ -493,7 +497,7 @@
 		padding: var(--lumi-space-xs);
 		border-radius: var(--lumi-radius-sm);
 		color: var(--lumi-color-text-muted);
-		transition: var(--lumi-transition-all);
+		transition: var(--lumi-transition-control);
 	}
 
 	.lumi-file-upload__remove-btn:hover {
@@ -559,7 +563,7 @@
 		color: var(--lumi-color-text-muted);
 		font-size: var(--lumi-font-size-sm);
 		cursor: pointer;
-		transition: var(--lumi-transition-all);
+		transition: var(--lumi-transition-control);
 		width: 100%;
 		flex: 0 0 auto;
 	}

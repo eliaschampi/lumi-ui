@@ -392,7 +392,7 @@
 	}
 
 	.lumi-line-chart__legend-item:focus-visible {
-		outline: var(--lumi-border-width-thick) solid var(--lumi-color-primary);
+		outline: var(--lumi-focus-outline);
 		outline-offset: calc(var(--lumi-space-2xs) * -0.5);
 	}
 

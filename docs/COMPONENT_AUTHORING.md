@@ -117,9 +117,15 @@ Use size aliases from `config.ts` intentionally:
 
 <style>
 	.lumi-my-component {
-		/* tokens only */
+		/* tokens only — set --lumi-control-accent when the control is colorable */
+		--lumi-control-accent: var(--lumi-my-accent);
 		border-radius: var(--lumi-control-radius);
-		transition: var(--lumi-transition-colors);
+		transition: var(--lumi-transition-control);
+	}
+
+	.lumi-my-component:focus-visible {
+		outline: var(--lumi-focus-outline);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 </style>
 ```
@@ -232,11 +238,21 @@ Rules:
 
 ### Motion
 
+Prefer the shared control micro-transition. Append `transform` only when the interaction actually lifts or scales:
+
 ```css
+/* good — shared control micro-motion */
+transition: var(--lumi-transition-control);
+
+/* good — when lift/press is needed */
+transition:
+	var(--lumi-transition-control),
+	transform var(--lumi-duration-fast) var(--lumi-easing-default);
+
+/* bad — invents a second timing ladder per component */
 transition:
 	background-color var(--lumi-duration-base) var(--lumi-easing-default),
-	box-shadow var(--lumi-duration-base) var(--lumi-easing-default),
-	transform var(--lumi-duration-fast) var(--lumi-easing-default);
+	box-shadow var(--lumi-duration-base) var(--lumi-easing-default);
 ```
 
 ### Responsive
@@ -250,7 +266,7 @@ Prefer layout tokens (`--lumi-layout-*`, breakpoints already used in `core.css`)
 Interactive components must cover what applies:
 
 - [ ] Keyboard operable (Enter/Space/Arrows/Escape as relevant)
-- [ ] Visible focus (tokenized ring)
+- [ ] Visible focus (`--lumi-control-focus-shadow` or `--lumi-focus-outline`)
 - [ ] `aria-label` / `aria-labelledby` when text is absent
 - [ ] `aria-expanded` / `aria-controls` for disclosure & menus
 - [ ] `aria-invalid` + described-by message for form errors
@@ -277,18 +293,22 @@ Reference implementations: `Dialog`, `Dropdown`, `Context`, `Select`, `Tooltip`.
 
 ## 8. Forms Family
 
-Forms should feel like one system:
+Forms and interactive peers should feel like one system:
 
-| Concern       | Approach                                                                                                          |
-| ------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Heights       | `--lumi-control-height-*`                                                                                         |
-| Radius        | `--lumi-control-radius`                                                                                           |
-| Fill / border | `--lumi-color-control-*`                                                                                          |
-| Focus         | `--lumi-control-focus-shadow` + accent                                                                            |
-| Labels        | Consistent label + description + message stack                                                                    |
-| Validation    | Prefer explicit `error` / `success` / `warning` or a single state model — stay consistent with peers when editing |
+| Concern            | Approach                                                                                             |
+| ------------------ | ---------------------------------------------------------------------------------------------------- |
+| Heights            | `--lumi-control-height-xs` … `--lumi-control-height-xl`                                              |
+| Radius             | `--lumi-control-radius`                                                                              |
+| Fill / border      | `--lumi-color-control-*`                                                                             |
+| Accent             | `--lumi-control-accent` on the control root (drives focus fill, ring, and outline)                   |
+| Focus (field)      | `--lumi-control-focus-shadow` on the shell / peer visual (re-declared on form roots in `core.css`)   |
+| Focus (affordance) | `--lumi-focus-outline` + offset; outline is re-declared on interactive roots so local accent wins    |
+| Motion             | `--lumi-transition-control` (+ `transform` only when lift/press is used)                             |
+| Autofill           | Class `lumi-autofill` + `--lumi-control-autofill-bg` (default + `:focus-within` focus fill)          |
+| Labels             | Consistent label + description + message stack; prefer `:focus-within` for label accent color        |
+| Validation         | Prefer explicit `error` / `success` / `warning` or a single state model — stay consistent with peers |
 
-When adding a new control, **side-by-side with Input** at `sm`/`md`/`lg` and match padding/typography.
+When adding a new control, **side-by-side with Input** at the sizes that control actually supports and match padding/typography. If you introduce a new interactive root that uses `--lumi-focus-outline` or `--lumi-control-focus-shadow`, add its class to the re-declaration list in `core.css` (never bake those recipes only on `:root`). Do not invent private focus-ring or transition variables.
 
 ---
 

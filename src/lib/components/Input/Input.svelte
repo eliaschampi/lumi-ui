@@ -188,7 +188,7 @@
 				undefined}
 			aria-invalid={inputState === 'danger' || undefined}
 			aria-describedby={hasFooter ? msgId : undefined}
-			class="lumi-input"
+			class="lumi-input lumi-autofill"
 			class:lumi-input--has-prefix={hasPrefix}
 			class:lumi-input--has-suffix={hasSuffix}
 			oninput={handleInput}
@@ -272,6 +272,11 @@
 		--input-border: var(--lumi-color-control-border);
 		--input-bg: var(--lumi-color-control-fill);
 		--input-bg-focus: var(--lumi-color-control-focus-fill);
+		--lumi-control-autofill-bg: var(--input-bg);
+	}
+
+	.lumi-input-container:focus-within {
+		--lumi-control-autofill-bg: var(--input-bg-focus);
 	}
 
 	/* States unify border to the active color */
@@ -291,7 +296,7 @@
 		color: var(--lumi-color-text);
 		cursor: pointer;
 		margin-block-end: var(--lumi-space-xs);
-		transition: color var(--lumi-duration-base) var(--lumi-easing-default);
+		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
 	.lumi-input-container:focus-within .lumi-input__label {
@@ -307,10 +312,7 @@
 		border: var(--lumi-border-width-thin) solid var(--input-border);
 		border-radius: var(--lumi-control-radius);
 		box-shadow: var(--lumi-control-shadow);
-		transition:
-			border-color var(--lumi-duration-base) var(--lumi-easing-default),
-			background-color var(--lumi-duration-base) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-base) var(--lumi-easing-default);
+		transition: var(--lumi-transition-control);
 		overflow: hidden;
 	}
 
@@ -351,28 +353,15 @@
 		color: var(--lumi-color-placeholder);
 	}
 
-	.lumi-input:-webkit-autofill,
-	.lumi-input:-webkit-autofill:hover,
-	.lumi-input:-webkit-autofill:focus {
-		-webkit-text-fill-color: var(--lumi-color-text);
-		caret-color: var(--lumi-color-text);
-		-webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset;
-		box-shadow: 0 0 0 1000px var(--input-bg) inset;
-		transition: background-color 99999s ease-out 0s;
-	}
-
-	.lumi-input__wrapper:focus-within .lumi-input:-webkit-autofill,
-	.lumi-input__wrapper:focus-within .lumi-input:-webkit-autofill:hover,
-	.lumi-input__wrapper:focus-within .lumi-input:-webkit-autofill:focus {
-		-webkit-box-shadow: 0 0 0 1000px var(--input-bg-focus) inset;
-		box-shadow: 0 0 0 1000px var(--input-bg-focus) inset;
-	}
-
 	/* ── Sizes ────────────────────────────────── */
 	.lumi-input-container--xs .lumi-input {
 		padding-block: var(--lumi-space-2xs);
 		padding-inline: var(--lumi-space-xs);
 		font-size: var(--lumi-font-size-xs);
+	}
+
+	.lumi-input-container--xs .lumi-input__wrapper {
+		min-height: var(--lumi-control-height-xs);
 	}
 	.lumi-input-container--sm .lumi-input {
 		padding-block: var(--lumi-space-xs);
@@ -438,7 +427,7 @@
 		background: transparent;
 		border: none;
 		cursor: pointer;
-		transition: color var(--lumi-duration-base) var(--lumi-easing-default);
+		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
 		flex-shrink: 0;
 	}
 
@@ -458,9 +447,8 @@
 
 	.lumi-input__icon:focus-visible,
 	.lumi-input__action:focus-visible {
-		outline: var(--lumi-border-width-thick) solid
-			color-mix(in srgb, var(--input-color) 35%, transparent);
-		outline-offset: calc(var(--lumi-space-2xs) * -1);
+		outline: var(--lumi-focus-outline);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	.lumi-input__icon--before:not(.lumi-input__icon--no-border) {

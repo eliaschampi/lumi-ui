@@ -100,6 +100,7 @@
 
 <style>
 	.lumi-list-item {
+		--lumi-control-accent: var(--list-accent, var(--lumi-color-primary));
 		--list-item-hover-bg: color-mix(
 			in srgb,
 			var(--list-accent, var(--lumi-color-primary)) 4%,
@@ -110,12 +111,7 @@
 			var(--list-accent, var(--lumi-color-primary)) 8%,
 			transparent
 		);
-		--list-item-focus-ring: color-mix(
-			in srgb,
-			var(--list-accent, var(--lumi-color-primary)) 20%,
-			transparent
-		);
-		--list-item-lift: calc(var(--lumi-space-2xs) * -0.25);
+		--list-item-lift: var(--lumi-interactive-lift);
 		position: relative;
 		display: flex;
 		align-items: center;
@@ -124,10 +120,8 @@
 		padding: var(--list-item-padding, var(--lumi-space-sm) var(--lumi-space-md));
 		border-radius: var(--lumi-radius-md);
 		transition:
-			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			color var(--lumi-duration-fast) var(--lumi-easing-default),
-			transform var(--lumi-duration-fast) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-fast) var(--lumi-easing-default);
+			var(--lumi-transition-control),
+			transform var(--lumi-duration-fast) var(--lumi-easing-default);
 		cursor: default;
 		background: transparent;
 		color: var(--lumi-color-text);
@@ -136,7 +130,6 @@
 		text-align: left;
 		line-height: var(--lumi-line-height-normal);
 		font: inherit;
-		outline: none;
 		border: none;
 		user-select: none;
 	}
@@ -219,7 +212,8 @@
 
 	.lumi-list-item--clickable:focus-visible {
 		background: var(--list-item-hover-bg);
-		box-shadow: 0 0 0 var(--lumi-border-width-thick) var(--list-item-focus-ring);
+		outline: var(--lumi-focus-outline);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	.lumi-list-item--clickable:active:not(.lumi-list-item--disabled) {

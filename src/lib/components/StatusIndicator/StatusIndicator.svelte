@@ -74,7 +74,7 @@
 		width: var(--lumi-space-xs);
 		height: var(--lumi-space-xs);
 		border-radius: var(--lumi-radius-full);
-		transition: var(--lumi-transition-all);
+		transition: background-color var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
 	.lumi-status-indicator--default {

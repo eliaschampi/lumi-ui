@@ -156,9 +156,7 @@
 		display: flex;
 		flex-direction: column;
 		transition:
-			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			border-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-fast) var(--lumi-easing-default),
+			var(--lumi-transition-control),
 			transform var(--lumi-duration-fast) var(--lumi-easing-default);
 		width: 100%;
 		text-align: left;
@@ -197,7 +195,11 @@
 		border-color: var(--lumi-color-border-interactive);
 		box-shadow:
 			0 0 0 var(--lumi-border-width-thick)
-				color-mix(in srgb, var(--lumi-color-primary) 24%, transparent),
+				color-mix(
+					in srgb,
+					var(--lumi-color-primary) var(--lumi-control-focus-ring-strength),
+					transparent
+				),
 			var(--lumi-shadow-md);
 	}
 

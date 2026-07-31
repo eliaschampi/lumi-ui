@@ -210,7 +210,7 @@
 		border-radius: var(--lumi-radius-full);
 		color: var(--lumi-color-text-muted);
 		cursor: pointer;
-		transition: var(--lumi-transition-all);
+		transition: var(--lumi-transition-control);
 		margin-top: var(--lumi-space-2xs);
 		position: relative;
 		z-index: var(--lumi-z-base);
@@ -227,7 +227,7 @@
 	}
 
 	.lumi-notification__close:focus-visible {
-		outline: var(--lumi-border-width-thick) solid var(--lumi-color-primary);
+		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-space-2xs);
 	}
 

@@ -25,12 +25,14 @@
 	}: TextareaProps = $props();
 
 	let textareaRef: HTMLTextAreaElement | undefined = $state();
-	let isFocused = $state(false);
 
 	const instanceId = $props.id();
 	const id = `lumi-textarea-${instanceId}`;
-	const hasError = $derived(Boolean(error && typeof error === 'string'));
-	const activeColor = $derived(error ? 'danger' : color);
+	// error: boolean → invalid only; string → invalid + message.
+	const errorText = $derived(typeof error === 'string' ? error : '');
+	const hasError = $derived(errorText.length > 0);
+	const isInvalid = $derived(Boolean(error));
+	const activeColor = $derived(isInvalid ? 'danger' : color);
 	const describedBy = $derived.by(() => {
 		const ids: string[] = [];
 		if (hasError) ids.push(`${id}-error`);
@@ -42,9 +44,7 @@
 		[
 			'lumi-textarea',
 			`lumi-textarea--${size}`,
-			`lumi-textarea--${color}`,
-			isFocused && 'lumi-textarea--focused',
-			error && 'lumi-textarea--error',
+			isInvalid && 'lumi-textarea--error',
 			disabled && 'lumi-textarea--disabled',
 			readonly && 'lumi-textarea--readonly',
 			className
@@ -58,16 +58,6 @@
 	function handleInput(event: Event): void {
 		value = (event.target as HTMLTextAreaElement).value;
 		oninput?.(event);
-	}
-
-	function handleFocus(event: FocusEvent): void {
-		isFocused = true;
-		onfocus?.(event);
-	}
-
-	function handleBlur(event: FocusEvent): void {
-		isFocused = false;
-		onblur?.(event);
 	}
 
 	function handleKeydown(event: KeyboardEvent): void {
@@ -102,12 +92,12 @@
 			{maxlength}
 			{value}
 			aria-label={ariaLabel || label || placeholder || undefined}
-			aria-invalid={Boolean(error) || undefined}
+			aria-invalid={isInvalid || undefined}
 			aria-describedby={describedBy || undefined}
-			class="lumi-textarea__input"
+			class="lumi-textarea__input lumi-autofill"
 			oninput={handleInput}
-			onfocus={handleFocus}
-			onblur={handleBlur}
+			{onfocus}
+			{onblur}
 			onkeydown={handleKeydown}
 		></textarea>
 
@@ -118,7 +108,7 @@
 
 	{#if hasError}
 		<div id={`${id}-error`} class="lumi-textarea__error" aria-live="polite">
-			{error}
+			{errorText}
 		</div>
 	{/if}
 
@@ -137,6 +127,11 @@
 		--lumi-control-accent: var(--textarea-color);
 		--textarea-bg: var(--lumi-color-control-fill);
 		--textarea-bg-focus: var(--lumi-color-control-focus-fill);
+		--lumi-control-autofill-bg: var(--textarea-bg);
+	}
+
+	.lumi-textarea:focus-within {
+		--lumi-control-autofill-bg: var(--textarea-bg-focus);
 	}
 
 	.lumi-textarea__label {
@@ -144,7 +139,7 @@
 		font-weight: var(--lumi-font-weight-semibold);
 		color: var(--lumi-color-text);
 		cursor: pointer;
-		transition: color var(--lumi-duration-base) var(--lumi-easing-default);
+		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
 	.lumi-textarea__required {
@@ -152,7 +147,7 @@
 		margin-left: var(--lumi-space-2xs);
 	}
 
-	.lumi-textarea--focused .lumi-textarea__label,
+	.lumi-textarea:focus-within .lumi-textarea__label,
 	.lumi-textarea--error .lumi-textarea__label {
 		color: var(--textarea-color);
 	}
@@ -178,10 +173,7 @@
 		field-sizing: content;
 		min-height: calc(var(--lumi-space-3xl) + var(--lumi-space-sm));
 		overflow-y: hidden;
-		transition:
-			border-color var(--lumi-duration-base) var(--lumi-easing-default),
-			background-color var(--lumi-duration-base) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-base) var(--lumi-easing-default);
+		transition: var(--lumi-transition-control);
 	}
 
 	.lumi-textarea__input::placeholder {
@@ -203,23 +195,6 @@
 	.lumi-textarea__input:read-only {
 		cursor: default;
 		background: var(--textarea-bg);
-	}
-
-	.lumi-textarea__input:-webkit-autofill,
-	.lumi-textarea__input:-webkit-autofill:hover,
-	.lumi-textarea__input:-webkit-autofill:focus {
-		-webkit-text-fill-color: var(--lumi-color-text);
-		caret-color: var(--lumi-color-text);
-		-webkit-box-shadow: 0 0 0 1000px var(--textarea-bg) inset;
-		box-shadow: 0 0 0 1000px var(--textarea-bg) inset;
-		transition: background-color 99999s ease-out 0s;
-	}
-
-	.lumi-textarea--focused .lumi-textarea__input:-webkit-autofill,
-	.lumi-textarea--focused .lumi-textarea__input:-webkit-autofill:hover,
-	.lumi-textarea--focused .lumi-textarea__input:-webkit-autofill:focus {
-		-webkit-box-shadow: 0 0 0 1000px var(--textarea-bg-focus) inset;
-		box-shadow: 0 0 0 1000px var(--textarea-bg-focus) inset;
 	}
 
 	.lumi-textarea__counter {
@@ -268,11 +243,6 @@
 	}
 
 	/* State variants */
-	.lumi-textarea--focused .lumi-textarea__input {
-		border-color: var(--textarea-color);
-		background: var(--textarea-bg-focus);
-	}
-
 	.lumi-textarea--error .lumi-textarea__input {
 		border-color: var(--textarea-color);
 	}

@@ -106,7 +106,7 @@
 		text-align: center;
 		font-family: var(--lumi-font-family-sans);
 		line-height: var(--lumi-line-height-normal);
-		transition: var(--lumi-transition-all);
+		transition: var(--lumi-transition-control);
 	}
 
 	/* Visual container */
@@ -202,7 +202,7 @@
 
 	/* Focus styles */
 	.lumi-empty-state:focus-visible {
-		outline: var(--lumi-border-width-thick) solid var(--lumi-color-primary);
+		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-space-2xs);
 		border-radius: var(--lumi-radius-lg);
 	}

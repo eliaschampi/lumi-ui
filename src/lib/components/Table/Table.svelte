@@ -660,8 +660,7 @@
 	}
 
 	.lumi-table__row--focusable:focus-visible {
-		outline: var(--lumi-border-width-thick) solid
-			color-mix(in srgb, var(--lumi-color-primary) 35%, transparent);
+		outline: var(--lumi-focus-outline);
 		outline-offset: calc(var(--lumi-border-width-thick) * -1);
 		border-radius: var(--lumi-radius-sm);
 	}
@@ -824,10 +823,7 @@
 		border: var(--lumi-border-width-thin) solid transparent;
 		border-radius: var(--lumi-radius-md);
 		cursor: pointer;
-		transition:
-			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			color var(--lumi-duration-fast) var(--lumi-easing-default),
-			border-color var(--lumi-duration-fast) var(--lumi-easing-default);
+		transition: var(--lumi-transition-control);
 	}
 
 	.lumi-table__pagination-page:hover:not(.lumi-table__pagination-page--active) {
@@ -836,8 +832,7 @@
 	}
 
 	.lumi-table__pagination-page:focus-visible {
-		outline: var(--lumi-border-width-thick) solid
-			color-mix(in srgb, var(--lumi-color-primary) 35%, transparent);
+		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-border-width-thin);
 	}
 

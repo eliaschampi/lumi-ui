@@ -129,9 +129,7 @@
 		background: var(--lumi-color-control-fill);
 		box-shadow: var(--lumi-control-shadow);
 		transition:
-			background-color var(--lumi-duration-base) var(--lumi-easing-default),
-			border-color var(--lumi-duration-base) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-base) var(--lumi-easing-default),
+			var(--lumi-transition-control),
 			transform var(--lumi-duration-fast) var(--lumi-easing-default);
 		flex-shrink: 0;
 		overflow: hidden;
@@ -143,7 +141,7 @@
 		transform: scale(0.6);
 		transition:
 			opacity var(--lumi-duration-fast) var(--lumi-easing-default),
-			transform var(--lumi-duration-base) var(--lumi-easing-default);
+			transform var(--lumi-duration-fast) var(--lumi-easing-default);
 		pointer-events: none;
 	}
 

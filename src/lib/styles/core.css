@@ -216,6 +216,41 @@ body {
 /* ========================================================================== */
 /* SHARED COMPONENT PRIMITIVES */
 /* ========================================================================== */
+/* Tokens that embed var(--lumi-control-accent) must be re-declared on each
+   interactive root. A :root-only value resolves accent to primary at
+   declaration time and inherits that baked color, ignoring local accents. */
+:where(
+	.lumi-input-container,
+	.lumi-number-input,
+	.lumi-select,
+	.lumi-segmented-control,
+	.lumi-tabs,
+	.lumi-tag-option,
+	.lumi-list-item,
+	.lumi-dropdown,
+	.lumi-dropdown-item,
+	.lumi-context-item,
+	.lumi-sidebar-item,
+	.lumi-dialog,
+	.lumi-alert,
+	.lumi-notification,
+	.lumi-collapse,
+	.lumi-file-upload,
+	.lumi-empty-state,
+	.lumi-divider,
+	.lumi-table,
+	.lumi-line-chart,
+	.drive-sidebar__close
+) {
+	--lumi-focus-outline: var(--lumi-border-width-thick) solid
+		color-mix(
+			in srgb,
+			var(--lumi-control-accent, var(--lumi-color-primary))
+				var(--lumi-focus-outline-strength),
+			transparent
+		);
+}
+
 :where(
 	.lumi-input-container,
 	.lumi-number-input,
@@ -259,6 +294,19 @@ body {
 		var(--lumi-shadow-sm);
 }
 
+/* Shared autofill override — UA yellow only yields to a large inset shadow. */
+:where(.lumi-autofill):autofill,
+:where(.lumi-autofill):-webkit-autofill {
+	-webkit-text-fill-color: var(--lumi-color-text);
+	caret-color: var(--lumi-color-text);
+	-webkit-box-shadow: inset 0 0 0 100vmax
+		var(--lumi-control-autofill-bg, var(--lumi-color-control-fill));
+	box-shadow: inset 0 0 0 100vmax
+		var(--lumi-control-autofill-bg, var(--lumi-color-control-fill));
+	transition: background-color calc(var(--lumi-duration-slower) * 20)
+		var(--lumi-easing-default);
+}
+
 :where(.lumi-surface, .lumi-card, .lumi-navbar, .lumi-sidebar, .lumi-dialog) {
 	background: var(--lumi-surface-bg, var(--lumi-floating-surface-bg));
 	border: var(
@@ -269,12 +317,17 @@ body {
 	box-shadow: var(--lumi-surface-shadow, var(--lumi-floating-surface-shadow));
 }
 
-/* Blur belongs to translucent surfaces; opaque structural panels stay crisp. */
+/* Blur on translucent shells; cards opt in via --lumi-surface-blur-filter. */
 :where(.lumi-surface, .lumi-navbar, .lumi-dialog) {
 	backdrop-filter: blur(var(--lumi-surface-blur, var(--lumi-blur-sm)))
 		saturate(var(--lumi-surface-saturation));
 	-webkit-backdrop-filter: blur(var(--lumi-surface-blur, var(--lumi-blur-sm)))
 		saturate(var(--lumi-surface-saturation));
+}
+
+:where(.lumi-card) {
+	backdrop-filter: var(--lumi-surface-blur-filter, none);
+	-webkit-backdrop-filter: var(--lumi-surface-blur-filter, none);
 }
 
 .lumi-card--ambient::after {

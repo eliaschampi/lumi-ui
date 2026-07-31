@@ -2,7 +2,6 @@
 	import type { Snippet } from 'svelte';
 	import { setContext } from 'svelte';
 	import { Icon } from '../Icon';
-	import { LUMI_CONFIG } from '../config';
 	import type { TabsProps } from './types';
 
 	interface Props extends TabsProps {
@@ -22,7 +21,6 @@
 
 	let previousValue = $state<string | number | undefined>(undefined);
 	const tabsId = `lumi-tabs-${crypto.randomUUID().slice(0, 8)}`;
-	const transitionDuration = `${LUMI_CONFIG.transitions.base}ms`;
 	$effect(() => {
 		if (value === undefined && tabs.length > 0) {
 			const firstEnabledTab = tabs.find((tab) => !tab.disabled);
@@ -43,8 +41,6 @@
 			.filter(Boolean)
 			.join(' ')
 	);
-
-	const styleVars = `--tabs-transition-duration: ${transitionDuration};`;
 
 	const selectTab = (tabValue: string | number) => {
 		if (value === tabValue) return;
@@ -83,7 +79,7 @@
 	};
 </script>
 
-<div class={classes} style={styleVars}>
+<div class={classes}>
 	<!-- Tab Navigation -->
 	<div
 		class="lumi-tabs__nav"
@@ -136,6 +132,7 @@
 		flex-direction: column;
 		width: 100%;
 		--lumi-tabs-color: var(--lumi-color-primary);
+		--lumi-control-accent: var(--lumi-tabs-color);
 		--tabs-hover-bg: color-mix(
 			in srgb,
 			var(--lumi-tabs-color) 10%,
@@ -143,7 +140,7 @@
 		);
 		--tabs-nav-border: var(--lumi-border-width-thin) solid
 			color-mix(in srgb, var(--lumi-color-border-glass) 76%, var(--lumi-color-border-strong) 24%);
-		--tabs-lift: calc(var(--lumi-space-2xs) * -0.25);
+		--tabs-lift: var(--lumi-interactive-lift);
 	}
 
 	.lumi-tabs--horizontal .lumi-tabs__nav {
@@ -223,14 +220,11 @@
 		border-radius: var(--lumi-radius-md);
 		cursor: pointer;
 		transition:
-			background-color var(--tabs-transition-duration) var(--lumi-easing-default),
-			color var(--tabs-transition-duration) var(--lumi-easing-default),
-			border-color var(--tabs-transition-duration) var(--lumi-easing-default),
-			transform var(--tabs-transition-duration) var(--lumi-easing-default),
-			box-shadow var(--tabs-transition-duration) var(--lumi-easing-default);
+			var(--lumi-transition-control),
+			transform var(--lumi-duration-fast) var(--lumi-easing-default);
 		user-select: none;
 		white-space: nowrap;
-		min-height: var(--lumi-space-xl);
+		min-height: var(--lumi-control-height-sm);
 	}
 
 	.lumi-tabs__tab:hover:not(:disabled):not(.lumi-tabs__tab--active) {
@@ -259,10 +253,8 @@
 	}
 
 	.lumi-tabs__tab:focus-visible {
-		outline: var(--lumi-border-width-thick) solid
-			color-mix(in srgb, var(--lumi-tabs-color) 35%, transparent);
-		outline-offset: calc(var(--lumi-space-2xs) * -1);
-		border-radius: var(--lumi-radius-md);
+		outline: var(--lumi-focus-outline);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	/* Tab content */
@@ -315,7 +307,7 @@
 		.lumi-tabs__tab {
 			padding: var(--lumi-space-xs) var(--lumi-space-sm);
 			font-size: var(--lumi-font-size-sm);
-			min-height: var(--lumi-space-xl);
+			min-height: var(--lumi-control-height-sm);
 		}
 	}
 

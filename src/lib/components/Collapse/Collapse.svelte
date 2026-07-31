@@ -184,7 +184,7 @@
 		cursor: pointer;
 		padding: 0;
 		margin: 0;
-		transition: background-color var(--lumi-duration-base) var(--lumi-easing-default);
+		transition: var(--lumi-transition-control);
 		text-align: left;
 	}
 
@@ -193,10 +193,9 @@
 	}
 
 	.lumi-collapse__trigger:focus-visible {
-		outline: none;
 		background: color-mix(in srgb, var(--lumi-color-surface-glass) 55%, transparent);
-		box-shadow: inset 0 0 0 var(--lumi-border-width-thick)
-			color-mix(in srgb, var(--lumi-color-primary) 22%, transparent);
+		outline: var(--lumi-focus-outline);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	.lumi-collapse__trigger--disabled {
@@ -272,7 +271,7 @@
 		color: var(--lumi-color-text-muted);
 		transition:
 			transform var(--lumi-duration-slow) var(--lumi-easing-default),
-			color var(--lumi-duration-base) var(--lumi-easing-default);
+			color var(--lumi-duration-fast) var(--lumi-easing-default);
 		flex-shrink: 0;
 	}
 

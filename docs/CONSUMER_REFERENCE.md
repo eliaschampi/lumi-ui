@@ -73,12 +73,14 @@ pnpm add @lumi-ui/svelte
 
 ### Status seeds
 
+Defaults are OKLCH in [`tokens.base.css`](../src/lib/styles/tokens.base.css). Override only when the product needs a different semantic identity:
+
 ```css
 :root {
-	--lumi-status-success: #008647;
-	--lumi-status-warning: #f6c330;
-	--lumi-status-danger: #df202e;
-	--lumi-status-info: #007dab;
+	--lumi-status-success: oklch(54% 0.16 158);
+	--lumi-status-warning: oklch(80% 0.17 80);
+	--lumi-status-danger: oklch(56% 0.205 24);
+	--lumi-status-info: oklch(52% 0.15 210);
 }
 ```
 
@@ -159,7 +161,25 @@ One controller per app. CSP: authorize the inline script hash or use `createColo
 	); /* --lumi-color-text-muted, --lumi-color-text-light */
 	background: var(--lumi-color-surface);
 	border: 1px solid var(--lumi-color-border);
-	transition: var(--lumi-duration-base) var(--lumi-easing-default);
+	/* Prefer shared recipes over raw duration pairs: */
+	transition: var(--lumi-transition-control);
+}
+
+.my-control {
+	--lumi-control-accent: var(--lumi-color-primary);
+	min-height: var(--lumi-control-height-md); /* xs…xl */
+	border-radius: var(--lumi-control-radius);
+	box-shadow: var(--lumi-control-shadow);
+	transition: var(--lumi-transition-control);
+}
+
+.my-control:focus-visible {
+	outline: var(--lumi-focus-outline);
+	outline-offset: var(--lumi-focus-outline-offset);
+}
+
+.my-field:focus-within {
+	box-shadow: var(--lumi-control-focus-shadow);
 }
 ```
 
@@ -513,19 +533,19 @@ The string registry is convenient but enters the bundle with `Icon`. Passing a d
 
 Reusable domain-neutral compositions (included in `@lumi-ui/svelte/styles`). Apply via `class`; use documented BEM children — don't invent modifiers.
 
-| Pattern              | Families & variants                                                                                                                                    |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Surfaces & auth      | `.lumi-surface`, `.lumi-auth-mark`; `.lumi-card--ambient` / `.lumi-auth-card` via `Card class`                                                         |
-| Filter summary       | `.lumi-filter-summary` + `__eyebrow`, `__title`, `__subtitle`, `__title-row`, `__meta`, `__actions`; `--compact`, `--centered`, color variants         |
-| Section actions      | `.lumi-section-toolbar`, `.lumi-toolbar-field`, `.lumi-form-action-row`, `.lumi-inline-filters` (+ child/compact variants)                             |
-| Ranked metrics       | `.lumi-metric-rank-list` / `.lumi-metric-rank-row`; `--dense`, `--accent-secondary`, `--scroll-capped`                                                 |
-| Identity & selection | `.lumi-person-cell`, `.lumi-selected-panel`, `.lumi-result-list`, `.lumi-result-option`, `.lumi-placeholder-tile`                                      |
-| Context panels       | `.lumi-hero-panel`, `.lumi-search-panel` + BEM children                                                                                                |
-| Collections          | `.lumi-history-list` / `item`, `.lumi-item-row`, `.lumi-item-list`; interactive/active row variants                                                    |
-| Summaries            | `.lumi-total-box`, `.lumi-scan-result`                                                                                                                 |
-| Small helpers        | `.lumi-cluster--pull-next-up`, `.lumi-container-responsive`, `.lumi-scrollbar`, `.lumi-list-item--stack-actions`                                       |
-| Toast stack          | `.lumi-toast-portal` — consumer-owned fixed wrapper for `Notification` children                                                                        |
-| Specialized          | `.lumi-drive-toolbar-card` (via `Card class`), `.lumi-drive-content`, `.lumi-navbar-branch`, `.lumi-navbar-user-dropdown`, `.lumi-brand-logo-wordmark` |
+| Pattern              | Families & variants                                                                                                                                                          |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Surfaces & auth      | `.lumi-surface`, `.lumi-auth-mark`; `.lumi-card--ambient` / `.lumi-auth-card` via `Card class`. Plain cards are crisp; translucent cards set `--lumi-surface-blur-filter`    |
+| Filter summary       | `.lumi-filter-summary` + `__eyebrow`, `__title`, `__subtitle`, `__title-row`, `__meta`, `__actions`; `--compact`, `--centered`, color variants                               |
+| Section actions      | `.lumi-section-toolbar`, `.lumi-toolbar-field`, `.lumi-form-action-row`, `.lumi-inline-filters` (+ child/compact variants)                                                   |
+| Ranked metrics       | `.lumi-metric-rank-list` / `.lumi-metric-rank-row`; `--dense`, `--accent-secondary`, `--scroll-capped`                                                                       |
+| Identity & selection | `.lumi-person-cell`, `.lumi-selected-panel`, `.lumi-result-list`, `.lumi-result-option`, `.lumi-placeholder-tile`                                                            |
+| Context panels       | `.lumi-hero-panel`, `.lumi-search-panel` + BEM children                                                                                                                      |
+| Collections          | `.lumi-history-list` / `item`, `.lumi-item-row`, `.lumi-item-list`; interactive/active row variants                                                                          |
+| Summaries            | `.lumi-total-box`, `.lumi-scan-result`                                                                                                                                       |
+| Small helpers        | `.lumi-cluster--pull-next-up`, `.lumi-container-responsive`, `.lumi-scrollbar`, `.lumi-list-item--stack-actions`                                                             |
+| Toast stack          | `.lumi-toast-portal` — consumer-owned fixed wrapper for `Notification` children                                                                                              |
+| Specialized          | `.lumi-drive-toolbar-card` (via `Card class`, includes blur opt-in), `.lumi-drive-content`, `.lumi-navbar-branch`, `.lumi-navbar-user-dropdown`, `.lumi-brand-logo-wordmark` |
 
 ---
 

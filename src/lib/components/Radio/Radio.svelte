@@ -124,10 +124,7 @@
 		background: var(--lumi-color-control-fill);
 		box-shadow: var(--lumi-control-shadow);
 		flex-shrink: 0;
-		transition:
-			border-color var(--lumi-duration-base) var(--lumi-easing-default),
-			background-color var(--lumi-duration-base) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-base) var(--lumi-easing-default);
+		transition: var(--lumi-transition-control);
 	}
 
 	.lumi-radio__circle {
@@ -137,8 +134,8 @@
 		background: transparent;
 		transform: scale(0);
 		transition:
-			transform var(--lumi-duration-base) var(--lumi-easing-default),
-			background-color var(--lumi-duration-base) var(--lumi-easing-default);
+			transform var(--lumi-duration-fast) var(--lumi-easing-default),
+			background-color var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
 	.lumi-radio__label {
@@ -155,9 +152,7 @@
 		border-radius: var(--lumi-radius-lg);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
 		background: var(--lumi-color-surface-card);
-		transition:
-			border-color var(--lumi-duration-base) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-base) var(--lumi-easing-default);
+		transition: var(--lumi-transition-control);
 	}
 
 	.lumi-radio.lumi-radio-option:not(.lumi-radio--card) {

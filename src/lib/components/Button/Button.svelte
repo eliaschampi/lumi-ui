@@ -165,10 +165,7 @@
 		isolation: isolate;
 
 		transition:
-			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			border-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			color var(--lumi-duration-fast) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-fast) var(--lumi-easing-default),
+			var(--lumi-transition-control),
 			transform var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 

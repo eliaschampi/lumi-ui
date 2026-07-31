@@ -418,7 +418,7 @@
 			readonly={!autocomplete}
 			{disabled}
 			{placeholder}
-			class="lumi-select__input"
+			class="lumi-select__input lumi-autofill"
 			role="combobox"
 			aria-expanded={floating.isOpen}
 			aria-controls={dropdownId}
@@ -548,6 +548,11 @@
 		--select-focus: var(--lumi-color-primary);
 		--select-bg: var(--lumi-color-control-fill);
 		--select-bg-focus: var(--lumi-color-control-focus-fill);
+		--lumi-control-autofill-bg: var(--select-bg);
+	}
+
+	.lumi-select:focus-within {
+		--lumi-control-autofill-bg: var(--select-bg-focus);
 	}
 
 	/* ── Label ────────────────────────────────── */
@@ -558,9 +563,10 @@
 		color: var(--lumi-color-text);
 		cursor: pointer;
 		margin-block-end: var(--lumi-space-xs);
-		transition: color var(--lumi-duration-base) var(--lumi-easing-default);
+		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
+	.lumi-select:focus-within .lumi-select__label,
 	.lumi-select--active .lumi-select__label {
 		color: var(--select-focus);
 	}
@@ -575,10 +581,7 @@
 		border: var(--lumi-border-width-thin) solid var(--select-border);
 		border-radius: var(--lumi-control-radius);
 		box-shadow: var(--lumi-control-shadow);
-		transition:
-			border-color var(--lumi-duration-base) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-base) var(--lumi-easing-default),
-			background-color var(--lumi-duration-base) var(--lumi-easing-default);
+		transition: var(--lumi-transition-control);
 		cursor: pointer;
 		overflow: hidden;
 	}
@@ -625,16 +628,6 @@
 		cursor: text;
 	}
 
-	.lumi-select__input:-webkit-autofill,
-	.lumi-select__input:-webkit-autofill:hover,
-	.lumi-select__input:-webkit-autofill:focus {
-		-webkit-text-fill-color: var(--lumi-color-text);
-		caret-color: var(--lumi-color-text);
-		-webkit-box-shadow: 0 0 0 1000px var(--select-bg) inset;
-		box-shadow: 0 0 0 1000px var(--select-bg) inset;
-		transition: background-color 99999s ease-out 0s;
-	}
-
 	/* ── Suffix (arrow / spinner) ─────────────── */
 	.lumi-select__suffix {
 		display: flex;
@@ -648,8 +641,8 @@
 
 	.lumi-select__arrow {
 		transition:
-			transform var(--lumi-duration-base) var(--lumi-easing-default),
-			color var(--lumi-duration-base) var(--lumi-easing-default);
+			transform var(--lumi-duration-fast) var(--lumi-easing-default),
+			color var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
 	.lumi-select__trigger {
@@ -662,7 +655,7 @@
 		border: none;
 		cursor: pointer;
 		flex-shrink: 0;
-		transition: color var(--lumi-duration-base) var(--lumi-easing-default);
+		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
 	.lumi-select--active .lumi-select__arrow {
@@ -694,9 +687,8 @@
 	}
 
 	.lumi-select__clear:focus-visible {
-		outline: var(--lumi-border-width-thick) solid
-			color-mix(in srgb, var(--select-focus) 35%, transparent);
-		outline-offset: calc(var(--lumi-space-2xs) * -1);
+		outline: var(--lumi-focus-outline);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	/* ── Dropdown ─────────────────────────────── */

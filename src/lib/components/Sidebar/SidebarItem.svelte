@@ -79,13 +79,13 @@
 		font-size: var(--lumi-font-size-sm);
 		font-weight: var(--lumi-font-weight-medium);
 		letter-spacing: normal;
+		--lumi-control-accent: var(--lumi-color-primary);
 		--sidebar-item-hover-bg: color-mix(in srgb, var(--lumi-color-primary) 9%, transparent);
 		--sidebar-item-active-bg: linear-gradient(
 			145deg,
 			color-mix(in srgb, var(--lumi-color-primary) 5.5%, transparent),
 			color-mix(in srgb, var(--lumi-color-primary) 1.8%, transparent)
 		);
-		--sidebar-item-focus-ring: color-mix(in srgb, var(--lumi-color-primary) 20%, transparent);
 		position: relative;
 		display: flex;
 		align-items: center;
@@ -99,12 +99,8 @@
 		border: var(--lumi-border-width-thin) solid transparent;
 		cursor: pointer;
 		text-align: left;
-		transition:
-			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			color var(--lumi-duration-fast) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-fast) var(--lumi-easing-default);
+		transition: var(--lumi-transition-control);
 		width: 100%;
-		outline: none;
 	}
 
 	.lumi-sidebar-item--sub {
@@ -140,7 +136,8 @@
 
 	.lumi-sidebar-item:focus-visible {
 		background: var(--sidebar-item-hover-bg);
-		box-shadow: 0 0 0 var(--lumi-border-width-thick) var(--sidebar-item-focus-ring);
+		outline: var(--lumi-focus-outline);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	.lumi-sidebar-item--active {

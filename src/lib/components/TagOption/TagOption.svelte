@@ -25,7 +25,7 @@
 <style>
   .lumi-tag-option {
     --color: var(--lumi-color-primary);
-
+    --lumi-control-accent: var(--color);
     display: flex;
     align-items: center;
     gap: var(--lumi-space-sm);
@@ -39,10 +39,7 @@
     font-size: var(--lumi-font-size-sm);
     cursor: pointer;
     text-align: left;
-    transition:
-      border-color var(--lumi-duration-base) var(--lumi-easing-default),
-      background-color var(--lumi-duration-base) var(--lumi-easing-default),
-      box-shadow var(--lumi-duration-base) var(--lumi-easing-default);
+    transition: var(--lumi-transition-control);
   }
 
   /* Color variants — set the single --color token used by all states */
@@ -75,8 +72,7 @@
   }
 
   .lumi-tag-option:focus-visible {
-    outline: var(--lumi-border-width-thick) solid
-      color-mix(in srgb, var(--color) 35%, transparent);
+    outline: var(--lumi-focus-outline);
     outline-offset: var(--lumi-space-2xs);
   }
 

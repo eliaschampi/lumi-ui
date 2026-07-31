@@ -131,7 +131,7 @@
 		--lumi-chip-padding-inline: var(--lumi-space-xs);
 		--lumi-chip-gap: var(--lumi-space-2xs);
 		--lumi-chip-font-size: var(--lumi-font-size-xs);
-		--lumi-chip-min-height: calc(var(--lumi-space-lg) + var(--lumi-space-2xs));
+		--lumi-chip-min-height: var(--lumi-control-height-xs);
 		--lumi-chip-close-size: var(--lumi-space-sm);
 	}
 

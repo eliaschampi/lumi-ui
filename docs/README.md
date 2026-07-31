@@ -7,6 +7,7 @@ Three documents cover the library. Source remains authoritative for exact APIs.
 | **[Guide](./GUIDE.md)**                             | Install, first page, theming, layouts, core CSS, design language, library design, release   |
 | **[Components](./COMPONENTS.md)**                   | Every root-exported component, selection matrix, contracts                                  |
 | **[Component authoring](./COMPONENT_AUTHORING.md)** | How to build or change a component: skeleton, prop contract, CSS, a11y, pre-merge checklist |
+| **[Upgrade](./UPGRADE.md)**                         | Compact consumer migration (0.1.5 → 0.2.x and later CSS notes)                              |
 
 Coding agents: [AGENTS.md](../AGENTS.md) → [Agent Guide](./AGENT_GUIDE.md). Working pages: [`examples/dashboard`](../examples/dashboard).
 

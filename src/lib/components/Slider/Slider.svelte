@@ -29,7 +29,7 @@
 	});
 
 	const styleVars = $derived(
-		`--slider-fill: ${percentage}%; --slider-accent: var(--lumi-color-${color});`
+		`--slider-fill: ${percentage}%; --slider-accent: var(--lumi-color-${color}); --lumi-control-accent: var(--lumi-color-${color});`
 	);
 
 	const classes = $derived(
@@ -98,6 +98,7 @@
 		width: 100%;
 
 		--slider-accent: var(--lumi-color-primary);
+		--lumi-control-accent: var(--slider-accent);
 		--slider-fill: 0%;
 		--slider-track: color-mix(
 			in srgb,
@@ -128,6 +129,7 @@
 		font-size: var(--lumi-font-size-sm);
 		font-weight: var(--lumi-font-weight-semibold);
 		color: var(--lumi-color-text);
+		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
 	.lumi-slider:focus-within .lumi-slider__label {
@@ -228,14 +230,22 @@
 		box-shadow:
 			var(--lumi-shadow-md),
 			0 0 0 var(--lumi-space-2xs)
-				color-mix(in srgb, var(--slider-accent) 28%, transparent);
+				color-mix(
+					in srgb,
+					var(--slider-accent) var(--lumi-control-focus-ring-strength),
+					transparent
+				);
 	}
 
 	.lumi-slider__input:focus-visible::-moz-range-thumb {
 		box-shadow:
 			var(--lumi-shadow-md),
 			0 0 0 var(--lumi-space-2xs)
-				color-mix(in srgb, var(--slider-accent) 28%, transparent);
+				color-mix(
+					in srgb,
+					var(--slider-accent) var(--lumi-control-focus-ring-strength),
+					transparent
+				);
 	}
 
 	/* Active dragging states (using :active pseudo-class!) */

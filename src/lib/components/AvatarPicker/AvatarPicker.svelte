@@ -56,7 +56,9 @@
 		border-radius: var(--lumi-radius-full);
 		overflow: hidden;
 		border: var(--lumi-border-width-thick) solid var(--lumi-color-border);
-		transition: var(--lumi-transition-all);
+		transition:
+			var(--lumi-transition-control),
+			transform var(--lumi-duration-fast) var(--lumi-easing-default);
 		transform: scale(1);
 		display: flex;
 		align-items: center;

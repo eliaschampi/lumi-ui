@@ -112,16 +112,16 @@ Brand seeds also provide the stable filled surface. Dark mode derives a brighter
 
 Feedback states are seeds too. Lumi derives the soft `-bg` and a brighter dark-mode accent from them.
 
-| Seed                    | Default   | Role                                              |
-| ----------------------- | --------- | ------------------------------------------------- |
-| `--lumi-status-success` | `#008647` | Confirmations, positive state                     |
-| `--lumi-status-warning` | `#f6c330` | Caution, needs attention                          |
-| `--lumi-status-danger`  | `#df202e` | Destructive actions, errors, blocking             |
-| `--lumi-status-info`    | `#007dab` | Neutral information (distinct from brand primary) |
+| Seed                    | Default (OKLCH)       | Role                                              |
+| ----------------------- | --------------------- | ------------------------------------------------- |
+| `--lumi-status-success` | `oklch(54% 0.16 158)` | Confirmations, positive state                     |
+| `--lumi-status-warning` | `oklch(80% 0.17 80)`  | Caution, needs attention                          |
+| `--lumi-status-danger`  | `oklch(56% 0.205 24)` | Destructive actions, errors, blocking             |
+| `--lumi-status-info`    | `oklch(52% 0.15 210)` | Neutral information (distinct from brand primary) |
 
-Defaults share a fresh, perceptually balanced OKLCH system in [`tokens.base.css`](../src/lib/styles/tokens.base.css). Warning uses a darker accent for indicators and keeps its light golden seed as the solid with dark content.
+Defaults share a perceptually balanced OKLCH system in [`tokens.base.css`](../src/lib/styles/tokens.base.css). Warning keeps a bright amber **solid** (black content) and derives a darker on-surface accent for text/indicators. Accent tints and state backgrounds mix in OKLCH so chroma stays even across hues.
 
-Default identity: fresh-blue primary (`#006ce7`), fresh-violet secondary (`#8b54d4`), warm ink (`#221c1a`), and warm-paper canvas (`#f7f3ed`).
+Default identity: azure primary (`oklch(55% 0.205 257)`), orchid secondary (`oklch(56% 0.2 310)`), warm ink (`rgb(34 28 26)`), and warm-paper canvas (`rgb(247 243 237)`).
 
 ### Semantic background/foreground contract
 
@@ -428,19 +428,20 @@ At exactly `64rem`, both max-width shell rules and min-width `*-lg` grid rules a
 
 Domain-neutral compositions in [`patterns.css`](../src/lib/styles/patterns.css) (not Svelte components; included by `@lumi-ui/svelte/styles`). Use documented BEM children; do not invent modifiers.
 
-| Pattern                | Families and variants                                                                                                                                                        |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Surfaces and auth      | `.lumi-surface`, `.lumi-auth-mark`; apply `.lumi-card--ambient` and `.lumi-auth-card` via `Card class`                                                                       |
-| Filter summary         | `.lumi-filter-summary` + `__copy`, `__eyebrow`, `__title`, `__subtitle`, `__title-row`, `__meta`, `__actions`; `--compact`, `--split`, `--centered`, semantic color variants |
-| Section actions        | `.lumi-section-toolbar`, `.lumi-toolbar-field`, `.lumi-form-action-row`, `.lumi-inline-filters` (each has existing child/compact variants)                                   |
-| Ranked metrics         | `.lumi-metric-rank-list` / `.lumi-metric-rank-row`; list `--dense`, `--accent-secondary`, `--scroll-capped`                                                                  |
-| Identity and selection | `.lumi-person-cell`, `.lumi-selected-panel`, `.lumi-result-list`, `.lumi-result-option`, `.lumi-placeholder-tile`                                                            |
-| Context panels         | `.lumi-hero-panel`, `.lumi-search-panel` + BEM children                                                                                                                      |
-| Collections            | `.lumi-history-list`/`item`, `.lumi-item-row`, `.lumi-item-list`; interactive/active row variants                                                                            |
-| Summaries              | `.lumi-total-box`, `.lumi-scan-result`                                                                                                                                       |
-| Small helpers          | `.lumi-cluster--pull-next-up`, `.lumi-container-responsive`, `.lumi-scrollbar`, `.lumi-list-item--stack-actions`                                                             |
-| Toast stack            | `.lumi-toast-portal` — consumer-owned fixed wrapper for `Notification` children                                                                                              |
-| Specialized hooks      | `.lumi-drive-toolbar-card` via `Card class`; `.lumi-drive-content`, `.lumi-drive-loading`, `.lumi-navbar-branch`, `.lumi-navbar-user-dropdown`, `.lumi-brand-logo-wordmark`  |
+| Pattern                | Families and variants                                                                                                                                                                                                                                                                                                                                           |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Surfaces and auth      | `.lumi-surface`, `.lumi-auth-mark`; apply `.lumi-card--ambient` and `.lumi-auth-card` via `Card class`. **Plain cards do not blur** (`backdrop-filter: none`); glass/translucent cards must set `--lumi-surface-blur-filter` (`.lumi-auth-card`, `.lumi-drive-toolbar-card` do). This is a minor CSS migration if you previously relied on every card blurring. |
+| Shared control hooks   | Interactive roots re-declare accent-aware `--lumi-focus-outline` and form roots re-declare focus fill/shadow in core. Text fields opt into `.lumi-autofill` + `--lumi-control-autofill-bg`.                                                                                                                                                                     |
+| Filter summary         | `.lumi-filter-summary` + `__copy`, `__eyebrow`, `__title`, `__subtitle`, `__title-row`, `__meta`, `__actions`; `--compact`, `--split`, `--centered`, semantic color variants                                                                                                                                                                                    |
+| Section actions        | `.lumi-section-toolbar`, `.lumi-toolbar-field`, `.lumi-form-action-row`, `.lumi-inline-filters` (each has existing child/compact variants)                                                                                                                                                                                                                      |
+| Ranked metrics         | `.lumi-metric-rank-list` / `.lumi-metric-rank-row`; list `--dense`, `--accent-secondary`, `--scroll-capped`                                                                                                                                                                                                                                                     |
+| Identity and selection | `.lumi-person-cell`, `.lumi-selected-panel`, `.lumi-result-list`, `.lumi-result-option`, `.lumi-placeholder-tile`                                                                                                                                                                                                                                               |
+| Context panels         | `.lumi-hero-panel`, `.lumi-search-panel` + BEM children                                                                                                                                                                                                                                                                                                         |
+| Collections            | `.lumi-history-list`/`item`, `.lumi-item-row`, `.lumi-item-list`; interactive/active row variants                                                                                                                                                                                                                                                               |
+| Summaries              | `.lumi-total-box`, `.lumi-scan-result`                                                                                                                                                                                                                                                                                                                          |
+| Small helpers          | `.lumi-cluster--pull-next-up`, `.lumi-container-responsive`, `.lumi-scrollbar`, `.lumi-list-item--stack-actions`                                                                                                                                                                                                                                                |
+| Toast stack            | `.lumi-toast-portal` — consumer-owned fixed wrapper for `Notification` children                                                                                                                                                                                                                                                                                 |
+| Specialized hooks      | `.lumi-drive-toolbar-card` via `Card class`; `.lumi-drive-content`, `.lumi-drive-loading`, `.lumi-navbar-branch`, `.lumi-navbar-user-dropdown`, `.lumi-brand-logo-wordmark`                                                                                                                                                                                     |
 
 Chart-tooltip support and base component selectors are component-owned even when styles live in core.
 
@@ -488,7 +489,7 @@ Lumi is a premium, minimal product shell—not a generic kit and not loud SaaS g
 
 1. **Layered light, not heavy chrome.** Surfaces float over a softly tinted canvas; borders are thin and low-contrast.
 2. **Elevation is quiet.** Shadows use the neutral ink key (`--lumi-color-shadow-key`) with contact + ambient layers; avoid pure-black blobs.
-3. **Glass is restrained.** Blur and translucency appear on overlays, sidebars, and cards—never as a noisy texture soup.
+3. **Glass is restrained.** Blur and translucency appear on overlays, shells, and **opt-in** glass cards—never as a noisy texture soup. Plain cards stay crisp (`backdrop-filter: none` unless `--lumi-surface-blur-filter` is set).
 4. **Disciplined gradients.** Card washes keep the `145deg` axis; the app canvas may layer one faint primary radial accent over its neutral gradient—subtle, not neon.
 5. **Sheen is optional polish.** Top-edge inset highlights simulate liquid glass; keep opacity low.
 6. **No arbitrary decoration.** No confetti backgrounds, no multi-colored borders, no bounce-heavy motion.
@@ -511,7 +512,11 @@ Dashboard content background is intentionally translucent so cards stay visibly 
 ### Contrast and semantics
 
 - Text: full ink (`--lumi-color-text`) on surfaces; muted/light for secondary copy.
-- Focus: tokenized control ring (`--lumi-control-focus-shadow`).
+- Focus (shared contract):
+  - **Field / peer visuals** (input shell, checkbox visual, switch track): `--lumi-control-focus-shadow` with `--lumi-control-accent` on the control root.
+  - **Keyboard affordances** (icon buttons, list/menu items, tabs, close controls): `--lumi-focus-outline` + `--lumi-focus-outline-offset` (or a positive offset when the control is free-floating).
+  - Set `--lumi-control-accent` from the semantic color; do not invent per-component focus rings.
+  - **Accent-aware recipes are re-declared on interactive roots** (see `core.css`). `:root` may hold a primary-only fallback; never put `var(--lumi-control-accent)` in a `:root` outline/shadow recipe or every control inherits baked primary.
 - Semantic states pair color with icon or text—never color alone.
 
 Components must not invent `purple`, `teal`, or product names as colors. The public color API is `primary | secondary | success | warning | danger | info` ([§3](#3-theming-and-color-scheme)).
@@ -524,22 +529,24 @@ Components must not invent `purple`, `teal`, or product names as colors. The pub
 | Typography   | Inter + system stack; scale `xs`→`4xl`; weights normal→bold                                                | Root uses compact `sm`; body inherits it for dense product UI                         |
 | Radius       | `--lumi-control-radius` (controls), `--lumi-surface-radius` (large surfaces), `--lumi-radius-full` (pills) | One radius per role; do not invent per component                                      |
 | Motion       | `--lumi-duration-fast` (150ms), `--lumi-duration-base` (220ms), `--lumi-duration-slow` / `slower`          | Fast = micro (hover, color); base = default UI; slow/slower = overlay enter/exit only |
+| Control UI   | `--lumi-transition-control`                                                                                | Shared color/fill/border/shadow micro-transition; append `transform` only when needed |
 | Easing       | `--lumi-easing-default`                                                                                    | Primary smooth-decelerate curve                                                       |
 | Press / lift | `--lumi-interactive-press-scale`, `--lumi-interactive-lift`                                                | Subtle; never jump                                                                    |
 
-Align form controls to `--lumi-control-height-sm|md|lg|xl` so buttons, inputs, selects, and segmented controls feel like one family at each size. Match JS transition durations to `LUMI_CONFIG.transitions` when coordinating Svelte transitions.
+Control heights share one ladder (`--lumi-control-height-xs` … `--lumi-control-height-xl`), but not every component exposes every step: **Input** uses `xs…xl`, **Button** `sm…xl`, **Select / Textarea / NumberInput** `sm…lg`, **Chip** `sm` (+ compact). Match the step the component actually supports. Match JS transition durations to `LUMI_CONFIG.transitions` when coordinating Svelte transitions.
 
 ### Interaction patterns
 
-| Pattern     | Expectation                                                    |
-| ----------- | -------------------------------------------------------------- |
-| Hover       | Soft fill/border shift; optional 1px lift—never jump           |
-| Focus       | Visible ring from tokens; keyboard-first                       |
-| Disabled    | Reduced opacity (`--lumi-opacity-disabled`), no pointer events |
-| Loading     | Spinner or progress; block double-submit                       |
-| Selection   | Primary-tinted border/bg; clear selected vs hover              |
-| Destructive | `danger` color; confirm in app logic, not red styling alone    |
-| Overlays    | Portal + Floating UI; Escape closes unless `persistent`        |
+| Pattern     | Expectation                                                     |
+| ----------- | --------------------------------------------------------------- |
+| Hover       | Soft fill/border shift; optional 1px lift—never jump            |
+| Focus       | Visible ring/outline from shared tokens; keyboard-first         |
+| Disabled    | Reduced opacity (`--lumi-opacity-disabled`), no pointer events  |
+| Loading     | Spinner or progress; block double-submit                        |
+| Selection   | Primary-tinted border/bg; clear selected vs hover               |
+| Destructive | `danger` color; confirm in app logic, not red styling alone     |
+| Overlays    | Portal + Floating UI; Escape closes unless `persistent`         |
+| Autofill    | Text fields use `.lumi-autofill` + `--lumi-control-autofill-bg` |
 
 ### Minimalism checklist
 

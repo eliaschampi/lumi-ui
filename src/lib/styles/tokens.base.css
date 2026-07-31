@@ -1,8 +1,9 @@
 /* Lumi UI - Base Design Tokens */
-/* Default theme: Fresh Blue × Violet on warm paper.
+/* Default theme: Azure × Orchid on warm paper.
    Architecture: curated seeds own identity; semantic tokens own component behavior.
    Override brand/status/neutral seeds — never reassign derived --lumi-color-* tokens.
-   Neutral ramps and semantic tints use sRGB to preserve the warm surface character. */
+   Neutral ramps use sRGB (warm surface character). Accent tints and semantic state
+   backgrounds mix in OKLCH so chroma stays even across hues. */
 :root {
 	color-scheme: light;
 
@@ -12,8 +13,8 @@
 
 	/* --- SEEDS --------------------------------------------------------------- */
 	/* Public identity: brand primary + secondary after importing Lumi styles. */
-	--lumi-brand-primary: oklch(55% 0.21 255); /* fresh blue */
-	--lumi-brand-secondary: oklch(57% 0.19 300); /* fresh violet */
+	--lumi-brand-primary: oklch(55% 0.205 257); /* azure */
+	--lumi-brand-secondary: oklch(56% 0.2 310); /* orchid */
 	/* Surface seeds: one source of truth for ink + page canvas. */
 	--lumi-color-neutral: rgb(34 28 26); /* warm ink */
 	--lumi-color-canvas: rgb(247 243 237); /* warm paper */
@@ -21,13 +22,14 @@
 	--lumi-dark-accent-mix: 70%;
 	--lumi-color-primary: var(--lumi-brand-primary);
 	--lumi-color-primary-solid: var(--lumi-brand-primary);
+	/* Accent tints in OKLCH keep chroma (sRGB mixes go chalky). */
 	--lumi-color-primary-50: color-mix(
-		in srgb,
+		in oklch,
 		var(--lumi-color-primary) 10%,
 		var(--lumi-color-white)
 	);
 	--lumi-color-primary-300: color-mix(
-		in srgb,
+		in oklch,
 		var(--lumi-color-primary) 45%,
 		var(--lumi-color-white)
 	);
@@ -36,16 +38,17 @@
 
 	/* --- STATUS SEEDS -------------------------------------------------------- */
 	/* Perceptually balanced OKLCH roles; hue carries semantic identity. */
-	--lumi-status-success: oklch(54% 0.145 155); /* emerald */
-	--lumi-status-warning: oklch(84% 0.16 88); /* light golden */
-	--lumi-status-danger: oklch(58% 0.22 25); /* coral red */
-	--lumi-status-info: oklch(54% 0.14 225); /* cyan-blue (≠ primary) */
+	--lumi-status-success: oklch(54% 0.16 158); /* emerald */
+	--lumi-status-warning: oklch(80% 0.17 80); /* amber fill; ink darkens below */
+	--lumi-status-danger: oklch(56% 0.205 24); /* vermilion */
+	/* L ≤ 53% keeps white-on-info solid above the 4.5:1 text target. */
+	--lumi-status-info: oklch(52% 0.15 210); /* teal-cyan (≠ primary) */
 
 	/* Consumed accents: light = seed; dark applies --lumi-dark-accent-mix. */
 	--lumi-color-success: var(--lumi-status-success);
 	--lumi-color-warning: color-mix(
 		in oklch,
-		var(--lumi-status-warning) 76%,
+		var(--lumi-status-warning) 68%,
 		var(--lumi-color-black)
 	);
 	--lumi-color-danger: var(--lumi-status-danger);
@@ -94,7 +97,7 @@
 	/* --- DERIVED PRIMARY RAMP ------------------------------------------------ */
 	--lumi-color-primary-500: var(--lumi-color-primary);
 	--lumi-color-primary-600: color-mix(
-		in srgb,
+		in oklch,
 		var(--lumi-color-primary) 86%,
 		var(--lumi-color-black)
 	);
@@ -172,7 +175,7 @@
 	);
 	--lumi-color-border-interactive: color-mix(
 		in srgb,
-		var(--lumi-color-primary) 28%,
+		var(--lumi-color-primary) 32%,
 		var(--lumi-color-border)
 	);
 
@@ -193,35 +196,35 @@
 		var(--lumi-color-surface) 20%
 	);
 	/* --- DERIVED STATE BACKGROUNDS ------------------------------------------- */
-	/* One hue-preserving tint strength across every semantic color. */
+	/* One hue-preserving tint strength; OKLCH keeps equal visual weight across hues. */
 	--lumi-state-bg-strength: 12%;
 	--lumi-color-success-bg: color-mix(
-		in srgb,
+		in oklch,
 		var(--lumi-color-success) var(--lumi-state-bg-strength),
 		var(--lumi-color-surface)
 	);
 	--lumi-color-warning-bg: color-mix(
-		in srgb,
+		in oklch,
 		var(--lumi-color-warning) var(--lumi-state-bg-strength),
 		var(--lumi-color-surface)
 	);
 	--lumi-color-danger-bg: color-mix(
-		in srgb,
+		in oklch,
 		var(--lumi-color-danger) var(--lumi-state-bg-strength),
 		var(--lumi-color-surface)
 	);
 	--lumi-color-info-bg: color-mix(
-		in srgb,
+		in oklch,
 		var(--lumi-color-info) var(--lumi-state-bg-strength),
 		var(--lumi-color-surface)
 	);
 	--lumi-color-primary-bg: color-mix(
-		in srgb,
+		in oklch,
 		var(--lumi-color-primary) var(--lumi-state-bg-strength),
 		var(--lumi-color-surface)
 	);
 	--lumi-color-secondary-bg: color-mix(
-		in srgb,
+		in oklch,
 		var(--lumi-color-secondary) var(--lumi-state-bg-strength),
 		var(--lumi-color-surface)
 	);
@@ -400,6 +403,17 @@
 	--lumi-radius-full: 9999px;
 	--lumi-control-radius: var(--lumi-radius-md);
 	--lumi-control-focus-ring-strength: 24%;
+	/* Outline: :root is a primary fallback only (explicit primary — never
+	   var(--lumi-control-accent) here, or it bakes primary for everyone).
+	   Interactive roots re-declare the full value in core.css with local accent. */
+	--lumi-focus-outline-strength: 35%;
+	--lumi-focus-outline-offset: calc(var(--lumi-space-2xs) * -1);
+	--lumi-focus-outline: var(--lumi-border-width-thick) solid
+		color-mix(
+			in srgb,
+			var(--lumi-color-primary) var(--lumi-focus-outline-strength),
+			transparent
+		);
 	--lumi-surface-radius: var(--lumi-radius-2xl);
 	--lumi-surface-saturation: 1.04;
 	--lumi-interactive-lift: calc(var(--lumi-space-2xs) * -0.25);
@@ -466,6 +480,12 @@
 		border-color var(--lumi-duration-base) var(--lumi-easing-default);
 	--lumi-transition-opacity: opacity var(--lumi-duration-base)
 		var(--lumi-easing-default);
+	/* Form control micro-interactions (color, fill, border, shadow). */
+	--lumi-transition-control:
+		color var(--lumi-duration-fast) var(--lumi-easing-default),
+		background-color var(--lumi-duration-fast) var(--lumi-easing-default),
+		border-color var(--lumi-duration-fast) var(--lumi-easing-default),
+		box-shadow var(--lumi-duration-fast) var(--lumi-easing-default);
 	--lumi-z-base: 1;
 	--lumi-z-fixed: 1040;
 	--lumi-z-sidebar: 1050;
@@ -518,6 +538,7 @@
 	--lumi-navbar-branch-text-max-width-mobile: min(8.5rem, 42vw);
 	--lumi-navbar-user-dropdown-max-width: 13.75rem;
 	--lumi-segmented-control-icon-only-padding: var(--lumi-space-xs);
+	--lumi-control-height-xs: calc(var(--lumi-space-lg) + var(--lumi-space-2xs));
 	--lumi-control-height-sm: var(--lumi-space-xl);
 	--lumi-control-height-md: var(--lumi-space-xxl);
 	--lumi-control-height-lg: var(--lumi-space-3xl);
@@ -607,12 +628,12 @@
 		var(--lumi-color-white)
 	);
 	--lumi-color-primary-50: color-mix(
-		in srgb,
+		in oklch,
 		var(--lumi-color-primary) 18%,
 		var(--lumi-color-black)
 	);
 	--lumi-color-primary-300: color-mix(
-		in srgb,
+		in oklch,
 		var(--lumi-color-primary) 50%,
 		var(--lumi-color-white)
 	);
@@ -649,7 +670,7 @@
 	);
 	/* --- DERIVED RAMP / TEXT -------------------------------------------------- */
 	--lumi-color-primary-600: color-mix(
-		in srgb,
+		in oklch,
 		var(--lumi-color-primary) 35%,
 		var(--lumi-color-white)
 	);

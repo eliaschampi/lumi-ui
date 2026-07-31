@@ -147,7 +147,7 @@
 		font-weight: var(--lumi-font-weight-semibold);
 		color: var(--lumi-color-text);
 		margin-block-end: var(--lumi-space-xs);
-		transition: color var(--lumi-duration-base) var(--lumi-easing-default);
+		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
 	.lumi-number-input:focus-within .lumi-number-input__label {
@@ -164,10 +164,7 @@
 		border-radius: var(--lumi-control-radius);
 		box-shadow: var(--lumi-control-shadow);
 		overflow: hidden;
-		transition:
-			border-color var(--lumi-duration-base) var(--lumi-easing-default),
-			background-color var(--lumi-duration-base) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-base) var(--lumi-easing-default);
+		transition: var(--lumi-transition-control);
 	}
 
 	.lumi-number-input__wrapper:hover:not(:focus-within) {
@@ -244,9 +241,8 @@
 	}
 
 	.lumi-number-input__btn:focus-visible {
-		outline: var(--lumi-border-width-thick) solid
-			color-mix(in srgb, var(--input-accent) 30%, transparent);
-		outline-offset: -1px;
+		outline: var(--lumi-focus-outline);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	.lumi-number-input--sm .lumi-number-input__wrapper {

@@ -34,7 +34,7 @@
 		box-shadow:
 			inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 24%, transparent),
 			var(--lumi-shadow-sm);
-		transition: var(--lumi-transition-all);
+		transition: var(--lumi-transition-control);
 	}
 
 	.lumi-icon-badge--sm {

@@ -158,12 +158,17 @@
     background: transparent;
     color: var(--lumi-color-text-muted);
     cursor: pointer;
-    transition: var(--lumi-transition-all);
+    transition: var(--lumi-transition-control);
   }
 
   .drive-sidebar__close:hover {
     background: var(--lumi-color-background-hover);
     color: var(--lumi-color-text);
+  }
+
+  .drive-sidebar__close:focus-visible {
+    outline: var(--lumi-focus-outline);
+    outline-offset: var(--lumi-space-2xs);
   }
 
   .drive-sidebar__storage-meta {

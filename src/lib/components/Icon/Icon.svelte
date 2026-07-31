@@ -78,7 +78,7 @@
 		flex-shrink: 0;
 		vertical-align: middle;
 		color: var(--lumi-icon-color, inherit);
-		transition: color var(--lumi-duration-base) var(--lumi-easing-default);
+		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
 		user-select: none;
 	}
 </style>

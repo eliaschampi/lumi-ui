@@ -375,7 +375,9 @@
 		border-radius: var(--lumi-radius-lg);
 		color: var(--lumi-color-text-muted);
 		cursor: pointer;
-		transition: var(--lumi-transition-all);
+		transition:
+			var(--lumi-transition-control),
+			transform var(--lumi-duration-fast) var(--lumi-easing-default);
 		flex-shrink: 0;
 	}
 
@@ -391,7 +393,7 @@
 	}
 
 	.lumi-dialog__close:focus-visible {
-		outline: var(--lumi-border-width-thick) solid var(--lumi-color-primary);
+		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-space-2xs);
 	}
 

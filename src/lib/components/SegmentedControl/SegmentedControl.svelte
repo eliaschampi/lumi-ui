@@ -144,10 +144,7 @@
 		overscroll-behavior-inline: contain;
 		scrollbar-width: thin;
 		scrollbar-color: var(--lumi-color-border-strong) transparent;
-		transition:
-			border-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-fast) var(--lumi-easing-default);
+		transition: var(--lumi-transition-control);
 	}
 
 	.lumi-segmented-control--vertical {
@@ -229,9 +226,7 @@
 		font-size: var(--lumi-font-size-sm);
 		white-space: nowrap;
 		transition:
-			color var(--lumi-duration-fast) var(--lumi-easing-default),
-			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-base) var(--lumi-easing-default),
+			var(--lumi-transition-control),
 			transform var(--lumi-duration-fast) var(--lumi-easing-default);
 		border-radius: var(--lumi-radius-md);
 		min-width: 0;
@@ -277,9 +272,8 @@
 
 	.lumi-segmented-control__input:focus-visible
 		+ .lumi-segmented-control__content {
-		outline: var(--lumi-border-width-thick) solid
-			color-mix(in srgb, var(--seg-color) 35%, transparent);
-		outline-offset: calc(var(--lumi-space-2xs) * -1);
+		outline: var(--lumi-focus-outline);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	.lumi-segmented-control--disabled {

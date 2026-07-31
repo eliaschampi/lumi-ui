@@ -121,24 +121,18 @@
 
 <style>
 	.lumi-dropdown-item {
+		--lumi-control-accent: var(--lumi-color-primary);
 		--dropdown-item-hover-bg: color-mix(
 			in srgb,
 			var(--lumi-color-primary) 4%,
 			transparent
 		);
-		--dropdown-item-focus-ring: color-mix(
-			in srgb,
-			var(--lumi-color-primary) 20%,
-			transparent
-		);
-		--dropdown-item-lift: calc(var(--lumi-space-2xs) * -0.25);
+		--dropdown-item-lift: var(--lumi-interactive-lift);
 		width: 100%;
 		padding: var(--lumi-space-sm) var(--lumi-space-md);
 		cursor: pointer;
 		transition:
-			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			color var(--lumi-duration-fast) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-fast) var(--lumi-easing-default),
+			var(--lumi-transition-control),
 			transform var(--lumi-duration-fast) var(--lumi-easing-default);
 		user-select: none;
 		color: var(--lumi-color-text);
@@ -161,10 +155,9 @@
 	}
 
 	.lumi-dropdown-item:focus-visible {
-		outline: none;
 		background: var(--dropdown-item-hover-bg);
-		box-shadow: 0 0 0 var(--lumi-border-width-thick)
-			var(--dropdown-item-focus-ring);
+		outline: var(--lumi-focus-outline);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	.lumi-dropdown-item:active:not(.lumi-dropdown-item--disabled) {

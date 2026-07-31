@@ -15,6 +15,8 @@
 	--lumi-surface-border: var(--lumi-border-width-thin) solid
 		var(--lumi-color-surface-card-glass-border);
 	--lumi-surface-blur: var(--lumi-blur-md);
+	--lumi-surface-blur-filter: blur(var(--lumi-surface-blur))
+		saturate(var(--lumi-surface-saturation));
 }
 
 .lumi-auth-mark {
@@ -881,6 +883,10 @@ button.lumi-person-cell--link:focus-visible {
 	);
 	--lumi-surface-border: var(--lumi-border-width-thin) solid
 		var(--lumi-color-border-light);
+	/* Translucent cards opt into blur; plain cards stay free of backdrop cost. */
+	--lumi-surface-blur: var(--lumi-blur-sm);
+	--lumi-surface-blur-filter: blur(var(--lumi-surface-blur))
+		saturate(var(--lumi-surface-saturation));
 }
 
 .lumi-drive-content {
