@@ -252,14 +252,24 @@
 		text-overflow: ellipsis;
 	}
 
+	/* Elevated active pill — same recipe as the active Tabs tab. */
 	.lumi-segmented-control__option--active .lumi-segmented-control__content {
 		color: var(--seg-color);
 		font-weight: var(--lumi-font-weight-semibold);
-		background: var(--lumi-control-active-fill);
+		background: linear-gradient(
+			145deg,
+			color-mix(
+					in srgb,
+					var(--lumi-color-surface-card-hover) 88%,
+					var(--seg-color) 12%
+				)
+				0%,
+			var(--lumi-color-surface-card) 100%
+		);
 		box-shadow:
 			inset 0 0 0 var(--lumi-border-width-thin)
-				var(--lumi-control-active-border),
-			var(--lumi-control-active-shadow);
+				color-mix(in srgb, var(--seg-color) 28%, var(--lumi-color-border)),
+			var(--lumi-shadow-sm);
 	}
 
 	.lumi-segmented-control__option:not(

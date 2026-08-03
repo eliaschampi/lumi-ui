@@ -431,7 +431,7 @@
     color: var(--lumi-color-text-muted);
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 40rem) {
     .drive-file-card {
       --drive-file-card-padding: var(--lumi-drive-file-card-padding-mobile);
     }

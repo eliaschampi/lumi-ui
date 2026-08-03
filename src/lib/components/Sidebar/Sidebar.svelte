@@ -164,7 +164,7 @@
 	}
 
 	/* Mobile responsive behavior */
-	@media (max-width: 1024px) {
+	@media (max-width: 64rem) {
 		.lumi-sidebar {
 			position: fixed;
 			top: var(--lumi-sidebar-mobile-offset);
@@ -186,7 +186,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 48rem) {
 		.lumi-sidebar {
 			top: var(--lumi-layout-shell-padding-mobile);
 			left: var(--lumi-layout-shell-padding-mobile);

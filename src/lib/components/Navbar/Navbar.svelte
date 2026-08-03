@@ -97,14 +97,14 @@
 	}
 
 	/* Responsive adjustments */
-	@media (max-width: 1024px) {
+	@media (max-width: 64rem) {
 		.lumi-navbar {
 			top: 0;
 			--lumi-surface-radius-local: var(--lumi-layout-floating-radius-tablet);
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 48rem) {
 		.lumi-navbar {
 			padding: 0 var(--lumi-space-md);
 			--lumi-surface-radius-local: var(--lumi-layout-floating-radius-mobile);

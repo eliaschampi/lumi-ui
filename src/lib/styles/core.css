@@ -225,6 +225,7 @@ body {
 	.lumi-select,
 	.lumi-segmented-control,
 	.lumi-tabs,
+	.lumi-chip,
 	.lumi-tag-option,
 	.lumi-list-item,
 	.lumi-dropdown,
@@ -277,7 +278,7 @@ body {
 		var(--lumi-control-shadow);
 }
 
-:where(.lumi-checkbox, .lumi-radio, .lumi-switch, .lumi-segmented-control) {
+:where(.lumi-checkbox, .lumi-radio, .lumi-switch) {
 	--lumi-control-active-fill: color-mix(
 		in srgb,
 		var(--lumi-control-accent, var(--lumi-color-primary)) 10%,

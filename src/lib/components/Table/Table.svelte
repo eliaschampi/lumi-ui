@@ -738,10 +738,12 @@
 	.lumi-table__spinner {
 		width: var(--lumi-icon-lg);
 		height: var(--lumi-icon-lg);
-		border: var(--lumi-border-width-thick) solid var(--lumi-color-border);
-		border-top-color: var(--lumi-color-primary);
+		color: var(--lumi-color-primary);
+		border: var(--lumi-border-width-thick) solid
+			color-mix(in srgb, currentColor 18%, transparent);
+		border-top-color: currentColor;
 		border-radius: var(--lumi-radius-full);
-		animation: lumi-table-spin var(--lumi-duration-slower) linear infinite;
+		animation: lumi-table-spin calc(var(--lumi-duration-slower) * 2) linear infinite;
 	}
 
 	@keyframes lumi-table-spin {

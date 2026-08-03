@@ -880,10 +880,13 @@
 	.lumi-select__spinner {
 		width: 1em;
 		height: 1em;
-		border: var(--lumi-border-width-thick) solid var(--lumi-color-border);
-		border-top-color: var(--select-focus);
-		border-radius: 50%;
-		animation: lumi-select-spin 0.6s linear infinite;
+		color: var(--select-focus);
+		border: var(--lumi-border-width-thick) solid
+			color-mix(in srgb, currentColor 18%, transparent);
+		border-top-color: currentColor;
+		border-radius: var(--lumi-radius-full);
+		animation: lumi-select-spin calc(var(--lumi-duration-slower) * 2) linear
+			infinite;
 	}
 
 	@keyframes lumi-select-spin {
@@ -894,7 +897,8 @@
 
 	/* ── Reduced motion ───────────────────────── */
 	@media (prefers-reduced-motion: reduce) {
-		.lumi-select__dropdown {
+		.lumi-select__dropdown,
+		.lumi-select__spinner {
 			animation: none;
 		}
 		.lumi-select__arrow,

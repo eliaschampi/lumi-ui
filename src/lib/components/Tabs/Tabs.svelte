@@ -127,20 +127,22 @@
 </div>
 
 <style>
+	/* Same segmented-shell recipe as SegmentedControl: one shell, one hover
+	   tint, one elevated active pill across both switchers. */
 	.lumi-tabs {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
 		--lumi-tabs-color: var(--lumi-color-primary);
 		--lumi-control-accent: var(--lumi-tabs-color);
-		--tabs-hover-bg: color-mix(
+		--tabs-hover-bg: color-mix(in srgb, var(--lumi-tabs-color) 9%, transparent);
+		--tabs-shell-bg: color-mix(
 			in srgb,
-			var(--lumi-tabs-color) 10%,
-			var(--lumi-color-surface-glass)
+			var(--lumi-color-surface-glass-strong) 78%,
+			var(--lumi-color-background-hover) 22%
 		);
 		--tabs-nav-border: var(--lumi-border-width-thin) solid
-			color-mix(in srgb, var(--lumi-color-border-glass) 76%, var(--lumi-color-border-strong) 24%);
-		--tabs-lift: var(--lumi-interactive-lift);
+			color-mix(in srgb, var(--lumi-color-border-glass) 72%, var(--lumi-color-border-strong) 28%);
 	}
 
 	.lumi-tabs--horizontal .lumi-tabs__nav {
@@ -151,18 +153,6 @@
 		overflow-x: auto;
 		overflow-y: hidden;
 		overscroll-behavior-inline: contain;
-		border: var(--tabs-nav-border);
-		border-radius: var(--lumi-radius-xl);
-		background:
-			linear-gradient(
-				145deg,
-				color-mix(in srgb, var(--lumi-tabs-color) 8%, transparent) 0%,
-				transparent 30%
-			),
-			var(--lumi-color-surface-glass-strong);
-		box-shadow: var(--lumi-shadow-sm);
-		padding: var(--lumi-space-2xs);
-		gap: var(--lumi-space-2xs);
 	}
 
 	.lumi-tabs--horizontal .lumi-tabs__tab {
@@ -178,12 +168,7 @@
 	.lumi-tabs--vertical .lumi-tabs__nav {
 		flex-direction: column;
 		align-items: stretch;
-		border: var(--tabs-nav-border);
-		border-radius: var(--lumi-radius-xl);
-		box-shadow: var(--lumi-shadow-sm);
 		min-width: calc(var(--lumi-space-5xl) * 2 + var(--lumi-space-md));
-		padding: var(--lumi-space-2xs);
-		gap: var(--lumi-space-2xs);
 	}
 
 	.lumi-tabs--vertical .lumi-tabs__tab {
@@ -200,8 +185,13 @@
 	.lumi-tabs__nav {
 		display: flex;
 		align-items: stretch;
-		gap: 0;
+		gap: var(--lumi-space-2xs);
 		margin-bottom: 0;
+		padding: var(--lumi-space-2xs);
+		border: var(--tabs-nav-border);
+		border-radius: var(--lumi-radius-xl);
+		background: var(--tabs-shell-bg);
+		box-shadow: var(--lumi-control-shadow);
 	}
 
 	.lumi-tabs__tab {
@@ -230,8 +220,6 @@
 	.lumi-tabs__tab:hover:not(:disabled):not(.lumi-tabs__tab--active) {
 		color: var(--lumi-color-text);
 		background: var(--tabs-hover-bg);
-		border-color: color-mix(in srgb, var(--lumi-tabs-color) 20%, var(--lumi-color-border));
-		transform: translateY(var(--tabs-lift));
 	}
 
 	.lumi-tabs__tab--active {
@@ -284,13 +272,12 @@
 	}
 
 	/* Responsive design */
-	@media (max-width: 768px) {
+	@media (max-width: 48rem) {
 		.lumi-tabs--vertical {
 			flex-direction: column;
 		}
 
 		.lumi-tabs--vertical .lumi-tabs__nav {
-			border-right: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
 			min-width: auto;
 			margin-bottom: var(--lumi-space-sm);
 		}

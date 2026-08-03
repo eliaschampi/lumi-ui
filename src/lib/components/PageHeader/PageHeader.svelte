@@ -68,7 +68,7 @@
 		flex-wrap: wrap;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 48rem) {
 		.lumi-page-header {
 			padding: var(--lumi-space-md);
 			border-radius: var(--lumi-radius-xl);

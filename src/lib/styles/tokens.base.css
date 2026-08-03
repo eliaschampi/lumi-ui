@@ -298,7 +298,8 @@
 		0 0 0 var(--lumi-border-width-thick)
 			color-mix(
 				in srgb,
-				var(--lumi-control-accent, var(--lumi-color-primary)) 24%,
+				var(--lumi-control-accent, var(--lumi-color-primary))
+					var(--lumi-control-focus-ring-strength),
 				transparent
 			),
 		inset 0 var(--lumi-border-width-thin) 0
@@ -761,8 +762,10 @@
 	);
 	--lumi-control-focus-ring-strength: 26%;
 	--lumi-control-shadow:
-		inset 0 1px 0 color-mix(in oklch, var(--lumi-color-white) 8%, transparent),
-		0 1px 2px color-mix(in oklch, var(--lumi-color-shadow-key) 20%, transparent),
+		inset 0 var(--lumi-border-width-thin) 0
+			color-mix(in oklch, var(--lumi-color-white) 8%, transparent),
+		0 var(--lumi-border-width-thin) 2px
+			color-mix(in oklch, var(--lumi-color-shadow-key) 20%, transparent),
 		0 6px 14px -10px
 			color-mix(in oklch, var(--lumi-color-shadow-key) 28%, transparent);
 	--lumi-control-focus-shadow:
@@ -773,7 +776,8 @@
 					var(--lumi-control-focus-ring-strength),
 				transparent
 			),
-		inset 0 1px 0 color-mix(in oklch, var(--lumi-color-white) 8%, transparent);
+		inset 0 var(--lumi-border-width-thin) 0
+			color-mix(in oklch, var(--lumi-color-white) 8%, transparent);
 
 	/* --- DERIVED STATE BACKGROUNDS / OVERLAY --------------------------------- */
 	--lumi-state-bg-strength: 16%;

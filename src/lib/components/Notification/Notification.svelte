@@ -241,7 +241,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 48rem) {
 		.lumi-notification {
 			inline-size: 100%;
 			gap: var(--lumi-space-sm);

@@ -434,7 +434,7 @@
 		border-bottom-right-radius: var(--lumi-layout-floating-radius);
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 48rem) {
 		.lumi-dialog-overlay {
 			padding: var(--lumi-dialog-overlay-padding-mobile);
 			align-items: center;

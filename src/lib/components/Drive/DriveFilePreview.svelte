@@ -243,7 +243,7 @@
     text-align: right;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 48rem) {
     .drive-preview {
       min-height: var(--lumi-drive-preview-min-height-mobile);
     }

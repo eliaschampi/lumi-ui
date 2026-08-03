@@ -29,9 +29,11 @@ Remove: `*-rgb`, `*-dark`, brand/status solid/foreground seeds, and any direct `
 
 **Behavior** — clickable `Card` = button (no nested interactives). Toasts need `.lumi-toast-portal`. Radio groups share `name`.
 
-## Unreleased control / theme pass (minor CSS)
+## 0.2.2 → 0.2.3 (CSS-only polish)
 
-No TS or public export breaks. Ship as **minor**, not patch.
+No TS, prop, or public export changes. Everything below is internal styling; upgrading is drop-in. Applies to all consumers (Coedula, Faztore, Aeduca).
+
+**Control / theme pass**
 
 | Change                                    | Consumer action                                                                                  |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------ |
@@ -49,6 +51,19 @@ Translucent custom card example:
 		saturate(var(--lumi-surface-saturation));
 }
 ```
+
+**Cross-component consistency pass** — one recipe per role, calmer shared motion. No new tokens, no new rules; components now follow the existing contracts in [GUIDE §6](./GUIDE.md#6-design-language).
+
+| Area                                          | What changed                                                                                                                                                                                                                                                                                                                             | Consumer action                    |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| **Tabs + SegmentedControl**                   | One segmented-shell recipe (glass shell, `72/28` glass/strong border, `--lumi-control-shadow`), one 9% accent hover, one elevated active pill (surface gradient, 28% accent edge, quiet shadow). Tab hover lift removed; vertical tab nav now gets the same shell background (was transparent) and drops its legacy mobile right border. | Visual QA on tab bars / segmenters |
+| **Spinners** (Button, Table, Select, Loading) | One recipe: faint 18% accent track + solid arc, one 1s cadence (`--lumi-duration-slower` × 2, was 500–1000ms drift; Select's hardcoded `0.6s` removed). Select spinner now honors `prefers-reduced-motion`.                                                                                                                              | Visual QA on loading states        |
+| **Icon tiles** (IconBadge + InfoItem)         | One tile recipe: 12% accent fill, 20% accent border, `--lumi-radius-lg`, unified 30% top sheen. IconBadge keeps its standalone `--lumi-shadow-sm` elevation and warning-strength bump.                                                                                                                                                   | Visual QA on icon tiles            |
+| **Chip focus**                                | Shared accent focus outline (`--lumi-focus-outline` with `--lumi-control-accent`) replaces the full-strength `currentColor` ring on chip action/close.                                                                                                                                                                                   | Keyboard QA on chips               |
+| **Sidebar sub-items**                         | Radius unified to `--lumi-control-radius` (was `--lumi-radius-base`); sub-items now match root items.                                                                                                                                                                                                                                    | None                               |
+| **Token leftovers**                           | Progress sheens use border-width tokens (raw `1px` removed); every component media query is rem-based (`64/48/40/30rem`, was `1024/768/640/480px`) matching `core.css`; InfoItem hover uses `--lumi-transition-control`.                                                                                                                 | None                               |
+
+Verified consistent, no change needed: **Checkbox**, **Radio**, **Switch**, **Input** (already on the shared control-fill / active / focus-shadow contract), **Button** focus halo (deliberate full-strength accent ring for filled actions).
 
 ## Checklist
 

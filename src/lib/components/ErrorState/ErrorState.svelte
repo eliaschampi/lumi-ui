@@ -151,7 +151,7 @@
 		max-width: calc(var(--lumi-space-6xl) * 7);
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 48rem) {
 		.lumi-error-state {
 			min-height: calc(100dvh - (var(--lumi-layout-content-padding-mobile) * 2));
 		}

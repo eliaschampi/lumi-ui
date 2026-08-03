@@ -98,6 +98,7 @@
 		--lumi-chip-close-size: var(--lumi-space-md);
 		--chip-color: var(--lumi-color-primary);
 		--chip-bg: var(--lumi-color-primary-bg);
+		--lumi-control-accent: var(--chip-color);
 		display: inline-flex;
 		align-items: center;
 		align-self: flex-start;
@@ -192,7 +193,7 @@
 	}
 
 	.lumi-chip__close:focus-visible {
-		outline: var(--lumi-border-width-thick) solid currentColor;
+		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-space-2xs);
 	}
 
@@ -206,7 +207,7 @@
 	}
 
 	.lumi-chip__action:focus-visible {
-		outline: var(--lumi-border-width-thick) solid currentColor;
+		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-space-2xs);
 		border-radius: var(--lumi-radius-full);
 	}

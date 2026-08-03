@@ -392,14 +392,16 @@
 	/* LOADING STATE */
 	/* ========================================================================== */
 
+	/* Shared spinner recipe: faint accent track + solid arc, 1s calm cadence. */
 	.lumi-button__spinner {
 		position: absolute;
 		width: 1.2em;
 		height: 1.2em;
-		border: var(--lumi-border-width-thick) solid currentColor;
-		border-right-color: transparent;
+		border: var(--lumi-border-width-thick) solid
+			color-mix(in srgb, currentColor 18%, transparent);
+		border-top-color: currentColor;
 		border-radius: var(--lumi-radius-full);
-		animation: lumi-spin var(--lumi-duration-slower) linear infinite;
+		animation: lumi-spin calc(var(--lumi-duration-slower) * 2) linear infinite;
 	}
 
 	.lumi-button--loading {

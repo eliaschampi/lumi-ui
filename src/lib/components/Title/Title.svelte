@@ -124,7 +124,7 @@
 	}
 
 	/* Responsive */
-	@media (max-width: 768px) {
+	@media (max-width: 48rem) {
 		.lumi-title--xl .lumi-title__text {
 			font-size: var(--lumi-font-size-xl);
 		}

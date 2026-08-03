@@ -57,7 +57,7 @@
     );
   }
 
-  @media (max-width: 1024px) {
+  @media (max-width: 64rem) {
     .drive-file-grid {
       grid-template-columns: repeat(
         auto-fill,
@@ -66,7 +66,7 @@
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 48rem) {
     .drive-file-grid {
       grid-template-columns: repeat(
         auto-fill,
@@ -75,7 +75,7 @@
     }
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: 30rem) {
     .drive-file-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }

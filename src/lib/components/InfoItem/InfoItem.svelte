@@ -64,11 +64,11 @@
 	.lumi-info-item {
 		--info-shell-bg: var(--lumi-color-control-fill);
 		--info-shell-border: var(--lumi-color-border);
-		--info-icon-bg: color-mix(in srgb, var(--_accent, var(--lumi-color-primary)) 10%, transparent);
+		--info-icon-bg: color-mix(in srgb, var(--_accent, var(--lumi-color-primary)) 12%, transparent);
 		--info-icon-border: color-mix(
 			in srgb,
-			var(--_accent, var(--lumi-color-primary)) 18%,
-			var(--lumi-color-border)
+			var(--_accent, var(--lumi-color-primary)) 20%,
+			transparent
 		);
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr);
@@ -79,10 +79,7 @@
 		border: var(--lumi-border-width-thin) solid var(--info-shell-border);
 		border-radius: var(--lumi-radius-xl);
 		background: var(--info-shell-bg);
-		transition:
-			border-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-fast) var(--lumi-easing-default);
+		transition: var(--lumi-transition-control);
 	}
 
 	.lumi-info-item:hover {
@@ -115,7 +112,7 @@
 		border: var(--lumi-border-width-thin) solid var(--info-icon-border);
 		background: var(--info-icon-bg);
 		box-shadow: inset 0 var(--lumi-border-width-thin) 0
-			color-mix(in srgb, var(--lumi-color-white) 35%, transparent);
+			color-mix(in srgb, var(--lumi-color-white) 30%, transparent);
 	}
 
 	.lumi-info-item--vertical .lumi-info-item__icon {

@@ -113,7 +113,8 @@
 			var(--lumi-color-white) 18%,
 			transparent
 		);
-		--progress-track-shadow: inset 0 1px 2px
+		--progress-track-shadow: inset 0 var(--lumi-border-width-thin)
+			var(--lumi-border-width-thick)
 			color-mix(in srgb, var(--lumi-color-black) 8%, transparent);
 	}
 
@@ -132,7 +133,7 @@
 		height: 100%;
 		background: var(--progress-color);
 		border-radius: var(--lumi-radius-full);
-		box-shadow: inset 0 1px 0 var(--progress-highlight);
+		box-shadow: inset 0 var(--lumi-border-width-thin) 0 var(--progress-highlight);
 		transition: width var(--lumi-duration-slow) var(--lumi-easing-default);
 		position: relative;
 		overflow: hidden;

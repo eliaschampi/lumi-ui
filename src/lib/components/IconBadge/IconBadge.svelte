@@ -16,14 +16,16 @@
 </div>
 
 <style>
+	/* Shared icon-tile recipe (same fill/border/radius/sheen as InfoItem icon);
+	   the standalone badge keeps a quiet elevation shadow. */
 	.lumi-icon-badge {
 		--icon-badge-color: var(--lumi-color-primary);
-		--icon-badge-bg-strength: 16%;
-		--icon-badge-border-strength: 22%;
+		--icon-badge-bg-strength: 12%;
+		--icon-badge-border-strength: 20%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		border-radius: var(--lumi-radius-xl);
+		border-radius: var(--lumi-radius-lg);
 		background: color-mix(
 			in srgb,
 			var(--icon-badge-color) var(--icon-badge-bg-strength),
@@ -32,7 +34,8 @@
 		border: var(--lumi-border-width-thin) solid
 			color-mix(in srgb, var(--icon-badge-color) var(--icon-badge-border-strength), transparent);
 		box-shadow:
-			inset 0 1px 0 color-mix(in srgb, var(--lumi-color-white) 24%, transparent),
+			inset 0 var(--lumi-border-width-thin) 0
+				color-mix(in srgb, var(--lumi-color-white) 30%, transparent),
 			var(--lumi-shadow-sm);
 		transition: var(--lumi-transition-control);
 	}

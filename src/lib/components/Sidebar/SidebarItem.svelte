@@ -109,7 +109,7 @@
 		gap: var(--lumi-space-sm);
 		min-height: var(--lumi-sidebar-subitem-height);
 		padding: var(--lumi-space-xs) var(--lumi-space-sm);
-		border-radius: var(--lumi-radius-base);
+		border-radius: var(--lumi-control-radius);
 	}
 
 	.lumi-sidebar-item::before {
