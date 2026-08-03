@@ -56,7 +56,8 @@
 
 <style>
 	.lumi-navbar {
-		--lumi-surface-bg: var(--lumi-gradient-subtle), var(--lumi-color-surface-glass-strong);
+		--lumi-surface-bg:
+			var(--lumi-gradient-subtle), var(--lumi-color-surface-glass-strong);
 		--lumi-surface-radius-local: var(--lumi-layout-floating-radius);
 		grid-area: navbar;
 		position: sticky;

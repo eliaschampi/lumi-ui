@@ -30,7 +30,11 @@
 	</div>
 
 	{#if actions}
-		<div class="lumi-page-header__actions" role="group" aria-label="Page actions">
+		<div
+			class="lumi-page-header__actions"
+			role="group"
+			aria-label="Page actions"
+		>
 			{@render actions()}
 		</div>
 	{/if}

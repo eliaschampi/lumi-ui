@@ -76,7 +76,12 @@
 	aria-label={alt || text || 'Avatar'}
 >
 	{#if imageSrc && !imageError}
-		<img src={imageSrc} {alt} class="lumi-avatar__image" onerror={handleImageError} />
+		<img
+			src={imageSrc}
+			{alt}
+			class="lumi-avatar__image"
+			onerror={handleImageError}
+		/>
 	{:else if icon}
 		<span class="lumi-avatar__icon">
 			<Icon {icon} />

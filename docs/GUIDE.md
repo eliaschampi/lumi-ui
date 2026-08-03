@@ -86,7 +86,9 @@ Repackage after public export changes. Runnable integration: [`examples/dashboar
 			<Input bind:value={name} name="name" label="Display name" />
 			<Button variant="filled" disabled={!name.trim()}>Save</Button>
 		</Card>
-		<Card title="Status">Use components for behavior and utilities for composition.</Card>
+		<Card title="Status"
+			>Use components for behavior and utilities for composition.</Card
+		>
 	</div>
 </div>
 ```
@@ -355,7 +357,9 @@ Always include `.lumi-grid`; a modifier alone does not set `display: grid`.
 Tokenized gaps: `2xs`–`xxl`. Responsive collapse differs by family—see [grid contract](#grid-contract).
 
 ```svelte
-<div class="lumi-flex lumi-flex--wrap lumi-align-items--center lumi-justify--between lumi-flex--gap-sm">
+<div
+	class="lumi-flex lumi-flex--wrap lumi-align-items--center lumi-justify--between lumi-flex--gap-sm"
+>
 	...
 </div>
 <div class="lumi-stack lumi-stack--md">...</div>
@@ -526,30 +530,30 @@ Components must not invent `purple`, `teal`, or product names as colors. The pub
 
 ### Geometry — space, type, radius, motion
 
-| Concern      | Tokens                                                                                                     | Rule                                                                                  |
-| ------------ | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Spacing      | `--lumi-space-2xs` … `--lumi-space-6xl` (quarter-rem base)                                                 | Compose from tokens; no magic numbers unless a `calc()` of tokens                     |
-| Typography   | Inter + system stack; scale `xs`→`4xl`; weights normal→bold                                                | Root uses compact `sm`; body inherits it for dense product UI                         |
-| Radius       | `--lumi-control-radius` (controls), `--lumi-surface-radius` (large surfaces), `--lumi-radius-full` (pills) | One radius per role; do not invent per component                                      |
+| Concern      | Tokens                                                                                                     | Rule                                                                                                                           |
+| ------------ | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Spacing      | `--lumi-space-2xs` … `--lumi-space-6xl` (quarter-rem base)                                                 | Compose from tokens; no magic numbers unless a `calc()` of tokens                                                              |
+| Typography   | Inter + system stack; scale `xs`→`4xl`; weights normal→bold                                                | Root uses compact `sm`; body inherits it for dense product UI                                                                  |
+| Radius       | `--lumi-control-radius` (controls), `--lumi-surface-radius` (large surfaces), `--lumi-radius-full` (pills) | One radius per role; do not invent per component                                                                               |
 | Motion       | `--lumi-duration-fast` (150ms), `--lumi-duration-base` (220ms), `--lumi-duration-slow` / `slower`          | Fast = micro (hover, color); base = default UI; slow/slower = overlay enter/exit; continuous spinners reuse `slower × 2` (~1s) |
-| Control UI   | `--lumi-transition-control`                                                                                | Shared color/fill/border/shadow micro-transition; append `transform` only when needed |
-| Easing       | `--lumi-easing-default`                                                                                    | Primary smooth-decelerate curve                                                       |
-| Press / lift | `--lumi-interactive-press-scale`, `--lumi-interactive-lift`                                                | Subtle; never jump                                                                    |
+| Control UI   | `--lumi-transition-control`                                                                                | Shared color/fill/border/shadow micro-transition; append `transform` only when needed                                          |
+| Easing       | `--lumi-easing-default`                                                                                    | Primary smooth-decelerate curve                                                                                                |
+| Press / lift | `--lumi-interactive-press-scale`, `--lumi-interactive-lift`                                                | Subtle; never jump                                                                                                             |
 
 Control heights share one ladder (`--lumi-control-height-xs` … `--lumi-control-height-xl`), but not every component exposes every step: **Input** uses `xs…xl`, **Button** `sm…xl`, **Select / Textarea / NumberInput** `sm…lg`, **Chip** `sm` (+ compact). Match the step the component actually supports. Match JS transition durations to `LUMI_CONFIG.transitions` when coordinating Svelte transitions.
 
 ### Interaction patterns
 
-| Pattern     | Expectation                                                                                          |
-| ----------- | ---------------------------------------------------------------------------------------------------- |
-| Hover       | Soft fill/border shift; optional 1px lift—never jump (switcher options: fill only, no lift)          |
-| Focus       | Visible ring/outline from shared tokens; keyboard-first                                              |
-| Disabled    | Reduced opacity (`--lumi-opacity-disabled`), no pointer events                                       |
-| Loading     | Shared spinner recipe (18% accent track + solid arc, ~1s) or progress; block double-submit           |
-| Selection   | Binary peers: control-active fill. Switchers: elevated active pill. Cards/lists: clear vs hover      |
-| Destructive | `danger` color; confirm in app logic, not red styling alone                                          |
-| Overlays    | Portal + Floating UI; Escape closes unless `persistent`                                              |
-| Autofill    | Text fields use `.lumi-autofill` + `--lumi-control-autofill-bg`                                      |
+| Pattern     | Expectation                                                                                     |
+| ----------- | ----------------------------------------------------------------------------------------------- |
+| Hover       | Soft fill/border shift; optional 1px lift—never jump (switcher options: fill only, no lift)     |
+| Focus       | Visible ring/outline from shared tokens; keyboard-first                                         |
+| Disabled    | Reduced opacity (`--lumi-opacity-disabled`), no pointer events                                  |
+| Loading     | Shared spinner recipe (18% accent track + solid arc, ~1s) or progress; block double-submit      |
+| Selection   | Binary peers: control-active fill. Switchers: elevated active pill. Cards/lists: clear vs hover |
+| Destructive | `danger` color; confirm in app logic, not red styling alone                                     |
+| Overlays    | Portal + Floating UI; Escape closes unless `persistent`                                         |
+| Autofill    | Text fields use `.lumi-autofill` + `--lumi-control-autofill-bg`                                 |
 
 ### Minimalism checklist
 
@@ -696,5 +700,7 @@ pnpm run check
 pnpm run package
 git diff --check
 ```
+
+`pnpm run lint` runs **oxlint** on `src` (including `<script>` blocks inside `.svelte`) then **Prettier** check. Use `pnpm run format` to write Prettier; `pnpm run lint:fix` applies safe oxlint fixes. Type and Svelte diagnostics remain on `pnpm run check`.
 
 For a locally linked consumer, package Lumi before checking that app. Do not start a duplicate dev server for docs or type-only changes.

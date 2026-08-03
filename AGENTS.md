@@ -48,3 +48,5 @@ pnpm run check
 pnpm run package
 git diff --check
 ```
+
+`pnpm run lint` = **oxlint** on `src` (JS/TS and `<script>` in `.svelte`) + **Prettier** check. Types/a11y stay on `pnpm run check` (`svelte-check`). Format: `pnpm run format`.

@@ -42,7 +42,9 @@
 			color === 'text'
 				? 'var(--lumi-color-text)'
 				: `var(--lumi-color-${color as Exclude<TitleColor, 'text'>})`;
-		const resolvedIconColor = iconColor ? `var(--lumi-color-${iconColor})` : titleColorVar;
+		const resolvedIconColor = iconColor
+			? `var(--lumi-color-${iconColor})`
+			: titleColorVar;
 		return `--title-color: ${titleColorVar}; --title-icon-color: ${resolvedIconColor};`;
 	});
 </script>

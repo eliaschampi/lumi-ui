@@ -2,10 +2,20 @@
 	import { Icon } from '../Icon';
 	import type { IconBadgeProps } from './types';
 
-	const { icon, color = 'primary', size = 'md', class: className = '' }: IconBadgeProps = $props();
+	const {
+		icon,
+		color = 'primary',
+		size = 'md',
+		class: className = ''
+	}: IconBadgeProps = $props();
 
 	const classes = $derived(
-		['lumi-icon-badge', `lumi-icon-badge--${size}`, `lumi-icon-badge--${color}`, className]
+		[
+			'lumi-icon-badge',
+			`lumi-icon-badge--${size}`,
+			`lumi-icon-badge--${color}`,
+			className
+		]
 			.filter(Boolean)
 			.join(' ')
 	);
@@ -32,7 +42,11 @@
 			transparent
 		);
 		border: var(--lumi-border-width-thin) solid
-			color-mix(in srgb, var(--icon-badge-color) var(--icon-badge-border-strength), transparent);
+			color-mix(
+				in srgb,
+				var(--icon-badge-color) var(--icon-badge-border-strength),
+				transparent
+			);
 		box-shadow:
 			inset 0 var(--lumi-border-width-thin) 0
 				color-mix(in srgb, var(--lumi-color-white) 30%, transparent),

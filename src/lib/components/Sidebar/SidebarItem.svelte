@@ -1,6 +1,6 @@
-	<script lang="ts">
-		import type { Snippet } from 'svelte';
-		import type { SidebarItemProps } from './types';
+<script lang="ts">
+	import type { Snippet } from 'svelte';
+	import type { SidebarItemProps } from './types';
 
 	interface Props extends SidebarItemProps {
 		children?: Snippet;
@@ -32,7 +32,9 @@
 	);
 
 	const ariaCurrent = $derived(active ? 'page' : undefined);
-	const ariaExpanded = $derived(expanded === undefined ? undefined : expanded ? 'true' : 'false');
+	const ariaExpanded = $derived(
+		expanded === undefined ? undefined : expanded ? 'true' : 'false'
+	);
 </script>
 
 {#if href}
@@ -80,7 +82,11 @@
 		font-weight: var(--lumi-font-weight-medium);
 		letter-spacing: normal;
 		--lumi-control-accent: var(--lumi-color-primary);
-		--sidebar-item-hover-bg: color-mix(in srgb, var(--lumi-color-primary) 9%, transparent);
+		--sidebar-item-hover-bg: color-mix(
+			in srgb,
+			var(--lumi-color-primary) 9%,
+			transparent
+		);
 		--sidebar-item-active-bg: linear-gradient(
 			145deg,
 			color-mix(in srgb, var(--lumi-color-primary) 5.5%, transparent),
@@ -104,8 +110,16 @@
 	}
 
 	.lumi-sidebar-item--sub {
-		--sidebar-item-hover-bg: color-mix(in srgb, var(--lumi-color-primary) 8%, transparent);
-		--sidebar-item-active-bg: color-mix(in srgb, var(--lumi-color-primary) 12%, transparent);
+		--sidebar-item-hover-bg: color-mix(
+			in srgb,
+			var(--lumi-color-primary) 8%,
+			transparent
+		);
+		--sidebar-item-active-bg: color-mix(
+			in srgb,
+			var(--lumi-color-primary) 12%,
+			transparent
+		);
 		gap: var(--lumi-space-sm);
 		min-height: var(--lumi-sidebar-subitem-height);
 		padding: var(--lumi-space-xs) var(--lumi-space-sm);
@@ -131,7 +145,11 @@
 	.lumi-sidebar-item:hover:not(.lumi-sidebar-item--active) {
 		background: var(--sidebar-item-hover-bg);
 		color: var(--lumi-color-text);
-		border-color: color-mix(in srgb, var(--lumi-color-primary) 18%, transparent);
+		border-color: color-mix(
+			in srgb,
+			var(--lumi-color-primary) 18%,
+			transparent
+		);
 	}
 
 	.lumi-sidebar-item:focus-visible {
@@ -143,7 +161,11 @@
 	.lumi-sidebar-item--active {
 		background: var(--sidebar-item-active-bg);
 		color: var(--lumi-color-primary);
-		border-color: color-mix(in srgb, var(--lumi-color-primary) 24%, var(--lumi-color-border));
+		border-color: color-mix(
+			in srgb,
+			var(--lumi-color-primary) 24%,
+			var(--lumi-color-border)
+		);
 		box-shadow: var(--lumi-shadow-sm);
 	}
 

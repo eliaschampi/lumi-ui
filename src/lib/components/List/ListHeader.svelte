@@ -8,10 +8,19 @@
 		actions?: Snippet;
 	}
 
-	const { title, color, icon, class: className = '', children, actions }: Props = $props();
+	const {
+		title,
+		color,
+		icon,
+		class: className = '',
+		children,
+		actions
+	}: Props = $props();
 
 	const classes = $derived(
-		['lumi-list-header', color && `lumi-list-header--${color}`, className].filter(Boolean).join(' ')
+		['lumi-list-header', color && `lumi-list-header--${color}`, className]
+			.filter(Boolean)
+			.join(' ')
 	);
 </script>
 
@@ -49,7 +58,8 @@
 		gap: var(--lumi-space-sm);
 		padding: var(--lumi-space-xs) var(--lumi-space-sm);
 		color: var(--list-header-color);
-		border-bottom: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
+		border-bottom: var(--lumi-border-width-thin) solid
+			var(--lumi-color-border-light);
 		margin-bottom: var(--lumi-space-2xs);
 	}
 

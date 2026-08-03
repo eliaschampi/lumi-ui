@@ -31,6 +31,7 @@ pnpm add @lumi-ui/svelte
 	import '../lumi-theme.css';
 	const { children } = $props();
 </script>
+
 {@render children?.()}
 ```
 
@@ -51,7 +52,9 @@ pnpm add @lumi-ui/svelte
 			<Input bind:value={name} name="name" label="Display name" />
 			<Button variant="filled" disabled={!name.trim()}>Save</Button>
 		</Card>
-		<Card title="Status">Use components for behavior, utilities for composition.</Card>
+		<Card title="Status"
+			>Use components for behavior, utilities for composition.</Card
+		>
 	</div>
 </div>
 ```
@@ -132,6 +135,7 @@ export const colorScheme = createColorScheme(colorSchemeOptions);
 	import { colorScheme, colorSchemeOptions } from '$lib/color-scheme.svelte';
 	onMount(colorScheme.start);
 </script>
+
 <ColorSchemeScript {...colorSchemeOptions} />
 ```
 
@@ -224,22 +228,31 @@ Import: `@lumi-ui/svelte/styles` = tokens → core → patterns. No Tailwind/Boo
 	let collapsed = $state(false);
 	let mobileOpen = $state(false);
 	function toggleSidebar(): void {
-		if (window.matchMedia('(max-width: 64rem)').matches) { mobileOpen = !mobileOpen; return; }
+		if (window.matchMedia('(max-width: 64rem)').matches) {
+			mobileOpen = !mobileOpen;
+			return;
+		}
 		collapsed = !collapsed;
 	}
 </script>
 
-<div class="lumi-dashboard-layout"
+<div
+	class="lumi-dashboard-layout"
 	class:lumi-sidebar--is-collapsed={collapsed}
-	class:lumi-sidebar--mobile-open={mobileOpen}>
+	class:lumi-sidebar--mobile-open={mobileOpen}
+>
 	<Sidebar {collapsed} {mobileOpen}>
 		<SidebarHeader title="App" />
 		<SidebarItem href="/" active>Home</SidebarItem>
 	</Sidebar>
 	<Navbar ontoggle-sidebar={toggleSidebar} />
 	<main class="lumi-dashboard-layout__content">{@render children?.()}</main>
-	<button type="button" class="lumi-mobile-overlay lumi-border--none"
-		aria-label="Close navigation" onclick={() => (mobileOpen = false)}></button>
+	<button
+		type="button"
+		class="lumi-mobile-overlay lumi-border--none"
+		aria-label="Close navigation"
+		onclick={() => (mobileOpen = false)}
+	></button>
 </div>
 ```
 
@@ -262,8 +275,11 @@ Import: `@lumi-ui/svelte/styles` = tokens → core → patterns. No Tailwind/Boo
 <PageHeader title="Records">
 	{#snippet actions()}
 		<div class="lumi-page-sidebar__header-actions">
-			<Button variant="border" class="lumi-page-sidebar__mobile-trigger"
-				onclick={() => (filtersOpen = true)}>Filters</Button>
+			<Button
+				variant="border"
+				class="lumi-page-sidebar__mobile-trigger"
+				onclick={() => (filtersOpen = true)}>Filters</Button
+			>
 		</div>
 	{/snippet}
 </PageHeader>

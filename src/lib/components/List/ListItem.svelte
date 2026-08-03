@@ -117,7 +117,10 @@
 		align-items: center;
 		gap: var(--lumi-space-md);
 		min-height: calc(var(--lumi-space-xxl) + var(--lumi-space-2xs));
-		padding: var(--list-item-padding, var(--lumi-space-sm) var(--lumi-space-md));
+		padding: var(
+			--list-item-padding,
+			var(--lumi-space-sm) var(--lumi-space-md)
+		);
 		border-radius: var(--lumi-radius-md);
 		transition:
 			var(--lumi-transition-control),
@@ -201,7 +204,9 @@
 		cursor: pointer;
 	}
 
-	.lumi-list-item--clickable:hover:not(.lumi-list-item--active):not(.lumi-list-item--disabled) {
+	.lumi-list-item--clickable:hover:not(.lumi-list-item--active):not(
+			.lumi-list-item--disabled
+		) {
 		background: var(--list-item-hover-bg);
 		transform: translateY(var(--list-item-lift));
 	}

@@ -58,18 +58,22 @@
 		if (orientation === 'horizontal') {
 			if (event.key === 'ArrowLeft') {
 				event.preventDefault();
-				nextIndex = currentIndex > 0 ? currentIndex - 1 : enabledTabs.length - 1;
+				nextIndex =
+					currentIndex > 0 ? currentIndex - 1 : enabledTabs.length - 1;
 			} else if (event.key === 'ArrowRight') {
 				event.preventDefault();
-				nextIndex = currentIndex < enabledTabs.length - 1 ? currentIndex + 1 : 0;
+				nextIndex =
+					currentIndex < enabledTabs.length - 1 ? currentIndex + 1 : 0;
 			}
 		} else {
 			if (event.key === 'ArrowUp') {
 				event.preventDefault();
-				nextIndex = currentIndex > 0 ? currentIndex - 1 : enabledTabs.length - 1;
+				nextIndex =
+					currentIndex > 0 ? currentIndex - 1 : enabledTabs.length - 1;
 			} else if (event.key === 'ArrowDown') {
 				event.preventDefault();
-				nextIndex = currentIndex < enabledTabs.length - 1 ? currentIndex + 1 : 0;
+				nextIndex =
+					currentIndex < enabledTabs.length - 1 ? currentIndex + 1 : 0;
 			}
 		}
 
@@ -92,9 +96,9 @@
 				id={`${tabsId}-tab-${tab.value}`}
 				type="button"
 				role="tab"
-				class="lumi-tabs__tab {value === tab.value ? 'lumi-tabs__tab--active' : ''} {tab.disabled
-					? 'lumi-tabs__tab--disabled'
-					: ''}"
+				class="lumi-tabs__tab {value === tab.value
+					? 'lumi-tabs__tab--active'
+					: ''} {tab.disabled ? 'lumi-tabs__tab--disabled' : ''}"
 				aria-controls={`${tabsId}-panel-${tab.value}`}
 				disabled={tab.disabled}
 				aria-selected={value === tab.value}
@@ -142,7 +146,11 @@
 			var(--lumi-color-background-hover) 22%
 		);
 		--tabs-nav-border: var(--lumi-border-width-thin) solid
-			color-mix(in srgb, var(--lumi-color-border-glass) 72%, var(--lumi-color-border-strong) 28%);
+			color-mix(
+				in srgb,
+				var(--lumi-color-border-glass) 72%,
+				var(--lumi-color-border-strong) 28%
+			);
 	}
 
 	.lumi-tabs--horizontal .lumi-tabs__nav {
@@ -227,10 +235,19 @@
 		font-weight: var(--lumi-font-weight-semibold);
 		background: linear-gradient(
 			145deg,
-			color-mix(in srgb, var(--lumi-color-surface-card-hover) 88%, var(--lumi-tabs-color) 12%) 0%,
+			color-mix(
+					in srgb,
+					var(--lumi-color-surface-card-hover) 88%,
+					var(--lumi-tabs-color) 12%
+				)
+				0%,
 			var(--lumi-color-surface-card) 100%
 		);
-		border-color: color-mix(in srgb, var(--lumi-tabs-color) 28%, var(--lumi-color-border));
+		border-color: color-mix(
+			in srgb,
+			var(--lumi-tabs-color) 28%,
+			var(--lumi-color-border)
+		);
 		box-shadow: var(--lumi-shadow-sm);
 	}
 

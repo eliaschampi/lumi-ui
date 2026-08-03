@@ -133,7 +133,8 @@
 		height: 100%;
 		background: var(--progress-color);
 		border-radius: var(--lumi-radius-full);
-		box-shadow: inset 0 var(--lumi-border-width-thin) 0 var(--progress-highlight);
+		box-shadow: inset 0 var(--lumi-border-width-thin) 0
+			var(--progress-highlight);
 		transition: width var(--lumi-duration-slow) var(--lumi-easing-default);
 		position: relative;
 		overflow: hidden;

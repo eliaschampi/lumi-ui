@@ -19,7 +19,9 @@
 			.join(', ')
 	);
 	const classes = $derived(
-		['lumi-avatar-group', `lumi-avatar-group--${size}`, className].filter(Boolean).join(' ')
+		['lumi-avatar-group', `lumi-avatar-group--${size}`, className]
+			.filter(Boolean)
+			.join(' ')
 	);
 	const ariaLabel = $derived(
 		`${items.length} avatar${items.length === 1 ? '' : 's'}${names ? `: ${names}` : ''}`
@@ -33,7 +35,10 @@
 		</div>
 	{/each}
 	{#if overflow > 0}
-		<div class="lumi-avatar-group__item lumi-avatar-group__overflow" aria-hidden="true">
+		<div
+			class="lumi-avatar-group__item lumi-avatar-group__overflow"
+			aria-hidden="true"
+		>
 			+{overflow}
 		</div>
 	{/if}

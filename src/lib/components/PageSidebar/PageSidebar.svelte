@@ -25,7 +25,10 @@
 	}
 </script>
 
-<aside class="lumi-layout--sidebar-left lumi-page-sidebar__desktop" data-variant={variant || undefined}>
+<aside
+	class="lumi-layout--sidebar-left lumi-page-sidebar__desktop"
+	data-variant={variant || undefined}
+>
 	<Card spaced class={cardClasses}>
 		<div class="lumi-page-sidebar__content">
 			{#if sidebar}
@@ -47,7 +50,12 @@
 			{#if !hideMobileHeader}
 				<div class="lumi-page-sidebar__drawer-header">
 					<p class="lumi-margin--none lumi-font--semibold">{mobileTitle}</p>
-					<Button variant="flat" size="sm" icon="x" onclick={closeMobileSidebar} />
+					<Button
+						variant="flat"
+						size="sm"
+						icon="x"
+						onclick={closeMobileSidebar}
+					/>
 				</div>
 			{/if}
 			<div class="lumi-page-sidebar__content">

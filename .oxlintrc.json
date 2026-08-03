@@ -1,0 +1,22 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"plugins": ["typescript", "unicorn", "oxc"],
+	"categories": {
+		"correctness": "error",
+		"suspicious": "warn"
+	},
+	"rules": {
+		"no-shadow": "off",
+		"no-underscore-dangle": "off",
+		"unicorn/consistent-function-scoping": "off"
+	},
+	"ignorePatterns": [
+		"dist/**",
+		"node_modules/**",
+		"examples/**",
+		".svelte-kit/**"
+	],
+	"env": {
+		"builtin": true
+	}
+}

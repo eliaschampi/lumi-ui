@@ -3,8 +3,12 @@
 	import Select from './Select.svelte';
 	import type { SelectOption } from './types';
 
-	export type RemoteSelectSearchParamValue = string | number | boolean | null | undefined;
-	export type RemoteSelectSearchParams = Record<string, RemoteSelectSearchParamValue>;
+	export type RemoteSelectSearchParamValue =
+		string | number | boolean | null | undefined;
+	export type RemoteSelectSearchParams = Record<
+		string,
+		RemoteSelectSearchParamValue
+	>;
 
 	export interface RemoteSelectProps<TItem> {
 		value?: string;
@@ -66,7 +70,9 @@
 		const items = selectedItem
 			? [
 					selectedItem,
-					...results.filter((item) => getOptionValue(item) !== getOptionValue(selectedItem))
+					...results.filter(
+						(item) => getOptionValue(item) !== getOptionValue(selectedItem)
+					)
 				]
 			: results;
 
@@ -96,7 +102,7 @@
 	}
 
 	function serializeSearchParams(query: string): string {
-			const params: RemoteSelectSearchParams = {
+		const params: RemoteSelectSearchParams = {
 			...getSearchParams?.(),
 			[searchParam]: query,
 			limit
@@ -106,7 +112,9 @@
 			.flatMap(([key, entryValue]) =>
 				entryValue == null
 					? []
-					: [`${encodeURIComponent(key)}=${encodeURIComponent(String(entryValue))}`]
+					: [
+							`${encodeURIComponent(key)}=${encodeURIComponent(String(entryValue))}`
+						]
 			)
 			.join('&');
 	}
@@ -141,7 +149,10 @@
 		const signal = abortSearch.signal;
 
 		try {
-			const response = await fetch(`${endpoint}?${serializeSearchParams(query)}`, { signal });
+			const response = await fetch(
+				`${endpoint}?${serializeSearchParams(query)}`,
+				{ signal }
+			);
 			const payload = (await response.json()) as {
 				message?: string;
 				items?: TItem[];
@@ -154,8 +165,13 @@
 
 			results = payload.items ?? [];
 		} catch (caught) {
-			if (signal.aborted || (caught instanceof Error && caught.name === 'AbortError')) return;
-			errorMessage = caught instanceof Error ? caught.message : errorMessageFallback;
+			if (
+				signal.aborted ||
+				(caught instanceof Error && caught.name === 'AbortError')
+			)
+				return;
+			errorMessage =
+				caught instanceof Error ? caught.message : errorMessageFallback;
 			results = [];
 		} finally {
 			if (!signal.aborted) loading = false;
@@ -168,10 +184,13 @@
 			return;
 		}
 
-		const currentSelected = selected && getOptionValue(selected) === nextValue ? selected : null;
+		const currentSelected =
+			selected && getOptionValue(selected) === nextValue ? selected : null;
 		value = nextValue;
 		selected =
-			currentSelected ?? results.find((item) => getOptionValue(item) === nextValue) ?? null;
+			currentSelected ??
+			results.find((item) => getOptionValue(item) === nextValue) ??
+			null;
 		onchange?.(selected);
 	}
 

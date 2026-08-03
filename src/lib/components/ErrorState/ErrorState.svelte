@@ -2,7 +2,11 @@
 	import { Button } from '../Button';
 	import { Card } from '../Card';
 	import { EmptyState } from '../EmptyState';
-	import type { ErrorStateContent, ErrorStateProps, ErrorStateStatus } from './types';
+	import type {
+		ErrorStateContent,
+		ErrorStateProps,
+		ErrorStateStatus
+	} from './types';
 
 	const ERROR_CONTENT = {
 		400: {
@@ -58,7 +62,13 @@
 
 	const content = $derived.by(() => ERROR_CONTENT[normalizedStatus]);
 	const classes = $derived(
-		['lumi-error-state', 'lumi-flex', 'lumi-flex--center', 'lumi-padding--xl', className]
+		[
+			'lumi-error-state',
+			'lumi-flex',
+			'lumi-flex--center',
+			'lumi-padding--xl',
+			className
+		]
 			.filter(Boolean)
 			.join(' ')
 	);
@@ -118,7 +128,9 @@
 			description={displayMessage || content.description}
 		>
 			{#snippet actions()}
-				<div class="lumi-flex lumi-flex--center lumi-flex--wrap lumi-flex--gap-sm">
+				<div
+					class="lumi-flex lumi-flex--center lumi-flex--wrap lumi-flex--gap-sm"
+				>
 					<Button
 						variant="filled"
 						color={content.color}
@@ -153,7 +165,9 @@
 
 	@media (max-width: 48rem) {
 		.lumi-error-state {
-			min-height: calc(100dvh - (var(--lumi-layout-content-padding-mobile) * 2));
+			min-height: calc(
+				100dvh - (var(--lumi-layout-content-padding-mobile) * 2)
+			);
 		}
 	}
 </style>

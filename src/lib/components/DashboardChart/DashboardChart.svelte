@@ -2,9 +2,15 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	import { portal } from '../../actions/portal';
 	import type { ChartColor } from '../../types/charts';
-	import { chartGradientId, computeSparseXLabels } from '../../utils/chartCoordinates';
+	import {
+		chartGradientId,
+		computeSparseXLabels
+	} from '../../utils/chartCoordinates';
 	import { formatChartValue } from '../../utils/chartFormat';
-	import { MIN_CHART_WIDTH, useChartWidth } from '../../utils/chartLayout.svelte';
+	import {
+		MIN_CHART_WIDTH,
+		useChartWidth
+	} from '../../utils/chartLayout.svelte';
 	import type { DashboardChartProps } from './types';
 
 	const {
@@ -51,15 +57,21 @@
 				]
 	);
 	const xAxisData = $derived(normalizedSeries[0]?.data ?? []);
-	const visibleSeries = $derived(normalizedSeries.filter((s) => !hiddenSeries.has(s.key)));
-	const classes = $derived(['lumi-line-chart', className].filter(Boolean).join(' '));
+	const visibleSeries = $derived(
+		normalizedSeries.filter((s) => !hiddenSeries.has(s.key))
+	);
+	const classes = $derived(
+		['lumi-line-chart', className].filter(Boolean).join(' ')
+	);
 	const chartW = $derived(layout.chartW);
 	const chartH = $derived(height);
 	const plotW = $derived(chartW - PADDING.left - PADDING.right);
 	const plotH = $derived(chartH - PADDING.top - PADDING.bottom);
 
 	const allVisibleValues = $derived(
-		visibleSeries.length > 0 ? visibleSeries.flatMap((s) => s.data).map((p) => p.value) : []
+		visibleSeries.length > 0
+			? visibleSeries.flatMap((s) => s.data).map((p) => p.value)
+			: []
 	);
 	const maxValue = $derived(Math.max(...allVisibleValues, 0));
 	const minValue = $derived(Math.min(...allVisibleValues, 0));
@@ -81,12 +93,17 @@
 		visibleSeries.map((s) => {
 			const pts = s.data.map((p, i) => ({ x: scaleX(i), y: scaleY(p.value) }));
 			const line = monotonePath(pts);
-			const area = line ? `${line}L${pts[pts.length - 1].x},${zeroY}L${pts[0].x},${zeroY}Z` : '';
+			const area = line
+				? `${line}L${pts[pts.length - 1].x},${zeroY}L${pts[0].x},${zeroY}Z`
+				: '';
 			return {
 				key: s.key,
 				label: s.label,
 				strokeColor: colorMap[s.color],
-				gradientId: chartGradientId('line', s.color, [s.key, ...s.data.map((p) => p.key)]),
+				gradientId: chartGradientId('line', s.color, [
+					s.key,
+					...s.data.map((p) => p.key)
+				]),
 				linePath: line,
 				areaPath: area,
 				points: pts
@@ -95,9 +112,14 @@
 	);
 
 	const yTicks = $derived(
-		Array.from({ length: Y_TICKS + 1 }, (_, i) => niceMin + (valueRange / Y_TICKS) * i)
+		Array.from(
+			{ length: Y_TICKS + 1 },
+			(_, i) => niceMin + (valueRange / Y_TICKS) * i
+		)
 	);
-	const xLabels = $derived(computeSparseXLabels(xAxisData, (index) => scaleX(index), 7));
+	const xLabels = $derived(
+		computeSparseXLabels(xAxisData, (index) => scaleX(index), 7)
+	);
 
 	const hoveredEntries = $derived.by(() => {
 		if (hoveredIndex === null) return [];
@@ -116,12 +138,16 @@
 		if (v <= 0) return 10;
 		const magnitude = 10 ** Math.floor(Math.log10(v));
 		const normalized = v / magnitude;
-		const nice = normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
+		const nice =
+			normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
 		return nice * magnitude;
 	}
 
 	function scaleX(i: number): number {
-		return PADDING.left + (xAxisData.length > 1 ? (i / (xAxisData.length - 1)) * plotW : plotW / 2);
+		return (
+			PADDING.left +
+			(xAxisData.length > 1 ? (i / (xAxisData.length - 1)) * plotW : plotW / 2)
+		);
 	}
 
 	function scaleY(v: number): number {
@@ -131,7 +157,8 @@
 	function monotonePath(pts: { x: number; y: number }[]): string {
 		if (pts.length === 0) return '';
 		if (pts.length === 1) return `M${pts[0].x},${pts[0].y}`;
-		if (pts.length === 2) return `M${pts[0].x},${pts[0].y}L${pts[1].x},${pts[1].y}`;
+		if (pts.length === 2)
+			return `M${pts[0].x},${pts[0].y}L${pts[1].x},${pts[1].y}`;
 
 		const tangents = monotoneTangents(pts);
 		let d = `M${pts[0].x},${pts[0].y}`;
@@ -197,9 +224,12 @@
 		}
 
 		const center = xPoints[index].x;
-		const left = index === 0 ? PADDING.left : (xPoints[index - 1].x + center) / 2;
+		const left =
+			index === 0 ? PADDING.left : (xPoints[index - 1].x + center) / 2;
 		const right =
-			index === xPoints.length - 1 ? chartW - PADDING.right : (center + xPoints[index + 1].x) / 2;
+			index === xPoints.length - 1
+				? chartW - PADDING.right
+				: (center + xPoints[index + 1].x) / 2;
 		return { x: left, width: right - left };
 	}
 
@@ -215,7 +245,11 @@
 
 <div bind:this={layout.root} class={classes}>
 	{#if normalizedSeries.length > 1}
-		<div class="lumi-line-chart__legend" role="group" aria-label="Series del gráfico">
+		<div
+			class="lumi-line-chart__legend"
+			role="group"
+			aria-label="Series del gráfico"
+		>
 			{#each normalizedSeries as s (s.key)}
 				<button
 					type="button"
@@ -225,7 +259,10 @@
 					aria-label={`Toggle ${s.label}`}
 					onclick={() => toggleSeries(s.key)}
 				>
-					<span class="lumi-line-chart__legend-dot" style:background={colorMap[s.color]}></span>
+					<span
+						class="lumi-line-chart__legend-dot"
+						style:background={colorMap[s.color]}
+					></span>
 					<span class="lumi-line-chart__legend-label">{s.label}</span>
 				</button>
 			{/each}
@@ -235,7 +272,9 @@
 	<div class="lumi-line-chart__plot" style:height="{height}px">
 		{#if !hasValues}
 			<div class="lumi-line-chart__empty">
-				<p class="lumi-margin--none lumi-text--sm lumi-text--muted">{emptyMessage}</p>
+				<p class="lumi-margin--none lumi-text--sm lumi-text--muted">
+					{emptyMessage}
+				</p>
 			</div>
 		{:else}
 			<svg
@@ -249,8 +288,16 @@
 				<defs>
 					{#each seriesPaths as sp (sp.key)}
 						<linearGradient id={sp.gradientId} x1="0" x2="0" y1="0" y2="1">
-							<stop offset="0%" stop-color={sp.strokeColor} stop-opacity="0.15" />
-							<stop offset="100%" stop-color={sp.strokeColor} stop-opacity="0" />
+							<stop
+								offset="0%"
+								stop-color={sp.strokeColor}
+								stop-opacity="0.15"
+							/>
+							<stop
+								offset="100%"
+								stop-color={sp.strokeColor}
+								stop-opacity="0"
+							/>
 						</linearGradient>
 					{/each}
 				</defs>
@@ -277,14 +324,23 @@
 				{/each}
 
 				{#each xLabels as xl (xl.key)}
-					<text x={xl.x} y={chartH - 6} text-anchor="middle" class="lumi-line-chart__label">
+					<text
+						x={xl.x}
+						y={chartH - 6}
+						text-anchor="middle"
+						class="lumi-line-chart__label"
+					>
 						{formatAxisLabel(xl.label)}
 					</text>
 				{/each}
 
 				{#each seriesPaths as sp (sp.key)}
 					{#if sp.areaPath}
-						<path d={sp.areaPath} fill="url(#{sp.gradientId})" pointer-events="none" />
+						<path
+							d={sp.areaPath}
+							fill="url(#{sp.gradientId})"
+							pointer-events="none"
+						/>
 					{/if}
 					<path
 						d={sp.linePath}
@@ -344,12 +400,19 @@
 		style:left="{tooltipX + 14}px"
 		style:top="{tooltipY - 10}px"
 	>
-		<span class="lumi-line-chart__tooltip-date">{hoveredEntries[0].point.label}</span>
+		<span class="lumi-line-chart__tooltip-date"
+			>{hoveredEntries[0].point.label}</span
+		>
 		{#each hoveredEntries as entry (entry.key)}
 			<div class="lumi-line-chart__tooltip-row">
-				<span class="lumi-line-chart__tooltip-dot" style:background={colorMap[entry.color]}></span>
+				<span
+					class="lumi-line-chart__tooltip-dot"
+					style:background={colorMap[entry.color]}
+				></span>
 				<span class="lumi-line-chart__tooltip-label">{entry.label}</span>
-				<span class="lumi-line-chart__tooltip-value">{formatTooltipValue(entry.point.value)}</span>
+				<span class="lumi-line-chart__tooltip-value"
+					>{formatTooltipValue(entry.point.value)}</span
+				>
 			</div>
 		{/each}
 	</div>

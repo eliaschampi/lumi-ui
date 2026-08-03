@@ -76,7 +76,10 @@
 					{title}
 				{/if}
 			</div>
-			<div class="lumi-collapse__icon" class:lumi-collapse__icon--rotated={isOpen}>
+			<div
+				class="lumi-collapse__icon"
+				class:lumi-collapse__icon--rotated={isOpen}
+			>
 				<svg
 					viewBox="0 0 24 24"
 					fill="none"
@@ -113,7 +116,8 @@
 		isolation: isolate;
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
 		border-radius: var(--lumi-radius-lg);
-		background: var(--lumi-gradient-subtle), var(--lumi-color-surface-glass-strong);
+		background:
+			var(--lumi-gradient-subtle), var(--lumi-color-surface-glass-strong);
 		box-shadow: var(--lumi-shadow-sm);
 		overflow: hidden;
 		transition:
@@ -189,11 +193,19 @@
 	}
 
 	.lumi-collapse__trigger:hover:not(.lumi-collapse__trigger--disabled) {
-		background: color-mix(in srgb, var(--lumi-color-surface-glass) 55%, transparent);
+		background: color-mix(
+			in srgb,
+			var(--lumi-color-surface-glass) 55%,
+			transparent
+		);
 	}
 
 	.lumi-collapse__trigger:focus-visible {
-		background: color-mix(in srgb, var(--lumi-color-surface-glass) 55%, transparent);
+		background: color-mix(
+			in srgb,
+			var(--lumi-color-surface-glass) 55%,
+			transparent
+		);
 		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-focus-outline-offset);
 	}
@@ -313,7 +325,8 @@
 	.lumi-collapse__content {
 		overflow: hidden;
 		border-top: var(--lumi-border-width-thin) solid transparent;
-		transition: border-color var(--lumi-duration-slow) var(--lumi-easing-default);
+		transition: border-color var(--lumi-duration-slow)
+			var(--lumi-easing-default);
 	}
 
 	.lumi-collapse__content--open {

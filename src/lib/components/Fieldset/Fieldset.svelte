@@ -8,7 +8,9 @@
 
 	const { legend = '', class: className = '', children }: Props = $props();
 
-	const classes = $derived.by(() => ['lumi-fieldset', className].filter(Boolean).join(' '));
+	const classes = $derived.by(() =>
+		['lumi-fieldset', className].filter(Boolean).join(' ')
+	);
 </script>
 
 <fieldset class={classes}>
@@ -31,7 +33,11 @@
 		min-width: 0;
 		background:
 			var(--lumi-gradient-subtle),
-			color-mix(in srgb, var(--lumi-color-surface-inset) 22%, var(--lumi-color-surface-card));
+			color-mix(
+				in srgb,
+				var(--lumi-color-surface-inset) 22%,
+				var(--lumi-color-surface-card)
+			);
 		position: relative;
 	}
 

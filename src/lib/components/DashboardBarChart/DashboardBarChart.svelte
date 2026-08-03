@@ -1,9 +1,15 @@
 <script lang="ts">
 	import { portal } from '../../actions/portal';
 	import type { ChartColor } from '../../types/charts';
-	import { chartGradientId, computeSparseXLabels } from '../../utils/chartCoordinates';
+	import {
+		chartGradientId,
+		computeSparseXLabels
+	} from '../../utils/chartCoordinates';
 	import { formatChartValue } from '../../utils/chartFormat';
-	import { MIN_CHART_WIDTH, useChartWidth } from '../../utils/chartLayout.svelte';
+	import {
+		MIN_CHART_WIDTH,
+		useChartWidth
+	} from '../../utils/chartLayout.svelte';
 	import type { DashboardBarChartProps } from './types';
 
 	const {
@@ -37,7 +43,9 @@
 
 	const fillColor = $derived(colorMap[color]);
 	const hasValues = $derived(data.some((point) => point.value > 0));
-	const classes = $derived(['lumi-bar-chart', className].filter(Boolean).join(' '));
+	const classes = $derived(
+		['lumi-bar-chart', className].filter(Boolean).join(' ')
+	);
 	const chartW = $derived(layout.chartW);
 	const chartH = $derived(height);
 	const plotW = $derived(chartW - PADDING.left - PADDING.right);
@@ -46,10 +54,16 @@
 	const barW = $derived(Math.max(4, Math.min(bandW * 0.58, plotH * 0.18)));
 	const maxValue = $derived(Math.max(...data.map((point) => point.value), 1));
 	const niceMax = $derived(
-		valueFormat === 'score' ? Math.max(20, ceilNice(maxValue)) : ceilNice(maxValue)
+		valueFormat === 'score'
+			? Math.max(20, ceilNice(maxValue))
+			: ceilNice(maxValue)
 	);
-	const yTicks = $derived(Array.from({ length: Y_TICKS + 1 }, (_, i) => (niceMax / Y_TICKS) * i));
-	const xLabels = $derived(computeSparseXLabels(data, (index) => barCenter(index), 7));
+	const yTicks = $derived(
+		Array.from({ length: Y_TICKS + 1 }, (_, i) => (niceMax / Y_TICKS) * i)
+	);
+	const xLabels = $derived(
+		computeSparseXLabels(data, (index) => barCenter(index), 7)
+	);
 	const gradientId = $derived(
 		chartGradientId(
 			'bar',
@@ -58,13 +72,16 @@
 		)
 	);
 
-	const hoveredPoint = $derived(hoveredIndex !== null ? data[hoveredIndex] : null);
+	const hoveredPoint = $derived(
+		hoveredIndex !== null ? data[hoveredIndex] : null
+	);
 
 	function ceilNice(value: number): number {
 		if (value <= 0) return 10;
 		const magnitude = 10 ** Math.floor(Math.log10(value));
 		const normalized = value / magnitude;
-		const nice = normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
+		const nice =
+			normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
 		return nice * magnitude;
 	}
 
@@ -93,7 +110,9 @@
 	}
 
 	function formatValue(value: number): string {
-		return formatChartValue(value, valueFormat, 'axis', { scoreAxisFractionDigits: 2 });
+		return formatChartValue(value, valueFormat, 'axis', {
+			scoreAxisFractionDigits: 2
+		});
 	}
 
 	function formatTooltipValue(value: number): string {
@@ -114,7 +133,9 @@
 <div bind:this={layout.root} class={classes} style:height="{height}px">
 	{#if !hasValues}
 		<div class="lumi-bar-chart__empty">
-			<p class="lumi-margin--none lumi-text--sm lumi-text--muted">{emptyMessage}</p>
+			<p class="lumi-margin--none lumi-text--sm lumi-text--muted">
+				{emptyMessage}
+			</p>
 		</div>
 	{:else}
 		<svg
@@ -159,7 +180,8 @@
 					rx="6"
 					fill="url(#{gradientId})"
 					class="lumi-bar-chart__bar"
-					class:lumi-bar-chart__bar--muted={hoveredIndex !== null && hoveredIndex !== index}
+					class:lumi-bar-chart__bar--muted={hoveredIndex !== null &&
+						hoveredIndex !== index}
 				/>
 			{/each}
 
@@ -188,7 +210,12 @@
 			{/each}
 
 			{#each xLabels as xLabel (xLabel.key)}
-				<text x={xLabel.x} y={chartH - 8} text-anchor="middle" class="lumi-bar-chart__label">
+				<text
+					x={xLabel.x}
+					y={chartH - 8}
+					text-anchor="middle"
+					class="lumi-bar-chart__label"
+				>
 					{formatAxisLabel(xLabel.label)}
 				</text>
 			{/each}
@@ -203,9 +230,11 @@
 		style:left="{tooltipX + 14}px"
 		style:top="{tooltipY - 10}px"
 	>
-		<span class="lumi-bar-chart__tooltip-dot" style:background={fillColor}></span>
+		<span class="lumi-bar-chart__tooltip-dot" style:background={fillColor}
+		></span>
 		<div class="lumi-bar-chart__tooltip-body">
-			<span class="lumi-text--xs lumi-font--semibold">{formatTooltipValue(hoveredPoint.value)}</span
+			<span class="lumi-text--xs lumi-font--semibold"
+				>{formatTooltipValue(hoveredPoint.value)}</span
 			>
 			<span class="lumi-text--xs lumi-text--muted">{hoveredPoint.label}</span>
 		</div>

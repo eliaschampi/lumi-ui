@@ -24,7 +24,9 @@
 	const hasIcon = $derived(!!(icon || iconSlot));
 
 	const classes = $derived(
-		['lumi-info-item', `lumi-info-item--${layout}`, className].filter(Boolean).join(' ')
+		['lumi-info-item', `lumi-info-item--${layout}`, className]
+			.filter(Boolean)
+			.join(' ')
 	);
 
 	const styleVars = $derived(`--_accent: var(--lumi-color-${iconColor});`);
@@ -64,7 +66,11 @@
 	.lumi-info-item {
 		--info-shell-bg: var(--lumi-color-control-fill);
 		--info-shell-border: var(--lumi-color-border);
-		--info-icon-bg: color-mix(in srgb, var(--_accent, var(--lumi-color-primary)) 12%, transparent);
+		--info-icon-bg: color-mix(
+			in srgb,
+			var(--_accent, var(--lumi-color-primary)) 12%,
+			transparent
+		);
 		--info-icon-border: color-mix(
 			in srgb,
 			var(--_accent, var(--lumi-color-primary)) 20%,
@@ -89,7 +95,11 @@
 			var(--info-shell-border)
 		);
 		box-shadow: 0 0 0 var(--lumi-border-width-thin)
-			color-mix(in srgb, var(--_accent, var(--lumi-color-primary)) 10%, transparent);
+			color-mix(
+				in srgb,
+				var(--_accent, var(--lumi-color-primary)) 10%,
+				transparent
+			);
 	}
 
 	.lumi-info-item--horizontal {

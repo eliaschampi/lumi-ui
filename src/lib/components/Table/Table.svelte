@@ -743,7 +743,8 @@
 			color-mix(in srgb, currentColor 18%, transparent);
 		border-top-color: currentColor;
 		border-radius: var(--lumi-radius-full);
-		animation: lumi-table-spin calc(var(--lumi-duration-slower) * 2) linear infinite;
+		animation: lumi-table-spin calc(var(--lumi-duration-slower) * 2) linear
+			infinite;
 	}
 
 	@keyframes lumi-table-spin {

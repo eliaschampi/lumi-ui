@@ -39,7 +39,8 @@
 		"build": "pnpm run package",
 		"package": "svelte-package --input src/lib --output dist --tsconfig ./tsconfig.json",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
-		"lint": "prettier --check .",
+		"lint": "oxlint src && prettier --check .",
+		"lint:fix": "oxlint --fix src",
 		"format": "prettier --write .",
 		"prepack": "pnpm run package",
 		"prepublishOnly": "pnpm run lint && pnpm run check"
@@ -74,6 +75,7 @@
 	"devDependencies": {
 		"@sveltejs/package": "^2.5.5",
 		"@sveltejs/vite-plugin-svelte": "^7.0.0",
+		"oxlint": "^1.76.0",
 		"prettier": "^3.8.1",
 		"prettier-plugin-svelte": "^3.5.1",
 		"svelte": "5.56.4",

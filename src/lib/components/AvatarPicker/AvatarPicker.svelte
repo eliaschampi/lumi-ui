@@ -8,7 +8,9 @@
 		class: className = ''
 	}: AvatarPickerProps = $props();
 
-	const classes = $derived(['lumi-avatar-picker', className].filter(Boolean).join(' '));
+	const classes = $derived(
+		['lumi-avatar-picker', className].filter(Boolean).join(' ')
+	);
 </script>
 
 <div class={classes}>

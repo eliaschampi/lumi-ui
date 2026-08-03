@@ -18,7 +18,9 @@
 		class: className = ''
 	}: Props = $props();
 
-	const classes = $derived(['lumi-user-info', className].filter(Boolean).join(' '));
+	const classes = $derived(
+		['lumi-user-info', className].filter(Boolean).join(' ')
+	);
 
 	const fullName = $derived(`${name} ${lastName}`.trim() || 'Sin nombre');
 	const avatarText = $derived(getInitials(name, lastName));
@@ -37,7 +39,12 @@
 
 <div class={classes}>
 	<div class="lumi-user-info__identity">
-		<Avatar text={avatarText} src={photoUrl || undefined} size={avatarSize} color={avatarColor} />
+		<Avatar
+			text={avatarText}
+			src={photoUrl || undefined}
+			size={avatarSize}
+			color={avatarColor}
+		/>
 		<div class="lumi-user-info__copy">
 			<h3 class="lumi-user-info__name">{fullName}</h3>
 			{#if description?.trim()}

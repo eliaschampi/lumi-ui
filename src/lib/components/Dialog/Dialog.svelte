@@ -131,7 +131,8 @@
 	function focusDialog(): void {
 		requestAnimationFrame(() => {
 			if (!dialogElement) return;
-			const firstFocusable = dialogElement.querySelector<HTMLElement>(focusableSelector);
+			const firstFocusable =
+				dialogElement.querySelector<HTMLElement>(focusableSelector);
 			(firstFocusable ?? dialogElement).focus();
 		});
 	}
@@ -140,7 +141,9 @@
 		if (!open) return;
 
 		previousActiveElement =
-			document.activeElement instanceof HTMLElement ? document.activeElement : null;
+			document.activeElement instanceof HTMLElement
+				? document.activeElement
+				: null;
 		lockBodyScroll();
 		document.addEventListener('keydown', handleEscapeKey);
 		document.addEventListener('keydown', trapFocus);
@@ -382,9 +385,17 @@
 	}
 
 	.lumi-dialog__close:hover {
-		background: color-mix(in srgb, var(--lumi-color-primary-bg) 45%, transparent);
+		background: color-mix(
+			in srgb,
+			var(--lumi-color-primary-bg) 45%,
+			transparent
+		);
 		color: var(--lumi-color-text);
-		border-color: color-mix(in srgb, var(--lumi-color-primary) 20%, var(--lumi-color-border));
+		border-color: color-mix(
+			in srgb,
+			var(--lumi-color-primary) 20%,
+			var(--lumi-color-border)
+		);
 		transform: scale(1.02);
 	}
 
