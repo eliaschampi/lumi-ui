@@ -502,10 +502,13 @@ From recessed to floating:
 inset → surface → card → elevated → raised / overlay / glass
 ```
 
-- **Inset / control-fill** — fields, wells, segmented tracks
+- **Inset / control-fill** — text fields, checkbox/radio/switch peers, wells (binary active uses `--lumi-control-active-*`)
+- **Switcher shell** — Tabs nav and SegmentedControl track: quiet glass mix + glass/strong border + `--lumi-control-shadow` (not control-fill)
 - **Surface / card** — content panels
-- **Elevated / raised** — sticky headers, highlighted panels
+- **Elevated / raised** — sticky headers, highlighted panels; exclusive switcher **active pill** (surface-card gradient + quiet shadow)
 - **Glass / floating** — dialogs, dropdowns, context menus, tooltips
+
+Do not style Tabs and SegmentedControl as inset fields. Binary peers (checkbox/radio/switch) and exclusive switchers are different roles; keep one recipe per role.
 
 Dashboard content background is intentionally translucent so cards stay visibly elevated above the shell. Do not solid-fill the main content until cards disappear into a flat slab.
 
@@ -528,7 +531,7 @@ Components must not invent `purple`, `teal`, or product names as colors. The pub
 | Spacing      | `--lumi-space-2xs` … `--lumi-space-6xl` (quarter-rem base)                                                 | Compose from tokens; no magic numbers unless a `calc()` of tokens                     |
 | Typography   | Inter + system stack; scale `xs`→`4xl`; weights normal→bold                                                | Root uses compact `sm`; body inherits it for dense product UI                         |
 | Radius       | `--lumi-control-radius` (controls), `--lumi-surface-radius` (large surfaces), `--lumi-radius-full` (pills) | One radius per role; do not invent per component                                      |
-| Motion       | `--lumi-duration-fast` (150ms), `--lumi-duration-base` (220ms), `--lumi-duration-slow` / `slower`          | Fast = micro (hover, color); base = default UI; slow/slower = overlay enter/exit only |
+| Motion       | `--lumi-duration-fast` (150ms), `--lumi-duration-base` (220ms), `--lumi-duration-slow` / `slower`          | Fast = micro (hover, color); base = default UI; slow/slower = overlay enter/exit; continuous spinners reuse `slower × 2` (~1s) |
 | Control UI   | `--lumi-transition-control`                                                                                | Shared color/fill/border/shadow micro-transition; append `transform` only when needed |
 | Easing       | `--lumi-easing-default`                                                                                    | Primary smooth-decelerate curve                                                       |
 | Press / lift | `--lumi-interactive-press-scale`, `--lumi-interactive-lift`                                                | Subtle; never jump                                                                    |
@@ -537,16 +540,16 @@ Control heights share one ladder (`--lumi-control-height-xs` … `--lumi-control
 
 ### Interaction patterns
 
-| Pattern     | Expectation                                                     |
-| ----------- | --------------------------------------------------------------- |
-| Hover       | Soft fill/border shift; optional 1px lift—never jump            |
-| Focus       | Visible ring/outline from shared tokens; keyboard-first         |
-| Disabled    | Reduced opacity (`--lumi-opacity-disabled`), no pointer events  |
-| Loading     | Spinner or progress; block double-submit                        |
-| Selection   | Primary-tinted border/bg; clear selected vs hover               |
-| Destructive | `danger` color; confirm in app logic, not red styling alone     |
-| Overlays    | Portal + Floating UI; Escape closes unless `persistent`         |
-| Autofill    | Text fields use `.lumi-autofill` + `--lumi-control-autofill-bg` |
+| Pattern     | Expectation                                                                                          |
+| ----------- | ---------------------------------------------------------------------------------------------------- |
+| Hover       | Soft fill/border shift; optional 1px lift—never jump (switcher options: fill only, no lift)          |
+| Focus       | Visible ring/outline from shared tokens; keyboard-first                                              |
+| Disabled    | Reduced opacity (`--lumi-opacity-disabled`), no pointer events                                       |
+| Loading     | Shared spinner recipe (18% accent track + solid arc, ~1s) or progress; block double-submit           |
+| Selection   | Binary peers: control-active fill. Switchers: elevated active pill. Cards/lists: clear vs hover      |
+| Destructive | `danger` color; confirm in app logic, not red styling alone                                          |
+| Overlays    | Portal + Floating UI; Escape closes unless `persistent`                                              |
+| Autofill    | Text fields use `.lumi-autofill` + `--lumi-control-autofill-bg`                                      |
 
 ### Minimalism checklist
 

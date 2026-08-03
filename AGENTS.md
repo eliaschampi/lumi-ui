@@ -1,6 +1,6 @@
 # Lumi UI Agent Instructions
 
-Shared Lumi UI source of truth for Coedula and Faztore.
+Shared Lumi UI source of truth for Coedula, Aeduca, and Faztore.
 
 ## Documentation Routing
 

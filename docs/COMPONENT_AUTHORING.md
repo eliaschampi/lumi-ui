@@ -310,6 +310,20 @@ Forms and interactive peers should feel like one system:
 
 When adding a new control, **side-by-side with Input** at the sizes that control actually supports and match padding/typography. If you introduce a new interactive root that uses `--lumi-focus-outline` or `--lumi-control-focus-shadow`, add its class to the re-declaration list in `core.css` (never bake those recipes only on `:root`). Do not invent private focus-ring or transition variables.
 
+### Shared visual recipes (copy peers — do not fork)
+
+One role → one CSS recipe. Match the nearest peer; do not invent a second shell, spinner, or tile.
+
+| Role | Peers | Recipe (tokens only) |
+| ---- | ----- | -------------------- |
+| Field / binary active | Input, Checkbox, Radio, Switch | Control fill/border; active via `--lumi-control-active-*`; field focus via `--lumi-control-focus-shadow` |
+| Exclusive switcher | Tabs, SegmentedControl | Glass shell (`surface-glass-strong` + `background-hover`, glass/strong border, `--lumi-control-shadow`); 9% accent hover (no lift); elevated **active pill** (surface-card gradient + quiet shadow). Not control-fill. |
+| Spinner | Button, Select, Table, Loading | Thick border: `currentColor` 18% track + solid top arc; `calc(var(--lumi-duration-slower) * 2)`; honor `prefers-reduced-motion` |
+| Icon tile | IconBadge, InfoItem icon | 12% accent fill, 20% accent border, `--lumi-radius-lg`, 30% top sheen; IconBadge may keep `--lumi-shadow-sm` as a free-standing tile |
+| Affordance focus | Chip close/action, list/menu items, tabs | `--lumi-focus-outline` + offset; set `--lumi-control-accent` on the root |
+
+Surface roles: [GUIDE §6](./GUIDE.md#6-design-language).
+
 ---
 
 ## 9. Content Defaults

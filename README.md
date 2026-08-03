@@ -27,6 +27,8 @@ pnpm add @lumi-ui/svelte
 | **[Guide](./docs/GUIDE.md)**                             | Install, theming, layouts, core CSS, design language, library design, release |
 | **[Components](./docs/COMPONENTS.md)**                   | Component catalog and selection                                               |
 | **[Component authoring](./docs/COMPONENT_AUTHORING.md)** | How to build or change a component                                            |
+| **[Consumer reference](./docs/CONSUMER_REFERENCE.md)**   | Compact product integration recipes                                           |
+| **[Upgrade](./docs/UPGRADE.md)**                         | Consumer migration (0.1.5 → 0.2.x and later)                                  |
 | **[docs hub](./docs/README.md)**                         | Authority map                                                                 |
 | **[AGENTS.md](./AGENTS.md)**                             | Agent rules → [Agent Guide](./docs/AGENT_GUIDE.md)                            |
 
@@ -50,15 +52,15 @@ New code should use semantic `variant`, `color`, and `placement` props. Historic
 
 ## Lightweight Contract
 
-The published artifact and browser payload are different measurements. The current `0.2.0` snapshot is:
+The published artifact and browser payload are different measurements. Budgets below are release gates; **re-measure on every release** (`pnpm run package` + `npm pack --dry-run`). Last published numbers below were taken on **0.2.0** and may drift slightly through **0.2.3** CSS polish.
 
-| Surface                                                                               |        Current | Release budget |
-| ------------------------------------------------------------------------------------- | -------------: | -------------: |
-| npm tarball                                                                           |      149.5 KiB |      ≤ 200 KiB |
-| npm unpacked                                                                          |      739.1 KiB |        ≤ 1 MiB |
-| All CSS (`tokens` + `core` + `patterns`)                                              | 10.70 KiB gzip |  ≤ 12 KiB gzip |
-| `Switch` + `Radio` + `Textarea` + `Checkbox` + `SegmentedControl` + `Input` + `Table` | 22.57 KiB gzip |  ≤ 25 KiB gzip |
-| Standalone `Checkbox`                                                                 |  2.47 KiB gzip |              — |
+| Surface                                                                               | Last measured (0.2.0) | Release budget |
+| ------------------------------------------------------------------------------------- | --------------------: | -------------: |
+| npm tarball                                                                           |             149.5 KiB |      ≤ 200 KiB |
+| npm unpacked                                                                          |             739.1 KiB |        ≤ 1 MiB |
+| All CSS (`tokens` + `core` + `patterns`)                                              |        10.70 KiB gzip |  ≤ 12 KiB gzip |
+| `Switch` + `Radio` + `Textarea` + `Checkbox` + `SegmentedControl` + `Input` + `Table` |        22.57 KiB gzip |  ≤ 25 KiB gzip |
+| Standalone `Checkbox`                                                                 |         2.47 KiB gzip |              — |
 
 Browser figures use a production Vite bundle with Svelte externalized because it is a shared peer dependency. Root imports tree-shake to the same runtime bytes as direct barrels. Components with arbitrary string-icon props retain the Lucide registry by contract; fixed internal icons should use deep Lucide imports so simple controls do not pay for that registry.
 
