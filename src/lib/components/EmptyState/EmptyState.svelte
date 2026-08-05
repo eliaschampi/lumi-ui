@@ -178,10 +178,12 @@
 		line-height: var(--lumi-line-height-normal);
 	}
 
-	/* Actions container */
+	/* Actions container — centered with the title/description block */
 	.lumi-empty-state__actions {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
+		justify-content: center;
 		gap: var(--lumi-space-sm);
 		margin-top: var(--lumi-space-sm);
 	}
