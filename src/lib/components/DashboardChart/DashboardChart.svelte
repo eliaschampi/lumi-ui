@@ -1,14 +1,19 @@
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
 	import { portal } from '../../actions/portal';
-	import type { ChartColor } from '../../types/charts';
 	import {
+		CHART_COLOR_VARS,
+		CHART_PADDING,
+		CHART_Y_TICKS,
+		ceilNice,
 		chartGradientId,
-		computeSparseXLabels
+		computeSparseXLabels,
+		truncateAxisLabel
 	} from '../../utils/chartCoordinates';
 	import { formatChartValue } from '../../utils/chartFormat';
 	import {
 		MIN_CHART_WIDTH,
+		placeChartTooltip,
 		useChartWidth
 	} from '../../utils/chartLayout.svelte';
 	import type { DashboardChartProps } from './types';
@@ -25,23 +30,12 @@
 		class: className = ''
 	}: DashboardChartProps = $props();
 
-	const colorMap: Record<ChartColor, string> = {
-		primary: 'var(--lumi-color-primary)',
-		secondary: 'var(--lumi-color-secondary)',
-		success: 'var(--lumi-color-success)',
-		warning: 'var(--lumi-color-warning)',
-		danger: 'var(--lumi-color-danger)',
-		info: 'var(--lumi-color-info)'
-	};
-
-	const PADDING = { top: 20, right: 12, bottom: 28, left: 52 };
-	const Y_TICKS = 4;
-
 	const layout = useChartWidth(MIN_CHART_WIDTH);
 
 	let hoveredIndex = $state<number | null>(null);
 	let tooltipX = $state(0);
 	let tooltipY = $state(0);
+	let tooltipEl = $state<HTMLDivElement | undefined>();
 	const hiddenSeries = new SvelteSet<string>();
 
 	const normalizedSeries = $derived(
@@ -65,13 +59,18 @@
 	);
 	const chartW = $derived(layout.chartW);
 	const chartH = $derived(height);
-	const plotW = $derived(chartW - PADDING.left - PADDING.right);
-	const plotH = $derived(chartH - PADDING.top - PADDING.bottom);
+	const plotW = $derived(
+		Math.max(1, chartW - CHART_PADDING.left - CHART_PADDING.right)
+	);
+	const plotH = $derived(
+		Math.max(1, chartH - CHART_PADDING.top - CHART_PADDING.bottom)
+	);
 
 	const allVisibleValues = $derived(
-		visibleSeries.length > 0
-			? visibleSeries.flatMap((s) => s.data).map((p) => p.value)
-			: []
+		visibleSeries
+			.flatMap((s) => s.data)
+			.map((p) => p.value)
+			.filter(Number.isFinite)
 	);
 	const maxValue = $derived(Math.max(...allVisibleValues, 0));
 	const minValue = $derived(Math.min(...allVisibleValues, 0));
@@ -91,34 +90,40 @@
 
 	const seriesPaths = $derived(
 		visibleSeries.map((s) => {
-			const pts = s.data.map((p, i) => ({ x: scaleX(i), y: scaleY(p.value) }));
-			const line = monotonePath(pts);
+			const pts = xAxisData.map((_, i) => {
+				const point = s.data[i];
+				if (!point || !Number.isFinite(point.value)) return null;
+				return { x: scaleX(i), y: scaleY(point.value) };
+			});
+			const defined = pts.filter((point) => point !== null);
+			const line = monotonePath(defined);
 			const area = line
-				? `${line}L${pts[pts.length - 1].x},${zeroY}L${pts[0].x},${zeroY}Z`
+				? `${line}L${defined[defined.length - 1].x},${zeroY}L${defined[0].x},${zeroY}Z`
 				: '';
 			return {
 				key: s.key,
 				label: s.label,
-				strokeColor: colorMap[s.color],
+				strokeColor: CHART_COLOR_VARS[s.color],
 				gradientId: chartGradientId('line', s.color, [
 					s.key,
 					...s.data.map((p) => p.key)
 				]),
 				linePath: line,
 				areaPath: area,
-				points: pts
+				points: pts,
+				lonePoint: defined.length === 1 ? defined[0] : null
 			};
 		})
 	);
 
 	const yTicks = $derived(
 		Array.from(
-			{ length: Y_TICKS + 1 },
-			(_, i) => niceMin + (valueRange / Y_TICKS) * i
+			{ length: CHART_Y_TICKS + 1 },
+			(_, i) => niceMin + (valueRange / CHART_Y_TICKS) * i
 		)
 	);
 	const xLabels = $derived(
-		computeSparseXLabels(xAxisData, (index) => scaleX(index), 7)
+		computeSparseXLabels(xAxisData, (index) => scaleX(index))
 	);
 
 	const hoveredEntries = $derived.by(() => {
@@ -131,27 +136,21 @@
 				color: s.color,
 				point: s.data[index]
 			}))
-			.filter((entry) => entry.point !== undefined);
+			.filter(
+				(entry) =>
+					entry.point !== undefined && Number.isFinite(entry.point.value)
+			);
 	});
-
-	function ceilNice(v: number): number {
-		if (v <= 0) return 10;
-		const magnitude = 10 ** Math.floor(Math.log10(v));
-		const normalized = v / magnitude;
-		const nice =
-			normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
-		return nice * magnitude;
-	}
 
 	function scaleX(i: number): number {
 		return (
-			PADDING.left +
+			CHART_PADDING.left +
 			(xAxisData.length > 1 ? (i / (xAxisData.length - 1)) * plotW : plotW / 2)
 		);
 	}
 
 	function scaleY(v: number): number {
-		return PADDING.top + ((niceMax - v) / valueRange) * plotH;
+		return CHART_PADDING.top + ((niceMax - v) / valueRange) * plotH;
 	}
 
 	function monotonePath(pts: { x: number; y: number }[]): string {
@@ -196,22 +195,15 @@
 		return formatChartValue(v, valueFormat, 'axis');
 	}
 
-	function formatAxisLabel(label: string): string {
-		if (label.length <= xLabelMaxLength) {
-			return label;
-		}
-
-		return `${label.slice(0, Math.max(1, xLabelMaxLength - 3))}...`;
-	}
-
 	function formatTooltipValue(v: number): string {
 		return formatChartValue(v, valueFormat, 'tooltip');
 	}
 
 	function setHover(index: number, event: PointerEvent): void {
 		hoveredIndex = index;
-		tooltipX = event.clientX;
-		tooltipY = event.clientY;
+		const position = placeChartTooltip(event, tooltipEl);
+		tooltipX = position.x;
+		tooltipY = position.y;
 	}
 
 	function clearHover(): void {
@@ -220,15 +212,15 @@
 
 	function hitBand(index: number): { x: number; width: number } {
 		if (xPoints.length === 1) {
-			return { x: PADDING.left, width: plotW };
+			return { x: CHART_PADDING.left, width: plotW };
 		}
 
 		const center = xPoints[index].x;
 		const left =
-			index === 0 ? PADDING.left : (xPoints[index - 1].x + center) / 2;
+			index === 0 ? CHART_PADDING.left : (xPoints[index - 1].x + center) / 2;
 		const right =
 			index === xPoints.length - 1
-				? chartW - PADDING.right
+				? chartW - CHART_PADDING.right
 				: (center + xPoints[index + 1].x) / 2;
 		return { x: left, width: right - left };
 	}
@@ -256,12 +248,12 @@
 					class="lumi-line-chart__legend-item"
 					class:lumi-line-chart__legend-item--hidden={hiddenSeries.has(s.key)}
 					aria-pressed={!hiddenSeries.has(s.key)}
-					aria-label={`Toggle ${s.label}`}
+					aria-label={s.label}
 					onclick={() => toggleSeries(s.key)}
 				>
 					<span
 						class="lumi-line-chart__legend-dot"
-						style:background={colorMap[s.color]}
+						style:background={CHART_COLOR_VARS[s.color]}
 					></span>
 					<span class="lumi-line-chart__legend-label">{s.label}</span>
 				</button>
@@ -304,9 +296,9 @@
 
 				{#each yTicks as tick (tick)}
 					<line
-						x1={PADDING.left}
+						x1={CHART_PADDING.left}
 						y1={scaleY(tick)}
-						x2={chartW - PADDING.right}
+						x2={chartW - CHART_PADDING.right}
 						y2={scaleY(tick)}
 						class="lumi-line-chart__grid"
 					/>
@@ -314,7 +306,7 @@
 
 				{#each yTicks as tick (tick)}
 					<text
-						x={PADDING.left - 8}
+						x={CHART_PADDING.left - 8}
 						y={scaleY(tick) + 3}
 						text-anchor="end"
 						class="lumi-line-chart__label"
@@ -326,11 +318,11 @@
 				{#each xLabels as xl (xl.key)}
 					<text
 						x={xl.x}
-						y={chartH - 6}
+						y={chartH - 8}
 						text-anchor="middle"
 						class="lumi-line-chart__label"
 					>
-						{formatAxisLabel(xl.label)}
+						{truncateAxisLabel(xl.label, xLabelMaxLength)}
 					</text>
 				{/each}
 
@@ -346,27 +338,36 @@
 						d={sp.linePath}
 						fill="none"
 						stroke={sp.strokeColor}
-						stroke-width="2.5"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						class="lumi-line-chart__line"
 					/>
+					{#if sp.lonePoint}
+						<circle
+							cx={sp.lonePoint.x}
+							cy={sp.lonePoint.y}
+							r="4"
+							fill={sp.strokeColor}
+							class="lumi-line-chart__dot"
+						/>
+					{/if}
 				{/each}
 
 				{#if hoveredIndex !== null}
 					<line
 						x1={xPoints[hoveredIndex].x}
-						y1={PADDING.top}
+						y1={CHART_PADDING.top}
 						x2={xPoints[hoveredIndex].x}
-						y2={PADDING.top + plotH}
+						y2={CHART_PADDING.top + plotH}
 						class="lumi-line-chart__crosshair"
 					/>
 					{#each seriesPaths as sp (sp.key)}
-						{#if sp.points[hoveredIndex]}
+						{@const hoverPoint = sp.points[hoveredIndex]}
+						{#if hoverPoint}
 							<circle
-								cx={sp.points[hoveredIndex].x}
-								cy={sp.points[hoveredIndex].y}
-								r="4.5"
+								cx={hoverPoint.x}
+								cy={hoverPoint.y}
+								r="4"
 								fill={sp.strokeColor}
 								class="lumi-line-chart__dot"
 							/>
@@ -378,7 +379,7 @@
 					{@const band = hitBand(index)}
 					<rect
 						x={band.x}
-						y={PADDING.top}
+						y={CHART_PADDING.top}
 						width={band.width}
 						height={plotH}
 						fill="transparent"
@@ -395,22 +396,23 @@
 
 {#if hoveredEntries.length > 0}
 	<div
-		class="lumi-chart-tooltip lumi-line-chart__tooltip"
+		bind:this={tooltipEl}
+		class="lumi-chart-tooltip"
 		use:portal
-		style:left="{tooltipX + 14}px"
-		style:top="{tooltipY - 10}px"
+		style:left="{tooltipX}px"
+		style:top="{tooltipY}px"
 	>
-		<span class="lumi-line-chart__tooltip-date"
+		<span class="lumi-chart-tooltip__title"
 			>{hoveredEntries[0].point.label}</span
 		>
 		{#each hoveredEntries as entry (entry.key)}
-			<div class="lumi-line-chart__tooltip-row">
+			<div class="lumi-chart-tooltip__row">
 				<span
-					class="lumi-line-chart__tooltip-dot"
-					style:background={colorMap[entry.color]}
+					class="lumi-chart-tooltip__dot"
+					style:background={CHART_COLOR_VARS[entry.color]}
 				></span>
-				<span class="lumi-line-chart__tooltip-label">{entry.label}</span>
-				<span class="lumi-line-chart__tooltip-value"
+				<span class="lumi-chart-tooltip__label">{entry.label}</span>
+				<span class="lumi-chart-tooltip__value"
 					>{formatTooltipValue(entry.point.value)}</span
 				>
 			</div>
@@ -444,9 +446,7 @@
 		border: var(--lumi-border-width-thin) solid transparent;
 		border-radius: var(--lumi-radius-full);
 		cursor: pointer;
-		transition:
-			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			opacity var(--lumi-duration-fast) var(--lumi-easing-default);
+		transition: var(--lumi-transition-control);
 		user-select: none;
 	}
 
@@ -504,22 +504,23 @@
 
 	.lumi-line-chart__grid {
 		stroke: var(--lumi-color-border-light);
-		stroke-width: 1;
+		stroke-width: var(--lumi-border-width-thin);
 	}
 
 	.lumi-line-chart__label {
-		font-size: 10px;
+		font-size: var(--lumi-font-size-xs);
 		fill: var(--lumi-color-text-muted);
 	}
 
 	.lumi-line-chart__line {
 		pointer-events: none;
 		vector-effect: non-scaling-stroke;
+		stroke-width: var(--lumi-border-width-thick);
 	}
 
 	.lumi-line-chart__crosshair {
 		stroke: var(--lumi-color-border);
-		stroke-width: 1;
+		stroke-width: var(--lumi-border-width-thin);
 		stroke-dasharray: 4 3;
 		pointer-events: none;
 	}
@@ -532,43 +533,5 @@
 
 	.lumi-line-chart__hit {
 		cursor: crosshair;
-	}
-
-	.lumi-line-chart__tooltip {
-		flex-direction: column;
-		gap: var(--lumi-space-2xs);
-	}
-
-	.lumi-line-chart__tooltip-date {
-		font-size: var(--lumi-font-size-xs);
-		font-weight: var(--lumi-font-weight-semibold);
-		color: var(--lumi-color-text);
-	}
-
-	.lumi-line-chart__tooltip-row {
-		display: flex;
-		align-items: center;
-		gap: var(--lumi-space-2xs);
-	}
-
-	.lumi-line-chart__tooltip-dot {
-		width: var(--lumi-space-2xs);
-		min-width: var(--lumi-space-2xs);
-		height: var(--lumi-space-2xs);
-		border-radius: var(--lumi-radius-full);
-	}
-
-	.lumi-line-chart__tooltip-label {
-		font-size: var(--lumi-font-size-xs);
-		color: var(--lumi-color-text-muted);
-		flex: 1;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.lumi-line-chart__tooltip-value {
-		font-size: var(--lumi-font-size-xs);
-		font-weight: var(--lumi-font-weight-semibold);
-		color: var(--lumi-color-text);
 	}
 </style>

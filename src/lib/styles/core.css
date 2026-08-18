@@ -406,6 +406,8 @@ body {
 	position: fixed;
 	z-index: var(--lumi-z-tooltip);
 	display: flex;
+	flex-direction: column;
+	gap: var(--lumi-space-2xs);
 	padding: var(--lumi-space-xs) var(--lumi-space-sm);
 	background: var(--lumi-color-surface-elevated, var(--lumi-color-surface));
 	border: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
@@ -413,6 +415,39 @@ body {
 	box-shadow: var(--lumi-shadow-md);
 	pointer-events: none;
 	white-space: nowrap;
+}
+
+.lumi-chart-tooltip__title {
+	font-size: var(--lumi-font-size-xs);
+	font-weight: var(--lumi-font-weight-semibold);
+	color: var(--lumi-color-text);
+}
+
+.lumi-chart-tooltip__row {
+	display: flex;
+	align-items: center;
+	gap: var(--lumi-space-2xs);
+}
+
+.lumi-chart-tooltip__dot {
+	width: var(--lumi-space-xs);
+	min-width: var(--lumi-space-xs);
+	height: var(--lumi-space-xs);
+	border-radius: var(--lumi-radius-full);
+}
+
+.lumi-chart-tooltip__label {
+	font-size: var(--lumi-font-size-xs);
+	color: var(--lumi-color-text-muted);
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.lumi-chart-tooltip__value {
+	font-size: var(--lumi-font-size-xs);
+	font-weight: var(--lumi-font-weight-semibold);
+	color: var(--lumi-color-text);
 }
 
 /* ========================================================================== */
