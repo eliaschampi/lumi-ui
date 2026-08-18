@@ -170,11 +170,11 @@
 
 	/* Zoom effect */
 	.lumi-image--zoomed:hover .lumi-image__img {
-		transform: scale(1.1);
+		transform: scale(var(--lumi-interactive-zoom-scale));
 	}
 
 	.lumi-image__img.lumi-image--zoomed:hover {
-		transform: scale(1.1);
+		transform: scale(var(--lumi-interactive-zoom-scale));
 	}
 
 	.lumi-image__error-state {
@@ -216,25 +216,6 @@
 		}
 		100% {
 			background-position: 200% 0;
-		}
-	}
-
-	/* Reduced motion support */
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-image__img {
-			transition: none;
-		}
-
-		.lumi-image__skeleton {
-			animation: none;
-		}
-
-		.lumi-image--zoomed:hover .lumi-image__img {
-			transform: none;
-		}
-
-		.lumi-image__img.lumi-image--zoomed:hover {
-			transform: none;
 		}
 	}
 </style>

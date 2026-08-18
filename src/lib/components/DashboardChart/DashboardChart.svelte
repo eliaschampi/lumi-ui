@@ -467,7 +467,7 @@
 		width: var(--lumi-space-xs);
 		min-width: var(--lumi-space-xs);
 		height: var(--lumi-space-xs);
-		border-radius: 50%;
+		border-radius: var(--lumi-radius-full);
 	}
 
 	.lumi-line-chart__legend-label {
@@ -492,7 +492,7 @@
 		justify-content: center;
 		padding: var(--lumi-space-lg);
 		border: var(--lumi-border-width-thin) dashed var(--lumi-color-border-light);
-		border-radius: var(--lumi-radius-xl);
+		border-radius: var(--lumi-radius-panel);
 	}
 
 	.lumi-line-chart__svg {
@@ -555,7 +555,7 @@
 		width: var(--lumi-space-2xs);
 		min-width: var(--lumi-space-2xs);
 		height: var(--lumi-space-2xs);
-		border-radius: 50%;
+		border-radius: var(--lumi-radius-full);
 	}
 
 	.lumi-line-chart__tooltip-label {

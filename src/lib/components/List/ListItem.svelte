@@ -121,10 +121,8 @@
 			--list-item-padding,
 			var(--lumi-space-sm) var(--lumi-space-md)
 		);
-		border-radius: var(--lumi-radius-md);
-		transition:
-			var(--lumi-transition-control),
-			transform var(--lumi-duration-fast) var(--lumi-easing-default);
+		border-radius: var(--lumi-radius-control);
+		transition: var(--lumi-transition-interactive);
 		cursor: default;
 		background: transparent;
 		color: var(--lumi-color-text);

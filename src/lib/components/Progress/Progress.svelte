@@ -101,7 +101,7 @@
 		gap: var(--lumi-space-sm);
 		width: 100%;
 		--progress-track-bg: var(--lumi-color-surface-inset);
-		--progress-indeterminate-width: 30%;
+		--progress-indeterminate-scale: 0.3;
 		--progress-stripe-color: color-mix(
 			in srgb,
 			var(--lumi-color-white) 32%,
@@ -141,13 +141,14 @@
 	}
 
 	.lumi-progress__bar--indeterminate {
-		width: var(--progress-indeterminate-width);
+		width: 100%;
 		position: absolute;
 		inset-block: 0;
 		left: 0;
+		transform-origin: left center;
 		animation: lumi-progress-indeterminate var(--lumi-duration-shimmer)
 			var(--lumi-easing-default) infinite;
-		will-change: left;
+		will-change: transform;
 	}
 
 	.lumi-progress__stripes {
@@ -206,12 +207,15 @@
 		--progress-stripe-size: var(--lumi-space-xl);
 	}
 
+	/* Transform, not `left`: the sweep stays on the compositor and never triggers
+	   layout on the track. The bar is full-width so translateX percentages are
+	   relative to the track, and scaleX carves out the travelling sliver. */
 	@keyframes lumi-progress-indeterminate {
 		from {
-			left: calc(var(--progress-indeterminate-width) * -1);
+			transform: translateX(-100%) scaleX(var(--progress-indeterminate-scale));
 		}
 		to {
-			left: 100%;
+			transform: translateX(100%) scaleX(var(--progress-indeterminate-scale));
 		}
 	}
 
@@ -224,19 +228,11 @@
 		}
 	}
 
+	/* core.css collapses durations globally; the indeterminate bar additionally
+	   needs a resting shape, since a frozen sliver reads as a stuck progress. */
 	@media (prefers-reduced-motion: reduce) {
-		.lumi-progress__bar {
-			transition: none;
-		}
-
-		.lumi-progress__bar--indeterminate,
-		.lumi-progress__stripes {
-			animation: none;
-		}
-
 		.lumi-progress__bar--indeterminate {
-			left: 0;
-			width: 100%;
+			transform: none;
 			background: color-mix(
 				in srgb,
 				var(--progress-color) 35%,

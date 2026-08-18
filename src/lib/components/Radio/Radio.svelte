@@ -149,7 +149,7 @@
 	.lumi-radio.lumi-radio-option {
 		width: 100%;
 		padding: var(--lumi-space-sm) var(--lumi-space-md);
-		border-radius: var(--lumi-radius-lg);
+		border-radius: var(--lumi-radius-option);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
 		background: var(--lumi-color-surface-card);
 		transition: var(--lumi-transition-control);
@@ -275,13 +275,5 @@
 
 	:global(.lumi-radio-option-list--gap-2xs) {
 		gap: var(--lumi-space-2xs);
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-radio__visual,
-		.lumi-radio__circle,
-		.lumi-radio.lumi-radio-option {
-			transition: none;
-		}
 	}
 </style>

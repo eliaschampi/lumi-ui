@@ -58,9 +58,7 @@
 		border-radius: var(--lumi-radius-full);
 		overflow: hidden;
 		border: var(--lumi-border-width-thick) solid var(--lumi-color-border);
-		transition:
-			var(--lumi-transition-control),
-			transform var(--lumi-duration-fast) var(--lumi-easing-default);
+		transition: var(--lumi-transition-interactive);
 		transform: scale(1);
 		display: flex;
 		align-items: center;
@@ -69,13 +67,12 @@
 
 	.lumi-avatar-picker__image:hover {
 		border-color: var(--lumi-color-primary);
-		transform: scale(1.05);
+		transform: scale(var(--lumi-interactive-hover-scale));
 	}
 
 	.lumi-avatar-picker__image--selected {
-		border-width: var(--lumi-border-width-thick);
 		border-color: var(--lumi-color-primary);
-		transform: scale(1.1);
+		transform: scale(var(--lumi-interactive-zoom-scale));
 	}
 
 	.lumi-avatar-picker__image img {

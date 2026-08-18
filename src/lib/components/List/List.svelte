@@ -62,7 +62,7 @@
 		padding: var(--lumi-space-xs);
 		background: var(--list-shell-bg);
 		border: var(--lumi-border-width-thin) solid var(--list-border);
-		border-radius: var(--lumi-radius-2xl);
+		border-radius: var(--lumi-surface-radius);
 		overflow-x: hidden;
 		overflow-y: auto;
 		overscroll-behavior: contain;
@@ -143,7 +143,6 @@
 	/* Disabled state */
 	.lumi-list--disabled {
 		opacity: var(--lumi-opacity-disabled);
-		filter: saturate(0.8);
 		pointer-events: none;
 	}
 </style>

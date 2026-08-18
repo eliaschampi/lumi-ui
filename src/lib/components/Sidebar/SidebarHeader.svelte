@@ -85,7 +85,7 @@
 		min-height: calc(var(--lumi-space-5xl) + var(--lumi-space-xs));
 		overflow: hidden;
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
-		border-radius: var(--lumi-radius-xl);
+		border-radius: var(--lumi-radius-panel);
 		background:
 			var(--lumi-gradient-sidebar-header), var(--lumi-color-surface-card);
 		box-shadow: var(--lumi-shadow-sm);

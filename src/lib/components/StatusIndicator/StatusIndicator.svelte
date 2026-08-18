@@ -123,7 +123,7 @@
 	}
 
 	.lumi-status-indicator--pulse {
-		animation: lumi-status-pulse calc(var(--lumi-duration-slower) * 4)
+		animation: lumi-status-pulse var(--lumi-duration-pulse)
 			var(--lumi-easing-in-out) infinite;
 	}
 
@@ -134,12 +134,6 @@
 		}
 		50% {
 			opacity: 0.5;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-status-indicator--pulse {
-			animation: none;
 		}
 	}
 </style>

@@ -83,7 +83,7 @@
 		min-width: 0;
 		padding: var(--lumi-space-sm) var(--lumi-space-md);
 		border: var(--lumi-border-width-thin) solid var(--info-shell-border);
-		border-radius: var(--lumi-radius-xl);
+		border-radius: var(--lumi-radius-panel);
 		background: var(--info-shell-bg);
 		transition: var(--lumi-transition-control);
 	}
@@ -118,7 +118,7 @@
 		width: calc(var(--lumi-icon-sm) + var(--lumi-space-lg));
 		height: calc(var(--lumi-icon-sm) + var(--lumi-space-lg));
 		color: var(--_accent, var(--lumi-color-primary));
-		border-radius: var(--lumi-radius-lg);
+		border-radius: var(--lumi-radius-tile);
 		border: var(--lumi-border-width-thin) solid var(--info-icon-border);
 		background: var(--info-icon-bg);
 		box-shadow: inset 0 var(--lumi-border-width-thin) 0

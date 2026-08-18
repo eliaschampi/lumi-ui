@@ -554,7 +554,7 @@
 		width: 100%;
 		background: var(--lumi-gradient-subtle), var(--lumi-color-surface-card);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
-		border-radius: var(--lumi-radius-2xl);
+		border-radius: var(--lumi-surface-radius);
 		box-shadow: var(--lumi-shadow-sm);
 		overflow-x: auto;
 	}
@@ -662,7 +662,7 @@
 	.lumi-table__row--focusable:focus-visible {
 		outline: var(--lumi-focus-outline);
 		outline-offset: calc(var(--lumi-border-width-thick) * -1);
-		border-radius: var(--lumi-radius-sm);
+		border-radius: var(--lumi-radius-control);
 	}
 
 	/* Hover uses color and border accent; transforms are unreliable on table rows. */
@@ -743,8 +743,7 @@
 			color-mix(in srgb, currentColor 18%, transparent);
 		border-top-color: currentColor;
 		border-radius: var(--lumi-radius-full);
-		animation: lumi-table-spin calc(var(--lumi-duration-slower) * 2) linear
-			infinite;
+		animation: lumi-table-spin var(--lumi-duration-spin) linear infinite;
 	}
 
 	@keyframes lumi-table-spin {
@@ -824,7 +823,7 @@
 		color: var(--lumi-color-text-muted);
 		background: transparent;
 		border: var(--lumi-border-width-thin) solid transparent;
-		border-radius: var(--lumi-radius-md);
+		border-radius: var(--lumi-radius-control);
 		cursor: pointer;
 		transition: var(--lumi-transition-control);
 	}
@@ -876,15 +875,4 @@
 	}
 
 	/* ── Reduced motion ───────────────────────── */
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-table__tbody .lumi-table__row,
-		.lumi-table__pagination-page {
-			transition: none;
-		}
-
-		.lumi-table__spinner {
-			animation: none;
-		}
-	}
 </style>

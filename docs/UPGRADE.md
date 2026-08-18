@@ -72,3 +72,42 @@ Verified consistent, no change needed: **Checkbox**, **Radio**, **Switch**, **In
 3. Grep and migrate legacy props / removed tokens
 4. Opt in glass blur on translucent cards
 5. `pnpm run check` + light/dark visual pass (forms, focus, cards, status solids)
+
+## 0.2.x → 0.3.x (soft-depth visual system)
+
+No component props, events, BEM classes, exports, or TypeScript contracts changed.
+This is a drop-in visual and CSS recipe update. Existing consumer styles continue to
+override the same brand/status seed variables after the Lumi styles import.
+
+**Theme seed changes** — default accent seeds are now gamut-safe and share a common
+lightness plane. Consumers that rely on Lumi's default colors should perform a light
+and dark visual QA pass. Custom seed overrides remain supported without migration:
+
+```css
+:root {
+	--lumi-brand-primary: …;
+	--lumi-brand-secondary: …;
+	--lumi-status-success: …;
+	--lumi-status-warning: …;
+	--lumi-status-danger: …;
+	--lumi-status-info: …;
+}
+```
+
+**New semantic CSS recipes** — `--lumi-radius-control`, `--lumi-radius-option`,
+`--lumi-radius-panel`, `--lumi-radius-tooltip`, `--lumi-radius-tile`,
+`--lumi-shadow-inset`, `--lumi-focus-ring`, `--lumi-transition-interactive`, and
+the elevation/motion tokens are additive token contract entries. Existing token
+names remain available.
+
+**Behavioral polish** — interactive motion uses shared lift/press/zoom values;
+reduced motion is handled centrally; indeterminate progress uses compositor-friendly
+transforms; and dropdowns no longer run a duplicate CSS transition alongside their
+Svelte transition. Review custom overrides that depend on the old shadow geometry.
+
+**Checklist**
+
+1. Keep the existing styles import order and seed overrides.
+2. Review cards, controls, dialogs, dropdowns, tabs, and progress in light and dark mode.
+3. Keyboard-check focus rings and `prefers-reduced-motion` behavior.
+4. Run `pnpm run check` and `pnpm run package` in the library workspace.

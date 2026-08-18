@@ -214,11 +214,4 @@
 		background: var(--lumi-color-border);
 		box-shadow: none;
 	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-switch__thumb,
-		.lumi-switch__track {
-			transition: none;
-		}
-	}
 </style>

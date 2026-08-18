@@ -71,7 +71,7 @@
 		padding: 0 var(--lumi-space-lg);
 		z-index: var(--lumi-z-fixed);
 		margin: 0;
-		transition: var(--lumi-transition-all);
+		transition: var(--lumi-transition-colors);
 	}
 
 	.lumi-navbar__left {

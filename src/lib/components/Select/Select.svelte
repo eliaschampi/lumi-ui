@@ -696,18 +696,18 @@
 		background: var(--lumi-floating-surface-bg);
 		border: var(--lumi-border-width-thin) solid
 			var(--lumi-floating-surface-border);
-		border-radius: var(--lumi-radius-2xl);
+		border-radius: var(--lumi-surface-radius);
 		overflow: hidden;
 		box-shadow: var(--lumi-floating-surface-shadow);
 		padding: var(--lumi-space-xs);
 		display: flex;
 		flex-direction: column;
-		animation: select-dropdown-in var(--lumi-duration-fast)
+		animation: lumi-select-dropdown-in var(--lumi-duration-fast)
 			var(--lumi-easing-default);
 		transform-origin: top center;
 	}
 
-	@keyframes select-dropdown-in {
+	@keyframes lumi-select-dropdown-in {
 		from {
 			opacity: 0;
 			transform: scaleY(0.96) translateY(calc(var(--lumi-space-2xs) * -1));
@@ -747,7 +747,7 @@
 		user-select: none;
 		color: var(--lumi-color-text);
 		font-size: var(--lumi-font-size-base);
-		border-radius: var(--lumi-radius-md);
+		border-radius: var(--lumi-radius-control);
 		border: var(--lumi-border-width-thin) solid transparent;
 		transition:
 			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
@@ -885,27 +885,12 @@
 			color-mix(in srgb, currentColor 18%, transparent);
 		border-top-color: currentColor;
 		border-radius: var(--lumi-radius-full);
-		animation: lumi-select-spin calc(var(--lumi-duration-slower) * 2) linear
-			infinite;
+		animation: lumi-select-spin var(--lumi-duration-spin) linear infinite;
 	}
 
 	@keyframes lumi-select-spin {
 		to {
 			transform: rotate(360deg);
-		}
-	}
-
-	/* ── Reduced motion ───────────────────────── */
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-select__dropdown,
-		.lumi-select__spinner {
-			animation: none;
-		}
-		.lumi-select__arrow,
-		.lumi-select__container,
-		.lumi-select__clear,
-		.lumi-select__option {
-			transition: none;
 		}
 	}
 </style>

@@ -190,7 +190,7 @@
 		padding: var(--lumi-space-xs) var(--lumi-space-sm);
 		max-width: calc(var(--lumi-space-5xl) * 3);
 		border: var(--lumi-border-width-thin) solid var(--lumi-tooltip-border);
-		border-radius: var(--lumi-radius-lg);
+		border-radius: var(--lumi-radius-tooltip);
 		background: var(--lumi-tooltip-bg);
 		color: var(--lumi-color-text);
 		box-shadow: var(--lumi-shadow-md);

@@ -96,7 +96,7 @@
 		--checkbox-size: var(--lumi-icon-md);
 		--checkbox-icon-size: var(--lumi-icon-sm);
 		--checkbox-label-size: var(--lumi-font-size-base);
-		--checkbox-radius: var(--lumi-radius-base);
+		--checkbox-radius: var(--lumi-radius-xs);
 		--checkbox-color: var(--lumi-color-primary);
 		--lumi-control-accent: var(--checkbox-color);
 		position: relative;
@@ -128,9 +128,7 @@
 		border-radius: var(--checkbox-radius);
 		background: var(--lumi-color-control-fill);
 		box-shadow: var(--lumi-control-shadow);
-		transition:
-			var(--lumi-transition-control),
-			transform var(--lumi-duration-fast) var(--lumi-easing-default);
+		transition: var(--lumi-transition-interactive);
 		flex-shrink: 0;
 		overflow: hidden;
 	}
@@ -157,7 +155,7 @@
 		--checkbox-size: var(--lumi-icon-sm);
 		--checkbox-icon-size: var(--lumi-icon-xs);
 		--checkbox-label-size: var(--lumi-font-size-sm);
-		--checkbox-radius: var(--lumi-radius-sm);
+		--checkbox-radius: var(--lumi-radius-2xs);
 	}
 
 	.lumi-checkbox--md {
@@ -205,12 +203,5 @@
 	.lumi-checkbox--disabled.lumi-checkbox--checked .lumi-checkbox__visual {
 		background: var(--lumi-color-border);
 		border-color: var(--lumi-color-border);
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-checkbox__visual,
-		:global(.lumi-checkbox__icon) {
-			transition: none;
-		}
 	}
 </style>

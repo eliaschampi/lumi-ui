@@ -255,7 +255,7 @@
 		justify-content: center;
 		padding: var(--lumi-space-lg);
 		border: var(--lumi-border-width-thin) dashed var(--lumi-color-border-light);
-		border-radius: var(--lumi-radius-xl);
+		border-radius: var(--lumi-radius-panel);
 	}
 
 	.lumi-bar-chart__svg {

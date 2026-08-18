@@ -375,12 +375,10 @@
 		margin-left: var(--lumi-space-md);
 		background: transparent;
 		border: var(--lumi-border-width-thin) solid transparent;
-		border-radius: var(--lumi-radius-lg);
+		border-radius: var(--lumi-radius-full);
 		color: var(--lumi-color-text-muted);
 		cursor: pointer;
-		transition:
-			var(--lumi-transition-control),
-			transform var(--lumi-duration-fast) var(--lumi-easing-default);
+		transition: var(--lumi-transition-interactive);
 		flex-shrink: 0;
 	}
 
@@ -396,11 +394,11 @@
 			var(--lumi-color-primary) 20%,
 			var(--lumi-color-border)
 		);
-		transform: scale(1.02);
+		transform: scale(var(--lumi-interactive-hover-scale));
 	}
 
 	.lumi-dialog__close:active {
-		transform: scale(0.98);
+		transform: scale(var(--lumi-interactive-press-scale));
 	}
 
 	.lumi-dialog__close:focus-visible {
@@ -483,12 +481,6 @@
 
 		.lumi-dialog__footer :global(.lumi-button) {
 			width: 100%;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-dialog__close {
-			transition: none;
 		}
 	}
 </style>
