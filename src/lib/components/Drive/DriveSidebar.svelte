@@ -136,6 +136,9 @@
 <style>
 	:global(.drive-sidebar__nav) {
 		max-height: var(--lumi-drive-sidebar-nav-max-height);
+		overflow-x: hidden;
+		overflow-y: auto;
+		overscroll-behavior: contain;
 	}
 
 	.lumi-drive-sidebar__scope {

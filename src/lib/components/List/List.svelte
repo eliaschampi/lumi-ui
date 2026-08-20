@@ -63,9 +63,6 @@
 		background: var(--list-shell-bg);
 		border: var(--lumi-border-width-thin) solid var(--list-border);
 		border-radius: var(--lumi-surface-radius);
-		overflow-x: hidden;
-		overflow-y: auto;
-		overscroll-behavior: contain;
 		scrollbar-width: thin;
 		scrollbar-color: var(--list-scroll-thumb) var(--list-scroll-track);
 	}
@@ -109,7 +106,15 @@
 		--list-accent: var(--lumi-color-info);
 	}
 
-	/* Bounded scroll area presets (token-based, no hardcode) */
+	/* Inner scroller only when height is capped — unbounded lists stay in the parent scrollport. */
+	.lumi-list--max-sm,
+	.lumi-list--max-md,
+	.lumi-list--max-lg {
+		overflow-x: hidden;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+	}
+
 	.lumi-list--max-sm {
 		max-block-size: calc(var(--lumi-space-3xl) * 3);
 	}

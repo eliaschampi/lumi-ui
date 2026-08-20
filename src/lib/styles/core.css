@@ -519,6 +519,10 @@ body {
 
 .lumi-page-sidebar__bounded-list {
 	max-height: var(--lumi-page-sidebar-list-max-height);
+	min-height: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
+	overscroll-behavior: contain;
 }
 
 .lumi-page-sidebar__radio-group {
