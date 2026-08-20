@@ -39,7 +39,11 @@
 	const values = $derived(
 		data.map((point) => point.value).filter(Number.isFinite)
 	);
-	const hasValues = $derived(values.some((value) => value > 0));
+	const hasValues = $derived(
+		valueFormat === 'score'
+			? values.length > 0
+			: values.some((value) => value > 0)
+	);
 	const classes = $derived(
 		['lumi-bar-chart', className].filter(Boolean).join(' ')
 	);

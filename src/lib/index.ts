@@ -114,6 +114,11 @@ export type {
 	DashboardChartValueFormat
 } from './components/DashboardChart';
 export { DashboardChart } from './components/DashboardChart';
+export type {
+	DashboardDonutChartProps,
+	DashboardDonutSlice
+} from './components/DashboardDonutChart';
+export { DashboardDonutChart } from './components/DashboardDonutChart';
 export type { DashboardSectionProps } from './components/DashboardSection';
 export { DashboardSection } from './components/DashboardSection';
 export { DateRangeFilter } from './components/DateRangeFilter';
