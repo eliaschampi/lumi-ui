@@ -143,7 +143,7 @@
 		min-width: 0;
 		padding: 0;
 		background: transparent;
-		border: 0;
+		border: none;
 		color: inherit;
 		font: inherit;
 		cursor: pointer;
@@ -210,13 +210,5 @@
 		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-space-2xs);
 		border-radius: var(--lumi-radius-full);
-	}
-
-	/* Accessibility */
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-chip,
-		.lumi-chip__close {
-			transition: none;
-		}
 	}
 </style>

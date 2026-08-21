@@ -146,7 +146,7 @@
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
-		border-radius: var(--lumi-radius-lg);
+		border-radius: var(--lumi-radius-tile);
 		opacity: 0.8;
 		transition: var(--lumi-transition-opacity);
 	}
@@ -190,7 +190,7 @@
 
 	/* Hover effects */
 	.lumi-empty-state:hover .lumi-empty-state__visual {
-		transform: scale(1.02);
+		transform: scale(var(--lumi-interactive-hover-scale));
 	}
 
 	.lumi-empty-state:hover .lumi-empty-state__icon,
@@ -206,21 +206,6 @@
 	.lumi-empty-state:focus-visible {
 		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-space-2xs);
-		border-radius: var(--lumi-radius-lg);
-	}
-
-	/* Reduced motion support */
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-empty-state,
-		.lumi-empty-state__visual,
-		.lumi-empty-state__icon,
-		.lumi-empty-state__default-icon,
-		.lumi-empty-state__image {
-			transition: none;
-		}
-
-		.lumi-empty-state:hover .lumi-empty-state__visual {
-			transform: none;
-		}
+		border-radius: var(--lumi-surface-radius);
 	}
 </style>

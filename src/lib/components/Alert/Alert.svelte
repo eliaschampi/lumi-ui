@@ -121,9 +121,10 @@
 		align-items: center;
 		gap: var(--lumi-space-sm);
 		padding: var(--lumi-space-md);
-		border-radius: var(--lumi-radius-2xl);
+		border-radius: var(--lumi-surface-radius);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
-		border-inline-start: var(--lumi-space-2xs) solid var(--alert-color);
+		border-inline-start: var(--lumi-border-width-accent) solid
+			var(--alert-color);
 		background: var(--alert-bg);
 		box-shadow: var(--lumi-shadow-sm);
 	}

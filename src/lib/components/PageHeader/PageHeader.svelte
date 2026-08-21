@@ -48,7 +48,7 @@
 		align-items: center;
 		gap: var(--lumi-space-md);
 		padding: var(--lumi-space-lg);
-		border-radius: var(--lumi-radius-2xl);
+		border-radius: var(--lumi-surface-radius);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border);
 		background: var(--lumi-gradient-card);
 		box-shadow: var(--lumi-shadow-sm);
@@ -75,7 +75,7 @@
 	@media (max-width: 48rem) {
 		.lumi-page-header {
 			padding: var(--lumi-space-md);
-			border-radius: var(--lumi-radius-xl);
+			border-radius: var(--lumi-radius-panel);
 			grid-template-columns: 1fr;
 		}
 

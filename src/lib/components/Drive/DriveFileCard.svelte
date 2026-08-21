@@ -277,10 +277,7 @@
 	.drive-file-card:focus-visible {
 		outline: none;
 		border-color: var(--lumi-color-border-interactive);
-		box-shadow:
-			0 0 0 var(--lumi-border-width-thick)
-				color-mix(in srgb, var(--lumi-color-primary) 24%, transparent),
-			var(--lumi-shadow-md);
+		box-shadow: var(--lumi-focus-ring), var(--lumi-shadow-md);
 	}
 
 	.drive-file-card--selected {
@@ -307,7 +304,7 @@
 			var(--lumi-color-primary) 10%,
 			var(--lumi-color-surface-card)
 		);
-		transform: scale(1.02);
+		transform: scale(var(--lumi-interactive-hover-scale));
 	}
 
 	.drive-file-card__preview {
@@ -317,7 +314,7 @@
 		justify-content: center;
 		width: 100%;
 		aspect-ratio: var(--lumi-drive-file-preview-ratio);
-		border-radius: var(--lumi-radius-xl);
+		border-radius: var(--lumi-radius-panel);
 		background:
 			linear-gradient(
 				145deg,
@@ -434,19 +431,6 @@
 	@media (max-width: 40rem) {
 		.drive-file-card {
 			--drive-file-card-padding: var(--lumi-drive-file-card-padding-mobile);
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.drive-file-card,
-		.drive-file-card__preview :global(.lumi-image__img) {
-			transition: none;
-		}
-
-		.drive-file-card:hover
-			.drive-file-card__preview
-			:global(.drive-file-card__image .lumi-image__img) {
-			transform: none;
 		}
 	}
 </style>

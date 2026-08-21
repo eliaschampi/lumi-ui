@@ -155,9 +155,7 @@
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
-		transition:
-			var(--lumi-transition-control),
-			transform var(--lumi-duration-fast) var(--lumi-easing-default);
+		transition: var(--lumi-transition-interactive);
 		width: 100%;
 		text-align: left;
 		color: var(--lumi-color-text);
@@ -193,14 +191,7 @@
 	.lumi-card--interactive:focus-visible {
 		outline-color: transparent;
 		border-color: var(--lumi-color-border-interactive);
-		box-shadow:
-			0 0 0 var(--lumi-border-width-thick)
-				color-mix(
-					in srgb,
-					var(--lumi-color-primary) var(--lumi-control-focus-ring-strength),
-					transparent
-				),
-			var(--lumi-shadow-md);
+		box-shadow: var(--lumi-focus-ring), var(--lumi-shadow-md);
 	}
 
 	.lumi-card--hoverable:hover {
@@ -309,17 +300,6 @@
 	/* With Image adjustments */
 	.lumi-card--with-image .lumi-card__header {
 		padding-top: var(--lumi-space-lg);
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-card,
-		.lumi-card__media :global(.lumi-image__img) {
-			transition: none;
-		}
-
-		.lumi-card--hoverable:hover .lumi-card__media :global(.lumi-image__img) {
-			transform: none;
-		}
 	}
 
 	@media (forced-colors: active) {

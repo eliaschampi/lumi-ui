@@ -27,7 +27,7 @@
 <style>
 	.lumi-fieldset {
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border);
-		border-radius: var(--lumi-radius-2xl);
+		border-radius: var(--lumi-surface-radius);
 		padding: var(--lumi-space-md);
 		margin: 0;
 		min-width: 0;

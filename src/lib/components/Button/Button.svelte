@@ -122,6 +122,8 @@
 	/* ========================================================================== */
 
 	.lumi-button {
+		/* Focus rings resolve the accent from here (core.css recipe). */
+		--lumi-control-accent: var(--btn-color);
 		--button-hover-lift: 0;
 		--button-shadow-strength: 22%;
 		--button-shadow-hover-strength: 28%;
@@ -164,18 +166,13 @@
 		outline: var(--lumi-border-width-thick) solid transparent;
 		isolation: isolate;
 
-		transition:
-			var(--lumi-transition-control),
-			transform var(--lumi-duration-fast) var(--lumi-easing-default);
+		transition: var(--lumi-transition-interactive);
 	}
 
 	/* Focus visible */
 	.lumi-button:focus-visible {
 		outline-color: transparent;
-		box-shadow:
-			0 0 0 var(--lumi-border-width-thick)
-				color-mix(in srgb, var(--lumi-color-background) 88%, transparent),
-			0 0 0 calc(var(--lumi-border-width-thick) * 2) var(--btn-color);
+		box-shadow: var(--lumi-focus-ring-offset);
 	}
 
 	/* Disabled - Elegant fade */
@@ -401,7 +398,7 @@
 			color-mix(in srgb, currentColor 18%, transparent);
 		border-top-color: currentColor;
 		border-radius: var(--lumi-radius-full);
-		animation: lumi-spin calc(var(--lumi-duration-slower) * 2) linear infinite;
+		animation: lumi-spin var(--lumi-duration-spin) linear infinite;
 	}
 
 	.lumi-button--loading {
@@ -439,14 +436,6 @@
 	.lumi-button__text {
 		display: inline-flex;
 		align-items: center;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-button,
-		.lumi-button__spinner {
-			transition: none;
-			animation: none;
-		}
 	}
 
 	@media (forced-colors: active) {

@@ -254,7 +254,7 @@
 		background: var(--lumi-floating-surface-bg);
 		border: var(--lumi-border-width-thin) solid
 			var(--lumi-floating-surface-border);
-		border-radius: var(--lumi-radius-2xl);
+		border-radius: var(--lumi-surface-radius);
 		padding: var(--lumi-space-xs);
 		min-width: calc(var(--lumi-space-5xl) * 2);
 		max-width: calc(var(--lumi-space-5xl) * 3 + var(--lumi-space-xl));
@@ -298,12 +298,5 @@
 	}
 	.lumi-context--lg {
 		min-width: calc(var(--lumi-space-5xl) * 3);
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-context {
-			transition: none !important;
-			animation: none !important;
-		}
 	}
 </style>

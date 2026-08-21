@@ -210,7 +210,7 @@
 
 	/* Hover */
 	.lumi-slider__input:hover::-webkit-slider-thumb {
-		transform: scale(1.08);
+		transform: scale(var(--lumi-interactive-zoom-scale));
 		box-shadow:
 			var(--lumi-shadow-md),
 			0 0 0 var(--lumi-space-2xs)
@@ -218,7 +218,7 @@
 	}
 
 	.lumi-slider__input:hover::-moz-range-thumb {
-		transform: scale(1.08);
+		transform: scale(var(--lumi-interactive-zoom-scale));
 		box-shadow:
 			var(--lumi-shadow-md),
 			0 0 0 var(--lumi-space-2xs)
@@ -250,7 +250,7 @@
 
 	/* Active dragging states (using :active pseudo-class!) */
 	.lumi-slider__input:active::-webkit-slider-thumb {
-		transform: scale(1.1);
+		transform: scale(var(--lumi-interactive-zoom-scale));
 		box-shadow:
 			var(--lumi-shadow-md),
 			0 0 0 var(--lumi-space-xs)
@@ -259,7 +259,7 @@
 	}
 
 	.lumi-slider__input:active::-moz-range-thumb {
-		transform: scale(1.1);
+		transform: scale(var(--lumi-interactive-zoom-scale));
 		box-shadow:
 			var(--lumi-shadow-md),
 			0 0 0 var(--lumi-space-xs)
@@ -282,7 +282,7 @@
 		font-family: var(--lumi-font-family-mono);
 		font-size: var(--lumi-font-size-xs);
 		font-weight: var(--lumi-font-weight-bold);
-		border-radius: var(--lumi-radius-md);
+		border-radius: var(--lumi-radius-tooltip);
 		white-space: nowrap;
 		opacity: 0;
 		pointer-events: none;
@@ -321,14 +321,6 @@
 	.lumi-slider--disabled {
 		opacity: var(--lumi-opacity-disabled);
 		pointer-events: none;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-slider__input::-webkit-slider-thumb,
-		.lumi-slider__input::-moz-range-thumb,
-		.lumi-slider__tooltip {
-			transition: none;
-		}
 	}
 
 	@media (forced-colors: active) {

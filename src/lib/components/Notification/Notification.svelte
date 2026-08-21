@@ -128,7 +128,8 @@
 		padding: var(--lumi-space-md);
 		background: var(--notification-bg);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
-		border-inline-start: var(--lumi-space-2xs) solid var(--notification-color);
+		border-inline-start: var(--lumi-border-width-accent) solid
+			var(--notification-color);
 		border-radius: var(--lumi-layout-floating-radius);
 		box-shadow: var(--lumi-shadow-lg);
 		pointer-events: auto;
@@ -247,17 +248,6 @@
 			gap: var(--lumi-space-sm);
 			padding: var(--lumi-space-sm);
 			border-radius: var(--lumi-layout-floating-radius-mobile);
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-notification,
-		.lumi-notification__close {
-			transition: none;
-		}
-
-		.lumi-notification--timed::after {
-			animation: none;
 		}
 	}
 </style>

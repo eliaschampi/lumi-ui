@@ -32,7 +32,7 @@
 		width: 100%;
 		padding: var(--lumi-space-md);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
-		border-radius: var(--lumi-radius-lg);
+		border-radius: var(--lumi-radius-option);
 		background: var(--lumi-color-surface);
 		color: var(--lumi-color-text);
 		font-family: inherit;
@@ -111,11 +111,5 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-tag-option {
-			transition: none;
-		}
 	}
 </style>

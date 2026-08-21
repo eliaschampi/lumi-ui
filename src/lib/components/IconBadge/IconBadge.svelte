@@ -35,7 +35,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		border-radius: var(--lumi-radius-lg);
+		border-radius: var(--lumi-radius-tile);
 		background: color-mix(
 			in srgb,
 			var(--icon-badge-color) var(--icon-badge-bg-strength),

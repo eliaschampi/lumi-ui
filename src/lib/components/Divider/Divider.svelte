@@ -127,7 +127,7 @@
 		font-weight: var(--lumi-font-weight-medium);
 		white-space: nowrap;
 		background: var(--lumi-color-surface-overlay);
-		border-radius: var(--lumi-radius-2xl);
+		border-radius: var(--lumi-surface-radius);
 		border: none;
 		min-width: fit-content;
 		flex-shrink: 0;
@@ -151,7 +151,7 @@
 	.lumi-divider--interactive:focus-visible {
 		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-space-2xs);
-		border-radius: var(--lumi-radius-md);
+		border-radius: var(--lumi-radius-control);
 	}
 
 	.lumi-divider--left .lumi-divider__line--after {

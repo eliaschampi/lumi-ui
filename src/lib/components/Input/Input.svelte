@@ -519,15 +519,4 @@
 	.lumi-input__description {
 		color: var(--lumi-color-text-muted);
 	}
-
-	/* ── Reduced motion ───────────────────────── */
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-input__wrapper,
-		.lumi-input__label,
-		.lumi-input__icon,
-		.lumi-input__action,
-		.lumi-input__footer {
-			transition: none;
-		}
-	}
 </style>

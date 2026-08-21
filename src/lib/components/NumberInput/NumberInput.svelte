@@ -281,11 +281,4 @@
 		-webkit-appearance: none;
 		margin: 0;
 	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-number-input__wrapper,
-		.lumi-number-input__btn {
-			transition: none;
-		}
-	}
 </style>

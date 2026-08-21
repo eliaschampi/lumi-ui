@@ -137,7 +137,7 @@
 		justify-content: center;
 		padding: var(--lumi-space-sm);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
-		border-radius: var(--lumi-radius-xl);
+		border-radius: var(--lumi-radius-panel);
 		background:
 			linear-gradient(
 				145deg,
@@ -158,14 +158,14 @@
 		max-width: 100%;
 		max-height: 70vh;
 		object-fit: contain;
-		border-radius: var(--lumi-radius-lg);
+		border-radius: var(--lumi-radius-tile);
 		box-shadow: var(--lumi-shadow-md);
 	}
 
 	.drive-preview__video {
 		width: 100%;
 		max-height: 70vh;
-		border-radius: var(--lumi-radius-lg);
+		border-radius: var(--lumi-radius-tile);
 		box-shadow: var(--lumi-shadow-md);
 	}
 
@@ -192,7 +192,7 @@
 		width: 100%;
 		height: 100%;
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
-		border-radius: var(--lumi-radius-lg);
+		border-radius: var(--lumi-radius-tile);
 		background: var(--lumi-color-surface);
 	}
 
@@ -209,7 +209,7 @@
 		margin-top: var(--lumi-space-sm);
 		padding: var(--lumi-space-sm) var(--lumi-space-md);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
-		border-radius: var(--lumi-radius-lg);
+		border-radius: var(--lumi-radius-tile);
 		background: var(--lumi-color-surface);
 		display: flex;
 		align-items: center;

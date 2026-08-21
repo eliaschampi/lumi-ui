@@ -131,9 +131,7 @@
 		width: 100%;
 		padding: var(--lumi-space-sm) var(--lumi-space-md);
 		cursor: pointer;
-		transition:
-			var(--lumi-transition-control),
-			transform var(--lumi-duration-fast) var(--lumi-easing-default);
+		transition: var(--lumi-transition-interactive);
 		user-select: none;
 		color: var(--lumi-color-text);
 		font-size: var(--lumi-font-size-sm);
@@ -143,7 +141,7 @@
 		gap: var(--lumi-space-md);
 		background: transparent;
 		border: none;
-		border-radius: var(--lumi-radius-md);
+		border-radius: var(--lumi-radius-control);
 		text-align: left;
 		text-decoration: none;
 	}

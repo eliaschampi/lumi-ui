@@ -26,7 +26,7 @@
 	width: var(--lumi-control-height-xl);
 	height: var(--lumi-control-height-xl);
 	padding: var(--lumi-space-xs);
-	border-radius: var(--lumi-radius-xl);
+	border-radius: var(--lumi-radius-panel);
 	border: var(--lumi-border-width-thin) solid
 		var(--lumi-floating-surface-border);
 	background: var(--lumi-floating-surface-bg);
@@ -68,7 +68,7 @@
 			var(--lumi-filter-summary-accent, var(--lumi-color-primary)) 8%,
 			var(--lumi-color-border)
 		);
-	border-radius: var(--lumi-radius-2xl);
+	border-radius: var(--lumi-surface-radius);
 	background:
 		linear-gradient(
 			145deg,
@@ -99,6 +99,7 @@
 
 .lumi-filter-summary--split {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: flex-start;
 	gap: var(--lumi-space-md);
 }
@@ -173,7 +174,8 @@
 
 .lumi-filter-summary--split
 	> :is(.lumi-filter-summary__meta, .lumi-filter-summary__actions) {
-	flex: 0 0 auto;
+	flex: 0 1 auto;
+	max-inline-size: 100%;
 	align-self: flex-start;
 	margin-left: auto;
 }
@@ -344,7 +346,7 @@
 	min-width: 0;
 	padding: var(--lumi-space-sm);
 	border: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
-	border-radius: var(--lumi-radius-lg);
+	border-radius: var(--lumi-radius-option);
 	background: color-mix(in srgb, var(--lumi-color-surface) 76%, transparent);
 	transition: var(--lumi-transition-colors);
 }
@@ -369,7 +371,7 @@
 	flex: 0 0 var(--lumi-space-xl);
 	width: var(--lumi-space-xl);
 	height: var(--lumi-space-xl);
-	border-radius: var(--lumi-radius-lg);
+	border-radius: var(--lumi-radius-tile);
 	background: var(--lumi-metric-rank-badge-tint);
 	color: var(--lumi-metric-rank-badge-color);
 	font-size: var(--lumi-font-size-xs);
@@ -429,14 +431,14 @@
 	width: 100%;
 	height: var(--lumi-space-xs);
 	border: none;
-	border-radius: var(--lumi-radius-full);
+	border-radius: var(--lumi-radius-pill);
 	overflow: hidden;
 	background: var(--lumi-color-background-hover);
 }
 
 .lumi-metric-rank-row__progress::-webkit-progress-bar {
 	background: var(--lumi-color-background-hover);
-	border-radius: var(--lumi-radius-full);
+	border-radius: var(--lumi-radius-pill);
 }
 
 .lumi-metric-rank-row__progress::-webkit-progress-value {
@@ -445,7 +447,7 @@
 		var(--lumi-color-primary),
 		var(--lumi-color-warning)
 	);
-	border-radius: var(--lumi-radius-full);
+	border-radius: var(--lumi-radius-pill);
 }
 
 .lumi-metric-rank-row__progress::-moz-progress-bar {
@@ -454,7 +456,7 @@
 		var(--lumi-color-primary),
 		var(--lumi-color-warning)
 	);
-	border-radius: var(--lumi-radius-full);
+	border-radius: var(--lumi-radius-pill);
 }
 
 /** Dashboard overview: chart plus side-column layout. */
@@ -508,7 +510,7 @@
 	justify-content: space-between;
 	padding: var(--lumi-space-md);
 	border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
-	border-radius: var(--lumi-radius-xl);
+	border-radius: var(--lumi-radius-panel);
 	background:
 		var(--lumi-gradient-subtle), var(--lumi-color-surface-glass-strong);
 	box-shadow: var(--lumi-shadow-sm);
@@ -528,9 +530,8 @@ button.lumi-person-cell--link {
 	color: inherit;
 	text-align: start;
 	background: transparent;
-	border-radius: var(--lumi-radius-md);
-	transition: background-color var(--lumi-duration-base)
-		var(--lumi-easing-default);
+	border-radius: var(--lumi-radius-control);
+	transition: var(--lumi-transition-colors);
 }
 
 button.lumi-person-cell--link:hover {
@@ -552,7 +553,7 @@ button.lumi-person-cell--link:focus-visible {
 	max-block-size: calc(var(--lumi-space-6xl) * 2);
 	padding: var(--lumi-space-xs);
 	border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
-	border-radius: var(--lumi-radius-xl);
+	border-radius: var(--lumi-radius-panel);
 	background: var(--lumi-color-surface-glass-strong);
 	box-shadow: inset 0 var(--lumi-border-width-thin) 0
 		var(--lumi-color-border-light);
@@ -568,16 +569,13 @@ button.lumi-person-cell--link:focus-visible {
 	min-width: 0;
 	padding: var(--lumi-space-sm) var(--lumi-space-md);
 	border: var(--lumi-border-width-thin) solid transparent;
-	border-radius: var(--lumi-radius-lg);
+	border-radius: var(--lumi-radius-option);
 	background: transparent;
 	color: var(--lumi-color-text);
 	font: inherit;
 	text-align: left;
 	cursor: pointer;
-	transition:
-		background-color var(--lumi-duration-fast) var(--lumi-easing-default),
-		border-color var(--lumi-duration-fast) var(--lumi-easing-default),
-		color var(--lumi-duration-fast) var(--lumi-easing-default);
+	transition: var(--lumi-transition-control);
 }
 
 .lumi-result-option:hover {
@@ -613,7 +611,7 @@ button.lumi-person-cell--link:focus-visible {
 	width: var(--lumi-placeholder-tile-size-md);
 	height: var(--lumi-placeholder-tile-size-md);
 	border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
-	border-radius: var(--lumi-radius-lg);
+	border-radius: var(--lumi-radius-tile);
 	background: var(--lumi-color-surface-glass);
 	flex: 0 0 auto;
 }
@@ -687,7 +685,7 @@ button.lumi-person-cell--link:focus-visible {
 	gap: var(--lumi-space-lg);
 	align-items: end;
 	padding: var(--lumi-space-lg);
-	border-radius: var(--lumi-radius-2xl);
+	border-radius: var(--lumi-surface-radius);
 	border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
 	background:
 		var(--lumi-gradient-glass-search-panel, var(--lumi-gradient-subtle)),
@@ -737,7 +735,7 @@ button.lumi-person-cell--link:focus-visible {
 	grid-template-columns: minmax(0, 1fr) auto;
 	gap: var(--lumi-space-md);
 	padding: var(--lumi-space-md);
-	border-radius: var(--lumi-radius-xl);
+	border-radius: var(--lumi-radius-panel);
 	border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
 	background:
 		var(--lumi-gradient-glass-history-item, var(--lumi-gradient-subtle)),
@@ -782,7 +780,7 @@ button.lumi-person-cell--link:focus-visible {
 	justify-content: space-between;
 	gap: var(--lumi-space-md);
 	padding: var(--lumi-space-sm) var(--lumi-space-md);
-	border-radius: var(--lumi-radius-xl);
+	border-radius: var(--lumi-radius-panel);
 	border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
 	background: var(--lumi-color-surface-card);
 	box-shadow: var(--lumi-shadow-sm);
@@ -795,14 +793,11 @@ button.lumi-person-cell--link:focus-visible {
 	background:
 		var(--lumi-gradient-glass-item-row, var(--lumi-gradient-subtle)),
 		var(--lumi-color-surface-card);
-	transition:
-		transform var(--lumi-duration-base) var(--lumi-easing-default),
-		border-color var(--lumi-duration-base) var(--lumi-easing-default),
-		box-shadow var(--lumi-duration-base) var(--lumi-easing-default);
+	transition: var(--lumi-transition-interactive);
 }
 
 .lumi-item-row--interactive:hover {
-	transform: translateY(calc(var(--lumi-space-2xs) * -0.25));
+	transform: translateY(var(--lumi-interactive-lift));
 	border-color: var(--lumi-color-border-interactive);
 	box-shadow: var(--lumi-shadow-sm);
 }
@@ -814,10 +809,7 @@ button.lumi-person-cell--link:focus-visible {
 		var(--lumi-color-primary) 44%,
 		var(--lumi-color-border)
 	);
-	box-shadow:
-		0 0 0 var(--lumi-border-width-thick)
-			color-mix(in srgb, var(--lumi-color-primary) 24%, transparent),
-		var(--lumi-shadow-sm);
+	box-shadow: var(--lumi-focus-ring), var(--lumi-shadow-sm);
 }
 
 .lumi-item-row--active {
@@ -868,7 +860,7 @@ button.lumi-person-cell--link:focus-visible {
 	justify-content: space-between;
 	gap: var(--lumi-space-md);
 	padding: var(--lumi-space-md);
-	border-radius: var(--lumi-radius-xl);
+	border-radius: var(--lumi-radius-panel);
 	border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
 	background:
 		var(--lumi-gradient-glass-total-summary), var(--lumi-color-surface-card);
@@ -935,7 +927,7 @@ button.lumi-person-cell--link:focus-visible {
 	.lumi-filter-summary {
 		grid-template-columns: minmax(0, 1fr);
 		padding: var(--lumi-space-md);
-		border-radius: var(--lumi-radius-xl);
+		border-radius: var(--lumi-radius-panel);
 	}
 
 	.lumi-filter-summary__title {
@@ -1098,7 +1090,7 @@ button.lumi-person-cell--link:focus-visible {
 	.lumi-result-list,
 	.lumi-metric-rank-list--scroll-capped
 )::-webkit-scrollbar-thumb {
-	border-radius: var(--lumi-radius-full);
+	border-radius: var(--lumi-radius-pill);
 	background: color-mix(
 		in srgb,
 		var(--lumi-color-border-strong) 78%,

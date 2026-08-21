@@ -205,7 +205,7 @@
 		color: var(--lumi-color-text-muted);
 		background: var(--lumi-color-surface-glass-strong);
 		padding: var(--lumi-space-2xs);
-		border-radius: var(--lumi-radius-xl);
+		border-radius: var(--lumi-radius-panel);
 		pointer-events: none;
 	}
 
@@ -259,12 +259,5 @@
 	.lumi-textarea--readonly .lumi-textarea__input {
 		cursor: default;
 		background: var(--textarea-bg);
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-textarea__label,
-		.lumi-textarea__input {
-			transition: none;
-		}
 	}
 </style>

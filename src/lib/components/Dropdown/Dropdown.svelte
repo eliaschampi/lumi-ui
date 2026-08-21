@@ -76,8 +76,6 @@
 			.join(' ')
 	);
 
-	const styleVars = `--dropdown-transition-duration: ${transitionDuration}ms;`;
-
 	// Render rule (no double-render of `children`):
 	//   trigger  -> `triggerContent`, or `children` only when no `content` is given.
 	//   menu     -> `content`, or `children` only when `triggerContent` is given.
@@ -268,7 +266,6 @@
 <div
 	bind:this={dropdownRef}
 	class={dropdownClasses}
-	style={styleVars}
 	onmouseenter={handleTriggerEnter}
 	onmouseleave={handleTriggerLeave}
 	role="presentation"
@@ -335,22 +332,19 @@
 	.lumi-dropdown__trigger:focus-visible {
 		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-space-2xs);
-		border-radius: var(--lumi-radius-md);
+		border-radius: var(--lumi-radius-control);
 	}
 
 	.lumi-dropdown__menu {
 		background: var(--lumi-floating-surface-bg);
 		border: var(--lumi-border-width-thin) solid
 			var(--lumi-floating-surface-border);
-		border-radius: var(--lumi-radius-2xl);
+		border-radius: var(--lumi-surface-radius);
 		box-shadow: var(--lumi-floating-surface-shadow);
 		padding: var(--lumi-space-xs);
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
-		transition:
-			opacity var(--dropdown-transition-duration) var(--lumi-easing-default),
-			transform var(--dropdown-transition-duration) var(--lumi-easing-default);
 	}
 
 	.lumi-dropdown__content {
@@ -382,11 +376,5 @@
 
 	.lumi-dropdown__menu--md {
 		min-width: calc(var(--lumi-space-5xl) * 2 + var(--lumi-space-sm));
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-dropdown__menu {
-			transition: none !important;
-		}
 	}
 </style>

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { LUMI_CONFIG } from '../config';
 	import type { LoadingProps } from './types';
 
 	interface Props extends LoadingProps {
@@ -15,8 +14,6 @@
 		children
 	}: Props = $props();
 
-	const transitionDuration = `${LUMI_CONFIG.transitions.base}ms`;
-
 	const classes = $derived.by(() => {
 		const baseClasses = [
 			'lumi-loading',
@@ -29,9 +26,7 @@
 		return baseClasses.join(' ');
 	});
 
-	const styleVars = $derived(
-		`--loading-color: var(--lumi-color-${color}); --loading-transition-duration: ${transitionDuration};`
-	);
+	const styleVars = $derived(`--loading-color: var(--lumi-color-${color});`);
 	const ariaLabel = $derived(text || (children ? undefined : 'Loading'));
 </script>
 
@@ -67,8 +62,7 @@
 		gap: var(--lumi-space-md);
 		font-family: var(--lumi-font-family-sans);
 		color: var(--loading-color);
-		transition: color var(--loading-transition-duration)
-			var(--lumi-easing-default);
+		transition: var(--lumi-transition-colors);
 		--loading-ring-size: var(--lumi-space-3xl);
 		--loading-core-size: var(--lumi-space-lg);
 	}
@@ -88,8 +82,7 @@
 		border: var(--lumi-border-width-thick) solid
 			color-mix(in srgb, currentColor 18%, transparent);
 		border-top-color: currentColor;
-		animation: lumi-loading-spin calc(var(--lumi-duration-slower) * 2) linear
-			infinite;
+		animation: lumi-loading-spin var(--lumi-duration-spin) linear infinite;
 	}
 
 	.lumi-loading__core {
@@ -99,7 +92,7 @@
 		background: currentColor;
 		box-shadow: 0 0 var(--lumi-space-md)
 			color-mix(in srgb, currentColor 35%, transparent);
-		animation: lumi-loading-pulse calc(var(--lumi-duration-slower) * 3)
+		animation: lumi-loading-pulse var(--lumi-duration-shimmer)
 			var(--lumi-easing-in-out) infinite;
 	}
 
@@ -143,15 +136,6 @@
 		50% {
 			transform: scale(1);
 			opacity: 1;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.lumi-loading,
-		.lumi-loading__ring,
-		.lumi-loading__core {
-			transition: none;
-			animation: none;
 		}
 	}
 </style>
