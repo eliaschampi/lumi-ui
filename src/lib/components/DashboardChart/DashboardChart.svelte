@@ -83,7 +83,11 @@
 	);
 	const niceMin = $derived(minValue < 0 ? -ceilNice(Math.abs(minValue)) : 0);
 	const valueRange = $derived(Math.max(niceMax - niceMin, Number.EPSILON));
-	const hasValues = $derived(allVisibleValues.some((v) => v !== 0));
+	const hasValues = $derived(
+		valueFormat === 'score'
+			? allVisibleValues.length > 0
+			: allVisibleValues.some((v) => v !== 0)
+	);
 
 	const xPoints = $derived(xAxisData.map((_, i) => ({ x: scaleX(i) })));
 	const zeroY = $derived(scaleY(0));
@@ -95,11 +99,16 @@
 				if (!point || !Number.isFinite(point.value)) return null;
 				return { x: scaleX(i), y: scaleY(point.value) };
 			});
-			const defined = pts.filter((point) => point !== null);
-			const line = monotonePath(defined);
-			const area = line
-				? `${line}L${defined[defined.length - 1].x},${zeroY}L${defined[0].x},${zeroY}Z`
-				: '';
+			const segments = finiteSegments(pts);
+			const line = segments.map((segment) => monotonePath(segment)).join('');
+			const area = segments
+				.map((segment) => {
+					const path = monotonePath(segment);
+					return path
+						? `${path}L${segment[segment.length - 1].x},${zeroY}L${segment[0].x},${zeroY}Z`
+						: '';
+				})
+				.join('');
 			return {
 				key: s.key,
 				label: s.label,
@@ -111,7 +120,9 @@
 				linePath: line,
 				areaPath: area,
 				points: pts,
-				lonePoint: defined.length === 1 ? defined[0] : null
+				lonePoints: segments
+					.filter((segment) => segment.length === 1)
+					.map((segment) => segment[0])
 			};
 		})
 	);
@@ -141,6 +152,29 @@
 					entry.point !== undefined && Number.isFinite(entry.point.value)
 			);
 	});
+
+	function finiteSegments(
+		pts: Array<{ x: number; y: number } | null>
+	): Array<Array<{ x: number; y: number }>> {
+		const segments: Array<Array<{ x: number; y: number }>> = [];
+		let current: Array<{ x: number; y: number }> = [];
+
+		for (const point of pts) {
+			if (point) {
+				current.push(point);
+				continue;
+			}
+
+			if (current.length > 0) {
+				segments.push(current);
+				current = [];
+			}
+		}
+
+		if (current.length > 0) segments.push(current);
+
+		return segments;
+	}
 
 	function scaleX(i: number): number {
 		return (
@@ -342,15 +376,15 @@
 						stroke-linejoin="round"
 						class="lumi-line-chart__line"
 					/>
-					{#if sp.lonePoint}
+					{#each sp.lonePoints as point, index (`${sp.key}-${index}`)}
 						<circle
-							cx={sp.lonePoint.x}
-							cy={sp.lonePoint.y}
+							cx={point.x}
+							cy={point.y}
 							r="4"
 							fill={sp.strokeColor}
 							class="lumi-line-chart__dot"
 						/>
-					{/if}
+					{/each}
 				{/each}
 
 				{#if hoveredIndex !== null}

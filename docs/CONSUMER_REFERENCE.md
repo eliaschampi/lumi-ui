@@ -454,15 +454,16 @@ import type { ButtonProps, LumiColor, LumiSize } from '@lumi-ui/svelte';
 
 ### Data & Dashboard
 
-| Component                          | Key props                                                                                  | Notes                       |
-| ---------------------------------- | ------------------------------------------------------------------------------------------ | --------------------------- |
-| `Table`                            | `data`, `rowKey`, `search`, `selectable`, `pagination`, `layout`; snippets `thead` / `row` | Typed records; row snippets |
-| `List` / `ListHeader` / `ListItem` | `color`, `size`, `selectable`, `maxHeight`                                                 | Short collection rows       |
-| `InfoItem`                         | `label`, `value`, `color`, `layout`                                                        | Label/value metadata        |
-| `StatCard`                         | `title`, `value`, `href`, `icon`                                                           | Linked or static metric     |
-| `DashboardChart`                   | `series`, `color`, `format`                                                                | Multi-series typed chart    |
-| `DashboardBarChart`                | `data`, `color`                                                                            | Single-series bar chart     |
-| `QuickAccessCard`                  | `title`, `description`, `icon`, `href`                                                     | Navigational task card      |
+| Component                          | Key props                                                                                  | Notes                                         |
+| ---------------------------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| `Table`                            | `data`, `rowKey`, `search`, `selectable`, `pagination`, `layout`; snippets `thead` / `row` | Typed records; row snippets                   |
+| `List` / `ListHeader` / `ListItem` | `color`, `size`, `selectable`, `maxHeight`                                                 | Short rows; `maxHeight` is the inner scroller |
+| `InfoItem`                         | `label`, `value`, `color`, `layout`                                                        | Label/value metadata                          |
+| `StatCard`                         | `title`, `value`, `href`, `icon`                                                           | Linked or static metric                       |
+| `DashboardChart`                   | `series`, `color`, `valueFormat`                                                           | Multi-series; non-finite points leave a gap   |
+| `DashboardBarChart`                | `data`, `color`, `valueFormat`                                                             | Single-series bar chart                       |
+| `DashboardDonutChart`              | `data`, `centerLabel`, `centerValue`, `valueFormat`                                        | Ring + legend; empty hides the legend         |
+| `QuickAccessCard`                  | `title`, `description`, `icon`, `href`                                                     | Navigational task card                        |
 
 ### Navigation & Layout
 

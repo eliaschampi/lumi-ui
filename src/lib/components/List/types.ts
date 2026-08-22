@@ -18,8 +18,9 @@ export interface ListProps {
 	disabled?: boolean;
 
 	/**
-	 * Bounded scroll area max height (token-based).
-	 * `sm` = 9rem, `md` = 12rem, `lg` = 15rem
+	 * Bounded inner scroll area (token-based).
+	 * `sm` = 9rem, `md` = 12rem, `lg` = 15rem.
+	 * Omit so the list grows with the parent scroller.
 	 */
 	maxHeight?: ListMaxHeight;
 
