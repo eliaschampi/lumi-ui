@@ -163,7 +163,7 @@
 		padding: var(--lumi-space-sm) var(--lumi-space-md);
 		background: var(--textarea-bg);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-control-border);
-		border-radius: var(--lumi-control-radius);
+		border-radius: var(--lumi-radius-control);
 		box-shadow: var(--lumi-control-shadow);
 		font-family: inherit;
 		font-size: var(--lumi-font-size-base);

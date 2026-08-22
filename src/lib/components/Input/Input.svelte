@@ -310,7 +310,7 @@
 		position: relative;
 		background: var(--input-bg);
 		border: var(--lumi-border-width-thin) solid var(--input-border);
-		border-radius: var(--lumi-control-radius);
+		border-radius: var(--lumi-radius-control);
 		box-shadow: var(--lumi-control-shadow);
 		transition: var(--lumi-transition-control);
 		overflow: hidden;

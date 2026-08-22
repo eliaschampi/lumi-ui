@@ -98,7 +98,7 @@
 		gap: var(--lumi-space-md);
 		padding: var(--lumi-space-sm) var(--lumi-space-md);
 		min-height: var(--lumi-sidebar-item-height);
-		border-radius: var(--lumi-control-radius);
+		border-radius: var(--lumi-radius-control);
 		color: var(--lumi-color-text-muted);
 		text-decoration: none;
 		background: transparent;
@@ -123,7 +123,7 @@
 		gap: var(--lumi-space-sm);
 		min-height: var(--lumi-sidebar-subitem-height);
 		padding: var(--lumi-space-xs) var(--lumi-space-sm);
-		border-radius: var(--lumi-control-radius);
+		border-radius: var(--lumi-radius-control);
 	}
 
 	.lumi-sidebar-item::before {

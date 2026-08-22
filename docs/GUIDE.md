@@ -404,6 +404,7 @@ Classes below are supported composition hooks. Other selectors style component i
 | Dashboard          | `.lumi-dashboard-layout`, `__content`, `.lumi-mobile-overlay`; sync `lumi-sidebar--is-collapsed` and `lumi-sidebar--mobile-open` with `Sidebar`                                                                   |
 | Two column         | `.lumi-layout--two-columns` + `.lumi-layout--sidebar-left` + `.lumi-layout--content-right`; collapses at `64rem`                                                                                                  |
 | Page sidebar hooks | `.lumi-page-sidebar-layout`, `__header-actions`, `__mobile-trigger`, `__section`, `__label`, `__radio-group`, `__radio-option`, `__radio-description`, `__bounded-list`; drawer internals belong to `PageSidebar` |
+| Scroll well        | `.lumi-scroll-well` recessed internally scrolling surface; cap and background through `--lumi-scroll-well-max-height` / `--lumi-scroll-well-bg`                                                                   |
 | Containers         | `.lumi-container` + `--{sm,md,lg,xl,2xl}`; `--wide` from `80rem`, `--ultrawide` from `96rem`                                                                                                                      |
 | Centered task      | `.lumi-centered-layout`, `.lumi-centered-card`, `--{sm,md,lg,xl}`; combine with `Card`                                                                                                                            |
 | Hero               | `.lumi-hero`, `__title`, `__subtitle`                                                                                                                                                                             |
@@ -506,7 +507,7 @@ From recessed to floating:
 inset → surface → card → elevated → raised / overlay / glass
 ```
 
-- **Inset / control-fill** — text fields, checkbox/radio/switch peers, wells (binary active uses `--lumi-control-active-*`)
+- **Inset / control-fill** — text fields, checkbox/radio/switch peers, wells (recessed scroll areas use `.lumi-scroll-well`; binary active uses `--lumi-control-active-*`)
 - **Switcher shell** — Tabs nav and SegmentedControl track: quiet glass mix + glass/strong border + `--lumi-control-shadow` (not control-fill)
 - **Surface / card** — content panels
 - **Elevated / raised** — sticky headers, highlighted panels; exclusive switcher **active pill** (surface-card gradient + quiet shadow)
@@ -530,15 +531,15 @@ Components must not invent `purple`, `teal`, or product names as colors. The pub
 
 ### Geometry — space, type, radius, motion
 
-| Concern      | Tokens                                                                                                                                         | Rule                                                                                                      |
-| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Spacing      | `--lumi-space-2xs` … `--lumi-space-6xl` (quarter-rem base)                                                                                     | Compose from tokens; no magic numbers unless a `calc()` of tokens                                         |
-| Typography   | Inter + system stack; scale `xs`→`4xl`; weights normal→bold                                                                                    | Root uses compact `sm`; body inherits it for dense product UI                                             |
-| Radius       | `--lumi-control-radius`, `--lumi-radius-option`, `--lumi-radius-panel`, `--lumi-radius-tooltip`, `--lumi-surface-radius`, `--lumi-radius-full` | Choose by semantic role; do not invent per component                                                      |
-| Motion       | `--lumi-duration-fast` … `--lumi-duration-slower`, `--lumi-duration-spin`, `--lumi-motion-scale`                                               | Fast = micro; base = UI; slow = overlays; spin = continuous ~1s; reduced motion collapses the shared dial |
-| Control UI   | `--lumi-transition-control`, `--lumi-transition-interactive`                                                                                   | Shared color/fill/border/shadow recipe; interactive adds the tokenized transform                          |
-| Easing       | `--lumi-easing-default`                                                                                                                        | Primary smooth-decelerate curve                                                                           |
-| Press / lift | `--lumi-interactive-press-scale`, `--lumi-interactive-hover-scale`, `--lumi-interactive-zoom-scale`, `--lumi-interactive-lift`                 | Subtle; never jump                                                                                        |
+| Concern      | Tokens                                                                                                                                                                                        | Rule                                                                                                      |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Spacing      | `--lumi-space-2xs` … `--lumi-space-6xl` (quarter-rem base)                                                                                                                                    | Compose from tokens; no magic numbers unless a `calc()` of tokens                                         |
+| Typography   | Inter + system stack; scale `xs`→`4xl`; weights normal→bold                                                                                                                                   | Root uses compact `sm`; body inherits it for dense product UI                                             |
+| Radius       | `--lumi-radius-control` (alias `--lumi-control-radius` still resolves), `--lumi-radius-option`, `--lumi-radius-panel`, `--lumi-radius-tooltip`, `--lumi-surface-radius`, `--lumi-radius-full` | Choose by semantic role; do not invent per component                                                      |
+| Motion       | `--lumi-duration-fast` … `--lumi-duration-slower`, `--lumi-duration-spin`, `--lumi-motion-scale`                                                                                              | Fast = micro; base = UI; slow = overlays; spin = continuous ~1s; reduced motion collapses the shared dial |
+| Control UI   | `--lumi-transition-control`, `--lumi-transition-interactive`                                                                                                                                  | Shared color/fill/border/shadow recipe; interactive adds the tokenized transform                          |
+| Easing       | `--lumi-easing-default`                                                                                                                                                                       | Primary smooth-decelerate curve                                                                           |
+| Press / lift | `--lumi-interactive-press-scale`, `--lumi-interactive-hover-scale`, `--lumi-interactive-zoom-scale`, `--lumi-interactive-lift`                                                                | Subtle; never jump                                                                                        |
 
 Control heights share one ladder (`--lumi-control-height-xs` … `--lumi-control-height-xl`), but not every component exposes every step: **Input** uses `xs…xl`, **Button** `sm…xl`, **Select / Textarea / NumberInput** `sm…lg`, **Chip** `sm` (+ compact). Match the step the component actually supports. Match JS transition durations to `LUMI_CONFIG.transitions` when coordinating Svelte transitions.
 

@@ -76,7 +76,7 @@
 		<button
 			type="button"
 			class="lumi-chip__close"
-			aria-label="Close chip"
+			aria-label="Cerrar chip"
 			onclick={handleClose}
 		>
 			<Icon icon="x" size="sm" />
@@ -194,7 +194,7 @@
 
 	.lumi-chip__close:focus-visible {
 		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-space-2xs);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	.lumi-chip--interactive:hover {
@@ -208,7 +208,7 @@
 
 	.lumi-chip__action:focus-visible {
 		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-space-2xs);
+		outline-offset: var(--lumi-focus-outline-offset);
 		border-radius: var(--lumi-radius-full);
 	}
 </style>

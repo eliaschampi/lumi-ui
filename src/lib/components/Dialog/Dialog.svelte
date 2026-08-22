@@ -20,7 +20,7 @@
 		scrollable = false,
 		fullScreen = false,
 		hideClose = false,
-		closeLabel = 'Close dialog',
+		closeLabel = 'Cerrar diálogo',
 		closeOnEscape = true,
 		class: className = '',
 		onclose,
@@ -403,7 +403,7 @@
 
 	.lumi-dialog__close:focus-visible {
 		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-space-2xs);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	.lumi-dialog__content {

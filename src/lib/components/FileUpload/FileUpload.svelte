@@ -5,13 +5,13 @@
 
 	let {
 		files = $bindable([]),
-		placeholderText = 'Upload your files',
-		hintText = 'Drag your files here or click to select',
+		placeholderText = 'Sube tus archivos',
+		hintText = 'Arrastra archivos aquí o haz clic para seleccionar',
 		accept = '*',
 		multiple = false,
 		maxSize = 0,
 		disabled = false,
-		addMoreText = 'Add more files',
+		addMoreText = 'Agregar más archivos',
 		class: className = '',
 		validateFile,
 		oninvalid,
@@ -53,7 +53,7 @@
 			return maxSizeErrorMessage(file, maxSize);
 		}
 
-		return `Max size: ${formatFileSize(maxSize)}`;
+		return `Tamaño máximo: ${formatFileSize(maxSize)}`;
 	}
 
 	function processFiles(fileList: File[]): void {
@@ -207,7 +207,7 @@
 		role="button"
 		tabindex={canTriggerDialogFromDropzone ? 0 : -1}
 		aria-disabled={disabled || !canTriggerDialogFromDropzone}
-		aria-label="File upload dropzone"
+		aria-label="Zona para subir archivos"
 	>
 		<input
 			bind:this={fileInputRef}
@@ -236,13 +236,13 @@
 			<div
 				class="lumi-file-upload__file-list"
 				role="list"
-				aria-label="Uploaded files"
+				aria-label="Archivos subidos"
 			>
 				{#each files as fileWrapper (fileWrapper.id)}
 					<div
 						class="lumi-file-upload__file-item lumi-file-upload__file-item--{fileWrapper.status}"
 						role="listitem"
-						aria-label="File: {fileWrapper.file.name}"
+						aria-label="Archivo: {fileWrapper.file.name}"
 					>
 						<div class="lumi-file-upload__file-icon">
 							<Icon icon="file" size="lg" />
@@ -276,7 +276,7 @@
 									type="button"
 									class="lumi-file-upload__remove-btn"
 									onclick={() => removeFile(fileWrapper.id)}
-									aria-label="Remove file {fileWrapper.file.name}"
+									aria-label="Quitar archivo {fileWrapper.file.name}"
 								>
 									<Icon icon="x" size="sm" />
 								</button>
@@ -345,7 +345,7 @@
 	.lumi-file-upload__dropzone:focus-visible {
 		border-color: var(--lumi-color-primary);
 		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-space-2xs);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	.lumi-file-upload__dropzone--dragging {

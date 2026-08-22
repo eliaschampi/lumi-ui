@@ -38,12 +38,15 @@ export function useChartWidth(minWidth = MIN_CHART_WIDTH) {
 		const el = root;
 		if (!el) return;
 
-		const syncWidth = () => {
-			chartW = Math.max(minWidth, Math.floor(el.clientWidth));
+		const syncWidth = (width: number) => {
+			const nextWidth = Math.max(minWidth, Math.floor(width));
+			if (nextWidth !== chartW) chartW = nextWidth;
 		};
 
-		syncWidth();
-		const observer = new ResizeObserver(syncWidth);
+		syncWidth(el.clientWidth);
+		const observer = new ResizeObserver(([entry]) => {
+			syncWidth(entry.contentRect.width);
+		});
 		observer.observe(el);
 		return () => observer.disconnect();
 	});

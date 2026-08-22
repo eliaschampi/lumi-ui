@@ -10,7 +10,7 @@
 	const {
 		collapsed = false,
 		mobileOpen = false,
-		ariaLabel = 'Sidebar',
+		ariaLabel = 'Barra lateral',
 		class: className = '',
 		children,
 		header

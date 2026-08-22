@@ -205,7 +205,7 @@
 	/* Focus styles */
 	.lumi-empty-state:focus-visible {
 		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-space-2xs);
+		outline-offset: var(--lumi-focus-outline-offset);
 		border-radius: var(--lumi-surface-radius);
 	}
 </style>

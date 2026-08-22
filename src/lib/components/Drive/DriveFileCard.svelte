@@ -52,10 +52,10 @@
 
 	const cardClasses = $derived(
 		[
-			'drive-file-card',
-			selected && 'drive-file-card--selected',
-			isDragging && 'drive-file-card--dragging',
-			isDropTarget && file.type === 'dir' && 'drive-file-card--drop-target'
+			'lumi-drive-file-card',
+			selected && 'lumi-drive-file-card--selected',
+			isDragging && 'lumi-drive-file-card--dragging',
+			isDropTarget && file.type === 'dir' && 'lumi-drive-file-card--drop-target'
 		]
 			.filter(Boolean)
 			.join(' ')
@@ -193,10 +193,10 @@
 	ontouchmove={clearLongPress}
 	onkeydown={handleKeydown}
 >
-	<div class="drive-file-card__preview">
+	<div class="lumi-drive-file-card__preview">
 		{#if file.type === 'img'}
 			<Image
-				class="drive-file-card__image"
+				class="lumi-drive-file-card__image"
 				src={previewUrl}
 				alt={file.name}
 				loading="lazy"
@@ -205,7 +205,7 @@
 				errorLabel={file.name}
 			/>
 		{:else}
-			<div class="drive-file-card__icon-scene">
+			<div class="lumi-drive-file-card__icon-scene">
 				<Icon
 					icon={getFileIcon(file.type)}
 					size="var(--lumi-drive-file-icon-size)"
@@ -213,36 +213,38 @@
 				/>
 			</div>
 		{/if}
-		<span class="drive-file-card__kind">{typeLabel}</span>
+		<span class="lumi-drive-file-card__kind">{typeLabel}</span>
 		{#if tagOption}
-			<span class="drive-file-card__tag">
+			<span class="lumi-drive-file-card__tag">
 				<span
-					class="drive-file-card__tag-dot"
+					class="lumi-drive-file-card__tag-dot"
 					style:--drive-tag-color={driveTagColorCssVar(tagOption.color)}
 				></span>
 			</span>
 		{/if}
 	</div>
 
-	<div class="drive-file-card__content">
+	<div class="lumi-drive-file-card__content">
 		<div
-			class="drive-file-card__name lumi-text-break lumi-text-clamp--2"
+			class="lumi-drive-file-card__name lumi-text-break lumi-text-clamp--2"
 			title={file.name}
 		>
 			{file.name}
 		</div>
-		<div class="drive-file-card__meta">
-			<span class="drive-file-card__type">{typeLabel}</span>
+		<div class="lumi-drive-file-card__meta">
+			<span class="lumi-drive-file-card__type">{typeLabel}</span>
 			{#if file.type !== 'dir'}
-				<span class="drive-file-card__separator">•</span>
-				<span class="drive-file-card__size">{formatFileSize(file.size)}</span>
+				<span class="lumi-drive-file-card__separator">•</span>
+				<span class="lumi-drive-file-card__size"
+					>{formatFileSize(file.size)}</span
+				>
 			{/if}
 		</div>
 	</div>
 </button>
 
 <style>
-	.drive-file-card {
+	.lumi-drive-file-card {
 		--drive-file-card-padding: var(--lumi-drive-file-card-padding);
 		display: flex;
 		flex-direction: column;
@@ -267,20 +269,20 @@
 		box-shadow: var(--lumi-shadow-sm);
 	}
 
-	.drive-file-card:hover {
+	.lumi-drive-file-card:hover {
 		transform: translateY(var(--lumi-interactive-lift));
 		border-color: var(--lumi-color-border-interactive);
 		background: var(--lumi-gradient-card-hover);
 		box-shadow: var(--lumi-shadow-md);
 	}
 
-	.drive-file-card:focus-visible {
+	.lumi-drive-file-card:focus-visible {
 		outline: none;
 		border-color: var(--lumi-color-border-interactive);
 		box-shadow: var(--lumi-focus-ring), var(--lumi-shadow-md);
 	}
 
-	.drive-file-card--selected {
+	.lumi-drive-file-card--selected {
 		border-color: var(--lumi-color-primary);
 		background:
 			linear-gradient(
@@ -293,11 +295,11 @@
 		box-shadow: var(--lumi-shadow-md);
 	}
 
-	.drive-file-card--dragging {
+	.lumi-drive-file-card--dragging {
 		opacity: 0.5;
 	}
 
-	.drive-file-card--drop-target {
+	.lumi-drive-file-card--drop-target {
 		border: var(--lumi-border-width-thin) dashed var(--lumi-color-primary);
 		background: color-mix(
 			in srgb,
@@ -307,7 +309,7 @@
 		transform: scale(var(--lumi-interactive-hover-scale));
 	}
 
-	.drive-file-card__preview {
+	.lumi-drive-file-card__preview {
 		position: relative;
 		display: flex;
 		align-items: center;
@@ -326,18 +328,18 @@
 		overflow: hidden;
 	}
 
-	.drive-file-card__preview :global(.drive-file-card__image) {
+	.lumi-drive-file-card__preview :global(.lumi-drive-file-card__image) {
 		width: 100%;
 		height: 100%;
 	}
 
-	.drive-file-card:hover
-		.drive-file-card__preview
-		:global(.drive-file-card__image .lumi-image__img) {
+	.lumi-drive-file-card:hover
+		.lumi-drive-file-card__preview
+		:global(.lumi-drive-file-card__image .lumi-image__img) {
 		transform: scale(var(--lumi-card-media-hover-scale));
 	}
 
-	.drive-file-card__icon-scene {
+	.lumi-drive-file-card__icon-scene {
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -352,7 +354,7 @@
 			transparent;
 	}
 
-	.drive-file-card__kind {
+	.lumi-drive-file-card__kind {
 		position: absolute;
 		left: var(--lumi-space-xs);
 		top: var(--lumi-space-xs);
@@ -371,7 +373,7 @@
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
 	}
 
-	.drive-file-card__tag {
+	.lumi-drive-file-card__tag {
 		position: absolute;
 		right: var(--lumi-space-xs);
 		bottom: var(--lumi-space-xs);
@@ -389,19 +391,19 @@
 		justify-content: center;
 	}
 
-	.drive-file-card__tag-dot {
+	.lumi-drive-file-card__tag-dot {
 		width: var(--lumi-drive-tag-dot-size);
 		height: var(--lumi-drive-tag-dot-size);
 		border-radius: var(--lumi-radius-full);
 		background: var(--drive-tag-color, var(--lumi-color-border));
 	}
 
-	.drive-file-card__content {
+	.lumi-drive-file-card__content {
 		padding: 0;
 		min-width: 0;
 	}
 
-	.drive-file-card__name {
+	.lumi-drive-file-card__name {
 		width: 100%;
 		font-size: var(--lumi-font-size-sm);
 		font-weight: var(--lumi-font-weight-medium);
@@ -410,26 +412,26 @@
 		min-height: calc(var(--lumi-font-size-sm) * 2.4);
 	}
 
-	.drive-file-card__meta {
+	.lumi-drive-file-card__meta {
 		display: flex;
 		align-items: center;
 		gap: var(--lumi-space-2xs);
 	}
 
-	.drive-file-card__type,
-	.drive-file-card__size {
+	.lumi-drive-file-card__type,
+	.lumi-drive-file-card__size {
 		font-size: var(--lumi-font-size-xs);
 		color: var(--lumi-color-text-muted);
 		letter-spacing: var(--lumi-letter-spacing-wide);
 	}
 
-	.drive-file-card__separator {
+	.lumi-drive-file-card__separator {
 		font-size: var(--lumi-font-size-xs);
 		color: var(--lumi-color-text-muted);
 	}
 
 	@media (max-width: 40rem) {
-		.drive-file-card {
+		.lumi-drive-file-card {
 			--drive-file-card-padding: var(--lumi-drive-file-card-padding-mobile);
 		}
 	}

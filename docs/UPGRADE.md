@@ -2,6 +2,18 @@
 
 Consumer migration for **0.1.5 → 0.2.x** and later. Use **pnpm** only. Source remains authoritative.
 
+## 0.3.0 → 0.4.0
+
+- `PageSidebar` now stays pinned while its adjacent content grows on desktop; mobile drawer behavior is unchanged.
+- `Tab.content` adds managed panels that remain mounted while inactive. Multi-step forms should move conditional panel bodies into these snippets so native `FormData` retains every field.
+- `Checkbox` has a clearer token-driven accent surface while preserving the existing API and form semantics.
+- Charts avoid redundant resize updates and intermediate sparse-label arrays; donut percentage formatting is shared across instances.
+- **Breaking (API):** `Notification.position` and the exported `NotificationPosition` type are removed — placement is owned by the `.lumi-toast-portal` wrapper.
+- **Breaking (classes):** Drive BEM classes are renamed `drive-*` → `lumi-drive-*` (e.g. `.drive-file-card` → `.lumi-drive-file-card`), matching the library namespace; `--drive-*` custom properties are unchanged.
+- Charts share plot primitives (`.lumi-chart-empty/svg/grid/label/crosshair/hit` in `core.css`) instead of per-component copies.
+- Focus rings across all affordances now use the canonical `--lumi-focus-outline-offset`; `Notification` follows the shared icon-tile recipe and animates its timeout bar from the inline start under RTL.
+- `NumberInput` joins `Input`/`Select`/`Textarea` in the shared autofill override; `SegmentedControl` matches the `Tabs` control-height floor; `Collapse` slide timing comes from `LUMI_CONFIG.transitions`.
+
 ## 0.1.5 → 0.2.x (required)
 
 **API (compat aliases still work — migrate anyway)**

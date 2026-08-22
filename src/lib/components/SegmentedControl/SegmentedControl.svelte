@@ -189,6 +189,7 @@
 		cursor: pointer;
 		display: flex;
 		min-width: max-content;
+		min-height: var(--lumi-control-height-sm);
 		text-align: center;
 	}
 

@@ -172,7 +172,7 @@ One controller per app. CSP: authorize the inline script hash or use `createColo
 .my-control {
 	--lumi-control-accent: var(--lumi-color-primary);
 	min-height: var(--lumi-control-height-md); /* xs…xl */
-	border-radius: var(--lumi-control-radius);
+	border-radius: var(--lumi-radius-control);
 	box-shadow: var(--lumi-control-shadow);
 	transition: var(--lumi-transition-control);
 }
@@ -216,6 +216,7 @@ Import: `@lumi-ui/svelte/styles` = tokens → core → patterns. No Tailwind/Boo
 | Dashboard      | `.lumi-dashboard-layout`, `__content`, `.lumi-mobile-overlay`; sync `lumi-sidebar--is-collapsed` / `lumi-sidebar--mobile-open` with `Sidebar`    |
 | Two column     | `.lumi-layout--two-columns` + `.lumi-layout--sidebar-left` + `.lumi-layout--content-right`; collapses ≤ 64rem                                    |
 | Page sidebar   | `.lumi-page-sidebar-layout`, `__header-actions`, `__mobile-trigger`, `__section`, `__label`, `__radio-group`, `__radio-option`, `__bounded-list` |
+| Scroll well    | `.lumi-scroll-well` recessed scroll surface; `--lumi-scroll-well-max-height` / `--lumi-scroll-well-bg`                                           |
 | Containers     | `.lumi-container--{sm,md,lg,xl,2xl}`; `--wide` ≥ 80rem; `--ultrawide` ≥ 96rem                                                                    |
 | Centered task  | `.lumi-centered-layout` + `.lumi-centered-card--{sm,md,lg,xl}`; combine with `Card`                                                              |
 | Hero           | `.lumi-hero`, `.lumi-hero__title`, `.lumi-hero__subtitle`                                                                                        |
@@ -442,7 +443,7 @@ import type { ButtonProps, LumiColor, LumiSize } from '@lumi-ui/svelte';
 | `Card`             | `title`, `subtitle`, `spaced`, `href`, `clickable`, `hoverable`, `selected`, `class`; snippets `media`, `header`, `footer` | Generic / link / button card            |
 | `DashboardSection` | `title`, snippet `actions`, snippet `footer`                                                                               | Titled section with chrome              |
 | `Alert`            | `color`, `title`, `closable`, `bind:active`                                                                                | Persistent inline message               |
-| `Notification`     | `color`, `title`, `duration`, `position`                                                                                   | Transient; wrap in `.lumi-toast-portal` |
+| `Notification`     | `color`, `title`, `duration`                                                                                               | Transient; wrap in `.lumi-toast-portal` |
 | `Chip`             | `color`, `size`, `closable`, `onclick`, `onclose`                                                                          | Label / status / token                  |
 | `Collapse`         | `title`, `open`, `color`, `size`, `radius`                                                                                 | Expandable disclosure                   |
 | `Divider`          | `label`, `position`                                                                                                        | Visual or labeled separator             |
@@ -473,7 +474,7 @@ import type { ButtonProps, LumiColor, LumiSize } from '@lumi-ui/svelte';
 | `Sidebar` / `SidebarHeader` / `SidebarItem` | `collapsed`, `mobileOpen`, `active`; `SidebarHeader` snippet `cover` | Responsive primary nav        |
 | `PageHeader`                                | `title`, `subtitle`, snippet `actions`                               | Page identity + actions       |
 | `PageSidebar`                               | `bind:mobileOpen`, `mobileTitle`, snippet `sidebar`                  | Desktop aside + mobile drawer |
-| `Tabs`                                      | `tabs`, `bind:active`, `color`, `orientation`                        | Tablist for related panels    |
+| `Tabs`                                      | `tabs`, `bind:value`, `color`, `orientation`; `Tab.content` panels   | Managed panels stay mounted   |
 
 ### Overlays & Menus
 

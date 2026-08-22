@@ -17,7 +17,6 @@
 		title = '',
 		message = '',
 		closable = true,
-		position = 'top-right',
 		duration = 0,
 		active = $bindable(true),
 		class: className = '',
@@ -47,7 +46,6 @@
 		const classList = [
 			'lumi-notification',
 			`lumi-notification--${resolvedColor}`,
-			`lumi-notification--position-${position}`,
 			duration > 0 && 'lumi-notification--timed'
 		];
 
@@ -86,7 +84,6 @@
 		{role}
 		aria-live={role === 'alert' ? 'assertive' : 'polite'}
 		aria-atomic="true"
-		data-position={position}
 		transition:fly={{ y: 12, duration: transitionDuration, easing: cubicOut }}
 	>
 		<div class="lumi-notification__icon" aria-hidden="true">
@@ -106,7 +103,7 @@
 			<button
 				type="button"
 				class="lumi-notification__close"
-				aria-label="Close notification"
+				aria-label="Cerrar notificación"
 				onclick={handleClose}
 			>
 				<X size="var(--lumi-icon-sm)" />
@@ -153,6 +150,10 @@
 			forwards;
 	}
 
+	:global([dir='rtl']) .lumi-notification--timed::after {
+		transform-origin: right;
+	}
+
 	.lumi-notification__icon {
 		flex-shrink: 0;
 		display: flex;
@@ -164,11 +165,11 @@
 		color: var(--notification-color);
 		background-color: color-mix(
 			in srgb,
-			var(--notification-color) 10%,
+			var(--notification-color) 12%,
 			var(--lumi-color-surface-raised)
 		);
 		border: var(--lumi-border-width-thin) solid
-			color-mix(in srgb, var(--notification-color) 16%, transparent);
+			color-mix(in srgb, var(--notification-color) 20%, transparent);
 		position: relative;
 		z-index: var(--lumi-z-base);
 	}
@@ -229,7 +230,7 @@
 
 	.lumi-notification__close:focus-visible {
 		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-space-2xs);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	@keyframes lumi-notification-timeout {

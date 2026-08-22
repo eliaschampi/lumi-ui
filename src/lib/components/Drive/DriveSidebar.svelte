@@ -52,11 +52,11 @@
 </script>
 
 {#if closable}
-	<div class="drive-sidebar__header">
+	<div class="lumi-drive-sidebar__header">
 		<span class="lumi-text--sm lumi-font--bold">Drive</span>
 		<button
 			type="button"
-			class="drive-sidebar__close"
+			class="lumi-drive-sidebar__close"
 			onclick={onclose}
 			aria-label="Cerrar"
 		>
@@ -87,7 +87,7 @@
 
 <div class="lumi-page-sidebar__section">
 	<p class="lumi-page-sidebar__label">Navegación</p>
-	<List size="sm" color="primary" class="drive-sidebar__nav">
+	<List size="sm" color="primary" class="lumi-drive-sidebar__nav">
 		<ListItem
 			title="Mi unidad"
 			subtitle="Archivos y carpetas"
@@ -124,7 +124,7 @@
 <div class="lumi-page-sidebar__section">
 	<p class="lumi-page-sidebar__label">Almacenamiento</p>
 	<Progress value={storageInfo.percentage} color={storageColor} />
-	<div class="drive-sidebar__storage-meta">
+	<div class="lumi-drive-sidebar__storage-meta">
 		<span class="lumi-text--xs lumi-text--muted">
 			{formatFileSize(storageInfo.used)} de {formatFileSize(storageInfo.total)}
 		</span>
@@ -134,7 +134,7 @@
 </div>
 
 <style>
-	:global(.drive-sidebar__nav) {
+	:global(.lumi-drive-sidebar__nav) {
 		max-height: var(--lumi-drive-sidebar-nav-max-height);
 		overflow-x: hidden;
 		overflow-y: auto;
@@ -145,13 +145,13 @@
 		width: 100%;
 	}
 
-	.drive-sidebar__header {
+	.lumi-drive-sidebar__header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 	}
 
-	.drive-sidebar__close {
+	.lumi-drive-sidebar__close {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -164,17 +164,17 @@
 		transition: var(--lumi-transition-control);
 	}
 
-	.drive-sidebar__close:hover {
+	.lumi-drive-sidebar__close:hover {
 		background: var(--lumi-color-background-hover);
 		color: var(--lumi-color-text);
 	}
 
-	.drive-sidebar__close:focus-visible {
+	.lumi-drive-sidebar__close:focus-visible {
 		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-space-2xs);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
-	.drive-sidebar__storage-meta {
+	.lumi-drive-sidebar__storage-meta {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;

@@ -124,7 +124,7 @@ Use size aliases from `config.ts` intentionally:
 	.lumi-my-component {
 		/* tokens only — set --lumi-control-accent when the control is colorable */
 		--lumi-control-accent: var(--lumi-my-accent);
-		border-radius: var(--lumi-control-radius);
+		border-radius: var(--lumi-radius-control);
 		transition: var(--lumi-transition-control);
 	}
 
@@ -303,7 +303,7 @@ Forms and interactive peers should feel like one system:
 | Concern            | Approach                                                                                             |
 | ------------------ | ---------------------------------------------------------------------------------------------------- |
 | Heights            | `--lumi-control-height-xs` … `--lumi-control-height-xl`                                              |
-| Radius             | `--lumi-control-radius`                                                                              |
+| Radius             | `--lumi-radius-control`                                                                              |
 | Fill / border      | `--lumi-color-control-*`                                                                             |
 | Accent             | `--lumi-control-accent` on the control root (drives focus fill, ring, and outline)                   |
 | Focus (field)      | `--lumi-control-focus-shadow` on the shell / peer visual (re-declared on form roots in `core.css`)   |

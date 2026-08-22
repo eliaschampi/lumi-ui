@@ -113,19 +113,19 @@
 			ondragover={(event) => handleDragOver(event, file)}
 			ondrop={(event) => handleDrop(event, file)}
 		>
-			<div class="drive-file-list__name-content">
+			<div class="lumi-drive-file-list__name-content">
 				<Icon
 					icon={getFileIcon(file.type)}
 					size="sm"
 					color={getFileColor(file.type)}
 				/>
 				<span
-					class="drive-file-list__name-text lumi-text-break lumi-text-clamp--2"
+					class="lumi-drive-file-list__name-text lumi-text-break lumi-text-clamp--2"
 					title={file.name}>{file.name}</span
 				>
 				{#if tagOption}
 					<span
-						class="drive-file-list__tag"
+						class="lumi-drive-file-list__tag"
 						style:--drive-tag-color={driveTagColorCssVar(tagOption.color)}
 					></span>
 				{/if}
@@ -150,7 +150,7 @@
 </Table>
 
 <style>
-	.drive-file-list__name-content {
+	.lumi-drive-file-list__name-content {
 		display: flex;
 		align-items: center;
 		gap: var(--lumi-space-xs);
@@ -164,12 +164,12 @@
 		font: inherit;
 	}
 
-	.drive-file-list__name-text {
+	.lumi-drive-file-list__name-text {
 		flex: 1 1 auto;
 		min-width: 0;
 	}
 
-	.drive-file-list__tag {
+	.lumi-drive-file-list__tag {
 		width: var(--lumi-drive-tag-dot-size);
 		height: var(--lumi-drive-tag-dot-size);
 		border-radius: var(--lumi-radius-full);

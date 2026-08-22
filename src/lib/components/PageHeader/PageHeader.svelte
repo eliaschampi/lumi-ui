@@ -33,7 +33,7 @@
 		<div
 			class="lumi-page-header__actions"
 			role="group"
-			aria-label="Page actions"
+			aria-label="Acciones de página"
 		>
 			{@render actions()}
 		</div>

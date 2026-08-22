@@ -411,7 +411,7 @@
 	--lumi-radius-panel: var(--lumi-radius-xl); /* blocks nested in a surface */
 	--lumi-radius-tooltip: var(--lumi-radius-lg); /* every floating bubble */
 	--lumi-radius-pill: var(--lumi-radius-full);
-	--lumi-control-radius: var(--lumi-radius-control);
+	--lumi-control-radius: var(--lumi-radius-control); /* deprecated alias */
 	--lumi-control-focus-ring-strength: 26%;
 	/* Outline: :root is a primary fallback only (explicit primary — never
 	   var(--lumi-control-accent) here, or it bakes primary for everyone).
@@ -725,7 +725,11 @@
 	--lumi-drive-preview-min-height-mobile: 13.75rem;
 	--lumi-drive-preview-audio-max-width: 27.5rem;
 	--lumi-drive-preview-title-max-width: 20rem;
+	--lumi-scroll-well-max-height: min(34rem, 62dvh);
+	--lumi-scroll-well-bg:
+		var(--lumi-gradient-subtle), var(--lumi-color-surface-inset);
 	--lumi-page-sidebar-list-max-height: min(18rem, 42dvh);
+	--lumi-page-sidebar-list-bg: var(--lumi-scroll-well-bg);
 
 	--lumi-duration-fast: 150ms;
 	--lumi-duration-base: 220ms;

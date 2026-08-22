@@ -160,7 +160,7 @@
 			>
 		{/if}
 
-		<div class="drive-uploader__file-upload">
+		<div class="lumi-drive-uploader__file-upload">
 			<FileUpload
 				bind:files={queue}
 				multiple
@@ -197,7 +197,7 @@
 </Dialog>
 
 <style>
-	.drive-uploader__file-upload :global(.lumi-file-upload__file-list) {
+	.lumi-drive-uploader__file-upload :global(.lumi-file-upload__file-list) {
 		max-height: var(--lumi-drive-uploader-queue-max-height);
 		overflow-y: auto;
 	}

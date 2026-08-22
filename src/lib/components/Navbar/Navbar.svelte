@@ -26,7 +26,7 @@
 				variant="ghost"
 				size="md"
 				icon="menu"
-				aria-label="Toggle sidebar"
+				aria-label="Alternar barra lateral"
 				onclick={onToggleSidebar}
 			/>
 		</div>

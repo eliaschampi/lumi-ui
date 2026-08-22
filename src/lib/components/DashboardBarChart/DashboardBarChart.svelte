@@ -123,7 +123,7 @@
 
 <div bind:this={layout.root} class={classes} style:height="{height}px">
 	{#if !hasValues}
-		<div class="lumi-bar-chart__empty">
+		<div class="lumi-chart-empty">
 			<p class="lumi-margin--none lumi-text--sm lumi-text--muted">
 				{emptyMessage}
 			</p>
@@ -132,7 +132,7 @@
 		<svg
 			viewBox="0 0 {chartW} {chartH}"
 			preserveAspectRatio="xMidYMid meet"
-			class="lumi-bar-chart__svg"
+			class="lumi-chart-svg"
 			role="img"
 			aria-label={ariaLabel}
 			onpointerleave={clearHover}
@@ -150,13 +150,13 @@
 					y1={scaleY(tick)}
 					x2={chartW - CHART_PADDING.right}
 					y2={scaleY(tick)}
-					class="lumi-bar-chart__grid"
+					class="lumi-chart-grid"
 				/>
 				<text
 					x={CHART_PADDING.left - 8}
 					y={scaleY(tick) + 3}
 					text-anchor="end"
-					class="lumi-bar-chart__label"
+					class="lumi-chart-label"
 				>
 					{formatValue(tick)}
 				</text>
@@ -181,7 +181,7 @@
 					y1={CHART_PADDING.top}
 					x2={barCenter(hoveredIndex)}
 					y2={CHART_PADDING.top + plotH}
-					class="lumi-bar-chart__crosshair"
+					class="lumi-chart-crosshair"
 				/>
 			{/if}
 
@@ -192,7 +192,7 @@
 					width={bandW}
 					height={plotH}
 					fill="transparent"
-					class="lumi-bar-chart__hit"
+					class="lumi-chart-hit"
 					aria-hidden="true"
 					onpointerenter={(event) => setHover(index, event)}
 					onpointermove={(event) => setHover(index, event)}
@@ -204,7 +204,7 @@
 					x={xLabel.x}
 					y={chartH - 8}
 					text-anchor="middle"
-					class="lumi-bar-chart__label"
+					class="lumi-chart-label"
 				>
 					{truncateAxisLabel(xLabel.label, xLabelMaxLength)}
 				</text>
@@ -238,33 +238,6 @@
 		min-width: 0;
 	}
 
-	.lumi-bar-chart__empty {
-		height: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: var(--lumi-space-lg);
-		border: var(--lumi-border-width-thin) dashed var(--lumi-color-border-light);
-		border-radius: var(--lumi-radius-panel);
-	}
-
-	.lumi-bar-chart__svg {
-		width: 100%;
-		height: 100%;
-		display: block;
-		touch-action: pan-y;
-	}
-
-	.lumi-bar-chart__grid {
-		stroke: var(--lumi-color-border-light);
-		stroke-width: var(--lumi-border-width-thin);
-	}
-
-	.lumi-bar-chart__label {
-		font-size: var(--lumi-font-size-xs);
-		fill: var(--lumi-color-text-muted);
-	}
-
 	.lumi-bar-chart__bar {
 		pointer-events: none;
 		rx: var(--lumi-radius-xs);
@@ -273,16 +246,5 @@
 
 	.lumi-bar-chart__bar--muted {
 		opacity: 0.42;
-	}
-
-	.lumi-bar-chart__crosshair {
-		stroke: var(--lumi-color-border);
-		stroke-width: var(--lumi-border-width-thin);
-		stroke-dasharray: 4 3;
-		pointer-events: none;
-	}
-
-	.lumi-bar-chart__hit {
-		cursor: crosshair;
 	}
 </style>

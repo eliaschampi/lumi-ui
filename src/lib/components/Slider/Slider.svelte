@@ -170,7 +170,7 @@
 		background-size: 100% var(--_track-h);
 		border-radius: var(--lumi-radius-full);
 		outline: var(--lumi-border-width-thick) solid transparent;
-		outline-offset: var(--lumi-space-2xs);
+		outline-offset: var(--lumi-focus-outline-offset);
 		cursor: pointer;
 	}
 

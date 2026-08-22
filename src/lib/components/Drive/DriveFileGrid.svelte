@@ -32,7 +32,7 @@
 	const selectedFileSet = $derived(new Set(selectedFiles));
 </script>
 
-<div class="lumi-grid lumi-grid--gap-md drive-file-grid">
+<div class="lumi-grid lumi-grid--gap-md lumi-drive-file-grid">
 	{#each files as file (file.code)}
 		<DriveFileCard
 			{file}
@@ -50,7 +50,7 @@
 </div>
 
 <style>
-	.drive-file-grid {
+	.lumi-drive-file-grid {
 		grid-template-columns: repeat(
 			auto-fill,
 			minmax(var(--lumi-drive-file-grid-min-desktop), 1fr)
@@ -58,7 +58,7 @@
 	}
 
 	@media (max-width: 64rem) {
-		.drive-file-grid {
+		.lumi-drive-file-grid {
 			grid-template-columns: repeat(
 				auto-fill,
 				minmax(var(--lumi-drive-file-grid-min-tablet), 1fr)
@@ -67,7 +67,7 @@
 	}
 
 	@media (max-width: 48rem) {
-		.drive-file-grid {
+		.lumi-drive-file-grid {
 			grid-template-columns: repeat(
 				auto-fill,
 				minmax(var(--lumi-drive-file-grid-min-mobile), 1fr)
@@ -76,7 +76,7 @@
 	}
 
 	@media (max-width: 30rem) {
-		.drive-file-grid {
+		.lumi-drive-file-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}

@@ -28,7 +28,7 @@ pnpm add @lumi-ui/svelte
 | **[Components](./docs/COMPONENTS.md)**                   | Component catalog and selection                                               |
 | **[Component authoring](./docs/COMPONENT_AUTHORING.md)** | How to build or change a component                                            |
 | **[Consumer reference](./docs/CONSUMER_REFERENCE.md)**   | Compact product integration recipes                                           |
-| **[Upgrade](./docs/UPGRADE.md)**                         | Consumer migration (0.1.5 → 0.2.x and 0.2.x → 0.3.x)                          |
+| **[Upgrade](./docs/UPGRADE.md)**                         | Consumer migration (0.1.5 → 0.2.x, 0.2.x → 0.3.x, 0.3.x → 0.4.0)              |
 | **[docs hub](./docs/README.md)**                         | Authority map                                                                 |
 | **[AGENTS.md](./AGENTS.md)**                             | Agent rules → [Agent Guide](./docs/AGENT_GUIDE.md)                            |
 
@@ -52,13 +52,13 @@ New code should use semantic `variant`, `color`, and `placement` props. Historic
 
 ## Lightweight Contract
 
-The published artifact and browser payload are different measurements. Budgets below are release gates; **re-measure on every release** (`pnpm run package` + `npm pack --dry-run`). npm tarball, unpacked size, and all-CSS gzip were remasured on **0.3.0**. Browser component figures remain from **0.2.0**.
+The published artifact and browser payload are different measurements. Budgets below are release gates; **re-measure on every release** with the commands at the end of this section (npm prints decimal kB; the table uses binary KiB). npm tarball, unpacked size, and all-CSS gzip were remeasured on **0.4.0**. Browser component figures remain from **0.2.0**.
 
 | Surface                                                                               |  Last measured | Release budget |
 | ------------------------------------------------------------------------------------- | -------------: | -------------: |
-| npm tarball                                                                           |      151.7 KiB |      ≤ 200 KiB |
-| npm unpacked                                                                          |      737.4 KiB |        ≤ 1 MiB |
-| All CSS (`tokens` + `core` + `patterns`)                                              | 11.21 KiB gzip |  ≤ 12 KiB gzip |
+| npm tarball                                                                           |      154.6 KiB |      ≤ 200 KiB |
+| npm unpacked                                                                          |      751.3 KiB |        ≤ 1 MiB |
+| All CSS (`tokens` + `core` + `patterns`, minified + gzip)                             | 11.45 KiB gzip |  ≤ 12 KiB gzip |
 | `Switch` + `Radio` + `Textarea` + `Checkbox` + `SegmentedControl` + `Input` + `Table` | 22.57 KiB gzip |  ≤ 25 KiB gzip |
 | Standalone `Checkbox`                                                                 |  2.47 KiB gzip |              — |
 
@@ -68,7 +68,9 @@ Verify the publish footprint on every release:
 
 ```bash
 pnpm run package
-npm pack --dry-run --ignore-scripts --json
+npm pack --dry-run --ignore-scripts --json          # tarball + unpacked size
+cat dist/styles/tokens.base.css dist/styles/core.css dist/styles/patterns.css \
+	| npx esbuild --loader=css --minify | gzip -9 -c | wc -c   # all-CSS min+gzip bytes
 ```
 
 ## Example and Development

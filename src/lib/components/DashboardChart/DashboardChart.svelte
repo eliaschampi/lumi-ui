@@ -297,7 +297,7 @@
 
 	<div class="lumi-line-chart__plot" style:height="{height}px">
 		{#if !hasValues}
-			<div class="lumi-line-chart__empty">
+			<div class="lumi-chart-empty">
 				<p class="lumi-margin--none lumi-text--sm lumi-text--muted">
 					{emptyMessage}
 				</p>
@@ -306,7 +306,7 @@
 			<svg
 				viewBox="0 0 {chartW} {chartH}"
 				preserveAspectRatio="xMidYMid meet"
-				class="lumi-line-chart__svg"
+				class="lumi-chart-svg"
 				role="img"
 				aria-label={ariaLabel}
 				onpointerleave={clearHover}
@@ -334,7 +334,7 @@
 						y1={scaleY(tick)}
 						x2={chartW - CHART_PADDING.right}
 						y2={scaleY(tick)}
-						class="lumi-line-chart__grid"
+						class="lumi-chart-grid"
 					/>
 				{/each}
 
@@ -343,7 +343,7 @@
 						x={CHART_PADDING.left - 8}
 						y={scaleY(tick) + 3}
 						text-anchor="end"
-						class="lumi-line-chart__label"
+						class="lumi-chart-label"
 					>
 						{formatYTick(tick)}
 					</text>
@@ -354,7 +354,7 @@
 						x={xl.x}
 						y={chartH - 8}
 						text-anchor="middle"
-						class="lumi-line-chart__label"
+						class="lumi-chart-label"
 					>
 						{truncateAxisLabel(xl.label, xLabelMaxLength)}
 					</text>
@@ -393,7 +393,7 @@
 						y1={CHART_PADDING.top}
 						x2={xPoints[hoveredIndex].x}
 						y2={CHART_PADDING.top + plotH}
-						class="lumi-line-chart__crosshair"
+						class="lumi-chart-crosshair"
 					/>
 					{#each seriesPaths as sp (sp.key)}
 						{@const hoverPoint = sp.points[hoveredIndex]}
@@ -417,7 +417,7 @@
 						width={band.width}
 						height={plotH}
 						fill="transparent"
-						class="lumi-line-chart__hit"
+						class="lumi-chart-hit"
 						aria-hidden="true"
 						onpointerenter={(event) => setHover(index, event)}
 						onpointermove={(event) => setHover(index, event)}
@@ -490,7 +490,7 @@
 
 	.lumi-line-chart__legend-item:focus-visible {
 		outline: var(--lumi-focus-outline);
-		outline-offset: calc(var(--lumi-space-2xs) * -0.5);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	.lumi-line-chart__legend-item--hidden {
@@ -519,53 +519,15 @@
 		position: relative;
 	}
 
-	.lumi-line-chart__empty {
-		height: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: var(--lumi-space-lg);
-		border: var(--lumi-border-width-thin) dashed var(--lumi-color-border-light);
-		border-radius: var(--lumi-radius-panel);
-	}
-
-	.lumi-line-chart__svg {
-		width: 100%;
-		height: 100%;
-		display: block;
-		touch-action: pan-y;
-	}
-
-	.lumi-line-chart__grid {
-		stroke: var(--lumi-color-border-light);
-		stroke-width: var(--lumi-border-width-thin);
-	}
-
-	.lumi-line-chart__label {
-		font-size: var(--lumi-font-size-xs);
-		fill: var(--lumi-color-text-muted);
-	}
-
 	.lumi-line-chart__line {
 		pointer-events: none;
 		vector-effect: non-scaling-stroke;
 		stroke-width: var(--lumi-border-width-thick);
 	}
 
-	.lumi-line-chart__crosshair {
-		stroke: var(--lumi-color-border);
-		stroke-width: var(--lumi-border-width-thin);
-		stroke-dasharray: 4 3;
-		pointer-events: none;
-	}
-
 	.lumi-line-chart__dot {
 		stroke: var(--lumi-color-surface);
 		stroke-width: var(--lumi-border-width-thick);
 		pointer-events: none;
-	}
-
-	.lumi-line-chart__hit {
-		cursor: crosshair;
 	}
 </style>

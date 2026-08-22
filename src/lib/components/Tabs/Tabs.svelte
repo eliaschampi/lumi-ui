@@ -20,7 +20,8 @@
 	}: Props = $props();
 
 	let previousValue = $state<string | number | undefined>(undefined);
-	const tabsId = `lumi-tabs-${crypto.randomUUID().slice(0, 8)}`;
+	const instanceId = $props.id();
+	const tabsId = `lumi-tabs-${instanceId}`;
 	$effect(() => {
 		if (value === undefined && tabs.length > 0) {
 			const firstEnabledTab = tabs.find((tab) => !tab.disabled);
@@ -41,6 +42,7 @@
 			.filter(Boolean)
 			.join(' ')
 	);
+	const managedPanels = $derived(tabs.some((tab) => tab.content));
 
 	const selectTab = (tabValue: string | number) => {
 		if (value === tabValue) return;
@@ -51,6 +53,7 @@
 
 	const handleKeyDown = (event: KeyboardEvent) => {
 		const enabledTabs = tabs.filter((tab) => !tab.disabled);
+		if (enabledTabs.length === 0) return;
 		const currentIndex = enabledTabs.findIndex((tab) => tab.value === value);
 
 		let nextIndex = currentIndex;
@@ -119,12 +122,29 @@
 
 	<!-- Tab Content -->
 	<div
-		id={value !== undefined ? `${tabsId}-panel-${value}` : undefined}
+		id={!managedPanels && value !== undefined
+			? `${tabsId}-panel-${value}`
+			: undefined}
 		class="lumi-tabs__content"
-		role="tabpanel"
-		aria-labelledby={value !== undefined ? `${tabsId}-tab-${value}` : undefined}
+		role={!managedPanels ? 'tabpanel' : undefined}
+		aria-labelledby={!managedPanels && value !== undefined
+			? `${tabsId}-tab-${value}`
+			: undefined}
 	>
-		{#if children}
+		{#if managedPanels}
+			{#each tabs as tab (tab.value)}
+				<div
+					id={`${tabsId}-panel-${tab.value}`}
+					role="tabpanel"
+					aria-labelledby={`${tabsId}-tab-${tab.value}`}
+					hidden={value !== tab.value}
+				>
+					{#if tab.content}
+						{@render tab.content()}
+					{/if}
+				</div>
+			{/each}
+		{:else if children}
 			{@render children()}
 		{/if}
 	</div>

@@ -92,7 +92,7 @@
 			class="lumi-number-input__btn lumi-number-input__btn--decrement"
 			onclick={decrement}
 			disabled={disabled || (min !== undefined && value <= min)}
-			aria-label="Decrease value"
+			aria-label="Disminuir valor"
 			tabindex="-1"
 		>
 			<Icon icon="minus" {size} />
@@ -111,7 +111,7 @@
 			{required}
 			onblur={handleBlur}
 			onkeydown={handleKeyDown}
-			class="lumi-number-input__field"
+			class="lumi-number-input__field lumi-autofill"
 			aria-label={ariaLabel || label || placeholder || undefined}
 		/>
 
@@ -120,7 +120,7 @@
 			class="lumi-number-input__btn lumi-number-input__btn--increment"
 			onclick={increment}
 			disabled={disabled || (max !== undefined && value >= max)}
-			aria-label="Increase value"
+			aria-label="Aumentar valor"
 			tabindex="-1"
 		>
 			<Icon icon="plus" {size} />
@@ -161,7 +161,7 @@
 		min-height: var(--lumi-control-height-md);
 		background: var(--number-bg);
 		border: var(--lumi-border-width-thin) solid var(--number-border);
-		border-radius: var(--lumi-control-radius);
+		border-radius: var(--lumi-radius-control);
 		box-shadow: var(--lumi-control-shadow);
 		overflow: hidden;
 		transition: var(--lumi-transition-control);

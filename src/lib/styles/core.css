@@ -260,7 +260,7 @@ body {
 	.lumi-divider,
 	.lumi-table,
 	.lumi-line-chart,
-	.drive-sidebar__close
+	.lumi-drive-sidebar__close
 ) {
 	--lumi-focus-outline: var(--lumi-border-width-thick) solid
 		color-mix(
@@ -294,7 +294,7 @@ body {
 	.lumi-file-upload,
 	.lumi-empty-state,
 	.lumi-item-row,
-	.drive-file-card
+	.lumi-drive-file-card
 ) {
 	--lumi-focus-ring: 0 0 0 var(--lumi-border-width-thick)
 		color-mix(
@@ -450,6 +450,46 @@ body {
 	color: var(--lumi-color-text);
 }
 
+/* Shared chart plot primitives — consumed by every Dashboard* chart the same
+   way as the tooltip family above; charts keep only series-specific rules. */
+.lumi-chart-empty {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--lumi-space-lg);
+	border: var(--lumi-border-width-thin) dashed var(--lumi-color-border-light);
+	border-radius: var(--lumi-radius-panel);
+}
+
+.lumi-chart-svg {
+	width: 100%;
+	height: 100%;
+	display: block;
+	touch-action: pan-y;
+}
+
+.lumi-chart-grid {
+	stroke: var(--lumi-color-border-light);
+	stroke-width: var(--lumi-border-width-thin);
+}
+
+.lumi-chart-label {
+	font-size: var(--lumi-font-size-xs);
+	fill: var(--lumi-color-text-muted);
+}
+
+.lumi-chart-crosshair {
+	stroke: var(--lumi-color-border);
+	stroke-width: var(--lumi-border-width-thin);
+	stroke-dasharray: 4 3;
+	pointer-events: none;
+}
+
+.lumi-chart-hit {
+	cursor: crosshair;
+}
+
 /* ========================================================================== */
 /* TWO-COLUMN LAYOUT SYSTEM */
 /* ========================================================================== */
@@ -475,6 +515,9 @@ body {
 }
 
 .lumi-page-sidebar__desktop {
+	position: sticky;
+	inset-block-start: 0;
+	align-self: start;
 	min-width: 0;
 }
 
@@ -523,6 +566,25 @@ body {
 	overflow-x: hidden;
 	overflow-y: auto;
 	overscroll-behavior: contain;
+	padding: var(--lumi-space-xs);
+	border-radius: var(--lumi-radius-panel);
+	border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
+	background: var(--lumi-page-sidebar-list-bg);
+}
+
+/* Recessed internally scrolling surface (the design-language "well" role on
+   the inset ladder step). Retune the cap per surface through
+   --lumi-scroll-well-max-height. */
+.lumi-scroll-well {
+	max-height: var(--lumi-scroll-well-max-height);
+	min-height: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	padding: var(--lumi-space-sm);
+	border-radius: var(--lumi-radius-panel);
+	border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
+	background: var(--lumi-scroll-well-bg);
 }
 
 .lumi-page-sidebar__radio-group {

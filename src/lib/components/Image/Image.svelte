@@ -16,7 +16,7 @@
 		isZoomed = false,
 		removeWrapper = false,
 		disableSkeleton = false,
-		errorLabel = 'Image unavailable',
+		errorLabel = 'Imagen no disponible',
 		class: className = '',
 		onload,
 		onerror

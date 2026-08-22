@@ -143,8 +143,9 @@ The string icon registry imports every registered Lucide icon when `Icon` enters
 - `RemoteSelect` needs endpoint/query and mapping inputs from its source.
 - Prefer `Button.variant` for visual hierarchy and `Button.type` for native semantics. Legacy visual `type` plus native `button` remains supported; `variant` wins visually and `button` wins natively when both forms are present. `filled` and `gradient` consume `solid + foreground`; the gradient shades away from the foreground when `contrast-color()` is supported and safely degrades to the calibrated solid otherwise.
 - `Card` derives its depth from the neutral surface ladder. A clickable card renders as a button and must not contain nested interactive controls.
-- Form and interactive peers share one control contract: fill/border (`--lumi-color-control-*`), height ladder (`--lumi-control-height-*`; expose only steps the component supports), radius (`--lumi-control-radius`), accent (`--lumi-control-accent`), field focus (`--lumi-control-focus-shadow`), affordance focus (`--lumi-focus-outline` re-declared on interactive roots), and micro-motion (`--lumi-transition-control`). `Input`, `NumberInput`, `Select`, and `Textarea` also share `.lumi-autofill` + `--lumi-control-autofill-bg`.
+- Form and interactive peers share one control contract: fill/border (`--lumi-color-control-*`), height ladder (`--lumi-control-height-*`; expose only steps the component supports), radius (`--lumi-radius-control`), accent (`--lumi-control-accent`), field focus (`--lumi-control-focus-shadow`), affordance focus (`--lumi-focus-outline` re-declared on interactive roots), and micro-motion (`--lumi-transition-control`). `Input`, `NumberInput`, `Select`, and `Textarea` also share `.lumi-autofill` + `--lumi-control-autofill-bg`.
 - `Tabs` and `SegmentedControl` share one **switcher** recipe (glass shell + elevated active pill), not the field/control-fill well. See [GUIDE §6](./GUIDE.md#6-design-language) and [authoring recipes](./COMPONENT_AUTHORING.md#shared-visual-recipes-copy-peers--do-not-fork).
+- `Tab.content` enables managed panels: every panel stays mounted while inactive panels are hidden, preserving local state and successful form controls. The children snippet remains the lightweight navigation-only fallback.
 - Radios bound to the same `group` must also share a non-empty `name` for native arrow-key navigation and form semantics. `busy` temporarily disables interaction.
 - `SegmentedControl.iconOnly` applies compact tokenized padding. With `clearable`, activating the selected option emits the empty string (`''`).
 - `Chip` uses a native button for `onclick`; when it is also `closable`, the action and close control remain siblings rather than nested controls. Its close control keeps full opacity for functional contrast.
@@ -154,6 +155,7 @@ The string icon registry imports every registered Lucide icon when `Icon` enters
 - `Dropdown.placement` and `Tooltip.placement` supersede legacy `position`; exported `DropdownPosition` and `TooltipPosition` remain compatible.
 - Supply `Table.rowKey` when records lack stable `id` or `key`.
 - `Table` suppresses row click/double-click/context actions when the pointer originates from a nested interactive control.
-- `Notification` renders in place; wrap in `.lumi-toast-portal` for a fixed toast stack.
+- `Notification` renders in place; wrap in `.lumi-toast-portal` for a fixed toast stack. Placement is owned by that wrapper — `Notification` has no `position` prop.
+- All `Dashboard*` charts consume the shared `.lumi-chart-*` plot primitives (`empty`, `svg`, `grid`, `label`, `crosshair`, `hit`) plus the `.lumi-chart-tooltip` family from `core.css`; components keep only series-specific rules.
 - Icon-only controls need an accessible name; decorative nested icons do not.
 - Preserve focus, dismissal, and roles when composing overlays.

@@ -4,7 +4,10 @@
 		CHART_COLOR_VARS,
 		CHART_PADDING
 	} from '../../utils/chartCoordinates';
-	import { formatChartValue } from '../../utils/chartFormat';
+	import {
+		formatChartPercent,
+		formatChartValue
+	} from '../../utils/chartFormat';
 	import {
 		MIN_CHART_WIDTH,
 		placeChartTooltip,
@@ -26,11 +29,6 @@
 	const INNER_RADIUS_RATIO = 0.62;
 	const FULL_TURN = Math.PI * 2;
 	const START_ANGLE = -Math.PI / 2;
-
-	const percentFormatter = new Intl.NumberFormat('es-PE', {
-		style: 'percent',
-		maximumFractionDigits: 0
-	});
 
 	const layout = useChartWidth(MIN_CHART_WIDTH);
 
@@ -66,7 +64,7 @@
 			label: slice.label,
 			color: CHART_COLOR_VARS[slice.color],
 			value: formatChartValue(slice.value, valueFormat, 'tooltip'),
-			share: total > 0 ? percentFormatter.format(slice.value / total) : ''
+			share: total > 0 ? formatChartPercent(slice.value / total) : ''
 		}))
 	);
 
@@ -86,7 +84,7 @@
 				label: slice.label,
 				fill: CHART_COLOR_VARS[slice.color],
 				value: formatChartValue(slice.value, valueFormat, 'tooltip'),
-				share: percentFormatter.format(slice.value / total),
+				share: formatChartPercent(slice.value / total),
 				full: positive.length === 1,
 				path: ringPath(start, angle)
 			};
@@ -126,7 +124,7 @@
 <div bind:this={layout.root} class={classes}>
 	<div class="lumi-donut-chart__plot" style:height="{chartH}px">
 		{#if !hasValues}
-			<div class="lumi-donut-chart__empty">
+			<div class="lumi-chart-empty">
 				<p class="lumi-margin--none lumi-text--sm lumi-text--muted">
 					{emptyMessage}
 				</p>
@@ -135,7 +133,7 @@
 			<svg
 				viewBox="0 0 {chartW} {chartH}"
 				preserveAspectRatio="xMidYMid meet"
-				class="lumi-donut-chart__svg"
+				class="lumi-chart-svg"
 				role="img"
 				aria-label={ariaLabel}
 				onpointerleave={clearHover}
@@ -175,7 +173,7 @@
 						x={centerX}
 						y={centerY - (centerValue ? 6 : -4)}
 						text-anchor="middle"
-						class="lumi-donut-chart__center-label"
+						class="lumi-chart-label"
 					>
 						{centerLabel}
 					</text>
@@ -247,23 +245,6 @@
 		position: relative;
 	}
 
-	.lumi-donut-chart__empty {
-		height: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: var(--lumi-space-lg);
-		border: var(--lumi-border-width-thin) dashed var(--lumi-color-border-light);
-		border-radius: var(--lumi-radius-panel);
-	}
-
-	.lumi-donut-chart__svg {
-		width: 100%;
-		height: 100%;
-		display: block;
-		touch-action: pan-y;
-	}
-
 	.lumi-donut-chart__slice {
 		cursor: pointer;
 		stroke: var(--lumi-color-surface);
@@ -273,11 +254,6 @@
 
 	.lumi-donut-chart__slice--muted {
 		opacity: 0.42;
-	}
-
-	.lumi-donut-chart__center-label {
-		font-size: var(--lumi-font-size-xs);
-		fill: var(--lumi-color-text-muted);
 	}
 
 	.lumi-donut-chart__center-value {

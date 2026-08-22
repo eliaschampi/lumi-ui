@@ -2,6 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import { LUMI_CONFIG } from '../config';
 	import type { CollapseProps } from './types';
 
 	interface Props extends CollapseProps {
@@ -99,7 +100,10 @@
 			id={panelId}
 			class="lumi-collapse__content"
 			class:lumi-collapse__content--open={isOpen}
-			transition:slide={{ duration: 300, easing: cubicOut }}
+			transition:slide={{
+				duration: LUMI_CONFIG.transitions.slow,
+				easing: cubicOut
+			}}
 		>
 			<div class="lumi-collapse__body">
 				{#if children}

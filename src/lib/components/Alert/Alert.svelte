@@ -102,7 +102,7 @@
 			<button
 				class="lumi-alert__close"
 				type="button"
-				aria-label="Close alert"
+				aria-label="Cerrar alerta"
 				onclick={handleClose}
 			>
 				<X size="var(--lumi-icon-sm)" />
@@ -197,6 +197,6 @@
 
 	.lumi-alert__close:focus-visible {
 		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-space-2xs);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 </style>

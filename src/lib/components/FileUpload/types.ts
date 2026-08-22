@@ -21,13 +21,13 @@ export interface FileUploadProps {
 
 	/**
 	 * Placeholder text when no files selected
-	 * @default "Upload your files"
+	 * @default "Sube tus archivos"
 	 */
 	placeholderText?: string;
 
 	/**
 	 * Helper text shown below the placeholder title
-	 * @default "Drag your files here or click to select"
+	 * @default "Arrastra archivos aquí o haz clic para seleccionar"
 	 */
 	hintText?: string;
 
@@ -57,7 +57,7 @@ export interface FileUploadProps {
 
 	/**
 	 * Label for the "add more files" action
-	 * @default "Add more files"
+	 * @default "Agregar más archivos"
 	 */
 	addMoreText?: string;
 

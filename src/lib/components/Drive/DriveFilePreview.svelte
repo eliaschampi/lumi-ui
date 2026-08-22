@@ -51,37 +51,44 @@
 </script>
 
 <Dialog bind:open title={file?.name || 'Vista previa'} size="lg">
-	<div class="drive-preview">
+	<div class="lumi-drive-preview">
 		{#if !file}
-			<div class="drive-preview__empty">
+			<div class="lumi-drive-preview__empty">
 				<Icon icon="file" size="2xl" color="muted" />
 				<p>No hay archivo seleccionado</p>
 			</div>
 		{:else if isImage}
-			<div class="drive-preview__media-wrap">
-				<img src={previewUrl} alt={file.name} class="drive-preview__image" />
+			<div class="lumi-drive-preview__media-wrap">
+				<img
+					src={previewUrl}
+					alt={file.name}
+					class="lumi-drive-preview__image"
+				/>
 			</div>
 		{:else if isVideo}
-			<div class="drive-preview__media-wrap">
+			<div class="lumi-drive-preview__media-wrap">
 				<!-- svelte-ignore a11y_media_has_caption -->
-				<video src={previewUrl} controls class="drive-preview__video">
+				<video src={previewUrl} controls class="lumi-drive-preview__video">
 					Tu navegador no soporta la reproducción de video.
 				</video>
 			</div>
 		{:else if isAudio}
-			<div class="drive-preview__audio-wrap">
+			<div class="lumi-drive-preview__audio-wrap">
 				<Icon icon="music" size="var(--lumi-space-4xl)" color="warning" />
-				<audio src={previewUrl} controls class="drive-preview__audio">
+				<audio src={previewUrl} controls class="lumi-drive-preview__audio">
 					Tu navegador no soporta la reproducción de audio.
 				</audio>
 			</div>
 		{:else if isPdf}
-			<div class="drive-preview__pdf-wrap">
-				<iframe src={previewUrl} title={file.name} class="drive-preview__pdf"
+			<div class="lumi-drive-preview__pdf-wrap">
+				<iframe
+					src={previewUrl}
+					title={file.name}
+					class="lumi-drive-preview__pdf"
 				></iframe>
 			</div>
 		{:else}
-			<div class="drive-preview__empty">
+			<div class="lumi-drive-preview__empty">
 				<Icon icon="file" size="2xl" color="muted" />
 				<p>Vista previa no disponible para este tipo de archivo</p>
 			</div>
@@ -89,14 +96,14 @@
 	</div>
 
 	{#if file}
-		<div class="drive-preview__details">
-			<div class="drive-preview__details-main">
+		<div class="lumi-drive-preview__details">
+			<div class="lumi-drive-preview__details-main">
 				<Icon
 					icon={getFileIcon(file.type)}
 					size="md"
 					color={getFileColor(file.type)}
 				/>
-				<div class="drive-preview__details-text">
+				<div class="lumi-drive-preview__details-text">
 					<span class="lumi-font--medium">{file.name}</span>
 					<span class="lumi-text--xs lumi-text--muted">
 						{getDriveTypeLabel(file.type)}
@@ -106,7 +113,7 @@
 					</span>
 				</div>
 			</div>
-			<div class="drive-preview__details-meta">
+			<div class="lumi-drive-preview__details-meta">
 				<span class="lumi-text--xs lumi-text--muted"
 					>Actualizado: {formatDate(file.updated_at)}</span
 				>
@@ -130,7 +137,7 @@
 </Dialog>
 
 <style>
-	.drive-preview {
+	.lumi-drive-preview {
 		min-height: var(--lumi-drive-preview-min-height);
 		display: flex;
 		align-items: center;
@@ -148,13 +155,13 @@
 			var(--lumi-color-background-secondary);
 	}
 
-	.drive-preview__media-wrap {
+	.lumi-drive-preview__media-wrap {
 		width: 100%;
 		display: flex;
 		justify-content: center;
 	}
 
-	.drive-preview__image {
+	.lumi-drive-preview__image {
 		max-width: 100%;
 		max-height: 70vh;
 		object-fit: contain;
@@ -162,14 +169,14 @@
 		box-shadow: var(--lumi-shadow-md);
 	}
 
-	.drive-preview__video {
+	.lumi-drive-preview__video {
 		width: 100%;
 		max-height: 70vh;
 		border-radius: var(--lumi-radius-tile);
 		box-shadow: var(--lumi-shadow-md);
 	}
 
-	.drive-preview__audio-wrap {
+	.lumi-drive-preview__audio-wrap {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -178,17 +185,17 @@
 		width: 100%;
 	}
 
-	.drive-preview__audio {
+	.lumi-drive-preview__audio {
 		width: 100%;
 		max-width: var(--lumi-drive-preview-audio-max-width);
 	}
 
-	.drive-preview__pdf-wrap {
+	.lumi-drive-preview__pdf-wrap {
 		width: 100%;
 		height: 70vh;
 	}
 
-	.drive-preview__pdf {
+	.lumi-drive-preview__pdf {
 		width: 100%;
 		height: 100%;
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
@@ -196,7 +203,7 @@
 		background: var(--lumi-color-surface);
 	}
 
-	.drive-preview__empty {
+	.lumi-drive-preview__empty {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -205,7 +212,7 @@
 		text-align: center;
 	}
 
-	.drive-preview__details {
+	.lumi-drive-preview__details {
 		margin-top: var(--lumi-space-sm);
 		padding: var(--lumi-space-sm) var(--lumi-space-md);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
@@ -218,27 +225,27 @@
 		flex-wrap: wrap;
 	}
 
-	.drive-preview__details-main {
+	.lumi-drive-preview__details-main {
 		display: flex;
 		align-items: center;
 		gap: var(--lumi-space-sm);
 		min-width: 0;
 	}
 
-	.drive-preview__details-text {
+	.lumi-drive-preview__details-text {
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
 	}
 
-	.drive-preview__details-text span:first-child {
+	.lumi-drive-preview__details-text span:first-child {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		max-width: var(--lumi-drive-preview-title-max-width);
 	}
 
-	.drive-preview__details-meta {
+	.lumi-drive-preview__details-meta {
 		display: flex;
 		flex-direction: column;
 		gap: var(--lumi-space-2xs);
@@ -246,11 +253,11 @@
 	}
 
 	@media (max-width: 48rem) {
-		.drive-preview {
+		.lumi-drive-preview {
 			min-height: var(--lumi-drive-preview-min-height-mobile);
 		}
 
-		.drive-preview__details-meta {
+		.lumi-drive-preview__details-meta {
 			text-align: left;
 		}
 	}

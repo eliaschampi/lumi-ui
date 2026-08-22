@@ -351,7 +351,7 @@
 							{#if selectable}
 								<th class="lumi-table__th lumi-table__th--select" scope="col">
 									<Checkbox
-										aria-label="Select all rows"
+										aria-label="Seleccionar todas las filas"
 										checked={isAllSelected}
 										indeterminate={isPartiallySelected}
 										size="sm"
@@ -426,7 +426,7 @@
 	</div>
 
 	{#if pagination && !loading}
-		<div class="lumi-table__pagination" aria-label="Table pagination">
+		<div class="lumi-table__pagination" aria-label="Paginación de la tabla">
 			{#if paginationSlot}
 				{@render paginationSlot(paginationData)}
 			{:else}
@@ -449,7 +449,7 @@
 				{#if totalPages > 1}
 					<nav
 						class="lumi-table__pagination-controls"
-						aria-label="Page navigation"
+						aria-label="Navegación de páginas"
 					>
 						<Button
 							size="sm"
@@ -457,7 +457,7 @@
 							icon="chevronLeft"
 							disabled={activePage === 1}
 							onclick={() => goToPage(activePage - 1)}
-							aria-label="Previous page"
+							aria-label="Página anterior"
 						/>
 
 						<div class="lumi-table__pagination-pages">
@@ -482,7 +482,7 @@
 							icon="chevronRight"
 							disabled={activePage === totalPages}
 							onclick={() => goToPage(activePage + 1)}
-							aria-label="Next page"
+							aria-label="Página siguiente"
 						/>
 					</nav>
 				{/if}
@@ -835,7 +835,7 @@
 
 	.lumi-table__pagination-page:focus-visible {
 		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-border-width-thin);
+		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	.lumi-table__pagination-page--active {

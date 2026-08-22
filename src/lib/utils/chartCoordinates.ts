@@ -63,12 +63,25 @@ export function computeSparseXLabels<T extends { key: string; label: string }>(
 	}
 
 	const step = Math.ceil(data.length / (maxLabels - 1));
-	return data
-		.map((point, index) => ({ point, index }))
-		.filter(({ index }) => index % step === 0 || index === data.length - 1)
-		.map(({ point, index }) => ({
+	const labels: { x: number; label: string; key: string }[] = [];
+	let index = 0;
+	for (; index < data.length; index += step) {
+		const point = data[index];
+		labels.push({
 			x: xAtIndex(index),
 			label: point.label,
 			key: point.key
-		}));
+		});
+	}
+
+	const lastIndex = data.length - 1;
+	if (index - step !== lastIndex) {
+		const point = data[lastIndex];
+		labels.push({
+			x: xAtIndex(lastIndex),
+			label: point.label,
+			key: point.key
+		});
+	}
+	return labels;
 }

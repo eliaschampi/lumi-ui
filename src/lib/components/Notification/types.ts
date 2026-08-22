@@ -1,6 +1,7 @@
 /**
  * Notification Component Types
- * Toast notifications with positioning and queue management
+ * Toast notification; placement is owned by the consumer stack
+ * (`.lumi-toast-portal` in core.css).
  */
 
 export type NotificationColor =
@@ -8,13 +9,6 @@ export type NotificationColor =
 /** @deprecated Use `NotificationColor`; legacy `error` maps to `danger`. */
 export type NotificationType =
 	'success' | 'warning' | 'error' | 'info' | 'primary';
-export type NotificationPosition =
-	| 'top-left'
-	| 'top-right'
-	| 'bottom-left'
-	| 'bottom-right'
-	| 'top-center'
-	| 'bottom-center';
 
 export interface NotificationProps {
 	/**
@@ -41,12 +35,6 @@ export interface NotificationProps {
 	 * @default true
 	 */
 	closable?: boolean;
-
-	/**
-	 * Notification position on screen
-	 * @default "top-right"
-	 */
-	position?: NotificationPosition;
 
 	/**
 	 * Auto-dismiss duration in milliseconds (0 = no auto-dismiss)

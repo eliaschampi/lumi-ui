@@ -579,7 +579,7 @@
 		min-height: var(--lumi-control-height-md);
 		background: var(--select-bg);
 		border: var(--lumi-border-width-thin) solid var(--select-border);
-		border-radius: var(--lumi-control-radius);
+		border-radius: var(--lumi-radius-control);
 		box-shadow: var(--lumi-control-shadow);
 		transition: var(--lumi-transition-control);
 		cursor: pointer;

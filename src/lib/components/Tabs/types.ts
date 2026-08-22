@@ -1,3 +1,4 @@
+import type { Snippet } from 'svelte';
 import type { LumiColor } from '../config';
 
 export type TabsColor = LumiColor;
@@ -24,6 +25,12 @@ export interface Tab {
 	 * @default false
 	 */
 	disabled?: boolean;
+
+	/**
+	 * Optional panel content. When used, Tabs keeps every panel mounted and
+	 * hides inactive panels so local state and form controls are preserved.
+	 */
+	content?: Snippet;
 }
 
 export interface TabsProps {

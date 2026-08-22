@@ -158,7 +158,7 @@
 
 		/* Visual */
 		border: var(--lumi-border-width-base) solid transparent;
-		border-radius: var(--lumi-control-radius);
+		border-radius: var(--lumi-radius-control);
 		cursor: pointer;
 		user-select: none;
 		position: relative;

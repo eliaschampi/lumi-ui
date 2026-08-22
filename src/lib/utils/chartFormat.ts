@@ -36,6 +36,14 @@ const compactIntegerAxisFormatter = new Intl.NumberFormat('es-PE', {
 	notation: 'compact'
 });
 const numberTooltipFormatter = new Intl.NumberFormat('es-PE');
+const percentFormatter = new Intl.NumberFormat('es-PE', {
+	style: 'percent',
+	maximumFractionDigits: 0
+});
+
+export function formatChartPercent(value: number): string {
+	return percentFormatter.format(value);
+}
 
 export function formatChartValue(
 	value: number,

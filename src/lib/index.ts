@@ -173,7 +173,6 @@ export { List, ListHeader, ListItem } from './components/List';
 export type { LoadingColor, LoadingProps } from './components/Loading';
 export { Loading } from './components/Loading';
 export type {
-	NotificationPosition,
 	NotificationType,
 	NotificationProps,
 	NotificationColor
