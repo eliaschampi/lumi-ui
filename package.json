@@ -1,6 +1,6 @@
 {
 	"name": "@lumi-ui/svelte",
-	"version": "0.4.0",
+	"version": "0.4.1",
 	"description": "Lumi UI: calm glassmorphic Svelte 5 component library with semantic tokens and reusable patterns.",
 	"type": "module",
 	"packageManager": "pnpm@10.33.2",
@@ -50,6 +50,10 @@
 			"types": "./dist/index.d.ts",
 			"svelte": "./dist/index.js",
 			"default": "./dist/index.js"
+		},
+		"./concurrency": {
+			"types": "./dist/concurrency.d.ts",
+			"default": "./dist/concurrency.js"
 		},
 		"./drive": {
 			"types": "./dist/drive.d.ts",
