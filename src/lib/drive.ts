@@ -1,6 +1,12 @@
 export {
 	ALLOWED_MIME_TYPES,
 	DRIVE_IMAGE_COMPRESSION_THRESHOLD_BYTES,
+	DRIVE_IMAGE_MAX_INPUT_PIXELS,
+	DRIVE_IMAGE_MIN_REDUCTION_RATIO,
+	DRIVE_IMAGE_PREVIEW_DIMENSION,
+	DRIVE_IMAGE_PREVIEW_QUALITY,
+	DRIVE_IMAGE_THUMB_DIMENSION,
+	DRIVE_IMAGE_THUMB_QUALITY,
 	DRIVE_MENU_OPTIONS,
 	DRIVE_PROJECT_STORAGE_LIMIT_BYTES,
 	DRIVE_SCOPE_OPTIONS,
@@ -8,6 +14,7 @@ export {
 	MAX_DRIVE_NAME_LENGTH,
 	MAX_FILE_SIZE,
 	TAG_OPTIONS,
+	buildDriveServeHeaders,
 	detectFileType,
 	driveTagColorCssVar,
 	formatDriveDate,
@@ -25,8 +32,11 @@ export {
 	isValidTagHash,
 	normalizeDriveFileSize,
 	normalizeDriveName,
+	shouldForceDriveDownload,
 	validateDriveName
 } from './utils/drive';
+
+export type { DriveServeHeadersInput } from './utils/drive';
 
 export type {
 	DriveBreadcrumb,

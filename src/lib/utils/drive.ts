@@ -120,6 +120,67 @@ const DRIVE_FILE_COLORS = {
 export const DRIVE_IMAGE_COMPRESSION_THRESHOLD_BYTES = 1 * 1024 * 1024;
 
 /**
+ * Decode ceiling for untrusted image inputs. Covers any real camera photo
+ * while bounding the memory a hostile image can force before being refused.
+ */
+export const DRIVE_IMAGE_MAX_INPUT_PIXELS = 50_000_000;
+
+/** Longest edge of generated preview variants. */
+export const DRIVE_IMAGE_PREVIEW_DIMENSION = 1600;
+
+/** Longest edge of generated thumb variants. */
+export const DRIVE_IMAGE_THUMB_DIMENSION = 480;
+
+/** WebP quality for preview variants. */
+export const DRIVE_IMAGE_PREVIEW_QUALITY = 84;
+
+/** WebP quality for thumb variants. */
+export const DRIVE_IMAGE_THUMB_QUALITY = 72;
+
+/**
+ * Optimized uploads are kept only when they resize the image or shrink the
+ * payload to at most this fraction of the original size.
+ */
+export const DRIVE_IMAGE_MIN_REDUCTION_RATIO = 0.94;
+
+const ACTIVE_DOCUMENT_MIME_TYPES: ReadonlySet<string> = new Set([
+	'image/svg+xml'
+]);
+
+/**
+ * Active documents (an SVG can carry scripts) are never served inline.
+ */
+export function shouldForceDriveDownload(
+	mimeType: string | null | undefined
+): boolean {
+	return (
+		typeof mimeType === 'string' && ACTIVE_DOCUMENT_MIME_TYPES.has(mimeType)
+	);
+}
+
+export interface DriveServeHeadersInput {
+	contentType: string;
+	fileName: string;
+	download: boolean;
+	cacheControl?: string;
+}
+
+/**
+ * Canonical Drive serve headers: nosniff always, centralized disposition
+ * policy, private caching by default.
+ */
+export function buildDriveServeHeaders(
+	input: DriveServeHeadersInput
+): Record<string, string> {
+	return {
+		'Content-Type': input.contentType,
+		'Cache-Control': input.cacheControl ?? 'private, max-age=3600',
+		'X-Content-Type-Options': 'nosniff',
+		'Content-Disposition': `${input.download ? 'attachment' : 'inline'}; filename="${encodeURIComponent(input.fileName)}"`
+	};
+}
+
+/**
  * Detect DriveFileType from MIME type
  */
 export function detectFileType(mimeType: string): DriveFileType {
