@@ -292,6 +292,8 @@ If the surface can be clipped by `overflow: hidden` parents:
 4. On open: cancel pending close timers/transitions before rebinding target.
 5. On close: restore focus to the trigger when the user opened via keyboard/pointer interaction that expects it.
 
+Release listeners and scroll locks in the effect that acquired them; destroying a closed overlay must not change another overlay's state.
+
 Reference implementations: `Dialog`, `Dropdown`, `Context`, `Select`, `Tooltip`.
 
 ---

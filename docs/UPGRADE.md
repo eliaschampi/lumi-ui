@@ -2,6 +2,12 @@
 
 Consumer migration for **0.1.5 → 0.2.x** and later. Use **pnpm** only. Source remains authoritative.
 
+## 0.4.1 → 0.4.2
+
+No component props, events, public exports, or dependency requirements changed. No consumer migration is required.
+
+- Destroying a closed `Dialog` no longer removes document keydown listeners or restores body scroll. The effect that acquired them releases them, so another open overlay keeps its scroll lock and keyboard handling.
+
 ## 0.4.0 → 0.4.1
 
 No component props, events, public exports, or dependency requirements changed. No consumer migration is required.

@@ -179,9 +179,6 @@
 			if (afterCloseTimer) {
 				window.clearTimeout(afterCloseTimer);
 			}
-			document.removeEventListener('keydown', handleEscapeKey);
-			document.removeEventListener('keydown', trapFocus);
-			unlockBodyScroll();
 		};
 	});
 </script>
