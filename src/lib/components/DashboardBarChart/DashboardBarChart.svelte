@@ -1,18 +1,17 @@
 <script lang="ts">
-	import { portal } from '../../actions/portal';
 	import {
 		CHART_COLOR_VARS,
 		CHART_PADDING,
 		CHART_Y_TICKS,
 		ceilNice,
-		chartGradientId,
 		computeSparseXLabels,
 		truncateAxisLabel
 	} from '../../utils/chartCoordinates';
+	import { chartAxis } from '../../utils/chartAxis';
 	import { formatChartValue } from '../../utils/chartFormat';
 	import {
 		MIN_CHART_WIDTH,
-		placeChartTooltip,
+		chartTooltip,
 		useChartWidth
 	} from '../../utils/chartLayout.svelte';
 	import type { DashboardBarChartProps } from './types';
@@ -28,20 +27,22 @@
 		class: className = ''
 	}: DashboardBarChartProps = $props();
 
+	const instanceId = $props.id();
+	const gradientId = `lumi-bar-gradient-${instanceId}`;
 	const layout = useChartWidth(MIN_CHART_WIDTH);
 
 	let hoveredIndex = $state<number | null>(null);
-	let tooltipX = $state(0);
-	let tooltipY = $state(0);
-	let tooltipEl = $state<HTMLDivElement | undefined>();
+	let tooltipAnchor = $state({ clientX: 0, clientY: 0 });
 
 	const fillColor = $derived(CHART_COLOR_VARS[color]);
 	const values = $derived(
-		data.map((point) => point.value).filter(Number.isFinite)
+		data.map((point) =>
+			Number.isFinite(point.value) ? Math.max(0, point.value) : 0
+		)
 	);
 	const hasValues = $derived(
 		valueFormat === 'score'
-			? values.length > 0
+			? data.some((point) => Number.isFinite(point.value))
 			: values.some((value) => value > 0)
 	);
 	const classes = $derived(
@@ -56,8 +57,12 @@
 		Math.max(1, chartH - CHART_PADDING.top - CHART_PADDING.bottom)
 	);
 	const bandW = $derived(plotW / Math.max(data.length, 1));
-	const barW = $derived(Math.max(4, Math.min(bandW * 0.58, plotH * 0.18)));
-	const maxValue = $derived(Math.max(...values, 1));
+	const barW = $derived(
+		Math.min(bandW, Math.max(4, Math.min(bandW * 0.58, plotH * 0.18)))
+	);
+	const maxValue = $derived(
+		values.reduce((max, value) => Math.max(max, value), 1)
+	);
 	const niceMax = $derived(
 		valueFormat === 'score'
 			? Math.max(20, ceilNice(maxValue))
@@ -72,48 +77,38 @@
 	const xLabels = $derived(
 		computeSparseXLabels(data, (index) => barCenter(index))
 	);
-	const gradientId = $derived(
-		chartGradientId(
-			'bar',
-			color,
-			data.map((point) => point.key)
-		)
-	);
-
 	const hoveredPoint = $derived(
-		hoveredIndex !== null ? data[hoveredIndex] : null
+		hoveredIndex !== null ? (data[hoveredIndex] ?? null) : null
 	);
 
 	function scaleY(value: number): number {
 		return CHART_PADDING.top + plotH - (value / niceMax) * plotH;
 	}
 
-	function barX(index: number): number {
-		return CHART_PADDING.left + index * bandW + (bandW - barW) / 2;
-	}
-
-	function barHeight(value: number): number {
-		if (!Number.isFinite(value) || value <= 0) return 0;
-		return Math.max(0, CHART_PADDING.top + plotH - scaleY(value));
-	}
-
 	function barCenter(index: number): number {
-		return barX(index) + barW / 2;
+		return CHART_PADDING.left + (index + 0.5) * bandW;
 	}
 
-	function formatValue(value: number): string {
-		return formatChartValue(value, valueFormat, 'axis');
-	}
-
-	function formatTooltipValue(value: number): string {
-		return formatChartValue(value, valueFormat, 'tooltip');
-	}
-
-	function setHover(index: number, event: PointerEvent): void {
+	function setHover(
+		index: number,
+		anchor: Pick<PointerEvent, 'clientX' | 'clientY'>
+	): void {
 		hoveredIndex = index;
-		const position = placeChartTooltip(event, tooltipEl);
-		tooltipX = position.x;
-		tooltipY = position.y;
+		tooltipAnchor = { clientX: anchor.clientX, clientY: anchor.clientY };
+	}
+
+	function handlePointer(event: PointerEvent): void {
+		const bounds = (
+			event.currentTarget as SVGRectElement
+		).getBoundingClientRect();
+		const index = Math.min(
+			data.length - 1,
+			Math.max(
+				0,
+				Math.floor(((event.clientX - bounds.left) / bounds.width) * data.length)
+			)
+		);
+		setHover(index, event);
 	}
 
 	function clearHover(): void {
@@ -136,6 +131,7 @@
 			role="img"
 			aria-label={ariaLabel}
 			onpointerleave={clearHover}
+			onpointercancel={clearHover}
 		>
 			<defs>
 				<linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
@@ -144,7 +140,7 @@
 				</linearGradient>
 			</defs>
 
-			{#each yTicks as tick (tick)}
+			{#each yTicks as tick}
 				<line
 					x1={CHART_PADDING.left}
 					y1={scaleY(tick)}
@@ -158,24 +154,25 @@
 					text-anchor="end"
 					class="lumi-chart-label"
 				>
-					{formatValue(tick)}
+					{formatChartValue(tick, valueFormat, 'axis')}
 				</text>
 			{/each}
 
-			{#each data as point, index (point.key)}
+			{#each data as _, index}
+				{@const value = values[index] ?? 0}
 				<rect
-					x={barX(index)}
-					y={scaleY(Math.max(0, point.value))}
+					x={barCenter(index) - barW / 2}
+					y={scaleY(value)}
 					width={barW}
-					height={barHeight(point.value)}
+					height={(value / niceMax) * plotH}
 					fill="url(#{gradientId})"
 					class="lumi-bar-chart__bar"
-					class:lumi-bar-chart__bar--muted={hoveredIndex !== null &&
+					class:lumi-bar-chart__bar--muted={hoveredPoint !== null &&
 						hoveredIndex !== index}
 				/>
 			{/each}
 
-			{#if hoveredIndex !== null}
+			{#if hoveredPoint && hoveredIndex !== null}
 				<line
 					x1={barCenter(hoveredIndex)}
 					y1={CHART_PADDING.top}
@@ -185,47 +182,56 @@
 				/>
 			{/if}
 
-			{#each data as point, index (point.key)}
-				<rect
-					x={CHART_PADDING.left + index * bandW}
-					y={CHART_PADDING.top}
-					width={bandW}
-					height={plotH}
-					fill="transparent"
-					class="lumi-chart-hit"
-					aria-hidden="true"
-					onpointerenter={(event) => setHover(index, event)}
-					onpointermove={(event) => setHover(index, event)}
-				/>
-			{/each}
+			<rect
+				x={CHART_PADDING.left}
+				y={CHART_PADDING.top}
+				width={plotW}
+				height={plotH}
+				fill="transparent"
+				class="lumi-chart-hit"
+				aria-hidden="true"
+				onpointerenter={handlePointer}
+				onpointermove={handlePointer}
+				onpointerleave={clearHover}
+			/>
 
-			{#each xLabels as xLabel (xLabel.key)}
-				<text
-					x={xLabel.x}
-					y={chartH - 8}
-					text-anchor="middle"
-					class="lumi-chart-label"
-				>
-					{truncateAxisLabel(xLabel.label, xLabelMaxLength)}
-				</text>
-			{/each}
+			<g
+				use:chartAxis={{
+					labels: xLabels,
+					width: chartW,
+					maxLength: xLabelMaxLength
+				}}
+			>
+				{#each xLabels as xLabel}
+					<text
+						x={xLabel.x}
+						y={chartH - 8}
+						text-anchor="middle"
+						class="lumi-chart-label"
+					>
+						{truncateAxisLabel(xLabel.label, xLabelMaxLength)}
+					</text>
+				{/each}
+			</g>
 		</svg>
 	{/if}
 </div>
 
 {#if hoveredPoint}
 	<div
-		bind:this={tooltipEl}
 		class="lumi-chart-tooltip"
-		use:portal
-		style:left="{tooltipX}px"
-		style:top="{tooltipY}px"
+		role="tooltip"
+		use:chartTooltip={tooltipAnchor}
 	>
 		<span class="lumi-chart-tooltip__title">{hoveredPoint.label}</span>
 		<div class="lumi-chart-tooltip__row">
 			<span class="lumi-chart-tooltip__dot" style:background={fillColor}></span>
 			<span class="lumi-chart-tooltip__value"
-				>{formatTooltipValue(hoveredPoint.value)}</span
+				>{formatChartValue(
+					Number.isFinite(hoveredPoint.value) ? hoveredPoint.value : 0,
+					valueFormat,
+					'tooltip'
+				)}</span
 			>
 		</div>
 	</div>
@@ -245,6 +251,6 @@
 	}
 
 	.lumi-bar-chart__bar--muted {
-		opacity: 0.42;
+		opacity: var(--lumi-opacity-muted);
 	}
 </style>

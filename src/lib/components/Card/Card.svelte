@@ -62,10 +62,6 @@
 		if (style) styles.push(style);
 		return styles.join(' ') || undefined;
 	});
-
-	function handleClick(event: MouseEvent) {
-		onclick?.(event);
-	}
 </script>
 
 {#snippet cardContent()}
@@ -84,7 +80,7 @@
 		</div>
 	{/if}
 
-	{#if header || title}
+	{#if header || title || subtitle}
 		<div class="lumi-card__header">
 			{#if header}
 				{@render header()}
@@ -119,7 +115,7 @@
 		rel={linkRel}
 		class={cardClasses}
 		style={cardStyles}
-		onclick={handleClick}
+		{onclick}
 		aria-label={ariaLabel || title || undefined}
 		aria-current={selected ? 'true' : undefined}
 	>
@@ -130,7 +126,7 @@
 		type="button"
 		class={cardClasses}
 		style={cardStyles}
-		onclick={handleClick}
+		{onclick}
 		aria-label={ariaLabel || title || undefined}
 		aria-pressed={selected}
 	>
@@ -256,6 +252,10 @@
 		padding-bottom: var(--lumi-space-xs);
 	}
 
+	.lumi-card__header:last-child {
+		padding-bottom: var(--lumi-space-lg);
+	}
+
 	.lumi-card__content {
 		flex: 1;
 		min-width: 0;
@@ -295,11 +295,6 @@
 		color: var(--lumi-color-text-muted);
 		font-size: var(--lumi-font-size-sm);
 		line-height: var(--lumi-line-height-normal);
-	}
-
-	/* With Image adjustments */
-	.lumi-card--with-image .lumi-card__header {
-		padding-top: var(--lumi-space-lg);
 	}
 
 	@media (forced-colors: active) {

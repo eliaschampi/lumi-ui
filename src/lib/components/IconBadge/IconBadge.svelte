@@ -21,7 +21,7 @@
 	);
 </script>
 
-<div class={classes}>
+<div class={classes} style:--icon-badge-color="var(--lumi-color-{color})">
 	<Icon {icon} {size} {color} />
 </div>
 
@@ -73,30 +73,8 @@
 		width: var(--lumi-space-4xl);
 		height: var(--lumi-space-4xl);
 	}
-
-	.lumi-icon-badge--primary {
-		--icon-badge-color: var(--lumi-color-primary);
-	}
-
-	.lumi-icon-badge--secondary {
-		--icon-badge-color: var(--lumi-color-secondary);
-	}
-
-	.lumi-icon-badge--success {
-		--icon-badge-color: var(--lumi-color-success);
-	}
-
-	.lumi-icon-badge--info {
-		--icon-badge-color: var(--lumi-color-info);
-	}
-
 	.lumi-icon-badge--warning {
-		--icon-badge-color: var(--lumi-color-warning);
 		--icon-badge-bg-strength: 17%;
 		--icon-badge-border-strength: 24%;
-	}
-
-	.lumi-icon-badge--danger {
-		--icon-badge-color: var(--lumi-color-danger);
 	}
 </style>

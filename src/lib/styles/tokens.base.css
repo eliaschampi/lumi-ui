@@ -19,8 +19,12 @@
 	   more makes the browser clip and silently shift hue. Rebrand by moving hue. */
 	--lumi-accent-lightness: 54%;
 	--lumi-accent-chroma-max: 0.21;
-	--lumi-brand-primary: oklch(54% 0.184 257); /* azure  — gamut max 0.192 */
-	--lumi-brand-secondary: oklch(54% 0.21 310); /* orchid — ceiling-capped */
+	--lumi-brand-primary: oklch(
+		var(--lumi-accent-lightness) min(0.184, var(--lumi-accent-chroma-max)) 257
+	); /* azure — gamut max 0.192 at default lightness */
+	--lumi-brand-secondary: oklch(
+		var(--lumi-accent-lightness) min(0.21, var(--lumi-accent-chroma-max)) 310
+	); /* orchid — ceiling-capped */
 	/* Surface seeds: one source of truth for ink + page canvas. */
 	--lumi-color-neutral: rgb(34 28 26); /* warm ink */
 	--lumi-color-canvas: rgb(247 243 237); /* warm paper */
@@ -46,13 +50,19 @@
 	/* Same lightness plane as brand, chroma clamped into sRGB. Hue carries the
 	   semantic identity; warning is the one exception — amber below L≈70% reads
 	   brown, so it keeps its own plane and takes a black foreground. */
-	--lumi-status-success: oklch(54% 0.121 158); /* emerald — gamut max 0.126 */
+	--lumi-status-success: oklch(
+		var(--lumi-accent-lightness) min(0.121, var(--lumi-accent-chroma-max)) 158
+	); /* emerald — gamut max 0.126 at default lightness */
 	--lumi-status-warning: oklch(
 		80% 0.162 82
 	); /* amber fill; ink darkens below */
-	--lumi-status-danger: oklch(54% 0.21 24); /* vermilion */
+	--lumi-status-danger: oklch(
+		var(--lumi-accent-lightness) min(0.21, var(--lumi-accent-chroma-max)) 24
+	); /* vermilion */
 	/* Teal-cyan, not a second blue. Gamut ceiling here is 0.093 — do not raise. */
-	--lumi-status-info: oklch(54% 0.09 210);
+	--lumi-status-info: oklch(
+		var(--lumi-accent-lightness) min(0.09, var(--lumi-accent-chroma-max)) 210
+	);
 
 	/* Consumed accents: light = seed; dark applies --lumi-dark-accent-mix. */
 	--lumi-color-success: var(--lumi-status-success);

@@ -1,19 +1,18 @@
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
-	import { portal } from '../../actions/portal';
 	import {
 		CHART_COLOR_VARS,
 		CHART_PADDING,
 		CHART_Y_TICKS,
 		ceilNice,
-		chartGradientId,
 		computeSparseXLabels,
 		truncateAxisLabel
 	} from '../../utils/chartCoordinates';
+	import { chartAxis } from '../../utils/chartAxis';
 	import { formatChartValue } from '../../utils/chartFormat';
 	import {
 		MIN_CHART_WIDTH,
-		placeChartTooltip,
+		chartTooltip,
 		useChartWidth
 	} from '../../utils/chartLayout.svelte';
 	import type { DashboardChartProps } from './types';
@@ -31,11 +30,10 @@
 	}: DashboardChartProps = $props();
 
 	const layout = useChartWidth(MIN_CHART_WIDTH);
+	const instanceId = $props.id();
 
 	let hoveredIndex = $state<number | null>(null);
-	let tooltipX = $state(0);
-	let tooltipY = $state(0);
-	let tooltipEl = $state<HTMLDivElement | undefined>();
+	let tooltipAnchor = $state({ clientX: 0, clientY: 0 });
 	const hiddenSeries = new SvelteSet<string>();
 
 	const normalizedSeries = $derived(
@@ -52,7 +50,9 @@
 	);
 	const xAxisData = $derived(normalizedSeries[0]?.data ?? []);
 	const visibleSeries = $derived(
-		normalizedSeries.filter((s) => !hiddenSeries.has(s.key))
+		normalizedSeries.length === 1
+			? normalizedSeries
+			: normalizedSeries.filter((s) => !hiddenSeries.has(s.key))
 	);
 	const classes = $derived(
 		['lumi-line-chart', className].filter(Boolean).join(' ')
@@ -66,63 +66,80 @@
 		Math.max(1, chartH - CHART_PADDING.top - CHART_PADDING.bottom)
 	);
 
-	const allVisibleValues = $derived(
-		visibleSeries
-			.flatMap((s) => s.data)
-			.map((p) => p.value)
-			.filter(Number.isFinite)
-	);
-	const maxValue = $derived(Math.max(...allVisibleValues, 0));
-	const minValue = $derived(Math.min(...allVisibleValues, 0));
+	const extent = $derived.by(() => {
+		let min = 0;
+		let max = 0;
+		let count = 0;
+		for (const s of visibleSeries) {
+			for (let index = 0; index < xAxisData.length; index++) {
+				const value = s.data[index]?.value;
+				if (value === undefined || !Number.isFinite(value)) continue;
+				min = Math.min(min, value);
+				max = Math.max(max, value);
+				count++;
+			}
+		}
+		return { min, max, count };
+	});
 	const niceMax = $derived(
 		valueFormat === 'score'
-			? Math.max(20, ceilNice(maxValue))
-			: maxValue > 0
-				? ceilNice(maxValue)
+			? Math.max(20, ceilNice(extent.max))
+			: extent.max > 0
+				? ceilNice(extent.max)
 				: 0
 	);
-	const niceMin = $derived(minValue < 0 ? -ceilNice(Math.abs(minValue)) : 0);
-	const valueRange = $derived(Math.max(niceMax - niceMin, Number.EPSILON));
+	const niceMin = $derived(
+		extent.min < 0 ? -ceilNice(Math.abs(extent.min)) : 0
+	);
+	const valueMagnitude = $derived(
+		Math.max(Math.abs(niceMax), Math.abs(niceMin), Number.MIN_VALUE)
+	);
+	const valueRange = $derived(
+		niceMax / valueMagnitude - niceMin / valueMagnitude || 1
+	);
 	const hasValues = $derived(
 		valueFormat === 'score'
-			? allVisibleValues.length > 0
-			: allVisibleValues.some((v) => v !== 0)
+			? extent.count > 0
+			: extent.min !== 0 || extent.max !== 0
 	);
 
-	const xPoints = $derived(xAxisData.map((_, i) => ({ x: scaleX(i) })));
 	const zeroY = $derived(scaleY(0));
+	const activeIndex = $derived(
+		hoveredIndex !== null && hoveredIndex < xAxisData.length && hasValues
+			? hoveredIndex
+			: null
+	);
 
 	const seriesPaths = $derived(
-		visibleSeries.map((s) => {
-			const pts = xAxisData.map((_, i) => {
-				const point = s.data[i];
-				if (!point || !Number.isFinite(point.value)) return null;
-				return { x: scaleX(i), y: scaleY(point.value) };
-			});
-			const segments = finiteSegments(pts);
-			const line = segments.map((segment) => monotonePath(segment)).join('');
-			const area = segments
-				.map((segment) => {
-					const path = monotonePath(segment);
-					return path
-						? `${path}L${segment[segment.length - 1].x},${zeroY}L${segment[0].x},${zeroY}Z`
-						: '';
-				})
-				.join('');
+		visibleSeries.map((s, seriesIndex) => {
+			let linePath = '';
+			let areaPath = '';
+			let segment: { x: number; y: number }[] = [];
+			const lonePoints: { x: number; y: number }[] = [];
+			function flushSegment() {
+				if (segment.length === 0) return;
+				const path = monotonePath(segment);
+				linePath += path;
+				areaPath += `${path}L${svgPoint(segment[segment.length - 1].x, zeroY)}L${svgPoint(segment[0].x, zeroY)}Z`;
+				if (segment.length === 1) lonePoints.push(segment[0]);
+				segment = [];
+			}
+			for (let index = 0; index < xAxisData.length; index++) {
+				const point = s.data[index];
+				if (point && Number.isFinite(point.value)) {
+					segment.push({ x: scaleX(index), y: scaleY(point.value) });
+				} else {
+					flushSegment();
+				}
+			}
+			flushSegment();
 			return {
 				key: s.key,
-				label: s.label,
 				strokeColor: CHART_COLOR_VARS[s.color],
-				gradientId: chartGradientId('line', s.color, [
-					s.key,
-					...s.data.map((p) => p.key)
-				]),
-				linePath: line,
-				areaPath: area,
-				points: pts,
-				lonePoints: segments
-					.filter((segment) => segment.length === 1)
-					.map((segment) => segment[0])
+				gradientId: `line-${instanceId}-${seriesIndex}`,
+				linePath,
+				areaPath,
+				lonePoints
 			};
 		})
 	);
@@ -130,7 +147,9 @@
 	const yTicks = $derived(
 		Array.from(
 			{ length: CHART_Y_TICKS + 1 },
-			(_, i) => niceMin + (valueRange / CHART_Y_TICKS) * i
+			(_, i) =>
+				(niceMin / valueMagnitude + (valueRange / CHART_Y_TICKS) * i) *
+				valueMagnitude
 		)
 	);
 	const xLabels = $derived(
@@ -138,8 +157,8 @@
 	);
 
 	const hoveredEntries = $derived.by(() => {
-		if (hoveredIndex === null) return [];
-		const index = hoveredIndex;
+		if (activeIndex === null) return [];
+		const index = activeIndex;
 		return visibleSeries
 			.map((s) => ({
 				key: s.key,
@@ -153,29 +172,6 @@
 			);
 	});
 
-	function finiteSegments(
-		pts: Array<{ x: number; y: number } | null>
-	): Array<Array<{ x: number; y: number }>> {
-		const segments: Array<Array<{ x: number; y: number }>> = [];
-		let current: Array<{ x: number; y: number }> = [];
-
-		for (const point of pts) {
-			if (point) {
-				current.push(point);
-				continue;
-			}
-
-			if (current.length > 0) {
-				segments.push(current);
-				current = [];
-			}
-		}
-
-		if (current.length > 0) segments.push(current);
-
-		return segments;
-	}
-
 	function scaleX(i: number): number {
 		return (
 			CHART_PADDING.left +
@@ -184,86 +180,72 @@
 	}
 
 	function scaleY(v: number): number {
-		return CHART_PADDING.top + ((niceMax - v) / valueRange) * plotH;
+		return (
+			CHART_PADDING.top +
+			((niceMax / valueMagnitude - v / valueMagnitude) / valueRange) * plotH
+		);
 	}
 
 	function monotonePath(pts: { x: number; y: number }[]): string {
 		if (pts.length === 0) return '';
-		if (pts.length === 1) return `M${pts[0].x},${pts[0].y}`;
-		if (pts.length === 2)
-			return `M${pts[0].x},${pts[0].y}L${pts[1].x},${pts[1].y}`;
+		const start = `M${svgPoint(pts[0].x, pts[0].y)}`;
+		if (pts.length === 1) return start;
+		if (pts.length === 2) return `${start}L${svgPoint(pts[1].x, pts[1].y)}`;
 
-		const tangents = monotoneTangents(pts);
-		let d = `M${pts[0].x},${pts[0].y}`;
+		const firstDx = pts[1].x - pts[0].x;
+		let slope = firstDx === 0 ? 0 : (pts[1].y - pts[0].y) / firstDx;
+		let tangent = slope;
+		let d = start;
 		for (let i = 0; i < pts.length - 1; i++) {
+			const last = i === pts.length - 2;
+			const nextDx = last ? 0 : pts[i + 2].x - pts[i + 1].x;
+			const nextSlope =
+				nextDx === 0 ? 0 : (pts[i + 2].y - pts[i + 1].y) / nextDx;
+			// Harmonic slopes keep each cubic inside its adjacent data values.
+			const nextTangent = last
+				? slope
+				: slope * nextSlope <= 0
+					? 0
+					: 2 / (1 / slope + 1 / nextSlope);
 			const dx = (pts[i + 1].x - pts[i].x) / 3;
 			const cp1x = pts[i].x + dx;
-			const cp1y = pts[i].y + tangents[i] * dx;
+			const cp1y = pts[i].y + tangent * dx;
 			const cp2x = pts[i + 1].x - dx;
-			const cp2y = pts[i + 1].y - tangents[i + 1] * dx;
-			d += `C${cp1x},${cp1y},${cp2x},${cp2y},${pts[i + 1].x},${pts[i + 1].y}`;
+			const cp2y = pts[i + 1].y - nextTangent * dx;
+			d += `C${svgPoint(cp1x, cp1y)},${svgPoint(cp2x, cp2y)},${svgPoint(pts[i + 1].x, pts[i + 1].y)}`;
+			slope = nextSlope;
+			tangent = nextTangent;
 		}
 		return d;
 	}
 
-	function monotoneTangents(pts: { x: number; y: number }[]): number[] {
-		const n = pts.length;
-		const slopes: number[] = [];
-		for (let i = 0; i < n - 1; i++) {
-			const dx = pts[i + 1].x - pts[i].x;
-			slopes.push(dx === 0 ? 0 : (pts[i + 1].y - pts[i].y) / dx);
-		}
-		const tangents: number[] = [slopes[0]];
-		for (let i = 1; i < n - 1; i++) {
-			if (slopes[i - 1] * slopes[i] <= 0) {
-				tangents.push(0);
-			} else {
-				tangents.push((slopes[i - 1] + slopes[i]) / 2);
-			}
-		}
-		tangents.push(slopes[n - 2]);
-		return tangents;
+	function svgPoint(x: number, y: number): string {
+		// Subpixel serialization only; curve calculations retain full precision.
+		return `${Math.round(x * 1000) / 1000},${Math.round(y * 1000) / 1000}`;
 	}
 
-	function formatYTick(v: number): string {
-		return formatChartValue(v, valueFormat, 'axis');
-	}
-
-	function formatTooltipValue(v: number): string {
-		return formatChartValue(v, valueFormat, 'tooltip');
-	}
-
-	function setHover(index: number, event: PointerEvent): void {
-		hoveredIndex = index;
-		const position = placeChartTooltip(event, tooltipEl);
-		tooltipX = position.x;
-		tooltipY = position.y;
+	function setHover(event: PointerEvent): void {
+		const bounds = (
+			event.currentTarget as SVGRectElement
+		).getBoundingClientRect();
+		const ratio =
+			bounds.width > 0 ? (event.clientX - bounds.left) / bounds.width : 0;
+		hoveredIndex = Math.max(
+			0,
+			Math.min(xAxisData.length - 1, Math.round(ratio * (xAxisData.length - 1)))
+		);
+		tooltipAnchor = { clientX: event.clientX, clientY: event.clientY };
 	}
 
 	function clearHover(): void {
 		hoveredIndex = null;
 	}
 
-	function hitBand(index: number): { x: number; width: number } {
-		if (xPoints.length === 1) {
-			return { x: CHART_PADDING.left, width: plotW };
-		}
-
-		const center = xPoints[index].x;
-		const left =
-			index === 0 ? CHART_PADDING.left : (xPoints[index - 1].x + center) / 2;
-		const right =
-			index === xPoints.length - 1
-				? chartW - CHART_PADDING.right
-				: (center + xPoints[index + 1].x) / 2;
-		return { x: left, width: right - left };
-	}
-
 	function toggleSeries(key: string): void {
 		if (hiddenSeries.has(key)) {
 			hiddenSeries.delete(key);
 		} else {
-			if (hiddenSeries.size + 1 >= normalizedSeries.length) return;
+			if (visibleSeries.length <= 1) return;
 			hiddenSeries.add(key);
 		}
 	}
@@ -310,6 +292,7 @@
 				role="img"
 				aria-label={ariaLabel}
 				onpointerleave={clearHover}
+				onpointercancel={clearHover}
 			>
 				<defs>
 					{#each seriesPaths as sp (sp.key)}
@@ -328,7 +311,7 @@
 					{/each}
 				</defs>
 
-				{#each yTicks as tick (tick)}
+				{#each yTicks as tick}
 					<line
 						x1={CHART_PADDING.left}
 						y1={scaleY(tick)}
@@ -336,29 +319,34 @@
 						y2={scaleY(tick)}
 						class="lumi-chart-grid"
 					/>
-				{/each}
-
-				{#each yTicks as tick (tick)}
 					<text
 						x={CHART_PADDING.left - 8}
 						y={scaleY(tick) + 3}
 						text-anchor="end"
 						class="lumi-chart-label"
 					>
-						{formatYTick(tick)}
+						{formatChartValue(tick, valueFormat, 'axis')}
 					</text>
 				{/each}
 
-				{#each xLabels as xl (xl.key)}
-					<text
-						x={xl.x}
-						y={chartH - 8}
-						text-anchor="middle"
-						class="lumi-chart-label"
-					>
-						{truncateAxisLabel(xl.label, xLabelMaxLength)}
-					</text>
-				{/each}
+				<g
+					use:chartAxis={{
+						labels: xLabels,
+						width: chartW,
+						maxLength: xLabelMaxLength
+					}}
+				>
+					{#each xLabels as xl}
+						<text
+							x={xl.x}
+							y={chartH - 8}
+							text-anchor="middle"
+							class="lumi-chart-label"
+						>
+							{truncateAxisLabel(xl.label, xLabelMaxLength)}
+						</text>
+					{/each}
+				</g>
 
 				{#each seriesPaths as sp (sp.key)}
 					{#if sp.areaPath}
@@ -387,42 +375,36 @@
 					{/each}
 				{/each}
 
-				{#if hoveredIndex !== null}
+				{#if activeIndex !== null}
 					<line
-						x1={xPoints[hoveredIndex].x}
+						x1={scaleX(activeIndex)}
 						y1={CHART_PADDING.top}
-						x2={xPoints[hoveredIndex].x}
+						x2={scaleX(activeIndex)}
 						y2={CHART_PADDING.top + plotH}
 						class="lumi-chart-crosshair"
 					/>
-					{#each seriesPaths as sp (sp.key)}
-						{@const hoverPoint = sp.points[hoveredIndex]}
-						{#if hoverPoint}
-							<circle
-								cx={hoverPoint.x}
-								cy={hoverPoint.y}
-								r="4"
-								fill={sp.strokeColor}
-								class="lumi-line-chart__dot"
-							/>
-						{/if}
+					{#each hoveredEntries as entry (entry.key)}
+						<circle
+							cx={scaleX(activeIndex)}
+							cy={scaleY(entry.point.value)}
+							r="4"
+							fill={CHART_COLOR_VARS[entry.color]}
+							class="lumi-line-chart__dot"
+						/>
 					{/each}
 				{/if}
 
-				{#each xAxisData as point, index (point.key)}
-					{@const band = hitBand(index)}
-					<rect
-						x={band.x}
-						y={CHART_PADDING.top}
-						width={band.width}
-						height={plotH}
-						fill="transparent"
-						class="lumi-chart-hit"
-						aria-hidden="true"
-						onpointerenter={(event) => setHover(index, event)}
-						onpointermove={(event) => setHover(index, event)}
-					/>
-				{/each}
+				<rect
+					x={CHART_PADDING.left}
+					y={CHART_PADDING.top}
+					width={plotW}
+					height={plotH}
+					fill="transparent"
+					class="lumi-chart-hit"
+					aria-hidden="true"
+					onpointerenter={setHover}
+					onpointermove={setHover}
+				/>
 			</svg>
 		{/if}
 	</div>
@@ -430,11 +412,9 @@
 
 {#if hoveredEntries.length > 0}
 	<div
-		bind:this={tooltipEl}
+		role="tooltip"
 		class="lumi-chart-tooltip"
-		use:portal
-		style:left="{tooltipX}px"
-		style:top="{tooltipY}px"
+		use:chartTooltip={tooltipAnchor}
 	>
 		<span class="lumi-chart-tooltip__title"
 			>{hoveredEntries[0].point.label}</span
@@ -447,7 +427,7 @@
 				></span>
 				<span class="lumi-chart-tooltip__label">{entry.label}</span>
 				<span class="lumi-chart-tooltip__value"
-					>{formatTooltipValue(entry.point.value)}</span
+					>{formatChartValue(entry.point.value, valueFormat, 'tooltip')}</span
 				>
 			</div>
 		{/each}
@@ -494,7 +474,7 @@
 	}
 
 	.lumi-line-chart__legend-item--hidden {
-		opacity: 0.4;
+		opacity: var(--lumi-opacity-muted);
 	}
 
 	.lumi-line-chart__legend-dot {

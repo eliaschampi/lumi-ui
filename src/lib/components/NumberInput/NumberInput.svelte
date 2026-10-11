@@ -22,7 +22,15 @@
 	const instanceId = $props.id();
 	const inputId = `lumi-number-${instanceId}`;
 	const styleVars = $derived(`--input-accent: var(--lumi-color-${color});`);
-	const normalizedStep = $derived(step > 0 ? step : 1);
+	const normalizedStep = $derived(Number.isFinite(step) && step > 0 ? step : 1);
+	const precision = $derived(
+		Math.max(decimalPlaces(normalizedStep), decimalPlaces(min))
+	);
+	const incrementDisabled = $derived(
+		disabled ||
+			(max !== undefined && value >= max) ||
+			clamp((value ?? 0) + normalizedStep) === value
+	);
 
 	const classes = $derived(
 		[
@@ -35,28 +43,34 @@
 			.join(' ')
 	);
 
+	function decimalPlaces(number: number): number {
+		const [coefficient, exponent = '0'] = String(number).split('e');
+		return Math.max(
+			0,
+			(coefficient.split('.')[1]?.length ?? 0) - Number(exponent)
+		);
+	}
+
 	function clamp(val: number): number {
-		let v = val;
-		if (min !== undefined) v = Math.max(min, v);
-		if (max !== undefined) v = Math.min(max, v);
-		const precision = String(normalizedStep).split('.')[1]?.length ?? 0;
+		const bounded = Math.min(max ?? Infinity, Math.max(min, val));
 		const snapped =
-			min + Math.round((v - min) / normalizedStep) * normalizedStep;
-		return Number(snapped.toFixed(precision));
+			min + Math.round((bounded - min) / normalizedStep) * normalizedStep;
+		// toFixed accepts at most 100 decimal places, including scientific steps.
+		const digits = Math.min(precision, 100);
+		const rounded = Number(snapped.toFixed(digits));
+		return max !== undefined && rounded > max
+			? Number((rounded - normalizedStep).toFixed(digits))
+			: rounded;
 	}
 
-	function increment(): void {
-		if (disabled) return;
-		const newVal = clamp((value ?? 0) + normalizedStep);
-		if (newVal !== value) {
-			value = newVal;
-			onchange?.(value);
-		}
-	}
-
-	function decrement(): void {
-		if (disabled) return;
-		const newVal = clamp((value ?? 0) - normalizedStep);
+	function stepValue(direction: number): void {
+		if (
+			disabled ||
+			(direction > 0 && incrementDisabled) ||
+			(direction < 0 && value <= min)
+		)
+			return;
+		const newVal = clamp((value ?? 0) + direction * normalizedStep);
 		if (newVal !== value) {
 			value = newVal;
 			onchange?.(value);
@@ -64,8 +78,7 @@
 	}
 
 	function handleBlur(): void {
-		if (value === null || isNaN(value)) value = min;
-		value = clamp(value);
+		value = clamp(Number.isFinite(value) ? value : min);
 		onchange?.(value);
 	}
 
@@ -73,10 +86,10 @@
 		if (disabled) return;
 		if (e.key === 'ArrowUp') {
 			e.preventDefault();
-			increment();
+			stepValue(1);
 		} else if (e.key === 'ArrowDown') {
 			e.preventDefault();
-			decrement();
+			stepValue(-1);
 		}
 	}
 </script>
@@ -90,7 +103,7 @@
 		<button
 			type="button"
 			class="lumi-number-input__btn lumi-number-input__btn--decrement"
-			onclick={decrement}
+			onclick={() => stepValue(-1)}
 			disabled={disabled || (min !== undefined && value <= min)}
 			aria-label="Disminuir valor"
 			tabindex="-1"
@@ -118,8 +131,8 @@
 		<button
 			type="button"
 			class="lumi-number-input__btn lumi-number-input__btn--increment"
-			onclick={increment}
-			disabled={disabled || (max !== undefined && value >= max)}
+			onclick={() => stepValue(1)}
+			disabled={incrementDisabled}
 			aria-label="Aumentar valor"
 			tabindex="-1"
 		>
@@ -139,6 +152,11 @@
 		--number-bg: var(--lumi-color-control-fill);
 		--number-bg-focus: var(--lumi-color-control-focus-fill);
 		--number-btn-size: var(--lumi-control-height-md);
+		--lumi-control-autofill-bg: var(--number-bg);
+	}
+
+	.lumi-number-input:focus-within {
+		--lumi-control-autofill-bg: var(--number-bg-focus);
 	}
 
 	.lumi-number-input__label {
@@ -211,19 +229,17 @@
 		border: none;
 		color: var(--lumi-color-text-muted);
 		cursor: pointer;
-		transition:
-			color var(--lumi-duration-fast) var(--lumi-easing-default),
-			background-color var(--lumi-duration-fast) var(--lumi-easing-default);
+		transition: var(--lumi-transition-control);
 		flex-shrink: 0;
 	}
 
 	.lumi-number-input__btn--decrement {
-		border-right: var(--lumi-border-width-thin) solid
+		border-inline-end: var(--lumi-border-width-thin) solid
 			var(--lumi-color-border-glass);
 	}
 
 	.lumi-number-input__btn--increment {
-		border-left: var(--lumi-border-width-thin) solid
+		border-inline-start: var(--lumi-border-width-thin) solid
 			var(--lumi-color-border-glass);
 	}
 

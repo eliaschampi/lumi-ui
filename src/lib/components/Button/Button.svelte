@@ -94,11 +94,11 @@
 	style={styleVars}
 >
 	{#if loading}
-		<span class="lumi-button__spinner"></span>
+		<span class="lumi-button__spinner" aria-hidden="true"></span>
 	{/if}
 
 	{#if icon && !iconAfter && !loading}
-		<span class="lumi-button__icon">
+		<span class="lumi-button__icon" aria-hidden="true">
 			<Icon {icon} size={`${iconPixelSize}px`} />
 		</span>
 	{/if}
@@ -110,7 +110,7 @@
 	{/if}
 
 	{#if icon && iconAfter && !loading}
-		<span class="lumi-button__icon">
+		<span class="lumi-button__icon" aria-hidden="true">
 			<Icon {icon} size={`${iconPixelSize}px`} />
 		</span>
 	{/if}
@@ -401,25 +401,8 @@
 		animation: lumi-spin var(--lumi-duration-spin) linear infinite;
 	}
 
-	.lumi-button--loading {
-		color: transparent !important;
-		opacity: 1;
-		pointer-events: none;
-	}
-
-	.lumi-button--loading .lumi-button__spinner {
-		color: var(--lumi-color-text);
-	}
-
-	.lumi-button--filled.lumi-button--loading .lumi-button__spinner,
-	.lumi-button--gradient.lumi-button--loading .lumi-button__spinner {
-		color: var(--btn-foreground);
-	}
-
-	.lumi-button--border.lumi-button--loading .lumi-button__spinner,
-	.lumi-button--flat.lumi-button--loading .lumi-button__spinner,
-	.lumi-button--ghost.lumi-button--loading .lumi-button__spinner {
-		color: var(--btn-color);
+	.lumi-button--loading .lumi-button__text {
+		opacity: 0;
 	}
 
 	/* ========================================================================== */

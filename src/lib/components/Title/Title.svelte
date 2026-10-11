@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Icon } from '../Icon';
-	import type { LumiSize } from '../config';
-	import type { TitleColor, TitleLevel, TitleProps, TitleSize } from './types';
+	import type { TitleLevel, TitleProps } from './types';
 
 	const {
 		id,
@@ -15,15 +14,7 @@
 		class: className = ''
 	}: TitleProps = $props();
 
-	const iconSizeMap: Record<TitleSize, LumiSize> = {
-		sm: 'sm',
-		md: 'md',
-		lg: 'lg',
-		xl: 'xl'
-	};
-
 	const headingTag = $derived(`h${level}` as `h${TitleLevel}`);
-	const iconSize = $derived(iconSizeMap[size]);
 
 	const titleClasses = $derived.by(() => {
 		return [
@@ -37,22 +28,15 @@
 			.join(' ');
 	});
 
-	const styleVars = $derived.by(() => {
-		const titleColorVar =
-			color === 'text'
-				? 'var(--lumi-color-text)'
-				: `var(--lumi-color-${color as Exclude<TitleColor, 'text'>})`;
-		const resolvedIconColor = iconColor
-			? `var(--lumi-color-${iconColor})`
-			: titleColorVar;
-		return `--title-color: ${titleColorVar}; --title-icon-color: ${resolvedIconColor};`;
-	});
+	const styleVars = $derived(
+		`--title-color: var(--lumi-color-${color}); --title-icon-color: var(--lumi-color-${iconColor ?? color});`
+	);
 </script>
 
 <div class={titleClasses} style={styleVars}>
 	{#if icon}
 		<div class="lumi-title__icon">
-			<Icon {icon} size={iconSize} />
+			<Icon {icon} {size} />
 		</div>
 	{/if}
 

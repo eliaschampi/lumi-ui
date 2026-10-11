@@ -272,6 +272,11 @@
 		--input-border: var(--lumi-color-control-border);
 		--input-bg: var(--lumi-color-control-fill);
 		--input-bg-focus: var(--lumi-color-control-focus-fill);
+		--input-height: var(--lumi-control-height-md);
+		--input-padding-block: var(--lumi-space-xs);
+		--input-padding-inline: var(--lumi-space-sm);
+		--input-font-size: var(--lumi-font-size-base);
+		--input-icon-padding: var(--lumi-space-sm);
 		--lumi-control-autofill-bg: var(--input-bg);
 	}
 
@@ -308,6 +313,7 @@
 		display: flex;
 		align-items: center;
 		position: relative;
+		min-height: var(--input-height);
 		background: var(--input-bg);
 		border: var(--lumi-border-width-thin) solid var(--input-border);
 		border-radius: var(--lumi-radius-control);
@@ -333,12 +339,13 @@
 		flex: 1;
 		width: 100%;
 		min-width: 0;
+		padding: var(--input-padding-block) var(--input-padding-inline);
 		background: transparent;
 		border: none;
 		outline: none;
 		color: var(--lumi-color-text);
 		font-family: inherit;
-		font-size: var(--lumi-font-size-base);
+		font-size: var(--input-font-size);
 		line-height: var(--lumi-line-height-normal);
 	}
 
@@ -354,51 +361,34 @@
 	}
 
 	/* ── Sizes ────────────────────────────────── */
-	.lumi-input-container--xs .lumi-input {
-		padding-block: var(--lumi-space-2xs);
-		padding-inline: var(--lumi-space-xs);
-		font-size: var(--lumi-font-size-xs);
+	.lumi-input-container--xs {
+		--input-height: var(--lumi-control-height-xs);
+		--input-padding-block: var(--lumi-space-2xs);
+		--input-padding-inline: var(--lumi-space-xs);
+		--input-font-size: var(--lumi-font-size-xs);
+		--input-icon-padding: var(--lumi-space-2xs);
 	}
 
-	.lumi-input-container--xs .lumi-input__wrapper {
-		min-height: var(--lumi-control-height-xs);
-	}
-	.lumi-input-container--sm .lumi-input {
-		padding-block: var(--lumi-space-xs);
-		padding-inline: var(--lumi-space-sm);
-		font-size: var(--lumi-font-size-sm);
+	.lumi-input-container--sm {
+		--input-height: var(--lumi-control-height-sm);
+		--input-font-size: var(--lumi-font-size-sm);
+		--input-icon-padding: var(--lumi-space-xs);
 	}
 
-	.lumi-input-container--sm .lumi-input__wrapper {
-		min-height: var(--lumi-control-height-sm);
+	.lumi-input-container--lg {
+		--input-height: var(--lumi-control-height-lg);
+		--input-padding-block: var(--lumi-space-md);
+		--input-padding-inline: var(--lumi-space-md);
+		--input-font-size: var(--lumi-font-size-lg);
+		--input-icon-padding: var(--lumi-space-md);
 	}
 
-	.lumi-input-container--md .lumi-input {
-		padding-block: var(--lumi-space-xs);
-		padding-inline: var(--lumi-space-sm);
-	}
-
-	.lumi-input-container--md .lumi-input__wrapper {
-		min-height: var(--lumi-control-height-md);
-	}
-	.lumi-input-container--lg .lumi-input {
-		padding-block: var(--lumi-space-md);
-		padding-inline: var(--lumi-space-md);
-		font-size: var(--lumi-font-size-lg);
-	}
-
-	.lumi-input-container--lg .lumi-input__wrapper {
-		min-height: var(--lumi-control-height-lg);
-	}
-
-	.lumi-input-container--xl .lumi-input {
-		padding-block: var(--lumi-space-md);
-		padding-inline: var(--lumi-space-lg);
-		font-size: var(--lumi-font-size-xl);
-	}
-
-	.lumi-input-container--xl .lumi-input__wrapper {
-		min-height: var(--lumi-control-height-xl);
+	.lumi-input-container--xl {
+		--input-height: var(--lumi-control-height-xl);
+		--input-padding-block: var(--lumi-space-md);
+		--input-padding-inline: var(--lumi-space-lg);
+		--input-font-size: var(--lumi-font-size-xl);
+		--input-icon-padding: var(--lumi-space-lg);
 	}
 
 	/* ── Suffix ───────────────────────────────── */
@@ -422,7 +412,7 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		padding: 0 var(--lumi-space-sm);
+		padding: 0 var(--input-icon-padding);
 		color: var(--lumi-color-text-muted);
 		background: transparent;
 		border: none;
@@ -452,30 +442,12 @@
 	}
 
 	.lumi-input__icon--before:not(.lumi-input__icon--no-border) {
-		border-right: var(--lumi-border-width-thin) solid
+		border-inline-end: var(--lumi-border-width-thin) solid
 			var(--lumi-color-border-light);
 	}
 	.lumi-input__icon--after:not(.lumi-input__icon--no-border) {
-		border-left: var(--lumi-border-width-thin) solid
+		border-inline-start: var(--lumi-border-width-thin) solid
 			var(--lumi-color-border-light);
-	}
-
-	/* Icon padding per size */
-	.lumi-input-container--xs .lumi-input__icon,
-	.lumi-input-container--xs .lumi-input__action {
-		padding: 0 var(--lumi-space-2xs);
-	}
-	.lumi-input-container--sm .lumi-input__icon,
-	.lumi-input-container--sm .lumi-input__action {
-		padding: 0 var(--lumi-space-xs);
-	}
-	.lumi-input-container--lg .lumi-input__icon,
-	.lumi-input-container--lg .lumi-input__action {
-		padding: 0 var(--lumi-space-md);
-	}
-	.lumi-input-container--xl .lumi-input__icon,
-	.lumi-input-container--xl .lumi-input__action {
-		padding: 0 var(--lumi-space-lg);
 	}
 
 	.lumi-input__validation-icon {

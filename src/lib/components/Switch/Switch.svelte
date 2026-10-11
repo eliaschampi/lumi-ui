@@ -57,7 +57,7 @@
 		onchange={handleChange}
 	/>
 
-	<div class="lumi-switch__track">
+	<div class="lumi-switch__track" aria-hidden="true">
 		<div class="lumi-switch__thumb"></div>
 	</div>
 
@@ -159,10 +159,6 @@
 		background: var(--lumi-control-active-fill);
 	}
 
-	.lumi-switch--checked:not(.lumi-switch--disabled):hover .lumi-switch__track {
-		box-shadow: var(--lumi-control-active-shadow);
-	}
-
 	.lumi-switch:not(.lumi-switch--disabled):hover .lumi-switch__thumb {
 		box-shadow: var(--lumi-shadow-md);
 	}
@@ -200,14 +196,6 @@
 
 	.lumi-switch--disabled .lumi-switch__label {
 		cursor: not-allowed;
-	}
-
-	.lumi-switch--disabled.lumi-switch--checked .lumi-switch__track {
-		background: color-mix(
-			in srgb,
-			var(--switch-color) 55%,
-			var(--lumi-color-border)
-		);
 	}
 
 	.lumi-switch--disabled:not(.lumi-switch--checked) .lumi-switch__track {

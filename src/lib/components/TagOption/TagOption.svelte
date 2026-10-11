@@ -15,6 +15,8 @@
 	class="lumi-tag-option lumi-tag-option--{color}"
 	class:lumi-tag-option--active={active}
 	class:lumi-tag-option--disabled={disabled}
+	style:--color="var(--lumi-color-{color})"
+	aria-pressed={active}
 	{disabled}
 	{onclick}
 >
@@ -38,28 +40,8 @@
 		font-family: inherit;
 		font-size: var(--lumi-font-size-sm);
 		cursor: pointer;
-		text-align: left;
+		text-align: start;
 		transition: var(--lumi-transition-control);
-	}
-
-	/* Color variants — set the single --color token used by all states */
-	.lumi-tag-option--primary {
-		--color: var(--lumi-color-primary);
-	}
-	.lumi-tag-option--secondary {
-		--color: var(--lumi-color-secondary);
-	}
-	.lumi-tag-option--success {
-		--color: var(--lumi-color-success);
-	}
-	.lumi-tag-option--warning {
-		--color: var(--lumi-color-warning);
-	}
-	.lumi-tag-option--danger {
-		--color: var(--lumi-color-danger);
-	}
-	.lumi-tag-option--info {
-		--color: var(--lumi-color-info);
 	}
 
 	.lumi-tag-option:hover {

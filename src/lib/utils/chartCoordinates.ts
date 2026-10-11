@@ -21,67 +21,57 @@ export const CHART_COLOR_VARS: Record<ChartColor, string> = {
 /** Nice upper bound on a 1-2-5 ladder. Non-finite or non-positive → 10. */
 export function ceilNice(value: number): number {
 	if (!Number.isFinite(value) || value <= 0) return 10;
-	const magnitude = 10 ** Math.floor(Math.log10(value));
+	const magnitude = Math.max(
+		Number.MIN_VALUE,
+		10 ** Math.floor(Math.log10(value))
+	);
 	const normalized = value / magnitude;
 	const nice =
 		normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
-	return nice * magnitude;
+	return Math.max(value, Math.min(Number.MAX_VALUE, nice * magnitude));
 }
 
 export function truncateAxisLabel(label: string, maxLength: number): string {
-	if (label.length <= maxLength) return label;
-	return `${label.slice(0, Math.max(1, maxLength - 3))}...`;
-}
-
-/** Stable SVG defs id (SSR-safe); unique per series and color on a page. */
-export function chartGradientId(
-	prefix: string,
-	color: string,
-	keys: readonly string[]
-): string {
-	const seed = keys.join('\0');
-	let hash = 0;
-	for (let index = 0; index < seed.length; index += 1) {
-		hash = (hash * 31 + seed.charCodeAt(index)) >>> 0;
+	const limit = Math.max(0, Math.floor(maxLength));
+	if (!Number.isFinite(limit) || label.length <= limit) return label;
+	let end = 0;
+	let prefixEnd = 0;
+	let count = 0;
+	for (const character of label) {
+		if (count === limit) {
+			return limit > 3
+				? `${label.slice(0, prefixEnd)}...`
+				: label.slice(0, end);
+		}
+		if (count === limit - 3) prefixEnd = end;
+		end += character.length;
+		count++;
 	}
-	return `${prefix}-${color}-${hash.toString(36)}`;
+	return label;
 }
 
-export function computeSparseXLabels<T extends { key: string; label: string }>(
-	data: readonly T[],
+export function computeSparseXLabels(
+	data: readonly { label: string }[],
 	xAtIndex: (index: number) => number,
 	maxLabels = CHART_MAX_X_LABELS
-): { x: number; label: string; key: string }[] {
+): { x: number; label: string }[] {
 	if (data.length === 0) return [];
 
-	if (data.length <= maxLabels) {
-		return data.map((point, index) => ({
-			x: xAtIndex(index),
-			label: point.label,
-			key: point.key
-		}));
-	}
-
-	const step = Math.ceil(data.length / (maxLabels - 1));
-	const labels: { x: number; label: string; key: string }[] = [];
-	let index = 0;
-	for (; index < data.length; index += step) {
+	const limit = Number.isFinite(maxLabels)
+		? Math.max(2, Math.floor(maxLabels))
+		: CHART_MAX_X_LABELS;
+	const count = Math.min(data.length, limit);
+	const labels: { x: number; label: string }[] = [];
+	for (let slot = 0; slot < count; slot++) {
+		const index =
+			count === 1 ? 0 : Math.round((slot * (data.length - 1)) / (count - 1));
 		const point = data[index];
-		labels.push({
-			x: xAtIndex(index),
-			label: point.label,
-			key: point.key
-		});
-	}
-
-	const lastIndex = data.length - 1;
-	if (index - step !== lastIndex) {
-		const point = data[lastIndex];
-		labels.push({
-			x: xAtIndex(lastIndex),
-			label: point.label,
-			key: point.key
-		});
+		if (point) {
+			labels.push({
+				x: xAtIndex(index),
+				label: point.label
+			});
+		}
 	}
 	return labels;
 }

@@ -270,8 +270,8 @@ export const iconRegistry = _registry;
  * Returns null if not found.
  */
 export function getIcon(name: string): IconComponent | null {
-	if (name in iconRegistry) {
-		return iconRegistry[name as IconName];
+	if (hasIcon(name)) {
+		return iconRegistry[name];
 	}
 
 	return null;
@@ -279,7 +279,7 @@ export function getIcon(name: string): IconComponent | null {
 
 /** Check whether a name exists in the registry */
 export function hasIcon(name: string): name is IconName {
-	return name in iconRegistry;
+	return Object.hasOwn(iconRegistry, name);
 }
 
 /** List all registered icon names */

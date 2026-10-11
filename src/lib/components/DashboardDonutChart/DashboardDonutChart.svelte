@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { portal } from '../../actions/portal';
 	import {
 		CHART_COLOR_VARS,
 		CHART_PADDING
@@ -10,7 +9,7 @@
 	} from '../../utils/chartFormat';
 	import {
 		MIN_CHART_WIDTH,
-		placeChartTooltip,
+		chartTooltip,
 		useChartWidth
 	} from '../../utils/chartLayout.svelte';
 	import type { DashboardDonutChartProps } from './types';
@@ -32,10 +31,8 @@
 
 	const layout = useChartWidth(MIN_CHART_WIDTH);
 
-	let hoveredKey = $state<string | null>(null);
-	let tooltipX = $state(0);
-	let tooltipY = $state(0);
-	let tooltipEl = $state<HTMLDivElement | undefined>();
+	let hoveredIndex = $state<number | null>(null);
+	let tooltipAnchor = $state({ clientX: 0, clientY: 0 });
 
 	const classes = $derived(
 		['lumi-donut-chart', className].filter(Boolean).join(' ')
@@ -55,43 +52,50 @@
 			value: Number.isFinite(slice.value) ? Math.max(0, slice.value) : 0
 		}))
 	);
-	const total = $derived(entries.reduce((sum, slice) => sum + slice.value, 0));
-	const hasValues = $derived(total > 0);
+	const largestValue = $derived(
+		entries.reduce((max, slice) => Math.max(max, slice.value), 0)
+	);
+	// Scaling before summation keeps finite slices proportional if their total overflows.
+	const total = $derived(
+		entries.reduce((sum, slice) => sum + slice.value / (largestValue || 1), 0)
+	);
+	const hasValues = $derived(largestValue > 0);
 
 	const legend = $derived(
-		entries.map((slice) => ({
-			key: slice.key,
-			label: slice.label,
-			color: CHART_COLOR_VARS[slice.color],
-			value: formatChartValue(slice.value, valueFormat, 'tooltip'),
-			share: total > 0 ? formatChartPercent(slice.value / total) : ''
-		}))
+		entries.map((slice) => {
+			const ratio = total > 0 ? slice.value / largestValue / total : 0;
+			return {
+				...slice,
+				fill: CHART_COLOR_VARS[slice.color],
+				formattedValue: formatChartValue(slice.value, valueFormat, 'tooltip'),
+				ratio,
+				share: hasValues ? formatChartPercent(ratio) : ''
+			};
+		})
 	);
 
 	const arcs = $derived.by(() => {
 		if (!hasValues) return [];
 
-		const positive = entries.filter((slice) => slice.value > 0);
+		const positive = legend.filter((slice) => slice.value > 0);
 		let angle = START_ANGLE;
 
 		return positive.map((slice) => {
-			const sweep = (slice.value / total) * FULL_TURN;
+			const sweep = slice.ratio * FULL_TURN;
 			const start = angle;
 			angle += sweep;
 
 			return {
-				key: slice.key,
-				label: slice.label,
-				fill: CHART_COLOR_VARS[slice.color],
-				value: formatChartValue(slice.value, valueFormat, 'tooltip'),
-				share: formatChartPercent(slice.value / total),
-				full: positive.length === 1,
+				...slice,
+				full: slice.ratio === 1,
 				path: ringPath(start, angle)
 			};
 		});
 	});
 
-	const hovered = $derived(arcs.find((arc) => arc.key === hoveredKey) ?? null);
+	const hovered = $derived(
+		hoveredIndex !== null ? (arcs[hoveredIndex] ?? null) : null
+	);
 
 	function pointOnCircle(radius: number, angle: number): string {
 		return `${centerX + radius * Math.cos(angle)},${centerY + radius * Math.sin(angle)}`;
@@ -100,24 +104,24 @@
 	function ringPath(start: number, end: number): string {
 		const largeArc = end - start > Math.PI ? 1 : 0;
 
-		return [
-			`M${pointOnCircle(outerRadius, start)}`,
-			`A${outerRadius},${outerRadius} 0 ${largeArc} 1 ${pointOnCircle(outerRadius, end)}`,
-			`L${pointOnCircle(innerRadius, end)}`,
-			`A${innerRadius},${innerRadius} 0 ${largeArc} 0 ${pointOnCircle(innerRadius, start)}`,
-			'Z'
-		].join('');
+		return (
+			`M${pointOnCircle(outerRadius, start)}` +
+			`A${outerRadius},${outerRadius} 0 ${largeArc} 1 ${pointOnCircle(outerRadius, end)}` +
+			`L${pointOnCircle(innerRadius, end)}` +
+			`A${innerRadius},${innerRadius} 0 ${largeArc} 0 ${pointOnCircle(innerRadius, start)}Z`
+		);
 	}
 
-	function setHover(key: string, event: PointerEvent): void {
-		hoveredKey = key;
-		const position = placeChartTooltip(event, tooltipEl);
-		tooltipX = position.x;
-		tooltipY = position.y;
+	function setHover(
+		index: number,
+		anchor: Pick<PointerEvent, 'clientX' | 'clientY'>
+	): void {
+		hoveredIndex = index;
+		tooltipAnchor = { clientX: anchor.clientX, clientY: anchor.clientY };
 	}
 
 	function clearHover(): void {
-		hoveredKey = null;
+		hoveredIndex = null;
 	}
 </script>
 
@@ -137,8 +141,9 @@
 				role="img"
 				aria-label={ariaLabel}
 				onpointerleave={clearHover}
+				onpointercancel={clearHover}
 			>
-				{#each arcs as arc (arc.key)}
+				{#each arcs as arc, index}
 					{#if arc.full}
 						<circle
 							cx={centerX}
@@ -148,22 +153,24 @@
 							stroke={arc.fill}
 							stroke-width={outerRadius - innerRadius}
 							class="lumi-donut-chart__slice"
-							role="presentation"
+							class:lumi-donut-chart__slice--muted={hovered !== null &&
+								hoveredIndex !== index}
 							aria-hidden="true"
-							onpointerenter={(event) => setHover(arc.key, event)}
-							onpointermove={(event) => setHover(arc.key, event)}
+							onpointerenter={(event) => setHover(index, event)}
+							onpointermove={(event) => setHover(index, event)}
+							onpointerleave={clearHover}
 						/>
 					{:else}
 						<path
 							d={arc.path}
 							fill={arc.fill}
 							class="lumi-donut-chart__slice"
-							class:lumi-donut-chart__slice--muted={hoveredKey !== null &&
-								hoveredKey !== arc.key}
-							role="presentation"
+							class:lumi-donut-chart__slice--muted={hovered !== null &&
+								hoveredIndex !== index}
 							aria-hidden="true"
-							onpointerenter={(event) => setHover(arc.key, event)}
-							onpointermove={(event) => setHover(arc.key, event)}
+							onpointerenter={(event) => setHover(index, event)}
+							onpointermove={(event) => setHover(index, event)}
+							onpointerleave={clearHover}
 						/>
 					{/if}
 				{/each}
@@ -192,17 +199,17 @@
 		{/if}
 	</div>
 
-	{#if hasValues && legend.length > 0}
+	{#if hasValues}
 		<ul class="lumi-donut-chart__legend">
-			{#each legend as item (item.key)}
+			{#each legend as item}
 				<li class="lumi-donut-chart__legend-item">
 					<span
 						class="lumi-donut-chart__legend-dot"
-						style:background={item.color}
+						style:background={item.fill}
 					></span>
 					<span class="lumi-donut-chart__legend-label">{item.label}</span>
 					<span class="lumi-donut-chart__legend-value">
-						{item.value}{item.share ? ` · ${item.share}` : ''}
+						{item.formattedValue} · {item.share}
 					</span>
 				</li>
 			{/each}
@@ -212,18 +219,16 @@
 
 {#if hovered}
 	<div
-		bind:this={tooltipEl}
 		class="lumi-chart-tooltip"
-		use:portal
-		style:left="{tooltipX}px"
-		style:top="{tooltipY}px"
+		role="tooltip"
+		use:chartTooltip={tooltipAnchor}
 	>
 		<span class="lumi-chart-tooltip__title">{hovered.label}</span>
 		<div class="lumi-chart-tooltip__row">
 			<span class="lumi-chart-tooltip__dot" style:background={hovered.fill}
 			></span>
 			<span class="lumi-chart-tooltip__value">
-				{hovered.value} · {hovered.share}
+				{hovered.formattedValue} · {hovered.share}
 			</span>
 		</div>
 	</div>
@@ -247,13 +252,16 @@
 
 	.lumi-donut-chart__slice {
 		cursor: pointer;
-		stroke: var(--lumi-color-surface);
-		stroke-width: var(--lumi-border-width-thick);
 		transition: opacity var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
+	path.lumi-donut-chart__slice {
+		stroke: var(--lumi-color-surface);
+		stroke-width: var(--lumi-border-width-thick);
+	}
+
 	.lumi-donut-chart__slice--muted {
-		opacity: 0.42;
+		opacity: var(--lumi-opacity-muted);
 	}
 
 	.lumi-donut-chart__center-value {
@@ -297,6 +305,9 @@
 	}
 
 	.lumi-donut-chart__legend-value {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
 		font-size: var(--lumi-font-size-xs);
 		font-weight: var(--lumi-font-weight-medium);
 		color: var(--lumi-color-text);

@@ -1,31 +1,54 @@
+import { portal } from '../actions/portal';
+
 export const MIN_CHART_WIDTH = 320;
 
 const TOOLTIP_PAD = 8;
 const TOOLTIP_OFFSET_X = 14;
 const TOOLTIP_OFFSET_Y = 12;
-const TOOLTIP_FALLBACK_WIDTH = 176;
-const TOOLTIP_FALLBACK_HEIGHT = 64;
 
-/** Keep the portaled chart tooltip inside the viewport. */
-export function placeChartTooltip(
-	event: PointerEvent,
-	tooltipEl?: HTMLElement
-): { x: number; y: number } {
-	if (typeof window === 'undefined') {
-		return { x: event.clientX, y: event.clientY };
+/** Portal and remeasure tooltips after mount, content changes, and viewport resize. */
+export function chartTooltip(
+	node: HTMLElement,
+	anchor: Pick<PointerEvent, 'clientX' | 'clientY'>
+) {
+	const portaled = portal(node);
+	let width = 0;
+	let height = 0;
+	function position() {
+		const x = Math.max(
+			TOOLTIP_PAD,
+			Math.min(
+				anchor.clientX + TOOLTIP_OFFSET_X,
+				window.innerWidth - width - TOOLTIP_PAD
+			)
+		);
+		const y = Math.max(
+			TOOLTIP_PAD,
+			Math.min(
+				anchor.clientY - TOOLTIP_OFFSET_Y,
+				window.innerHeight - height - TOOLTIP_PAD
+			)
+		);
+		node.style.left = `${x}px`;
+		node.style.top = `${y}px`;
 	}
-
-	const width = tooltipEl?.offsetWidth || TOOLTIP_FALLBACK_WIDTH;
-	const height = tooltipEl?.offsetHeight || TOOLTIP_FALLBACK_HEIGHT;
+	const observer = new ResizeObserver(() => {
+		width = node.offsetWidth;
+		height = node.offsetHeight;
+		position();
+	});
+	observer.observe(node, { box: 'border-box' });
+	window.addEventListener('resize', position);
 	return {
-		x: Math.min(
-			Math.max(TOOLTIP_PAD, event.clientX + TOOLTIP_OFFSET_X),
-			window.innerWidth - width - TOOLTIP_PAD
-		),
-		y: Math.min(
-			Math.max(TOOLTIP_PAD, event.clientY - TOOLTIP_OFFSET_Y),
-			window.innerHeight - height - TOOLTIP_PAD
-		)
+		update(next: typeof anchor) {
+			anchor = next;
+			position();
+		},
+		destroy() {
+			observer.disconnect();
+			window.removeEventListener('resize', position);
+			portaled.destroy();
+		}
 	};
 }
 
@@ -38,14 +61,8 @@ export function useChartWidth(minWidth = MIN_CHART_WIDTH) {
 		const el = root;
 		if (!el) return;
 
-		const syncWidth = (width: number) => {
-			const nextWidth = Math.max(minWidth, Math.floor(width));
-			if (nextWidth !== chartW) chartW = nextWidth;
-		};
-
-		syncWidth(el.clientWidth);
 		const observer = new ResizeObserver(([entry]) => {
-			syncWidth(entry.contentRect.width);
+			chartW = Math.max(minWidth, Math.floor(entry.contentRect.width));
 		});
 		observer.observe(el);
 		return () => observer.disconnect();

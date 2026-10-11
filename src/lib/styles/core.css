@@ -414,7 +414,9 @@ body {
 	border-radius: var(--lumi-radius-tooltip);
 	box-shadow: var(--lumi-shadow-md);
 	pointer-events: none;
-	white-space: nowrap;
+	inline-size: max-content;
+	max-inline-size: calc(100vw - 2 * var(--lumi-space-sm));
+	overflow-wrap: anywhere;
 }
 
 .lumi-chart-tooltip__title {
@@ -430,8 +432,7 @@ body {
 }
 
 .lumi-chart-tooltip__dot {
-	width: var(--lumi-space-xs);
-	min-width: var(--lumi-space-xs);
+	flex: 0 0 var(--lumi-space-xs);
 	height: var(--lumi-space-xs);
 	border-radius: var(--lumi-radius-full);
 }
@@ -440,14 +441,14 @@ body {
 	font-size: var(--lumi-font-size-xs);
 	color: var(--lumi-color-text-muted);
 	flex: 1;
-	overflow: hidden;
-	text-overflow: ellipsis;
+	min-width: 0;
 }
 
 .lumi-chart-tooltip__value {
 	font-size: var(--lumi-font-size-xs);
 	font-weight: var(--lumi-font-weight-semibold);
 	color: var(--lumi-color-text);
+	min-width: 0;
 }
 
 /* Shared chart plot primitives — consumed by every Dashboard* chart the same

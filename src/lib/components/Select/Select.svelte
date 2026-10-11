@@ -4,12 +4,10 @@
 	import { createFloating } from '../../utils/floating.svelte';
 	import Icon from '../Icon/Icon.svelte';
 	import { LUMI_CONFIG } from '../config';
-	import type { SelectProps } from './types';
-
-	type OptionValue = string | number | Record<string, unknown>;
+	import type { SelectProps, SelectValue } from './types';
 
 	interface NormalizedOption {
-		value: OptionValue | null;
+		value: SelectValue | null;
 		label: string;
 		disabled: boolean;
 		key: string;
@@ -103,7 +101,7 @@
 		);
 	}
 
-	function toOptionKey(optionValue: OptionValue | null, index: number): string {
+	function toOptionKey(optionValue: SelectValue | null, index: number): string {
 		if (optionValue == null) return `opt-${index}`;
 		if (typeof optionValue === 'object') {
 			try {
@@ -128,7 +126,7 @@
 		return options.map((option, index) => {
 			if (typeof option === 'object' && option !== null) {
 				const rec = option as Record<string, unknown>;
-				const optValue = (rec[valueKey] ?? null) as OptionValue | null;
+				const optValue = (rec[valueKey] ?? null) as SelectValue | null;
 				const optLabel = rec[labelKey] ?? optValue ?? '';
 
 				return {
@@ -832,23 +830,11 @@
 	}
 
 	.lumi-select--sm .lumi-select__input {
-		padding-block: var(--lumi-space-xs);
-		padding-inline: var(--lumi-space-sm);
 		font-size: var(--lumi-font-size-sm);
 	}
 	.lumi-select--sm .lumi-select__option {
 		padding: var(--lumi-space-xs) var(--lumi-space-sm);
 		font-size: var(--lumi-font-size-sm);
-	}
-
-	.lumi-select--md .lumi-select__container {
-		min-height: var(--lumi-control-height-md);
-	}
-
-	.lumi-select--md .lumi-select__input {
-		padding-block: var(--lumi-space-xs);
-		padding-inline: var(--lumi-space-sm);
-		font-size: var(--lumi-font-size-base);
 	}
 
 	.lumi-select--lg .lumi-select__container {

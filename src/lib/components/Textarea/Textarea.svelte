@@ -60,10 +60,6 @@
 		oninput?.(event);
 	}
 
-	function handleKeydown(event: KeyboardEvent): void {
-		onkeydown?.(event);
-	}
-
 	// Public methods (exposed via bind:this)
 	export const focus = () => textareaRef?.focus();
 	export const blur = () => textareaRef?.blur();
@@ -98,7 +94,7 @@
 			oninput={handleInput}
 			{onfocus}
 			{onblur}
-			onkeydown={handleKeydown}
+			{onkeydown}
 		></textarea>
 
 		{#if maxlength && showCount}
@@ -144,7 +140,7 @@
 
 	.lumi-textarea__required {
 		color: var(--lumi-color-danger);
-		margin-left: var(--lumi-space-2xs);
+		margin-inline-start: var(--lumi-space-2xs);
 	}
 
 	.lumi-textarea:focus-within .lumi-textarea__label,
@@ -187,7 +183,9 @@
 		box-shadow: var(--lumi-control-focus-shadow);
 	}
 
-	.lumi-textarea__input:hover:not(:focus):not(:disabled) {
+	.lumi-textarea__input:hover:not(:focus):not(:disabled):not(
+			[aria-invalid='true']
+		) {
 		border-color: var(--lumi-color-border-strong);
 		background: var(--lumi-color-control-hover-fill);
 	}
@@ -199,8 +197,8 @@
 
 	.lumi-textarea__counter {
 		position: absolute;
-		bottom: var(--lumi-space-xs);
-		right: var(--lumi-space-xs);
+		inset-block-end: var(--lumi-space-xs);
+		inset-inline-end: var(--lumi-space-xs);
 		font-size: var(--lumi-font-size-xs);
 		color: var(--lumi-color-text-muted);
 		background: var(--lumi-color-surface-glass-strong);
@@ -209,16 +207,18 @@
 		pointer-events: none;
 	}
 
-	.lumi-textarea__error {
+	.lumi-textarea__error,
+	.lumi-textarea__hint {
 		font-size: var(--lumi-font-size-xs);
+		margin-block-start: var(--lumi-space-2xs);
+	}
+
+	.lumi-textarea__error {
 		color: var(--lumi-color-danger);
-		margin-top: var(--lumi-space-2xs);
 	}
 
 	.lumi-textarea__hint {
-		font-size: var(--lumi-font-size-xs);
 		color: var(--lumi-color-text-muted);
-		margin-top: var(--lumi-space-2xs);
 	}
 
 	/* Size variants */
@@ -230,11 +230,6 @@
 	.lumi-textarea--sm .lumi-textarea__counter {
 		font-size: var(--lumi-font-size-xs);
 		padding: calc(var(--lumi-space-2xs) / 2) var(--lumi-space-2xs);
-	}
-
-	.lumi-textarea--md .lumi-textarea__input {
-		padding: var(--lumi-space-sm) var(--lumi-space-md);
-		font-size: var(--lumi-font-size-base);
 	}
 
 	.lumi-textarea--lg .lumi-textarea__input {
@@ -254,10 +249,5 @@
 	.lumi-textarea--disabled {
 		opacity: var(--lumi-opacity-disabled);
 		pointer-events: none;
-	}
-
-	.lumi-textarea--readonly .lumi-textarea__input {
-		cursor: default;
-		background: var(--textarea-bg);
 	}
 </style>

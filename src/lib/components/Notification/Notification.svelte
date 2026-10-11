@@ -117,6 +117,7 @@
 		--lumi-notification-max-inline-size: calc(var(--lumi-space-6xl) * 5);
 		--notification-color: var(--lumi-color-primary);
 		--notification-bg: var(--lumi-color-primary-bg);
+		--lumi-control-accent: var(--notification-color);
 
 		display: flex;
 		align-items: flex-start;

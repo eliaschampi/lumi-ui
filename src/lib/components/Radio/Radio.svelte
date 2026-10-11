@@ -25,7 +25,7 @@
 	const isOptionCard = $derived(!!description || option);
 
 	function handleChange(event: Event): void {
-		if (disabled || busy || group === value) return;
+		if (disabled || busy || isChecked) return;
 		group = value;
 		onchange?.(value, event);
 	}
@@ -55,7 +55,7 @@
 
 	{#if description}
 		<div class="lumi-radio__header">
-			<div class="lumi-radio__visual">
+			<div class="lumi-radio__visual" aria-hidden="true">
 				<div class="lumi-radio__circle"></div>
 			</div>
 			{#if label || children}
@@ -70,7 +70,7 @@
 		</div>
 		<span class="lumi-radio__description">{description}</span>
 	{:else}
-		<div class="lumi-radio__visual">
+		<div class="lumi-radio__visual" aria-hidden="true">
 			<div class="lumi-radio__circle"></div>
 		</div>
 
@@ -185,7 +185,7 @@
 	}
 
 	.lumi-radio.lumi-radio-option--busy {
-		opacity: 0.65;
+		opacity: var(--lumi-opacity-disabled);
 		pointer-events: none;
 	}
 
@@ -201,7 +201,7 @@
 		display: block;
 		width: 100%;
 		margin: 0;
-		padding: 0 0 0 calc(var(--radio-size) + var(--lumi-space-sm));
+		padding-inline-start: calc(var(--radio-size) + var(--lumi-space-sm));
 		font-size: var(--lumi-font-size-xs);
 		font-weight: var(--lumi-font-weight-normal);
 		line-height: var(--lumi-line-height-normal);
@@ -224,10 +224,6 @@
 	/* ── States ───────────────────────────────────────────────── */
 	.lumi-radio:not(.lumi-radio--disabled):hover .lumi-radio__visual {
 		border-color: var(--lumi-control-active-border);
-		background: var(--lumi-control-active-fill);
-	}
-
-	.lumi-radio--checked:not(.lumi-radio--disabled):hover .lumi-radio__visual {
 		background: var(--lumi-control-active-fill);
 	}
 

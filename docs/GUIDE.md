@@ -529,6 +529,8 @@ Dashboard content background is intentionally translucent so cards stay visibly 
 
 Components must not invent `purple`, `teal`, or product names as colors. The public color API is `primary | secondary | success | warning | danger | info` ([§3](#3-theming-and-color-scheme)).
 
+The default brand and status seeds share `--lumi-accent-lightness` and respect `--lumi-accent-chroma-max`. Warning keeps its amber lightness and paired dark foreground. Override the shared dials at the theme root to tune the family together, or override an individual seed to give one role its own identity.
+
 ### Geometry — space, type, radius, motion
 
 | Concern      | Tokens                                                                                                                                                                                        | Rule                                                                                                      |
@@ -555,6 +557,10 @@ Control heights share one ladder (`--lumi-control-height-xs` … `--lumi-control
 | Destructive | `danger` color; confirm in app logic, not red styling alone                                     |
 | Overlays    | Portal + Floating UI; Escape closes unless `persistent`                                         |
 | Autofill    | Text fields use `.lumi-autofill` + `--lumi-control-autofill-bg`                                 |
+
+Dashboard chart tooltips portal to the page and remeasure when their content or viewport changes. Line series align by index against the first series; missing values break the curve. Smooth segments stay within adjacent values, while bar and donut charts retain their nonnegative value model.
+
+Line/area and bar axes measure at most seven evenly spaced label candidates with the actual SVG font. Narrow charts show fewer labels, keep them inside the plot, and shorten oversized text without splitting Unicode code points. Resizing restores labels when space returns; tooltips keep the full labels and all data points remain plotted.
 
 ### Minimalism checklist
 

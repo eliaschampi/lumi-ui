@@ -2,6 +2,17 @@
 
 Consumer migration for **0.1.5 → 0.2.x** and later. Use **pnpm** only. Source remains authoritative.
 
+## 0.4.0 → 0.4.1
+
+No component props, events, public exports, or dependency requirements changed. No consumer migration is required.
+
+- Line/area and bar axes fit at most seven label candidates to the actual SVG font and available width. Full labels remain in tooltips and all data points stay plotted.
+- Charts share tooltip positioning and size observation, use instance-safe gradients, and avoid per-point hit targets and temporary slope arrays. Missing values break line segments; smooth curves stay within adjacent values.
+- `NumberInput` handles fractional minima and scientific-notation steps, prevents increments beyond its maximum, and applies the same bounds to buttons and keyboard input.
+- Tabs support Home/End and keep keyboard focus with selection. Controls share size, focus, motion, and logical border recipes; default theme seeds now honor the existing accent dials.
+
+Review visual changes in light/dark mode if your application relies on Lumi defaults. The responsive axis fitting adds a small browser payload; see the measured [lightweight contract](../README.md#lightweight-contract).
+
 ## 0.3.0 → 0.4.0
 
 - `PageSidebar` now stays pinned while its adjacent content grows on desktop; mobile drawer behavior is unchanged.

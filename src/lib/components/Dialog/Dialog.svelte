@@ -38,7 +38,7 @@
 	let afterCloseTimer: number | undefined;
 	let pointerDownOnOverlay = false;
 
-	const uniqueId = Math.random().toString(36).substring(2, 11);
+	const uniqueId = $props.id();
 	const titleId = `lumi-dialog-title-${uniqueId}`;
 	const contentId = `lumi-dialog-content-${uniqueId}`;
 	const transitionDuration = LUMI_CONFIG.transitions.base;

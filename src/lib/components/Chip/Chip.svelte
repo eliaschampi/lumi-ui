@@ -111,10 +111,7 @@
 		font-size: var(--lumi-chip-font-size);
 		font-weight: var(--lumi-font-weight-medium);
 		line-height: var(--lumi-line-height-tight);
-		transition:
-			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			color var(--lumi-duration-fast) var(--lumi-easing-default),
-			border-color var(--lumi-duration-fast) var(--lumi-easing-default);
+		transition: var(--lumi-transition-control);
 		white-space: nowrap;
 		cursor: default;
 		user-select: none;
@@ -177,14 +174,13 @@
 		width: var(--lumi-chip-close-size);
 		height: var(--lumi-chip-close-size);
 		padding: 0;
-		margin-left: var(--lumi-space-2xs);
+		margin-inline-start: var(--lumi-space-2xs);
 		background: transparent;
 		border: none;
 		border-radius: var(--lumi-radius-full);
 		color: currentColor;
 		cursor: pointer;
-		transition: background-color var(--lumi-duration-fast)
-			var(--lumi-easing-default);
+		transition: var(--lumi-transition-control);
 		flex-shrink: 0;
 	}
 
@@ -192,9 +188,11 @@
 		background: color-mix(in srgb, currentColor 15%, transparent);
 	}
 
-	.lumi-chip__close:focus-visible {
+	.lumi-chip__close:focus-visible,
+	.lumi-chip__action:focus-visible {
 		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-focus-outline-offset);
+		border-radius: var(--lumi-radius-full);
 	}
 
 	.lumi-chip--interactive:hover {
@@ -204,11 +202,5 @@
 			var(--lumi-color-surface-card)
 		);
 		border-color: color-mix(in srgb, var(--chip-color) 34%, transparent);
-	}
-
-	.lumi-chip__action:focus-visible {
-		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-focus-outline-offset);
-		border-radius: var(--lumi-radius-full);
 	}
 </style>

@@ -19,7 +19,6 @@
 		onchange
 	}: Props = $props();
 
-	let previousValue = $state<string | number | undefined>(undefined);
 	const instanceId = $props.id();
 	const tabsId = `lumi-tabs-${instanceId}`;
 	$effect(() => {
@@ -43,46 +42,40 @@
 			.join(' ')
 	);
 	const managedPanels = $derived(tabs.some((tab) => tab.content));
+	const enabledTabs = $derived(tabs.filter((tab) => !tab.disabled));
 
 	const selectTab = (tabValue: string | number) => {
 		if (value === tabValue) return;
-		previousValue = value;
+		const previousValue = value;
 		value = tabValue;
 		onchange?.(tabValue, previousValue);
 	};
 
 	const handleKeyDown = (event: KeyboardEvent) => {
-		const enabledTabs = tabs.filter((tab) => !tab.disabled);
 		if (enabledTabs.length === 0) return;
 		const currentIndex = enabledTabs.findIndex((tab) => tab.value === value);
-
-		let nextIndex = currentIndex;
-
-		if (orientation === 'horizontal') {
-			if (event.key === 'ArrowLeft') {
-				event.preventDefault();
-				nextIndex =
-					currentIndex > 0 ? currentIndex - 1 : enabledTabs.length - 1;
-			} else if (event.key === 'ArrowRight') {
-				event.preventDefault();
-				nextIndex =
-					currentIndex < enabledTabs.length - 1 ? currentIndex + 1 : 0;
-			}
+		const previousKey = orientation === 'horizontal' ? 'ArrowLeft' : 'ArrowUp';
+		const nextKey = orientation === 'horizontal' ? 'ArrowRight' : 'ArrowDown';
+		let nextIndex: number;
+		if (event.key === previousKey) {
+			nextIndex = currentIndex > 0 ? currentIndex - 1 : enabledTabs.length - 1;
+		} else if (event.key === nextKey) {
+			nextIndex = currentIndex < enabledTabs.length - 1 ? currentIndex + 1 : 0;
+		} else if (event.key === 'Home') {
+			nextIndex = 0;
+		} else if (event.key === 'End') {
+			nextIndex = enabledTabs.length - 1;
 		} else {
-			if (event.key === 'ArrowUp') {
-				event.preventDefault();
-				nextIndex =
-					currentIndex > 0 ? currentIndex - 1 : enabledTabs.length - 1;
-			} else if (event.key === 'ArrowDown') {
-				event.preventDefault();
-				nextIndex =
-					currentIndex < enabledTabs.length - 1 ? currentIndex + 1 : 0;
-			}
+			return;
 		}
 
-		if (nextIndex !== currentIndex) {
-			selectTab(enabledTabs[nextIndex].value);
-		}
+		event.preventDefault();
+		selectTab(enabledTabs[nextIndex].value);
+		const tabList = (event.currentTarget as HTMLButtonElement).parentElement;
+		const tabButtons = tabList?.querySelectorAll<HTMLButtonElement>(
+			'[role="tab"]:not(:disabled)'
+		);
+		tabButtons?.[nextIndex]?.focus();
 	};
 </script>
 
@@ -286,7 +279,7 @@
 		padding-top: var(--lumi-space-md);
 	}
 
-	/* Color variants */
+	/* Color variants preserve the existing custom-property cascade. */
 	.lumi-tabs--primary {
 		--lumi-tabs-color: var(--lumi-color-primary);
 	}

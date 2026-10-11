@@ -76,7 +76,7 @@
 		<div class="lumi-alert__content">
 			<!-- Icon -->
 			{#if icon}
-				<div class="lumi-alert__icon">
+				<div class="lumi-alert__icon" aria-hidden="true">
 					<AlertIcon size="var(--lumi-icon-md)" />
 				</div>
 			{/if}
@@ -116,6 +116,7 @@
 		/* Base alert styles */
 		--alert-color: var(--lumi-color-info);
 		--alert-bg: var(--lumi-color-info-bg);
+		--lumi-control-accent: var(--alert-color);
 		position: relative;
 		display: flex;
 		align-items: center;

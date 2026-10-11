@@ -26,19 +26,6 @@
 			.filter(Boolean)
 			.join(' ');
 	});
-
-	function handleKeydown(e: KeyboardEvent) {
-		if (onclick && (e.key === 'Enter' || e.key === ' ')) {
-			e.preventDefault();
-			// Create a synthetic MouseEvent for keyboard activation
-			const syntheticEvent = new MouseEvent('click', {
-				bubbles: true,
-				cancelable: true,
-				view: window
-			});
-			onclick(syntheticEvent);
-		}
-	}
 </script>
 
 {#snippet dividerContent()}
@@ -68,8 +55,7 @@
 		type="button"
 		class={dividerClasses}
 		{onclick}
-		onkeydown={handleKeydown}
-		aria-label={ariaLabel || 'Divider button'}
+		aria-label={ariaLabel || text || icon || 'Divider button'}
 	>
 		{@render dividerContent()}
 	</button>
@@ -110,11 +96,11 @@
 	}
 
 	.lumi-divider__line--before {
-		margin-right: var(--lumi-space-sm);
+		margin-inline-end: var(--lumi-space-sm);
 	}
 
 	.lumi-divider__line--after {
-		margin-left: var(--lumi-space-sm);
+		margin-inline-start: var(--lumi-space-sm);
 	}
 
 	.lumi-divider__content {
@@ -152,18 +138,5 @@
 		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-focus-outline-offset);
 		border-radius: var(--lumi-radius-control);
-	}
-
-	.lumi-divider--left .lumi-divider__line--after {
-		margin-left: var(--lumi-space-sm);
-	}
-
-	.lumi-divider--right .lumi-divider__line--before {
-		margin-right: var(--lumi-space-sm);
-	}
-
-	.lumi-divider--center .lumi-divider__line--before,
-	.lumi-divider--center .lumi-divider__line--after {
-		flex: 1;
 	}
 </style>
