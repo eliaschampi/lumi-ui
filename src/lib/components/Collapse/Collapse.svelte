@@ -26,7 +26,8 @@
 
 	// svelte-ignore state_referenced_locally
 	let isOpen = $state(defaultOpen);
-	const panelId = `lumi-collapse-panel-${crypto.randomUUID().slice(0, 8)}`;
+	const instanceId = $props.id();
+	const panelId = `lumi-collapse-panel-${instanceId}`;
 
 	const collapseClasses = $derived.by(() => {
 		return [
@@ -61,11 +62,15 @@
 	}
 </script>
 
-<div class={collapseClasses}>
+<div
+	class={collapseClasses}
+	style:--lumi-control-accent="var(--lumi-color-{color})"
+>
 	<button
 		class={triggerClasses}
 		aria-expanded={isOpen}
 		aria-controls={panelId}
+		{disabled}
 		type="button"
 		onclick={toggleCollapse}
 	>
@@ -298,29 +303,8 @@
 		transform: rotate(180deg);
 	}
 
-	/* Color variants for icon */
-	.lumi-collapse--primary.lumi-collapse--open .lumi-collapse__icon {
-		color: var(--lumi-color-primary);
-	}
-
-	.lumi-collapse--secondary.lumi-collapse--open .lumi-collapse__icon {
-		color: var(--lumi-color-secondary);
-	}
-
-	.lumi-collapse--success.lumi-collapse--open .lumi-collapse__icon {
-		color: var(--lumi-color-success);
-	}
-
-	.lumi-collapse--warning.lumi-collapse--open .lumi-collapse__icon {
-		color: var(--lumi-color-warning);
-	}
-
-	.lumi-collapse--danger.lumi-collapse--open .lumi-collapse__icon {
-		color: var(--lumi-color-danger);
-	}
-
-	.lumi-collapse--info.lumi-collapse--open .lumi-collapse__icon {
-		color: var(--lumi-color-info);
+	.lumi-collapse--open .lumi-collapse__icon {
+		color: var(--lumi-control-accent);
 	}
 
 	/* Content */

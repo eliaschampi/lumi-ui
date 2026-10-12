@@ -48,18 +48,6 @@
 		return file.code;
 	}
 
-	function handleRowClick(file: DriveFileItem) {
-		onfileclick?.(file);
-	}
-
-	function handleRowDblClick(file: DriveFileItem) {
-		onfiledblclick?.(file);
-	}
-
-	function handleRowContextMenu(event: MouseEvent, file: DriveFileItem) {
-		onfilecontextmenu?.(event, file);
-	}
-
 	function handleDragStart(event: DragEvent, file: DriveFileItem) {
 		if (isTrash) return;
 		if (event.dataTransfer) {
@@ -91,9 +79,9 @@
 	selected={selectedRows}
 	layout="fixed"
 	hover
-	onrow-click={(row) => handleRowClick(row)}
-	onrow-dblclick={(row) => handleRowDblClick(row)}
-	onrow-contextmenu={(event, row) => handleRowContextMenu(event, row)}
+	onrow-click={onfileclick}
+	onrow-dblclick={onfiledblclick}
+	onrow-contextmenu={onfilecontextmenu}
 >
 	{#snippet thead()}
 		<th class="lumi-table-column--main">Nombre</th>

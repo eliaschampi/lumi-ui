@@ -120,7 +120,8 @@
 	}
 
 	/* Icon styling */
-	.lumi-empty-state__icon {
+	.lumi-empty-state__icon,
+	.lumi-empty-state__default-icon {
 		width: 100%;
 		height: 100%;
 		opacity: 0.6;
@@ -132,13 +133,7 @@
 
 	/* Default icon */
 	.lumi-empty-state__default-icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 100%;
-		height: 100%;
 		opacity: 0.4;
-		transition: var(--lumi-transition-opacity);
 	}
 
 	/* Image styling */

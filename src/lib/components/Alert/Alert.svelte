@@ -57,9 +57,7 @@
 
 	function handleClose(event: MouseEvent) {
 		active = false;
-		if (onclose) {
-			onclose(event);
-		}
+		onclose?.(event);
 	}
 </script>
 

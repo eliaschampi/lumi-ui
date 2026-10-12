@@ -1,4 +1,8 @@
-import type { ChartColor } from '../types/charts';
+import type {
+	ChartColor,
+	ChartSeriesPoint,
+	ChartValueFormat
+} from '../types/charts';
 
 export const CHART_Y_TICKS = 4;
 export const CHART_MAX_X_LABELS = 7;
@@ -29,6 +33,50 @@ export function ceilNice(value: number): number {
 	const nice =
 		normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
 	return Math.max(value, Math.min(Number.MAX_VALUE, nice * magnitude));
+}
+
+/** Shared zero baseline and overflow-safe scale for finite cartesian values. */
+export function chartScale(
+	series: readonly { data: readonly ChartSeriesPoint[] }[],
+	format: ChartValueFormat,
+	length = Infinity
+) {
+	let min = 0;
+	let max = 0;
+	let count = 0;
+	for (const { data } of series) {
+		for (let index = 0; index < Math.min(data.length, length); index++) {
+			const value = data[index]?.value;
+			if (value === undefined || !Number.isFinite(value)) continue;
+			min = Math.min(min, value);
+			max = Math.max(max, value);
+			count++;
+		}
+	}
+	const upper =
+		format === 'score'
+			? Math.max(20, ceilNice(max))
+			: max > 0
+				? ceilNice(max)
+				: min < 0
+					? 0
+					: 10;
+	const lower = min < 0 ? -ceilNice(-min) : 0;
+	const magnitude = Math.max(
+		Math.abs(upper),
+		Math.abs(lower),
+		Number.MIN_VALUE
+	);
+	const range = upper / magnitude - lower / magnitude;
+	return {
+		hasValues: count > 0,
+		ratio: (value: number) => (upper / magnitude - value / magnitude) / range,
+		ticks: Array.from(
+			{ length: CHART_Y_TICKS + 1 },
+			(_, index) =>
+				(lower / magnitude + (range / CHART_Y_TICKS) * index) * magnitude
+		)
+	};
 }
 
 export function truncateAxisLabel(label: string, maxLength: number): string {

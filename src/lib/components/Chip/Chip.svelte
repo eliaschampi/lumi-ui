@@ -36,11 +36,7 @@
 	// Event handlers
 	const handleClose = (event: MouseEvent) => {
 		event.stopPropagation();
-		if (onclose) onclose(event);
-	};
-
-	const handleClick = (event: MouseEvent) => {
-		if (onclick) onclick(event);
+		onclose?.(event);
 	};
 </script>
 
@@ -64,7 +60,7 @@
 	style:--chip-bg="var(--lumi-color-{color}-bg)"
 >
 	{#if onclick}
-		<button type="button" class="lumi-chip__action" onclick={handleClick}>
+		<button type="button" class="lumi-chip__action" {onclick}>
 			{@render content()}
 		</button>
 	{:else}

@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+	import { onDestroy, untrack, type Snippet } from 'svelte';
 	import { fade, scale } from 'svelte/transition';
 	import { portal } from '../../actions/portal';
+	import { registerModal } from '../../utils/modal';
 	import Icon from '../Icon/Icon.svelte';
 	import { LUMI_CONFIG } from '../config';
 	import type { DialogProps } from './types';
@@ -33,17 +34,14 @@
 	}: Props = $props();
 
 	let dialogElement: HTMLDivElement | undefined = $state();
-	let previousActiveElement: HTMLElement | null = null;
-	let bodyOverflow = '';
 	let afterCloseTimer: number | undefined;
+	let destroyed = false;
 	let pointerDownOnOverlay = false;
 
 	const uniqueId = $props.id();
 	const titleId = `lumi-dialog-title-${uniqueId}`;
 	const contentId = `lumi-dialog-content-${uniqueId}`;
 	const transitionDuration = LUMI_CONFIG.transitions.base;
-	const focusableSelector =
-		'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 	const dialogClasses = $derived.by(() =>
 		[
@@ -58,7 +56,11 @@
 	);
 
 	const overlayClasses = $derived.by(() =>
-		['lumi-dialog-overlay', persistent && 'lumi-dialog-overlay--persistent']
+		[
+			'lumi-dialog-overlay',
+			persistent && 'lumi-dialog-overlay--persistent',
+			fullScreen && 'lumi-dialog-overlay--full-screen'
+		]
 			.filter(Boolean)
 			.join(' ')
 	);
@@ -84,124 +86,54 @@
 		handleClose();
 	}
 
-	function handleEscapeKey(event: KeyboardEvent): void {
-		if (!open || !closeOnEscape || event.key !== 'Escape') return;
-		event.preventDefault();
-		handleClose();
-	}
-
-	function trapFocus(event: KeyboardEvent): void {
-		if (!dialogElement || event.key !== 'Tab') return;
-
-		const focusableElements = Array.from(
-			dialogElement.querySelectorAll<HTMLElement>(focusableSelector)
-		);
-
-		if (focusableElements.length === 0) {
-			event.preventDefault();
-			dialogElement.focus();
-			return;
-		}
-
-		const firstElement = focusableElements[0];
-		const lastElement = focusableElements[focusableElements.length - 1];
-
-		if (event.shiftKey) {
-			if (document.activeElement === firstElement) {
-				event.preventDefault();
-				lastElement.focus();
-			}
-		} else {
-			if (document.activeElement === lastElement) {
-				event.preventDefault();
-				firstElement.focus();
-			}
-		}
-	}
-
-	function lockBodyScroll(): void {
-		bodyOverflow = document.body.style.overflow;
-		document.body.style.overflow = 'hidden';
-	}
-
-	function unlockBodyScroll(): void {
-		document.body.style.overflow = bodyOverflow;
-	}
-
-	function focusDialog(): void {
-		requestAnimationFrame(() => {
-			if (!dialogElement) return;
-			const firstFocusable =
-				dialogElement.querySelector<HTMLElement>(focusableSelector);
-			(firstFocusable ?? dialogElement).focus();
-		});
-	}
-
 	$effect(() => {
-		if (!open) return;
-
-		previousActiveElement =
-			document.activeElement instanceof HTMLElement
-				? document.activeElement
-				: null;
-		lockBodyScroll();
-		document.addEventListener('keydown', handleEscapeKey);
-		document.addEventListener('keydown', trapFocus);
-		onopen?.();
-		focusDialog();
+		if (!open || !dialogElement) return;
+		window.clearTimeout(afterCloseTimer);
+		const release = registerModal(dialogElement, () => {
+			if (!closeOnEscape) return false;
+			handleClose();
+		});
+		untrack(() => onopen?.());
+		const duration = untrack(() => transitionDuration);
 
 		const afterOpenTimer = window.setTimeout(() => {
 			onafteropen?.();
-		}, transitionDuration);
+		}, duration);
 
 		return () => {
 			window.clearTimeout(afterOpenTimer);
-			document.removeEventListener('keydown', handleEscapeKey);
-			document.removeEventListener('keydown', trapFocus);
-			unlockBodyScroll();
-
-			if (previousActiveElement?.isConnected) {
-				previousActiveElement.focus();
+			release();
+			window.clearTimeout(afterCloseTimer);
+			if (!destroyed) {
+				afterCloseTimer = window.setTimeout(() => onafterclose?.(), duration);
 			}
-			previousActiveElement = null;
-
-			if (afterCloseTimer) {
-				window.clearTimeout(afterCloseTimer);
-			}
-			afterCloseTimer = window.setTimeout(() => {
-				onafterclose?.();
-			}, transitionDuration);
 		};
 	});
 
-	$effect(() => {
-		return () => {
-			if (afterCloseTimer) {
-				window.clearTimeout(afterCloseTimer);
-			}
-		};
+	onDestroy(() => {
+		destroyed = true;
+		clearTimeout(afterCloseTimer);
 	});
 </script>
 
 {#if open}
+	<!-- svelte-ignore a11y_click_events_have_key_events (Backdrop dismissal is pointer-only; keyboard users close with Escape or the close button.) -->
 	<div
+		bind:this={dialogElement}
 		use:portal
 		class={overlayClasses}
 		transition:fade={{ duration: transitionDuration }}
 		onpointerdown={handleOverlayPointerDown}
 		onclick={handleOverlayClick}
-		role="presentation"
+		role="dialog"
+		aria-labelledby={title && !header ? titleId : undefined}
+		aria-label={header || !title ? title || 'Dialog' : undefined}
+		aria-describedby={contentId}
+		tabindex="-1"
 	>
 		<div
-			bind:this={dialogElement}
 			class={dialogClasses}
 			transition:scale={{ duration: transitionDuration, start: 0.96 }}
-			role="dialog"
-			aria-modal="true"
-			aria-labelledby={title ? titleId : undefined}
-			aria-label={!title ? 'Dialog' : undefined}
-			aria-describedby={contentId}
-			tabindex="-1"
 		>
 			{#if header || title || !hideClose}
 				<header class="lumi-dialog__header">
@@ -254,17 +186,25 @@
 		--lumi-dialog-width-md: 31.25rem;
 		--lumi-dialog-width-lg: 43.75rem;
 		--lumi-dialog-width-xl: 56.25rem;
-		--lumi-dialog-max-height: 90vh;
-		--lumi-dialog-content-max-height: 60vh;
+		--lumi-dialog-max-height: 90dvh;
+		--lumi-dialog-content-max-height: 60dvh;
 		--lumi-dialog-full-width: 100vw;
-		--lumi-dialog-full-height: 100vh;
+		--lumi-dialog-full-height: 100dvh;
 		--lumi-dialog-overlay-padding: var(--lumi-space-lg);
 		--lumi-dialog-overlay-padding-mobile: var(--lumi-space-sm);
 		--lumi-dialog-mobile-max-width: calc(
 			100vw - (var(--lumi-dialog-overlay-padding-mobile) * 2)
 		);
 		--lumi-dialog-mobile-max-height: calc(
-			100dvh - (var(--lumi-dialog-overlay-padding-mobile) * 2)
+			100dvh -
+				max(
+					var(--lumi-dialog-overlay-padding-mobile),
+					var(--lumi-safe-area-top)
+				) -
+				max(
+					var(--lumi-dialog-overlay-padding-mobile),
+					var(--lumi-safe-area-bottom)
+				)
 		);
 		position: fixed;
 		inset: 0;
@@ -273,9 +213,18 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: var(--lumi-dialog-overlay-padding);
+		padding: max(var(--lumi-dialog-overlay-padding), var(--lumi-safe-area-top))
+			max(var(--lumi-dialog-overlay-padding), var(--lumi-safe-area-right))
+			max(var(--lumi-dialog-overlay-padding), var(--lumi-safe-area-bottom))
+			max(var(--lumi-dialog-overlay-padding), var(--lumi-safe-area-left));
 		cursor: pointer;
 		overflow-y: auto;
+		overscroll-behavior: contain;
+		outline: none;
+	}
+
+	.lumi-dialog-overlay--full-screen {
+		padding: 0;
 	}
 
 	.lumi-dialog-overlay--persistent {
@@ -294,10 +243,6 @@
 		cursor: default;
 		z-index: var(--lumi-z-modal);
 		overflow: hidden;
-	}
-
-	.lumi-dialog:focus {
-		outline: none;
 	}
 
 	.lumi-dialog--sm {
@@ -330,6 +275,8 @@
 		max-height: none;
 		width: var(--lumi-dialog-full-width);
 		height: var(--lumi-dialog-full-height);
+		padding: var(--lumi-safe-area-top) var(--lumi-safe-area-right)
+			var(--lumi-safe-area-bottom) var(--lumi-safe-area-left);
 		--lumi-surface-radius-local: var(--lumi-radius-none);
 	}
 
@@ -412,6 +359,8 @@
 		overflow-x: hidden;
 		overflow-y: auto;
 		min-width: 0;
+		min-height: 0;
+		overscroll-behavior: contain;
 	}
 
 	.lumi-dialog__content::-webkit-scrollbar {
@@ -442,7 +391,7 @@
 
 	@media (max-width: 48rem) {
 		.lumi-dialog-overlay {
-			padding: var(--lumi-dialog-overlay-padding-mobile);
+			--lumi-dialog-overlay-padding: var(--lumi-dialog-overlay-padding-mobile);
 			align-items: center;
 		}
 

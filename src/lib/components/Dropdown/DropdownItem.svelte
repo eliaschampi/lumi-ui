@@ -69,6 +69,20 @@
 	}
 </script>
 
+{#snippet itemContent()}
+	{#if icon}
+		<div class="lumi-dropdown-item__icon">
+			<Icon {icon} size="sm" />
+		</div>
+	{/if}
+
+	<span class="lumi-dropdown-item__content">
+		{#if children}
+			{@render children()}
+		{/if}
+	</span>
+{/snippet}
+
 {#if href}
 	<a
 		{href}
@@ -81,17 +95,7 @@
 		onclick={handleClick}
 		onkeydown={handleLinkKeydown}
 	>
-		{#if icon}
-			<div class="lumi-dropdown-item__icon">
-				<Icon {icon} size="sm" />
-			</div>
-		{/if}
-
-		<span class="lumi-dropdown-item__content">
-			{#if children}
-				{@render children()}
-			{/if}
-		</span>
+		{@render itemContent()}
 	</a>
 {:else}
 	<button
@@ -105,17 +109,7 @@
 		tabindex="-1"
 		onclick={handleClick}
 	>
-		{#if icon}
-			<div class="lumi-dropdown-item__icon">
-				<Icon {icon} size="sm" />
-			</div>
-		{/if}
-
-		<span class="lumi-dropdown-item__content">
-			{#if children}
-				{@render children()}
-			{/if}
-		</span>
+		{@render itemContent()}
 	</button>
 {/if}
 
@@ -196,10 +190,5 @@
 	.lumi-dropdown-item--disabled {
 		opacity: var(--lumi-opacity-disabled);
 		cursor: not-allowed;
-	}
-
-	/* Link styles */
-	a.lumi-dropdown-item {
-		text-decoration: none;
 	}
 </style>

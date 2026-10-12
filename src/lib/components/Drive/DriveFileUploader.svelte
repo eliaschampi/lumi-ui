@@ -51,19 +51,6 @@
 		return null;
 	}
 
-	function updateQueueItem(
-		id: string,
-		updater: (item: FileUploadFile) => void
-	): void {
-		const item = queue.find((current) => current.id === id);
-		if (!item) {
-			return;
-		}
-
-		updater(item);
-		queue = [...queue];
-	}
-
 	function resetDialogState(): void {
 		queue = [];
 		errorMessage = '';
@@ -97,7 +84,6 @@
 
 		uploading = true;
 		errorMessage = '';
-		let hasFailures = false;
 		let uploadedCount = 0;
 		let failedCount = 0;
 
@@ -106,23 +92,17 @@
 				continue;
 			}
 
-			updateQueueItem(item.id, (queueItem) => {
-				queueItem.status = 'uploading';
-				queueItem.progress = 30;
-				queueItem.error = undefined;
-			});
+			item.status = 'uploading';
+			item.progress = 30;
+			item.error = undefined;
 
 			try {
 				await onupload(item.file);
 				uploadedCount += 1;
 
-				updateQueueItem(item.id, (queueItem) => {
-					queueItem.status = 'success';
-					queueItem.progress = 100;
-					queueItem.error = undefined;
-				});
+				item.status = 'success';
+				item.progress = 100;
 			} catch (caught) {
-				hasFailures = true;
 				failedCount += 1;
 				const message =
 					caught instanceof Error ? caught.message : 'Error al subir archivos';
@@ -131,11 +111,9 @@
 					errorMessage = message;
 				}
 
-				updateQueueItem(item.id, (queueItem) => {
-					queueItem.status = 'error';
-					queueItem.progress = 0;
-					queueItem.error = message;
-				});
+				item.status = 'error';
+				item.progress = 0;
+				item.error = message;
 			}
 		}
 
@@ -144,7 +122,7 @@
 			await oncomplete?.({ uploaded: uploadedCount, failed: failedCount });
 		}
 
-		if (!hasFailures) {
+		if (failedCount === 0) {
 			resetDialogState();
 			open = false;
 			onclose?.();

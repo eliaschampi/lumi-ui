@@ -16,16 +16,16 @@
 		header
 	}: Props = $props();
 
-	const sidebarClasses = $derived.by(() => {
-		return [
+	const sidebarClasses = $derived(
+		[
 			'lumi-sidebar',
 			collapsed && 'lumi-sidebar--collapsed',
 			mobileOpen && 'lumi-sidebar--mobile-open',
 			className
 		]
 			.filter(Boolean)
-			.join(' ');
-	});
+			.join(' ')
+	);
 </script>
 
 <aside class={sidebarClasses} role="navigation" aria-label={ariaLabel}>
@@ -61,12 +61,17 @@
 		display: flex;
 		flex-direction: column;
 		width: var(--lumi-sidebar-width);
-		height: calc(100dvh - (var(--lumi-layout-shell-padding) * 2));
+		height: calc(
+			100dvh -
+				max(var(--lumi-layout-shell-padding), var(--lumi-safe-area-top)) -
+				max(var(--lumi-layout-shell-padding), var(--lumi-safe-area-bottom))
+		);
 		margin: 0;
 		transition:
 			width var(--lumi-duration-base) var(--lumi-easing-default),
 			transform var(--lumi-duration-base) var(--lumi-easing-default),
-			box-shadow var(--lumi-duration-base) var(--lumi-easing-default);
+			box-shadow var(--lumi-duration-base) var(--lumi-easing-default),
+			visibility 0s linear var(--lumi-duration-base);
 		overflow: hidden;
 		z-index: var(--lumi-z-sidebar);
 	}
@@ -169,51 +174,56 @@
 	@media (max-width: 64rem) {
 		.lumi-sidebar {
 			position: fixed;
-			top: var(--lumi-sidebar-mobile-offset);
-			left: var(--lumi-sidebar-mobile-offset);
-			margin: 0;
-			height: var(--lumi-sidebar-mobile-height);
-			transform: translateX(var(--lumi-sidebar-mobile-closed-shift));
-			width: var(--lumi-sidebar-mobile-width);
+			top: max(var(--lumi-sidebar-mobile-offset), var(--lumi-safe-area-top));
+			left: max(var(--lumi-sidebar-mobile-offset), var(--lumi-safe-area-left));
+			height: min(
+				var(--lumi-sidebar-mobile-height),
+				calc(
+					100dvh -
+						max(var(--lumi-sidebar-mobile-offset), var(--lumi-safe-area-top)) -
+						max(var(--lumi-sidebar-mobile-offset), var(--lumi-safe-area-bottom))
+				)
+			);
+			transform: translateX(
+				min(
+					var(--lumi-sidebar-mobile-closed-shift),
+					calc(-100% - var(--lumi-safe-area-left))
+				)
+			);
+			width: min(
+				var(--lumi-sidebar-mobile-width),
+				calc(
+					100vw -
+						max(var(--lumi-sidebar-mobile-offset), var(--lumi-safe-area-left)) -
+						max(var(--lumi-sidebar-mobile-offset), var(--lumi-safe-area-right))
+				)
+			);
+			visibility: hidden;
 			--lumi-surface-radius-local: var(--lumi-layout-floating-radius-tablet);
 			--lumi-surface-shadow: var(--lumi-shadow-lg);
 		}
 
 		.lumi-sidebar.lumi-sidebar--mobile-open {
 			transform: translateX(0);
-		}
-
-		.lumi-sidebar--collapsed {
-			width: var(
-				--lumi-sidebar-mobile-width
-			); /* No collapsed state on mobile */
+			visibility: visible;
+			transition-delay: 0s;
 		}
 	}
 
 	@media (max-width: 48rem) {
 		.lumi-sidebar {
-			top: var(--lumi-layout-shell-padding-mobile);
-			left: var(--lumi-layout-shell-padding-mobile);
-			height: calc(100dvh - (var(--lumi-layout-shell-padding-mobile) * 2));
-			width: min(
-				var(--lumi-sidebar-width-mobile),
-				calc(100vw - (var(--lumi-layout-shell-padding-mobile) * 2))
+			--lumi-sidebar-mobile-offset: var(--lumi-layout-shell-padding-mobile);
+			--lumi-sidebar-mobile-height: calc(
+				100dvh - (var(--lumi-sidebar-mobile-offset) * 2)
 			);
-			transform: translateX(
-				calc(-100% - var(--lumi-layout-shell-padding-mobile))
+			--lumi-sidebar-mobile-width: min(
+				var(--lumi-sidebar-width-mobile),
+				calc(100vw - (var(--lumi-sidebar-mobile-offset) * 2))
+			);
+			--lumi-sidebar-mobile-closed-shift: calc(
+				-100% - var(--lumi-sidebar-mobile-offset)
 			);
 			--lumi-surface-radius-local: var(--lumi-layout-floating-radius-mobile);
-		}
-
-		.lumi-sidebar.lumi-sidebar--mobile-open {
-			transform: translateX(0);
-		}
-
-		.lumi-sidebar--collapsed {
-			width: min(
-				var(--lumi-sidebar-width-mobile),
-				calc(100vw - (var(--lumi-layout-shell-padding-mobile) * 2))
-			);
 		}
 	}
 </style>

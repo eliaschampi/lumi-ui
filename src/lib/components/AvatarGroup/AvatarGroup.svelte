@@ -10,8 +10,8 @@
 		class: className = ''
 	}: AvatarGroupProps = $props();
 
-	const visible = $derived(items.slice(0, max));
-	const overflow = $derived(Math.max(0, items.length - max));
+	const visible = $derived(items.slice(0, Math.max(0, max)));
+	const overflow = $derived(items.length - visible.length);
 	const names = $derived(
 		items
 			.map((item) => item.alt || item.text || '')

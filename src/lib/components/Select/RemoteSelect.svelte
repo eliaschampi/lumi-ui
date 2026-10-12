@@ -67,12 +67,11 @@
 	);
 	const options = $derived.by<SelectOption[]>(() => {
 		const selectedItem = selected;
+		const selectedValue = selectedItem ? getOptionValue(selectedItem) : null;
 		const items = selectedItem
 			? [
 					selectedItem,
-					...results.filter(
-						(item) => getOptionValue(item) !== getOptionValue(selectedItem)
-					)
+					...results.filter((item) => getOptionValue(item) !== selectedValue)
 				]
 			: results;
 

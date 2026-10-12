@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Icon } from '../Icon';
 	import { Loading } from '../Loading';
+	import { formatFileSize } from '../../utils/file';
 	import type { FileUploadFile, FileUploadProps } from './types';
 
 	let {
@@ -40,14 +41,6 @@
 			.join(' ');
 	});
 
-	function formatFileSize(bytes: number): string {
-		if (bytes === 0) return '0 B';
-		const k = 1024;
-		const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-		const i = Math.floor(Math.log(bytes) / Math.log(k));
-		return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
-	}
-
 	function buildMaxSizeMessage(file: File): string {
 		if (maxSizeErrorMessage) {
 			return maxSizeErrorMessage(file, maxSize);
@@ -74,27 +67,17 @@
 				validationMessage = validateFile(file);
 			}
 
-			if (validationMessage) {
-				if (oninvalid) {
-					oninvalid(validationMessage, file);
-					continue;
-				}
-
-				nextFiles.push({
-					id: `${file.name}-${file.lastModified}-${Math.random().toString(36).substring(2, 11)}`,
-					file,
-					status: 'error',
-					progress: 0,
-					error: validationMessage
-				});
+			if (validationMessage && oninvalid) {
+				oninvalid(validationMessage, file);
 				continue;
 			}
 
 			nextFiles.push({
 				id: `${file.name}-${file.lastModified}-${Math.random().toString(36).substring(2, 11)}`,
 				file,
-				status: 'selected',
-				progress: 0
+				status: validationMessage ? 'error' : 'selected',
+				progress: 0,
+				error: validationMessage || undefined
 			});
 		}
 

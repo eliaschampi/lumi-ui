@@ -10,7 +10,7 @@
 		value: SelectValue | null;
 		label: string;
 		disabled: boolean;
-		key: string;
+		key: number;
 	}
 
 	let {
@@ -69,12 +69,13 @@
 	function isEqual(
 		a: unknown,
 		b: unknown,
-		seen = new WeakMap<object, object>()
+		seen?: WeakMap<object, object>
 	): boolean {
 		if (Object.is(a, b)) return true;
 		if (a == null || b == null) return false;
 		if (typeof a !== typeof b) return false;
 		if (typeof a !== 'object') return false;
+		seen ??= new WeakMap<object, object>();
 		const seenMatch = seen.get(a);
 		if (seenMatch) return seenMatch === b;
 		seen.set(a, b as object);
@@ -101,18 +102,6 @@
 		);
 	}
 
-	function toOptionKey(optionValue: SelectValue | null, index: number): string {
-		if (optionValue == null) return `opt-${index}`;
-		if (typeof optionValue === 'object') {
-			try {
-				return `opt-${index}-${JSON.stringify(optionValue)}`;
-			} catch {
-				return `opt-${index}`;
-			}
-		}
-		return `${String(optionValue)}-${index}`;
-	}
-
 	// ── IDs ────────────────────────────────────
 	const uniqueId = $props.id();
 	const inputId = `lumi-select-${uniqueId}`;
@@ -133,7 +122,7 @@
 					value: optValue,
 					label: String(optLabel),
 					disabled: Boolean(rec[disabledKey]),
-					key: toOptionKey(optValue, index)
+					key: index
 				} satisfies NormalizedOption;
 			}
 
@@ -141,7 +130,7 @@
 				value: option,
 				label: String(option),
 				disabled: false,
-				key: toOptionKey(option, index)
+				key: index
 			} satisfies NormalizedOption;
 		});
 	});
@@ -232,9 +221,7 @@
 		inputRef?.focus();
 		filterText = selectedLabel;
 		const selectedIndex = selectedOption
-			? visibleOptions.findIndex((opt) =>
-					isEqual(opt.value, selectedOption.value)
-				)
+			? visibleOptions.indexOf(selectedOption)
 			: -1;
 		focusedIndex =
 			selectedIndex >= 0

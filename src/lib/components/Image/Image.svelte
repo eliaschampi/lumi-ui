@@ -22,7 +22,6 @@
 		onerror
 	}: ImageProps = $props();
 
-	let currentSrc = $state<string | null>(null);
 	let isLoading = $state(true);
 	let hasError = $state(false);
 
@@ -49,18 +48,16 @@
 	const handleImageLoad = (event: Event) => {
 		isLoading = false;
 		hasError = false;
-		if (onload) onload(event);
+		onload?.(event);
 	};
 
 	const handleImageError = () => {
 		isLoading = false;
 		hasError = true;
-		if (onerror) onerror();
+		onerror?.();
 	};
 
 	$effect(() => {
-		if (src === currentSrc) return;
-		currentSrc = src;
 		isLoading = Boolean(src);
 		hasError = false;
 	});

@@ -1,5 +1,12 @@
 import { tick } from 'svelte';
 
+const origins = new WeakMap<HTMLElement, HTMLElement | null>();
+
+/** Return where a portaled element was declared before it moved to its target. */
+export function getPortalOrigin(node: HTMLElement): HTMLElement | null {
+	return origins.get(node) ?? null;
+}
+
 /**
  * Usage: <div use:portal={'css-selector'}> or <div use:portal={element}>
  * Default target is document.body
@@ -8,6 +15,7 @@ export function portal(
 	node: HTMLElement,
 	target: HTMLElement | string = 'body'
 ) {
+	origins.set(node, node.parentElement);
 	let activeTarget: HTMLElement | null = null;
 	let updateVersion = 0;
 	let destroyed = false;
@@ -48,6 +56,7 @@ export function portal(
 		destroyed = true;
 		updateVersion += 1;
 		node.parentNode?.removeChild(node);
+		origins.delete(node);
 		activeTarget = null;
 	}
 

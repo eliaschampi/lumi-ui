@@ -8,8 +8,8 @@
 		formatChartValue
 	} from '../../utils/chartFormat';
 	import {
-		MIN_CHART_WIDTH,
 		chartTooltip,
+		useChartInteraction,
 		useChartWidth
 	} from '../../utils/chartLayout.svelte';
 	import type { DashboardDonutChartProps } from './types';
@@ -29,10 +29,10 @@
 	const FULL_TURN = Math.PI * 2;
 	const START_ANGLE = -Math.PI / 2;
 
-	const layout = useChartWidth(MIN_CHART_WIDTH);
+	const layout = useChartWidth();
+	const instanceId = $props.id();
 
-	let hoveredIndex = $state<number | null>(null);
-	let tooltipAnchor = $state({ clientX: 0, clientY: 0 });
+	const hover = useChartInteraction();
 
 	const classes = $derived(
 		['lumi-donut-chart', className].filter(Boolean).join(' ')
@@ -94,7 +94,7 @@
 	});
 
 	const hovered = $derived(
-		hoveredIndex !== null ? (arcs[hoveredIndex] ?? null) : null
+		hover.index !== null ? (arcs[hover.index] ?? null) : null
 	);
 
 	function pointOnCircle(radius: number, angle: number): string {
@@ -111,18 +111,6 @@
 			`A${innerRadius},${innerRadius} 0 ${largeArc} 0 ${pointOnCircle(innerRadius, start)}Z`
 		);
 	}
-
-	function setHover(
-		index: number,
-		anchor: Pick<PointerEvent, 'clientX' | 'clientY'>
-	): void {
-		hoveredIndex = index;
-		tooltipAnchor = { clientX: anchor.clientX, clientY: anchor.clientY };
-	}
-
-	function clearHover(): void {
-		hoveredIndex = null;
-	}
 </script>
 
 <div bind:this={layout.root} class={classes}>
@@ -134,14 +122,18 @@
 				</p>
 			</div>
 		{:else}
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex (Keyboard exploration keeps the chart image semantics.) -->
 			<svg
 				viewBox="0 0 {chartW} {chartH}"
 				preserveAspectRatio="xMidYMid meet"
 				class="lumi-chart-svg"
 				role="img"
 				aria-label={ariaLabel}
-				onpointerleave={clearHover}
-				onpointercancel={clearHover}
+				aria-describedby={hovered ? `${instanceId}-tooltip` : undefined}
+				tabindex="0"
+				use:hover.keyboard={arcs.length}
+				onpointerleave={hover.clear}
+				onpointercancel={hover.clear}
 			>
 				{#each arcs as arc, index}
 					{#if arc.full}
@@ -154,11 +146,11 @@
 							stroke-width={outerRadius - innerRadius}
 							class="lumi-donut-chart__slice"
 							class:lumi-donut-chart__slice--muted={hovered !== null &&
-								hoveredIndex !== index}
+								hover.index !== index}
 							aria-hidden="true"
-							onpointerenter={(event) => setHover(index, event)}
-							onpointermove={(event) => setHover(index, event)}
-							onpointerleave={clearHover}
+							onpointerenter={(event) => hover.set(index, event)}
+							onpointermove={(event) => hover.set(index, event)}
+							onpointerleave={hover.clear}
 						/>
 					{:else}
 						<path
@@ -166,11 +158,11 @@
 							fill={arc.fill}
 							class="lumi-donut-chart__slice"
 							class:lumi-donut-chart__slice--muted={hovered !== null &&
-								hoveredIndex !== index}
+								hover.index !== index}
 							aria-hidden="true"
-							onpointerenter={(event) => setHover(index, event)}
-							onpointermove={(event) => setHover(index, event)}
-							onpointerleave={clearHover}
+							onpointerenter={(event) => hover.set(index, event)}
+							onpointermove={(event) => hover.set(index, event)}
+							onpointerleave={hover.clear}
 						/>
 					{/if}
 				{/each}
@@ -221,7 +213,8 @@
 	<div
 		class="lumi-chart-tooltip"
 		role="tooltip"
-		use:chartTooltip={tooltipAnchor}
+		id={`${instanceId}-tooltip`}
+		use:chartTooltip={hover.anchor}
 	>
 		<span class="lumi-chart-tooltip__title">{hovered.label}</span>
 		<div class="lumi-chart-tooltip__row">

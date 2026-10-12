@@ -2,8 +2,8 @@
  * Icon System — Lucide Icons for Lumi UI
  *
  * Two usage patterns:
- *   1. Direct component ref (tree-shakeable):  <Icon icon={Home} />
- *   2. String registry lookup (convenient):     <Icon icon="home" />
+ *   1. Direct component ref:                 <Icon icon={House} />
+ *   2. String registry lookup:               <Icon icon="house" />
  *
  * Dev note: import each icon via deep path (@lucide/svelte/icons/*),
  * never the package barrel. The barrel re-exports ~1700 icons and
@@ -129,7 +129,7 @@ import ZoomOut from '@lucide/svelte/icons/zoom-out';
 // Organized by category. `satisfies` checks value types while
 // preserving literal key types for IconName inference.
 
-const _registry = {
+export const iconRegistry = {
 	// Navigation
 	house: House,
 	menu: Menu,
@@ -258,10 +258,7 @@ const _registry = {
 } satisfies Record<string, IconComponent>;
 
 /** All registered icon names as a union type */
-export type IconName = keyof typeof _registry;
-
-/** Icon registry — string key → component mapping */
-export const iconRegistry = _registry;
+export type IconName = keyof typeof iconRegistry;
 
 // ─── Utilities ─────────────────────────────────────────────────
 
@@ -270,11 +267,7 @@ export const iconRegistry = _registry;
  * Returns null if not found.
  */
 export function getIcon(name: string): IconComponent | null {
-	if (hasIcon(name)) {
-		return iconRegistry[name];
-	}
-
-	return null;
+	return hasIcon(name) ? iconRegistry[name] : null;
 }
 
 /** Check whether a name exists in the registry */

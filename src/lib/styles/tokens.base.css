@@ -645,6 +645,10 @@
 	--lumi-sidebar-subitem-icon-size: var(--lumi-icon-sm);
 	--lumi-sidebar-subitem-icon-opacity: 0.82;
 	--lumi-navbar-height: 4rem;
+	--lumi-safe-area-top: env(safe-area-inset-top, 0px);
+	--lumi-safe-area-right: env(safe-area-inset-right, 0px);
+	--lumi-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+	--lumi-safe-area-left: env(safe-area-inset-left, 0px);
 	--lumi-layout-shell-padding: var(--lumi-space-md);
 	--lumi-layout-shell-padding-tablet: var(--lumi-space-sm);
 	--lumi-layout-shell-padding-mobile: var(--lumi-space-xs);

@@ -32,8 +32,7 @@
 		onreset
 	}: Props = $props();
 
-	const inputSize = $derived(compact ? 'sm' : 'md');
-	const buttonSize = $derived(compact ? 'sm' : 'md');
+	const size = $derived(compact ? 'sm' : 'md');
 
 	const showReset = $derived(Boolean(resetLabel && onreset));
 	const showApply = $derived(!hideApply && Boolean(onapply));
@@ -46,22 +45,16 @@
 			bind:value={fromValue}
 			label={fromLabel}
 			{disabled}
-			size={inputSize}
+			{size}
 		/>
 	</div>
 	<div class="lumi-form-action-row__field">
-		<Input
-			type="date"
-			bind:value={toValue}
-			label={toLabel}
-			{disabled}
-			size={inputSize}
-		/>
+		<Input type="date" bind:value={toValue} label={toLabel} {disabled} {size} />
 	</div>
 	{#if showReset || showApply}
 		<div class="lumi-form-action-row__actions">
 			{#if showReset}
-				<Button variant="border" size={buttonSize} onclick={onreset} {disabled}>
+				<Button variant="border" {size} onclick={onreset} {disabled}>
 					{resetLabel}
 				</Button>
 			{/if}
@@ -70,7 +63,7 @@
 					variant="flat"
 					color="info"
 					icon="search"
-					size={buttonSize}
+					{size}
 					aria-label={applyLabel}
 					onclick={onapply}
 					{disabled}

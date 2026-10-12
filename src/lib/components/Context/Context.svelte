@@ -217,9 +217,7 @@
 		return () => {
 			document.removeEventListener('click', handleClickOutside, true);
 			document.removeEventListener('contextmenu', handleClickOutside, true);
-			if (closeOnScroll) {
-				window.removeEventListener('scroll', handleScroll, true);
-			}
+			window.removeEventListener('scroll', handleScroll, true);
 		};
 	});
 

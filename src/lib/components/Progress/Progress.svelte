@@ -26,9 +26,7 @@
 	const clampedValue = $derived(
 		Number.isFinite(value) ? Math.min(Math.max(value, 0), 100) : 0
 	);
-	const styleVars = $derived.by(
-		() => `--progress-color: var(--lumi-color-${color});`
-	);
+	const styleVars = $derived(`--progress-color: var(--lumi-color-${color});`);
 	const progressStyle = $derived(
 		indeterminate ? '' : `width: ${clampedValue}%`
 	);
@@ -190,11 +188,6 @@
 	.lumi-progress--sm .lumi-progress__track {
 		height: var(--lumi-space-xs);
 		--progress-stripe-size: var(--lumi-space-sm);
-	}
-
-	.lumi-progress--md .lumi-progress__track {
-		height: var(--lumi-space-sm);
-		--progress-stripe-size: var(--lumi-space-md);
 	}
 
 	.lumi-progress--lg .lumi-progress__track {

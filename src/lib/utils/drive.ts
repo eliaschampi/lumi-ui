@@ -1,6 +1,8 @@
 import type { LumiColor } from '../components/config';
 import type { IconName } from './icons';
 
+export { formatFileSize } from './file';
+
 /** Supported drive file types */
 export type DriveFileType =
 	'dir' | 'img' | 'vid' | 'aud' | 'doc' | 'zip' | 'otr';
@@ -123,14 +125,14 @@ export const DRIVE_IMAGE_COMPRESSION_THRESHOLD_BYTES = 1 * 1024 * 1024;
  * Detect DriveFileType from MIME type
  */
 export function detectFileType(mimeType: string): DriveFileType {
-	return ALLOWED_MIME_TYPES[mimeType] || 'otr';
+	return isAllowedMimeType(mimeType) ? ALLOWED_MIME_TYPES[mimeType] : 'otr';
 }
 
 /**
  * Check if MIME type is allowed for upload
  */
 export function isAllowedMimeType(mimeType: string): boolean {
-	return mimeType in ALLOWED_MIME_TYPES;
+	return Object.hasOwn(ALLOWED_MIME_TYPES, mimeType);
 }
 
 /**
@@ -144,8 +146,9 @@ export function normalizeDriveName(value: string): string {
  * Build a safe extension for storage paths based on the original filename.
  */
 export function getSafeDriveExtension(originalName: string): string {
+	const extensionIndex = originalName.lastIndexOf('.');
 	const cleaned = originalName
-		.slice(originalName.lastIndexOf('.'))
+		.slice(extensionIndex < 0 ? originalName.length : extensionIndex)
 		.toLowerCase()
 		.replace(/[^a-z0-9.]/g, '');
 
@@ -257,18 +260,6 @@ export function normalizeDriveFileSize(
 ): number {
 	const parsed = Number(value);
 	return Number.isFinite(parsed) ? parsed : 0;
-}
-
-/**
- * Format bytes into human-readable size
- */
-export function formatFileSize(bytes: number): string {
-	if (bytes === 0) return '0 B';
-	const units = ['B', 'KB', 'MB', 'GB'];
-	const k = 1024;
-	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	const size = parseFloat((bytes / k ** i).toFixed(1));
-	return `${size} ${units[i]}`;
 }
 
 export type DriveDateFormatter = (value: string) => string;

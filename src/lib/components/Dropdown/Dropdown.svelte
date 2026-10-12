@@ -88,6 +88,7 @@
 
 	async function openDropdown(focusTarget?: 'first' | 'last'): Promise<void> {
 		if (disabled || floating.isOpen) return;
+		cancelHoverClose();
 		floating.open();
 		open = true;
 		onopen?.();
@@ -98,6 +99,7 @@
 	}
 
 	function closeDropdown(restoreFocus = false): void {
+		cancelHoverClose();
 		const wasOpen = floating.isOpen;
 		floating.close();
 		open = false;
@@ -224,21 +226,6 @@
 		openDropdown();
 	}
 
-	function handleTriggerLeave(): void {
-		if (trigger !== 'hover') return;
-		scheduleHoverClose();
-	}
-
-	function handleMenuEnter(): void {
-		if (trigger !== 'hover') return;
-		cancelHoverClose();
-	}
-
-	function handleMenuLeave(): void {
-		if (trigger !== 'hover') return;
-		scheduleHoverClose();
-	}
-
 	// Reactive document listeners: attached only while open, and only when
 	// their feature is enabled. A change to `closeOnClickOutside` after mount
 	// is now honored on the next open cycle.
@@ -267,7 +254,7 @@
 	bind:this={dropdownRef}
 	class={dropdownClasses}
 	onmouseenter={handleTriggerEnter}
-	onmouseleave={handleTriggerLeave}
+	onmouseleave={scheduleHoverClose}
 	role="presentation"
 >
 	<div
@@ -299,8 +286,8 @@
 			aria-labelledby={triggerId}
 			tabindex="-1"
 			style={floating.styleString}
-			onmouseenter={handleMenuEnter}
-			onmouseleave={handleMenuLeave}
+			onmouseenter={cancelHoverClose}
+			onmouseleave={scheduleHoverClose}
 			onkeydown={handleMenuKeydown}
 			transition:scale={{ duration: transitionDuration, start: 0.96 }}
 		>

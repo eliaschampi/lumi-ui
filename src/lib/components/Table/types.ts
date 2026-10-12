@@ -47,15 +47,15 @@ export interface TableProps<TRow extends object = TableRow> {
 
 	/** Data array */
 	data?: TRow[];
-	/** Items per page when pagination is enabled */
+	/** Page size, rounded down to an integer with a minimum of 1 */
 	itemsPerPage?: number;
-	/** Current page when paginationMode is server */
+	/** Server page, rounded down and clamped to the available pages */
 	currentPage?: number;
-	/** Total items when paginationMode is server */
+	/** Server total, normalized to a non-negative integer; defaults to data.length */
 	totalItems?: number;
 	/** Show loading state */
 	loading?: boolean;
-	/** Stable row identity when rows do not expose id or key */
+	/** Unique row identity when rows lack id or key; strings and numbers are distinct */
 	rowKey?: (row: TRow) => string | number;
 	/** Selected rows (bindable); styling does not depend on checkbox controls */
 	selected?: TRow[];
@@ -76,6 +76,7 @@ export interface TableProps<TRow extends object = TableRow> {
 
 	/* ── Event handlers ── */
 	'onrow-click'?: (row: TRow, index: number) => void;
+	/** Also invoked by Enter/Space when no onrow-click handler is supplied */
 	'onrow-dblclick'?: (row: TRow, index: number) => void;
 	/** Complete-row context action; supports pointer, ContextMenu and Shift+F10 */
 	'onrow-contextmenu'?: (event: MouseEvent, row: TRow, index: number) => void;

@@ -1,12 +1,6 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
 	import { Icon } from '../Icon';
 	import type { ListHeaderProps } from './types';
-
-	interface Props extends ListHeaderProps {
-		children?: Snippet;
-		actions?: Snippet;
-	}
 
 	const {
 		title,
@@ -15,7 +9,7 @@
 		class: className = '',
 		children,
 		actions
-	}: Props = $props();
+	}: ListHeaderProps = $props();
 
 	const classes = $derived(
 		['lumi-list-header', color && `lumi-list-header--${color}`, className]
@@ -39,13 +33,9 @@
 		{/if}
 	</div>
 
-	{#if actions}
+	{#if actions || children}
 		<div class="lumi-list-header__actions">
-			{@render actions()}
-		</div>
-	{:else if children}
-		<div class="lumi-list-header__actions">
-			{@render children()}
+			{@render (actions ?? children)?.()}
 		</div>
 	{/if}
 </div>

@@ -40,7 +40,6 @@
 
 <style>
 	.lumi-stat-card__container {
-		container-type: inline-size;
 		display: flex;
 		flex-direction: column;
 		gap: var(--lumi-space-xs);

@@ -77,7 +77,7 @@
 			transparent
 		);
 		display: grid;
-		grid-template-columns: auto minmax(0, 1fr);
+		grid-template-columns: minmax(0, 1fr);
 		align-items: center;
 		gap: var(--lumi-space-sm);
 		min-width: 0;
@@ -102,12 +102,11 @@
 			);
 	}
 
-	.lumi-info-item--horizontal {
+	.lumi-info-item--horizontal:has(> .lumi-info-item__icon) {
 		grid-template-columns: auto minmax(0, 1fr);
 	}
 
 	.lumi-info-item--vertical {
-		grid-template-columns: minmax(0, 1fr);
 		align-items: start;
 	}
 

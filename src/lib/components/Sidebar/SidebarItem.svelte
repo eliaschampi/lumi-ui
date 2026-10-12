@@ -37,20 +37,24 @@
 	);
 </script>
 
+{#snippet content()}
+	{#if icon}
+		<span class="lumi-sidebar-item__icon">
+			{@render icon()}
+		</span>
+	{/if}
+	{#if !collapsed}
+		<span class="lumi-sidebar-item__text">
+			{#if children}
+				{@render children()}
+			{/if}
+		</span>
+	{/if}
+{/snippet}
+
 {#if href}
 	<a {href} class={itemClasses} aria-current={ariaCurrent} {onclick}>
-		{#if icon}
-			<span class="lumi-sidebar-item__icon">
-				{@render icon()}
-			</span>
-		{/if}
-		{#if !collapsed}
-			<span class="lumi-sidebar-item__text">
-				{#if children}
-					{@render children()}
-				{/if}
-			</span>
-		{/if}
+		{@render content()}
 	</a>
 {:else}
 	<button
@@ -60,18 +64,7 @@
 		aria-expanded={ariaExpanded}
 		{onclick}
 	>
-		{#if icon}
-			<span class="lumi-sidebar-item__icon">
-				{@render icon()}
-			</span>
-		{/if}
-		{#if !collapsed}
-			<span class="lumi-sidebar-item__text">
-				{#if children}
-					{@render children()}
-				{/if}
-			</span>
-		{/if}
+		{@render content()}
 	</button>
 {/if}
 

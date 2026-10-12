@@ -1,6 +1,6 @@
 import { portal } from '../actions/portal';
 
-export const MIN_CHART_WIDTH = 320;
+const INITIAL_CHART_WIDTH = 320;
 
 const TOOLTIP_PAD = 8;
 const TOOLTIP_OFFSET_X = 14;
@@ -52,17 +52,93 @@ export function chartTooltip(
 	};
 }
 
+/** One interaction state for pointer, keyboard, and focus across chart shapes. */
+export function useChartInteraction() {
+	let index = $state<number | null>(null);
+	let anchor = $state({ clientX: 0, clientY: 0 });
+	const clear = () => {
+		index = null;
+	};
+	const set = (next: number, position: typeof anchor) => {
+		index = next;
+		anchor = { clientX: position.clientX, clientY: position.clientY };
+	};
+	return {
+		get index() {
+			return index;
+		},
+		get anchor() {
+			return anchor;
+		},
+		set,
+		clear,
+		keyboard(node: SVGSVGElement, count: number) {
+			const select = (next: number) => {
+				if (!count) return clear();
+				const bounds = node.getBoundingClientRect();
+				set(Math.max(0, Math.min(count - 1, next)), {
+					clientX: bounds.left + bounds.width / 2,
+					clientY: bounds.top + bounds.height / 2
+				});
+			};
+			const focus = () => select(index ?? 0);
+			const keydown = (event: KeyboardEvent) => {
+				let next = index ?? -1;
+				switch (event.key) {
+					case 'ArrowRight':
+					case 'ArrowDown':
+						next++;
+						break;
+					case 'ArrowLeft':
+					case 'ArrowUp':
+						next = index === null ? count - 1 : index - 1;
+						break;
+					case 'Home':
+						next = 0;
+						break;
+					case 'End':
+						next = count - 1;
+						break;
+					case 'Escape':
+						if (index !== null) event.stopPropagation();
+						clear();
+						return;
+					default:
+						return;
+				}
+				event.preventDefault();
+				select(next);
+			};
+			node.addEventListener('focus', focus);
+			node.addEventListener('blur', clear);
+			node.addEventListener('keydown', keydown);
+			return {
+				update(next: number) {
+					count = next;
+				},
+				destroy() {
+					node.removeEventListener('focus', focus);
+					node.removeEventListener('blur', clear);
+					node.removeEventListener('keydown', keydown);
+					clear();
+				}
+			};
+		}
+	};
+}
+
 /** Observes a chart container and keeps SVG viewBox width in sync with layout. */
-export function useChartWidth(minWidth = MIN_CHART_WIDTH) {
+export function useChartWidth() {
 	let root = $state<HTMLDivElement | undefined>();
-	let chartW = $state(minWidth);
+	let chartW = $state(INITIAL_CHART_WIDTH);
 
 	$effect(() => {
 		const el = root;
 		if (!el) return;
 
 		const observer = new ResizeObserver(([entry]) => {
-			chartW = Math.max(minWidth, Math.floor(entry.contentRect.width));
+			if (entry.contentRect.width > 0)
+				chartW = Math.max(1, Math.floor(entry.contentRect.width));
 		});
 		observer.observe(el);
 		return () => observer.disconnect();

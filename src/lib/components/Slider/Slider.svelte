@@ -51,10 +51,8 @@
 <div class={classes} style={styleVars}>
 	{#if label}
 		<div class="lumi-slider__header">
-			{#if label}
-				<label class="lumi-slider__label" for={sliderId}>{label}</label>
-			{/if}
-			{#if showValue && label}
+			<label class="lumi-slider__label" for={sliderId}>{label}</label>
+			{#if showValue}
 				<span class="lumi-slider__value-inline">{value}</span>
 			{/if}
 		</div>

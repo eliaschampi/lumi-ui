@@ -295,7 +295,7 @@ Grid areas: `sidebar`, `navbar`, `content`. Keep shell classes and component pro
 </div>
 ```
 
-At `64rem` and below, core switches the shell to navbar/content. `Sidebar` separately owns fixed mobile presentation at `1024px`—align viewport state with both. Full shell: [`examples/dashboard`](../examples/dashboard). Breakpoints: [§5 Responsive effects](#responsive-effects).
+At `64rem` and below, core switches the shell to navbar/content and `Sidebar` uses fixed mobile presentation. Keep viewport state aligned with that breakpoint. Closed mobile navigation is excluded from keyboard navigation. Full shell: [`examples/dashboard`](../examples/dashboard). Breakpoints: [§5 Responsive effects](#responsive-effects).
 
 ### Standard page
 
@@ -316,6 +316,8 @@ At `64rem` and below, core switches the shell to navbar/content. `Sidebar` separ
 ### Page sidebar
 
 `PageSidebar` reuses one sidebar snippet for desktop surface and mobile drawer. The trigger **must** sit inside `.lumi-page-sidebar__header-actions` (public composition contract). Desktop aside hides at `64rem`.
+
+The mobile drawer portals to the document body, locks page scrolling, contains keyboard focus, closes with Escape and restores focus to its trigger. It shares modal ownership with `Dialog`, so closing a nested dialog returns focus to the drawer. Resizing above `64rem` releases modal resources. Shells, containers, navigation and modal surfaces respect `--lumi-safe-area-top/right/bottom/left`, defaulting to the device safe-area insets. For edge-to-edge iOS/iPadOS layouts, set `viewport-fit=cover` in the viewport meta tag so the browser exposes nonzero safe-area values.
 
 ```svelte
 <PageHeader title="Records">
@@ -638,6 +640,8 @@ src/lib/
 
 Internal imports stay relative. Library source never imports `$lib`, `$app`, consumer routes, application state, permissions, endpoints, or persistence.
 
+Audit findings and measured tradeoffs: [2026-10-12 review](./REFACTOR_REVIEW.md).
+
 ### Public contract lookup
 
 1. Root/subpath `index.ts` — is the symbol public?
@@ -692,7 +696,7 @@ tokens.base.css → core.css → patterns.css → consumer brand CSS → consume
 | Optional global preference | Explicit factory/controller instance |
 | Business state             | Consumer application                 |
 
-Avoid import-time DOM mutation. Listeners, observers, timers, requests, and portals must be scoped and cleaned up.
+Avoid import-time DOM mutation. Scope and clean up listeners, observers, timers, requests, and portals; cancel deferred close callbacks when reopening. Use `$props.id()` for SSR-stable DOM IDs.
 
 `Select`, `Dropdown`, `Context`, and `Tooltip` share floating positioning; clipped overlays use `portal`. Each component owns its focus model, dismissal, keyboard navigation, and role. Menus contain menu items; mixed controls need a neutral popover pattern.
 

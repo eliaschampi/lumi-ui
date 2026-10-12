@@ -2,6 +2,18 @@
 
 Consumer migration for **0.1.5 → 0.2.x** and later. Use **pnpm** only. Source remains authoritative.
 
+## 0.4.2 → 0.5.0
+
+Public component props and exports remain compatible; dependencies are unchanged. Review these corrected behaviors when upgrading:
+
+- `Table` normalizes page sizes, page numbers and totals to finite integers. Numeric and string row keys keep distinct identities. Rows with only a double-click action also support Enter/Space; editable controls keep their own keyboard events.
+- Line and bar charts render finite zero values; bars support negative values on the shared signed scale. Charts fit narrow cards without shrinking their SVG typography and support arrows, Home, End and Escape while focused.
+- `Dialog` and mobile `PageSidebar` share scroll locking, focus restoration and Escape ownership across concurrent overlays. Only the top modal is interactive. The drawer portals out of clipped containers; desktop resizing releases its modal resources.
+- Grids constrain wide children, mobile tracks fit narrow containers, viewport helpers use dynamic height, and layouts respect device safe areas through four additive `--lumi-safe-area-*` tokens. Edge-to-edge iOS/iPadOS layouts need `viewport-fit=cover`. Closed mobile `Sidebar` links no longer receive focus.
+- Selection and upload paths perform less repeated work; shared helpers and styling remove duplication. Existing design tokens and component classes remain available.
+
+Check light/dark layouts and keyboard navigation in your app. Keep loading the library styles before consumer overrides; portaled drawers inherit styles from the document rather than their former ancestors.
+
 ## 0.4.1 → 0.4.2
 
 No component props, events, public exports, or dependency requirements changed. No consumer migration is required.

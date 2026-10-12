@@ -48,9 +48,7 @@
 		pagination && paginationMode === 'server'
 	);
 	const pageSize = $derived(
-		Number.isFinite(itemsPerPage) && itemsPerPage > 0
-			? Math.floor(itemsPerPage)
-			: 1
+		Number.isFinite(itemsPerPage) ? Math.max(1, Math.floor(itemsPerPage)) : 1
 	);
 
 	// ── Row identity ──────────────────────────
@@ -61,10 +59,10 @@
 		if (customKey != null) return customKey;
 
 		const id = Reflect.get(row, 'id');
-		if (typeof id === 'string' || typeof id === 'number') return String(id);
+		if (typeof id === 'string' || typeof id === 'number') return id;
 
 		const key = Reflect.get(row, 'key');
-		if (typeof key === 'string' || typeof key === 'number') return String(key);
+		if (typeof key === 'string' || typeof key === 'number') return key;
 
 		return row;
 	}
@@ -72,24 +70,24 @@
 	// ── Processed data ────────────────────────
 	const processedData = $derived.by(() => {
 		if (!data) return [];
+		const query = searchQuery.toLowerCase().trim();
 
-		let result = [...data];
-
-		if (searchQuery && search && !isServerPagination) {
-			const query = searchQuery.toLowerCase().trim();
-			result = result.filter((item) =>
+		if (query && search && !isServerPagination) {
+			return data.filter((item) =>
 				Object.values(item).some((val) =>
 					String(val).toLowerCase().includes(query)
 				)
 			);
 		}
 
-		return result;
+		return data;
 	});
 
 	const totalItems = $derived(
-		isServerPagination
-			? (totalItemsProp ?? processedData.length)
+		isServerPagination &&
+			totalItemsProp != null &&
+			Number.isFinite(totalItemsProp)
+			? Math.max(0, Math.floor(totalItemsProp))
 			: processedData.length
 	);
 	const totalPages = $derived(
@@ -100,26 +98,32 @@
 		const requestedPage = isServerPagination
 			? controlledPage
 			: currentPageState;
-		return Math.min(Math.max(1, requestedPage), totalPages);
+		return Number.isFinite(requestedPage)
+			? Math.min(Math.max(1, Math.floor(requestedPage)), totalPages)
+			: 1;
 	});
 
 	const currentPageData = $derived.by(() => {
-		if (!pagination) return processedData;
-		if (isServerPagination) return processedData;
+		if (!pagination || isServerPagination) return processedData;
 		const start = (activePage - 1) * pageSize;
 		return processedData.slice(start, start + pageSize);
 	});
 
-	const isAllSelected = $derived.by(() => {
-		if (!data || !selectable || currentPageData.length === 0) return false;
-		return currentPageData.every((item) => isRowSelected(item));
-	});
-
-	const isPartiallySelected = $derived.by(() => {
-		if (!data || !selectable) return false;
-		const count = currentPageData.filter((item) => isRowSelected(item)).length;
-		return count > 0 && count < currentPageData.length;
-	});
+	const selectedKeys = $derived(new Set(selected.map(getRowIdentity)));
+	const pageSelectionCount = $derived(
+		selectable
+			? currentPageData.reduce(
+					(count, item) => count + Number(isRowSelected(item)),
+					0
+				)
+			: 0
+	);
+	const isAllSelected = $derived(
+		pageSelectionCount > 0 && pageSelectionCount === currentPageData.length
+	);
+	const isPartiallySelected = $derived(
+		pageSelectionCount > 0 && pageSelectionCount < currentPageData.length
+	);
 
 	const paginationData = $derived({
 		currentPage: activePage,
@@ -129,24 +133,14 @@
 	});
 
 	const pageNumbers = $derived.by(() => {
-		if (totalPages <= 5) {
-			return Array.from({ length: totalPages }, (_, i) => i + 1);
-		}
-		if (activePage <= 3) return [1, 2, 3, 4, 5];
-		if (activePage >= totalPages - 2) {
-			return Array.from({ length: 5 }, (_, i) => totalPages - 4 + i);
-		}
-		return [
-			activePage - 2,
-			activePage - 1,
-			activePage,
-			activePage + 1,
-			activePage + 2
-		];
+		const start = Math.max(1, Math.min(activePage - 2, totalPages - 4));
+		return Array.from({ length: Math.min(5, totalPages) }, (_, i) => start + i);
 	});
 
 	const hasPrimaryRowAction = $derived(!!onRowClick || !!onRowDblClick);
-	const hasKeyboardRowAction = $derived(!!onRowClick || !!onRowContextMenu);
+	const hasKeyboardRowAction = $derived(
+		hasPrimaryRowAction || !!onRowContextMenu
+	);
 	const hasSelectionState = $derived(selectable || selected.length > 0);
 	const emptyText = $derived(
 		search && searchQuery.trim() ? noResultsText : noDataText
@@ -181,7 +175,6 @@
 		if (!data || !selectable) return;
 
 		if (checked) {
-			const selectedKeys = new Set(selected.map((r) => getRowIdentity(r)));
 			const newSelections = currentPageData.filter(
 				(r) => !selectedKeys.has(getRowIdentity(r))
 			);
@@ -206,7 +199,7 @@
 			return false;
 		return Boolean(
 			target.closest(
-				'.lumi-table__td--select, button, a, label, input, select, textarea, summary, [role="button"], [role="link"], [contenteditable="true"]'
+				'.lumi-table__td--select, button, a, label, input, select, textarea, summary, [role="button"], [role="link"], [contenteditable]:not([contenteditable="false"])'
 			)
 		);
 	}
@@ -259,7 +252,7 @@
 		row: TRow,
 		index: number
 	): void {
-		if (isInteractiveTarget(event.target)) return;
+		if (event.defaultPrevented || isInteractiveTarget(event.target)) return;
 
 		if (
 			onRowContextMenu &&
@@ -270,10 +263,10 @@
 			return;
 		}
 
-		if (!onRowClick) return;
+		if (!hasPrimaryRowAction) return;
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
-			onRowClick?.(row, index);
+			(onRowClick ?? onRowDblClick)?.(row, index);
 		}
 	}
 
@@ -295,8 +288,7 @@
 	}
 
 	function isRowSelected(row: TRow): boolean {
-		const identity = getRowIdentity(row);
-		return selected.some((item) => getRowIdentity(item) === identity);
+		return selectedKeys.has(getRowIdentity(row));
 	}
 
 	function goToPage(page: number): void {
@@ -307,13 +299,7 @@
 
 	// ── Effects ───────────────────────────────
 	$effect(() => {
-		if (!pagination) return;
-		if (isServerPagination) return;
-		if (totalPages === 0 && currentPageState !== 1) {
-			currentPageState = 1;
-		} else if (totalPages > 0 && currentPageState > totalPages) {
-			currentPageState = totalPages;
-		}
+		if (pagination && !isServerPagination) currentPageState = activePage;
 	});
 </script>
 
@@ -510,6 +496,7 @@
 			var(--lumi-space-3xl) + var(--lumi-space-lg)
 		);
 		width: 100%;
+		min-width: 0;
 		display: flex;
 		flex-direction: column;
 		gap: var(--lumi-space-md);
@@ -873,6 +860,4 @@
 			width: var(--lumi-table-column-compact-width-sm);
 		}
 	}
-
-	/* ── Reduced motion ───────────────────────── */
 </style>

@@ -8,13 +8,10 @@
 	}
 
 	const {
-		title = '',
-		subtitle = '',
-		icon = '',
 		size = 'lg',
-		color = 'text',
 		class: className = '',
-		actions
+		actions,
+		...titleProps
 	}: Props = $props();
 
 	const classes = $derived(
@@ -26,7 +23,7 @@
 
 <header class={classes}>
 	<div class="lumi-page-header__title">
-		<Title {title} {subtitle} {icon} {size} {color} />
+		<Title {...titleProps} {size} />
 	</div>
 
 	{#if actions}

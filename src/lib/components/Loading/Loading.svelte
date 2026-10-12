@@ -14,17 +14,16 @@
 		children
 	}: Props = $props();
 
-	const classes = $derived.by(() => {
-		const baseClasses = [
+	const classes = $derived(
+		[
 			'lumi-loading',
 			`lumi-loading--${size}`,
-			`lumi-loading--${color}`
-		];
-
-		if (className) baseClasses.push(className);
-
-		return baseClasses.join(' ');
-	});
+			`lumi-loading--${color}`,
+			className
+		]
+			.filter(Boolean)
+			.join(' ')
+	);
 
 	const styleVars = $derived(`--loading-color: var(--lumi-color-${color});`);
 	const ariaLabel = $derived(text || (children ? undefined : 'Loading'));
@@ -82,7 +81,7 @@
 		border: var(--lumi-border-width-thick) solid
 			color-mix(in srgb, currentColor 18%, transparent);
 		border-top-color: currentColor;
-		animation: lumi-loading-spin var(--lumi-duration-spin) linear infinite;
+		animation: lumi-spin var(--lumi-duration-spin) linear infinite;
 	}
 
 	.lumi-loading__core {
@@ -114,16 +113,6 @@
 		--loading-ring-size: var(--lumi-space-4xl);
 		--loading-core-size: var(--lumi-space-xl);
 		gap: var(--lumi-space-lg);
-	}
-
-	@keyframes lumi-loading-spin {
-		from {
-			transform: rotate(0deg);
-		}
-
-		to {
-			transform: rotate(360deg);
-		}
 	}
 
 	@keyframes lumi-loading-pulse {

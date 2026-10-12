@@ -4,4 +4,3 @@ export type {
 	NumberInputProps,
 	NumberInputSize
 } from './types';
-export * from './types';

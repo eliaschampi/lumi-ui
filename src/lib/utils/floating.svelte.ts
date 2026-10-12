@@ -69,7 +69,7 @@ export type FloatingReference = ReferenceElement;
 export function createFloating(
 	triggerElement: () => ReferenceElement | undefined,
 	floatingElement: () => HTMLElement | undefined,
-	options: FloatingOptionsInput = {} as UseFloatingOptions
+	options: FloatingOptionsInput = {}
 ): FloatingController {
 	const optionsGetter: () => UseFloatingOptions =
 		typeof options === 'function' ? options : () => options;
@@ -226,7 +226,6 @@ export function createFloating(
 		const floating = floatingElement();
 		if (!trigger || !floating) return;
 
-		updatePosition();
 		return autoUpdate(trigger, floating, updatePosition);
 	});
 

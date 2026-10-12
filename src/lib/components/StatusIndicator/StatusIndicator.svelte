@@ -9,12 +9,9 @@
 		class: className = ''
 	}: StatusIndicatorProps = $props();
 
-	const effectiveStatus = $derived.by(() => {
-		if (active !== undefined) {
-			return active ? 'active' : 'inactive';
-		}
-		return status;
-	});
+	const effectiveStatus = $derived(
+		active === undefined ? status : active ? 'active' : 'inactive'
+	);
 
 	const predefinedStatuses: StatusIndicatorStatus[] = [
 		'default',
@@ -45,12 +42,11 @@
 			.join(' ');
 	});
 
-	const customStyle = $derived.by(() => {
-		if (!isPredefined) {
-			return `--lumi-status-indicator-custom-color: ${effectiveStatus}`;
-		}
-		return '';
-	});
+	const customStyle = $derived(
+		isPredefined
+			? ''
+			: `--lumi-status-indicator-custom-color: ${effectiveStatus}`
+	);
 </script>
 
 <div
@@ -78,20 +74,9 @@
 			var(--lumi-easing-default);
 	}
 
-	.lumi-status-indicator--default {
-		background: var(--lumi-color-gray-400);
-	}
-
-	.lumi-status-indicator--active {
-		background: var(--lumi-color-success);
-	}
-
+	.lumi-status-indicator--default,
 	.lumi-status-indicator--inactive {
 		background: var(--lumi-color-gray-400);
-	}
-
-	.lumi-status-indicator--pending {
-		background: var(--lumi-color-warning);
 	}
 
 	.lumi-status-indicator--primary {
@@ -102,10 +87,12 @@
 		background: var(--lumi-color-secondary);
 	}
 
+	.lumi-status-indicator--active,
 	.lumi-status-indicator--success {
 		background: var(--lumi-color-success);
 	}
 
+	.lumi-status-indicator--pending,
 	.lumi-status-indicator--warning {
 		background: var(--lumi-color-warning);
 	}
@@ -123,17 +110,7 @@
 	}
 
 	.lumi-status-indicator--pulse {
-		animation: lumi-status-pulse var(--lumi-duration-pulse)
-			var(--lumi-easing-in-out) infinite;
-	}
-
-	@keyframes lumi-status-pulse {
-		0%,
-		100% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0.5;
-		}
+		animation: lumi-pulse var(--lumi-duration-pulse) var(--lumi-easing-in-out)
+			infinite;
 	}
 </style>

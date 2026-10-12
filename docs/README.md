@@ -8,7 +8,7 @@ Five documents cover the library. Source remains authoritative for exact APIs.
 | **[Components](./COMPONENTS.md)**                   | Every root-exported component, selection matrix, contracts                                  |
 | **[Component authoring](./COMPONENT_AUTHORING.md)** | How to build or change a component: skeleton, prop contract, CSS, a11y, pre-merge checklist |
 | **[Consumer reference](./CONSUMER_REFERENCE.md)**   | Compact setup, theming, layout classes, and component usage for product apps                |
-| **[Upgrade](./UPGRADE.md)**                         | Consumer migration notes (0.1.5 → 0.2.x, 0.2.x → 0.3.x and 0.3.x → 0.4.0)                   |
+| **[Upgrade](./UPGRADE.md)**                         | Consumer migration notes through 0.5.0                                                      |
 
 Coding agents: [AGENTS.md](../AGENTS.md) → [Agent Guide](./AGENT_GUIDE.md). Working pages: [`examples/dashboard`](../examples/dashboard).
 

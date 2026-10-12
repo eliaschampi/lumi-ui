@@ -3,16 +3,15 @@
 	import {
 		CHART_COLOR_VARS,
 		CHART_PADDING,
-		CHART_Y_TICKS,
-		ceilNice,
+		chartScale,
 		computeSparseXLabels,
 		truncateAxisLabel
 	} from '../../utils/chartCoordinates';
 	import { chartAxis } from '../../utils/chartAxis';
 	import { formatChartValue } from '../../utils/chartFormat';
 	import {
-		MIN_CHART_WIDTH,
 		chartTooltip,
+		useChartInteraction,
 		useChartWidth
 	} from '../../utils/chartLayout.svelte';
 	import type { DashboardChartProps } from './types';
@@ -29,11 +28,10 @@
 		class: className = ''
 	}: DashboardChartProps = $props();
 
-	const layout = useChartWidth(MIN_CHART_WIDTH);
+	const layout = useChartWidth();
 	const instanceId = $props.id();
 
-	let hoveredIndex = $state<number | null>(null);
-	let tooltipAnchor = $state({ clientX: 0, clientY: 0 });
+	const hover = useChartInteraction();
 	const hiddenSeries = new SvelteSet<string>();
 
 	const normalizedSeries = $derived(
@@ -66,47 +64,14 @@
 		Math.max(1, chartH - CHART_PADDING.top - CHART_PADDING.bottom)
 	);
 
-	const extent = $derived.by(() => {
-		let min = 0;
-		let max = 0;
-		let count = 0;
-		for (const s of visibleSeries) {
-			for (let index = 0; index < xAxisData.length; index++) {
-				const value = s.data[index]?.value;
-				if (value === undefined || !Number.isFinite(value)) continue;
-				min = Math.min(min, value);
-				max = Math.max(max, value);
-				count++;
-			}
-		}
-		return { min, max, count };
-	});
-	const niceMax = $derived(
-		valueFormat === 'score'
-			? Math.max(20, ceilNice(extent.max))
-			: extent.max > 0
-				? ceilNice(extent.max)
-				: 0
-	);
-	const niceMin = $derived(
-		extent.min < 0 ? -ceilNice(Math.abs(extent.min)) : 0
-	);
-	const valueMagnitude = $derived(
-		Math.max(Math.abs(niceMax), Math.abs(niceMin), Number.MIN_VALUE)
-	);
-	const valueRange = $derived(
-		niceMax / valueMagnitude - niceMin / valueMagnitude || 1
-	);
-	const hasValues = $derived(
-		valueFormat === 'score'
-			? extent.count > 0
-			: extent.min !== 0 || extent.max !== 0
+	const scale = $derived(
+		chartScale(visibleSeries, valueFormat, xAxisData.length)
 	);
 
 	const zeroY = $derived(scaleY(0));
 	const activeIndex = $derived(
-		hoveredIndex !== null && hoveredIndex < xAxisData.length && hasValues
-			? hoveredIndex
+		hover.index !== null && hover.index < xAxisData.length && scale.hasValues
+			? hover.index
 			: null
 	);
 
@@ -144,14 +109,6 @@
 		})
 	);
 
-	const yTicks = $derived(
-		Array.from(
-			{ length: CHART_Y_TICKS + 1 },
-			(_, i) =>
-				(niceMin / valueMagnitude + (valueRange / CHART_Y_TICKS) * i) *
-				valueMagnitude
-		)
-	);
 	const xLabels = $derived(
 		computeSparseXLabels(xAxisData, (index) => scaleX(index))
 	);
@@ -180,10 +137,7 @@
 	}
 
 	function scaleY(v: number): number {
-		return (
-			CHART_PADDING.top +
-			((niceMax / valueMagnitude - v / valueMagnitude) / valueRange) * plotH
-		);
+		return CHART_PADDING.top + scale.ratio(v) * plotH;
 	}
 
 	function monotonePath(pts: { x: number; y: number }[]): string {
@@ -230,15 +184,16 @@
 		).getBoundingClientRect();
 		const ratio =
 			bounds.width > 0 ? (event.clientX - bounds.left) / bounds.width : 0;
-		hoveredIndex = Math.max(
-			0,
-			Math.min(xAxisData.length - 1, Math.round(ratio * (xAxisData.length - 1)))
+		hover.set(
+			Math.max(
+				0,
+				Math.min(
+					xAxisData.length - 1,
+					Math.round(ratio * (xAxisData.length - 1))
+				)
+			),
+			event
 		);
-		tooltipAnchor = { clientX: event.clientX, clientY: event.clientY };
-	}
-
-	function clearHover(): void {
-		hoveredIndex = null;
 	}
 
 	function toggleSeries(key: string): void {
@@ -278,21 +233,27 @@
 	{/if}
 
 	<div class="lumi-line-chart__plot" style:height="{height}px">
-		{#if !hasValues}
+		{#if !scale.hasValues}
 			<div class="lumi-chart-empty">
 				<p class="lumi-margin--none lumi-text--sm lumi-text--muted">
 					{emptyMessage}
 				</p>
 			</div>
 		{:else}
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex (Keyboard exploration keeps the chart image semantics.) -->
 			<svg
 				viewBox="0 0 {chartW} {chartH}"
 				preserveAspectRatio="xMidYMid meet"
 				class="lumi-chart-svg"
 				role="img"
 				aria-label={ariaLabel}
-				onpointerleave={clearHover}
-				onpointercancel={clearHover}
+				aria-describedby={hoveredEntries.length > 0
+					? `${instanceId}-tooltip`
+					: undefined}
+				tabindex="0"
+				use:hover.keyboard={xAxisData.length}
+				onpointerleave={hover.clear}
+				onpointercancel={hover.clear}
 			>
 				<defs>
 					{#each seriesPaths as sp (sp.key)}
@@ -311,7 +272,7 @@
 					{/each}
 				</defs>
 
-				{#each yTicks as tick}
+				{#each scale.ticks as tick}
 					<line
 						x1={CHART_PADDING.left}
 						y1={scaleY(tick)}
@@ -413,8 +374,9 @@
 {#if hoveredEntries.length > 0}
 	<div
 		role="tooltip"
+		id={`${instanceId}-tooltip`}
 		class="lumi-chart-tooltip"
-		use:chartTooltip={tooltipAnchor}
+		use:chartTooltip={hover.anchor}
 	>
 		<span class="lumi-chart-tooltip__title"
 			>{hoveredEntries[0].point.label}</span

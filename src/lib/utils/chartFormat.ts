@@ -2,10 +2,6 @@ import type { ChartValueFormat } from '../types/charts';
 
 type ChartValueRole = 'axis' | 'tooltip';
 
-interface ChartValueFormatOptions {
-	scoreAxisFractionDigits?: 1 | 2;
-}
-
 const currencyAxisFormatter = new Intl.NumberFormat('es-PE', {
 	style: 'currency',
 	currency: 'PEN',
@@ -48,8 +44,7 @@ export function formatChartPercent(value: number): string {
 export function formatChartValue(
 	value: number,
 	valueFormat: ChartValueFormat,
-	role: ChartValueRole,
-	options: ChartValueFormatOptions = {}
+	role: ChartValueRole
 ): string {
 	if (valueFormat === 'currency') {
 		return role === 'axis'
@@ -58,7 +53,7 @@ export function formatChartValue(
 	}
 
 	if (valueFormat === 'score') {
-		return role === 'axis' && options.scoreAxisFractionDigits !== 2
+		return role === 'axis'
 			? scoreAxisFormatter.format(value)
 			: decimalFormatter.format(value);
 	}

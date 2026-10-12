@@ -28,7 +28,7 @@ pnpm add @lumi-ui/svelte
 | **[Components](./docs/COMPONENTS.md)**                   | Component catalog and selection                                               |
 | **[Component authoring](./docs/COMPONENT_AUTHORING.md)** | How to build or change a component                                            |
 | **[Consumer reference](./docs/CONSUMER_REFERENCE.md)**   | Compact product integration recipes                                           |
-| **[Upgrade](./docs/UPGRADE.md)**                         | Consumer migration through 0.4.2                                              |
+| **[Upgrade](./docs/UPGRADE.md)**                         | Consumer migration through 0.5.0                                              |
 | **[docs hub](./docs/README.md)**                         | Authority map                                                                 |
 | **[AGENTS.md](./AGENTS.md)**                             | Agent rules → [Agent Guide](./docs/AGENT_GUIDE.md)                            |
 
@@ -52,18 +52,18 @@ New code should use semantic `variant`, `color`, and `placement` props. Historic
 
 ## Lightweight Contract
 
-The published artifact and browser payload are different measurements. Budgets below are release gates; **re-measure on every release** with the commands at the end of this section (npm prints decimal kB; the table uses binary KiB). All figures were remeasured on **0.4.2**.
+The published artifact and browser payload are different measurements. Budgets below are release gates; **re-measure on every release**. Package commands below verify the published files; the CSS shell command is a minified-and-gzipped spot check, while browser payloads are measured with the Vite method described below. npm prints decimal kB; the table uses binary KiB. Working-tree measurements below were taken on **2026-10-12** for 0.5.0.
 
 | Surface                                                                               |  Last measured | Release budget |
 | ------------------------------------------------------------------------------------- | -------------: | -------------: |
-| npm tarball                                                                           |      155.7 KiB |      ≤ 200 KiB |
-| npm unpacked                                                                          |      751.8 KiB |        ≤ 1 MiB |
-| All CSS (`tokens` + `core` + `patterns`, minified + gzip)                             | 11.49 KiB gzip |  ≤ 12 KiB gzip |
-| `Switch` + `Radio` + `Textarea` + `Checkbox` + `SegmentedControl` + `Input` + `Table` | 22.18 KiB gzip |  ≤ 25 KiB gzip |
-| `DashboardChart` + `DashboardBarChart` + `DashboardDonutChart`                        |  7.97 KiB gzip |              — |
-| Standalone `Checkbox`                                                                 |  2.41 KiB gzip |              — |
+| npm tarball                                                                           |      158.6 KiB |      ≤ 200 KiB |
+| npm unpacked                                                                          |      750.5 KiB |        ≤ 1 MiB |
+| All CSS (`tokens` + `core` + `patterns`, minified + gzip)                             | 11.55 KiB gzip |  ≤ 12 KiB gzip |
+| `Switch` + `Radio` + `Textarea` + `Checkbox` + `SegmentedControl` + `Input` + `Table` | 24.97 KiB gzip |  ≤ 25 KiB gzip |
+| `DashboardChart` + `DashboardBarChart` + `DashboardDonutChart`                        |  9.04 KiB gzip |              — |
+| Standalone `Checkbox`                                                                 |  2.70 KiB gzip |              — |
 
-Browser figures use a production Vite bundle with Svelte externalized because it is a shared peer dependency. Root imports tree-shake unused components; compressed totals can vary with module ordering. Components with arbitrary string-icon props retain the Lucide registry by contract; fixed internal icons should use deep Lucide imports so simple controls do not pay for that registry.
+Browser figures sum separately gzipped JavaScript and component CSS from Vite 8.1.3 production ES library bundles, with Svelte externalized, OXC/Lightning CSS minification and gzip level 9. Compared with the previous 0.5.0 working-tree snapshot under the same method, controls are 115 bytes smaller, charts 315 bytes larger for the shared signed scale and keyboard support, standalone Checkbox is 29 bytes smaller, and global CSS is 140 bytes larger. Root imports tree-shake unused components; compressed totals can vary with module ordering. Components with arbitrary string-icon props retain the Lucide registry by contract; fixed internal icons should use deep Lucide imports so simple controls do not pay for that registry.
 
 Verify the publish footprint on every release:
 
@@ -71,7 +71,7 @@ Verify the publish footprint on every release:
 pnpm run package
 npm pack --dry-run --ignore-scripts --json          # tarball + unpacked size
 cat dist/styles/tokens.base.css dist/styles/core.css dist/styles/patterns.css \
-	| npx esbuild --loader=css --minify | gzip -9 -c | wc -c   # all-CSS min+gzip bytes
+	| npx esbuild --loader=css --minify | gzip -9 -c | wc -c   # CSS spot-check bytes (Vite uses Lightning CSS)
 ```
 
 ## Example and Development

@@ -75,6 +75,10 @@
 		transform: scale(var(--lumi-interactive-zoom-scale));
 	}
 
+	.lumi-avatar-picker__input:focus-visible + .lumi-avatar-picker__image {
+		box-shadow: var(--lumi-control-focus-shadow);
+	}
+
 	.lumi-avatar-picker__image img {
 		width: 100%;
 		height: 100%;

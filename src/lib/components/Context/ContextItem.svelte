@@ -128,7 +128,7 @@
 
 	/* States */
 	.lumi-context-item--disabled {
-		opacity: 0.5;
+		opacity: var(--lumi-opacity-disabled);
 		cursor: not-allowed;
 	}
 </style>
