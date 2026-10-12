@@ -63,7 +63,7 @@ pnpm add @lumi-ui/svelte@link:../lumi-ui
 cd ../lumi-ui && pnpm run package
 ```
 
-Repackage after public export changes. Runnable integration: [`examples/dashboard`](../examples/dashboard).
+Repackage after public export changes. Runnable showcase: [`lumi-web`](https://github.com/eliaschampi/lumi-web).
 
 ---
 
@@ -295,7 +295,7 @@ Grid areas: `sidebar`, `navbar`, `content`. Keep shell classes and component pro
 </div>
 ```
 
-At `64rem` and below, core switches the shell to navbar/content and `Sidebar` uses fixed mobile presentation. Keep viewport state aligned with that breakpoint. Closed mobile navigation is excluded from keyboard navigation. Full shell: [`examples/dashboard`](../examples/dashboard). Breakpoints: [§5 Responsive effects](#responsive-effects).
+At `64rem` and below, core switches the shell to navbar/content and `Sidebar` uses fixed mobile presentation. Keep viewport state aligned with that breakpoint. Closed mobile navigation is excluded from keyboard navigation. Full shell: the [`lumi-web`](https://github.com/eliaschampi/lumi-web) showcase. Breakpoints: [§5 Responsive effects](#responsive-effects).
 
 ### Standard page
 
@@ -381,7 +381,7 @@ Tokenized gaps: `2xs`–`xxl`. Responsive collapse differs by family—see [grid
 - Tokenize genuinely new application composition with `--lumi-*`.
 - Keep overlays portaled and independent of page overflow.
 - Do not nest full dashboard shells or duplicate `PageSidebar` drawer markup.
-- Use the example for complete pages; recipes stay on contracts.
+- Use the showcase for complete pages; recipes stay on contracts.
 
 ---
 
@@ -714,4 +714,4 @@ git diff --check
 
 `pnpm run lint` runs **oxlint** on `src` (including `<script>` blocks inside `.svelte`) then **Prettier** check. Use `pnpm run format` to write Prettier; `pnpm run lint:fix` applies safe oxlint fixes. Type and Svelte diagnostics remain on `pnpm run check`.
 
-For a locally linked consumer, package Lumi before checking that app. Do not start a duplicate dev server for docs or type-only changes.
+For a locally linked consumer, package Lumi before checking that app. The [`lumi-web`](https://github.com/eliaschampi/lumi-web) showcase consumes the published package and needs no local link. Do not start a duplicate dev server for docs or type-only changes.

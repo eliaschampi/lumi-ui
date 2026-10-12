@@ -10,7 +10,7 @@ Five documents cover the library. Source remains authoritative for exact APIs.
 | **[Consumer reference](./CONSUMER_REFERENCE.md)**   | Compact setup, theming, layout classes, and component usage for product apps                |
 | **[Upgrade](./UPGRADE.md)**                         | Consumer migration notes through 0.5.0                                                      |
 
-Coding agents: [AGENTS.md](../AGENTS.md) → [Agent Guide](./AGENT_GUIDE.md). Working pages: [`examples/dashboard`](../examples/dashboard).
+Coding agents: [AGENTS.md](../AGENTS.md) → [Agent Guide](./AGENT_GUIDE.md). Working pages: the [`lumi-web`](https://github.com/eliaschampi/lumi-web) showcase.
 
 ## Authority
 

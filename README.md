@@ -74,9 +74,9 @@ cat dist/styles/tokens.base.css dist/styles/core.css dist/styles/patterns.css \
 	| npx esbuild --loader=css --minify | gzip -9 -c | wc -c   # CSS spot-check bytes (Vite uses Lightning CSS)
 ```
 
-## Example and Development
+## Showcase and Development
 
-[`examples/dashboard`](./examples/dashboard) is a locally linked SvelteKit showcase.
+The runnable showcase lives in its own repository: [`eliaschampi/lumi-web`](https://github.com/eliaschampi/lumi-web) — a static SvelteKit site composed exclusively with Lumi components, ready for GitHub Pages.
 
 ```bash
 pnpm install --ignore-scripts

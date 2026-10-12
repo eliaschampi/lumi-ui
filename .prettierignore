@@ -2,6 +2,3 @@ dist
 .svelte-kit
 node_modules
 pnpm-lock.yaml
-examples/dashboard/build
-examples/dashboard/.svelte-kit
-examples/dashboard/node_modules
