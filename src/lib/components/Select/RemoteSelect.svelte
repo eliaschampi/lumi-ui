@@ -207,8 +207,7 @@
 	autocomplete
 	searchMode="server"
 	{loading}
-	error={Boolean(errorMessage)}
-	{errorMessage}
+	error={errorMessage}
 	noDataText={emptyText}
 	{disabled}
 	{clearable}

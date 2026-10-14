@@ -19,7 +19,7 @@
 	);
 </script>
 
-<Card {href} {hoverable} class={cardClasses} aria-label={title}>
+<Card {href} {hoverable} class={cardClasses}>
 	<div class="lumi-quick-access-card__container">
 		<IconBadge {icon} {color} size="lg" />
 		<Title {title} size="md" {color} />

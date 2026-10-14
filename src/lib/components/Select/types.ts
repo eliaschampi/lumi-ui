@@ -2,6 +2,7 @@
 
 import type { FloatingPlacement } from '../../utils/floating.svelte';
 import type { LumiControlSize } from '../config';
+import type { FieldError } from '../Field';
 
 export type SelectValue = string | number | Record<string, unknown>;
 export type SelectOptionInput =
@@ -55,11 +56,11 @@ export interface SelectProps {
 	/** Where autocomplete filtering is resolved */
 	searchMode?: SelectSearchMode;
 
-	/** Whether select has error state */
-	error?: boolean;
+	/** Invalid state; a string is also shown as the message */
+	error?: FieldError;
 
-	/** Error message text */
-	errorMessage?: string;
+	/** Helper text below the field; an error message replaces it */
+	hint?: string;
 
 	/** Text to show when no data */
 	noDataText?: string;

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {
 		CHART_COLOR_VARS,
+		CHART_LABEL_GAP,
 		CHART_PADDING,
 		chartScale,
 		computeSparseXLabels,
@@ -10,6 +11,7 @@
 	import { formatChartValue } from '../../utils/chartFormat';
 	import {
 		chartTooltip,
+		useChartGutter,
 		useChartInteraction,
 		useChartWidth
 	} from '../../utils/chartLayout.svelte';
@@ -20,7 +22,7 @@
 		color = 'primary',
 		height = 260,
 		valueFormat = 'number',
-		xLabelMaxLength = 12,
+		xLabelMaxLength,
 		emptyMessage = 'No hay datos suficientes para mostrar este gráfico.',
 		'aria-label': ariaLabel = 'Gráfico de barras del dashboard',
 		class: className = ''
@@ -29,6 +31,7 @@
 	const instanceId = $props.id();
 	const gradientId = `lumi-bar-gradient-${instanceId}`;
 	const layout = useChartWidth();
+	const gutter = useChartGutter(() => layout.chartW);
 
 	const hover = useChartInteraction();
 
@@ -41,7 +44,7 @@
 	const chartW = $derived(layout.chartW);
 	const chartH = $derived(height);
 	const plotW = $derived(
-		Math.max(1, chartW - CHART_PADDING.left - CHART_PADDING.right)
+		Math.max(1, chartW - gutter.left - CHART_PADDING.right)
 	);
 	const plotH = $derived(
 		Math.max(1, chartH - CHART_PADDING.top - CHART_PADDING.bottom)
@@ -49,6 +52,12 @@
 	const bandW = $derived(plotW / Math.max(data.length, 1));
 	const barW = $derived(
 		Math.min(bandW, Math.max(4, Math.min(bandW * 0.58, plotH * 0.18)))
+	);
+	const yTicks = $derived(
+		scale.ticks.map((tick) => ({
+			y: CHART_PADDING.top + tick.ratio * plotH,
+			label: formatChartValue(tick.value, valueFormat, 'axis')
+		}))
 	);
 	const xLabels = $derived(
 		computeSparseXLabels(data, (index) => barCenter(index))
@@ -66,7 +75,7 @@
 	}
 
 	function barCenter(index: number): number {
-		return CHART_PADDING.left + (index + 0.5) * bandW;
+		return gutter.left + (index + 0.5) * bandW;
 	}
 
 	function handlePointer(event: PointerEvent): void {
@@ -112,23 +121,27 @@
 				</linearGradient>
 			</defs>
 
-			{#each scale.ticks as tick}
+			{#each yTicks as tick}
 				<line
-					x1={CHART_PADDING.left}
-					y1={scaleY(tick)}
+					x1={gutter.left}
+					y1={tick.y}
 					x2={chartW - CHART_PADDING.right}
-					y2={scaleY(tick)}
+					y2={tick.y}
 					class="lumi-chart-grid"
 				/>
-				<text
-					x={CHART_PADDING.left - 8}
-					y={scaleY(tick) + 3}
-					text-anchor="end"
-					class="lumi-chart-label"
-				>
-					{formatChartValue(tick, valueFormat, 'axis')}
-				</text>
 			{/each}
+			<g use:gutter.measure>
+				{#each yTicks as tick}
+					<text
+						x={gutter.left - CHART_LABEL_GAP}
+						y={tick.y + 3}
+						text-anchor="end"
+						class="lumi-chart-label"
+					>
+						{tick.label}
+					</text>
+				{/each}
+			</g>
 
 			{#each data as point, index}
 				{@const y = Number.isFinite(point.value) ? scaleY(point.value) : zeroY}
@@ -155,7 +168,7 @@
 			{/if}
 
 			<rect
-				x={CHART_PADDING.left}
+				x={gutter.left}
 				y={CHART_PADDING.top}
 				width={plotW}
 				height={plotH}
@@ -170,6 +183,7 @@
 			<g
 				use:chartAxis={{
 					labels: xLabels,
+					left: gutter.left,
 					width: chartW,
 					maxLength: xLabelMaxLength
 				}}
@@ -179,6 +193,7 @@
 						x={xLabel.x}
 						y={chartH - 8}
 						text-anchor="middle"
+						visibility="hidden"
 						class="lumi-chart-label"
 					>
 						{truncateAxisLabel(xLabel.label, xLabelMaxLength)}

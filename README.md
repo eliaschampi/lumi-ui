@@ -52,18 +52,18 @@ New code should use semantic `variant`, `color`, and `placement` props. Historic
 
 ## Lightweight Contract
 
-The published artifact and browser payload are different measurements. Budgets below are release gates; **re-measure on every release**. Package commands below verify the published files; the CSS shell command is a minified-and-gzipped spot check, while browser payloads are measured with the Vite method described below. npm prints decimal kB; the table uses binary KiB. Working-tree measurements below were taken on **2026-10-12** for 0.5.0.
+The published artifact and browser payload are different measurements. Budgets below are release gates; **re-measure on every release**. Package commands below verify the published files; the CSS shell command is a minified-and-gzipped spot check, while browser payloads are measured with the Vite method described below. npm prints decimal kB; the table uses binary KiB. Working-tree measurements below were taken on **2026-10-14** for 0.6.0.
 
 | Surface                                                                               |  Last measured | Release budget |
 | ------------------------------------------------------------------------------------- | -------------: | -------------: |
-| npm tarball                                                                           |      158.6 KiB |      ≤ 200 KiB |
-| npm unpacked                                                                          |      750.5 KiB |        ≤ 1 MiB |
-| All CSS (`tokens` + `core` + `patterns`, minified + gzip)                             | 11.55 KiB gzip |  ≤ 12 KiB gzip |
-| `Switch` + `Radio` + `Textarea` + `Checkbox` + `SegmentedControl` + `Input` + `Table` | 24.97 KiB gzip |  ≤ 25 KiB gzip |
-| `DashboardChart` + `DashboardBarChart` + `DashboardDonutChart`                        |  9.04 KiB gzip |              — |
-| Standalone `Checkbox`                                                                 |  2.70 KiB gzip |              — |
+| npm tarball                                                                           |      161.1 KiB |      ≤ 200 KiB |
+| npm unpacked                                                                          |      753.9 KiB |        ≤ 1 MiB |
+| All CSS (`tokens` + `core` + `patterns`, minified + gzip)                             | 11.45 KiB gzip |  ≤ 12 KiB gzip |
+| `Switch` + `Radio` + `Textarea` + `Checkbox` + `SegmentedControl` + `Input` + `Table` | 24.70 KiB gzip |  ≤ 25 KiB gzip |
+| `DashboardChart` + `DashboardBarChart` + `DashboardDonutChart`                        |  9.29 KiB gzip |              — |
+| Standalone `Checkbox`                                                                 |  2.81 KiB gzip |              — |
 
-Browser figures sum separately gzipped JavaScript and component CSS from Vite 8.1.3 production ES library bundles, with Svelte externalized, OXC/Lightning CSS minification and gzip level 9. Compared with the previous 0.5.0 working-tree snapshot under the same method, controls are 115 bytes smaller, charts 315 bytes larger for the shared signed scale and keyboard support, standalone Checkbox is 29 bytes smaller, and global CSS is 140 bytes larger. Root imports tree-shake unused components; compressed totals can vary with module ordering. Components with arbitrary string-icon props retain the Lucide registry by contract; fixed internal icons should use deep Lucide imports so simple controls do not pay for that registry.
+Browser figures sum separately gzipped JavaScript and component CSS from Vite 8.1.3 production ES library bundles, with Svelte externalized, OXC/Lightning CSS minification and gzip level 9. Compared with 0.5.0 under the same method, controls are 234 bytes smaller and global CSS 113 bytes smaller (shared field label and message, removed tokens); charts are 282 bytes larger for measured value-axis gutters, exact ticks and compact currency axes, and standalone Checkbox is 65 bytes larger for its now-working check animation. Root imports tree-shake unused components; compressed totals can vary with module ordering. Components with arbitrary string-icon props retain the Lucide registry by contract; fixed internal icons should use deep Lucide imports so simple controls do not pay for that registry.
 
 Verify the publish footprint on every release:
 

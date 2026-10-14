@@ -67,13 +67,13 @@
 	<div class="lumi-checkbox__visual" aria-hidden="true">
 		{#if indeterminate}
 			<Minus
-				class="lumi-checkbox__icon"
+				class="lumi-checkbox__icon lumi-checkbox__icon--minus"
 				size="var(--checkbox-icon-size)"
 				strokeWidth={3}
 			/>
 		{:else if checked}
 			<Check
-				class="lumi-checkbox__icon"
+				class="lumi-checkbox__icon lumi-checkbox__icon--check"
 				size="var(--checkbox-icon-size)"
 				strokeWidth={3}
 			/>
@@ -133,14 +133,35 @@
 		overflow: hidden;
 	}
 
+	/* Icons mount with their state, so keyframes (not transitions) animate them.
+	   The check draws like a pen stroke from its short arm; the dash exceeds
+	   both glyphs' length in Lucide's 24-unit viewBox. */
 	:global(.lumi-checkbox__icon) {
 		color: var(--checkbox-foreground);
-		opacity: 0;
-		transform: scale(0.6);
-		transition:
-			opacity var(--lumi-duration-fast) var(--lumi-easing-default),
-			transform var(--lumi-duration-fast) var(--lumi-easing-default);
 		pointer-events: none;
+	}
+
+	:global(.lumi-checkbox__icon--check) {
+		stroke-dasharray: 24;
+		animation: lumi-checkbox-draw var(--lumi-duration-base)
+			var(--lumi-easing-default);
+	}
+
+	:global(.lumi-checkbox__icon--minus) {
+		animation: lumi-checkbox-grow var(--lumi-duration-fast)
+			var(--lumi-easing-default);
+	}
+
+	@keyframes -global-lumi-checkbox-draw {
+		from {
+			stroke-dashoffset: -24;
+		}
+	}
+
+	@keyframes -global-lumi-checkbox-grow {
+		from {
+			transform: scaleX(0);
+		}
 	}
 
 	.lumi-checkbox__label {
@@ -167,11 +188,6 @@
 		background: var(--checkbox-solid);
 		border-color: var(--checkbox-solid);
 		box-shadow: var(--lumi-control-active-shadow);
-	}
-
-	.lumi-checkbox--checked :global(.lumi-checkbox__icon) {
-		opacity: 1;
-		transform: scale(1);
 	}
 
 	.lumi-checkbox__input:focus-visible + .lumi-checkbox__visual {

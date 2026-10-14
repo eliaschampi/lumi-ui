@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { FieldLabel, FieldMessage } from '../Field';
 	import { Icon } from '../Icon';
 	import type { NumberInputProps } from './types';
 
@@ -11,6 +12,8 @@
 		label = '',
 		placeholder = '',
 		color = 'primary',
+		error = false,
+		hint = '',
 		size = 'md',
 		disabled = false,
 		required = false,
@@ -21,7 +24,9 @@
 
 	const instanceId = $props.id();
 	const inputId = `lumi-number-${instanceId}`;
-	const styleVars = $derived(`--input-accent: var(--lumi-color-${color});`);
+	const messageId = `${inputId}-message`;
+	const invalid = $derived(Boolean(error));
+	const errorText = $derived(typeof error === 'string' ? error : '');
 	const normalizedStep = $derived(Number.isFinite(step) && step > 0 ? step : 1);
 	const precision = $derived(
 		Math.max(decimalPlaces(normalizedStep), decimalPlaces(min))
@@ -36,6 +41,7 @@
 		[
 			'lumi-number-input',
 			`lumi-number-input--${size}`,
+			invalid && 'lumi-number-input--invalid',
 			disabled && 'lumi-number-input--disabled',
 			className
 		]
@@ -94,9 +100,12 @@
 	}
 </script>
 
-<div class={classes} style={styleVars}>
+<div
+	class={classes}
+	style:--lumi-control-accent="var(--lumi-color-{invalid ? 'danger' : color})"
+>
 	{#if label}
-		<label class="lumi-number-input__label" for={inputId}>{label}</label>
+		<FieldLabel for={inputId} {label} {required} />
 	{/if}
 
 	<div class="lumi-number-input__wrapper">
@@ -125,7 +134,9 @@
 			onblur={handleBlur}
 			onkeydown={handleKeyDown}
 			class="lumi-number-input__field lumi-autofill"
-			aria-label={ariaLabel || label || placeholder || undefined}
+			aria-label={ariaLabel || (label ? undefined : placeholder) || undefined}
+			aria-invalid={invalid || undefined}
+			aria-describedby={errorText || hint ? messageId : undefined}
 		/>
 
 		<button
@@ -139,6 +150,8 @@
 			<Icon icon="plus" {size} />
 		</button>
 	</div>
+
+	<FieldMessage id={messageId} error={errorText} {hint} />
 </div>
 
 <style>
@@ -146,8 +159,6 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		--input-accent: var(--lumi-color-primary);
-		--lumi-control-accent: var(--input-accent);
 		--number-border: var(--lumi-color-control-border);
 		--number-bg: var(--lumi-color-control-fill);
 		--number-bg-focus: var(--lumi-color-control-focus-fill);
@@ -157,19 +168,6 @@
 
 	.lumi-number-input:focus-within {
 		--lumi-control-autofill-bg: var(--number-bg-focus);
-	}
-
-	.lumi-number-input__label {
-		font-family: var(--lumi-font-family-sans);
-		font-size: var(--lumi-font-size-sm);
-		font-weight: var(--lumi-font-weight-semibold);
-		color: var(--lumi-color-text);
-		margin-block-end: var(--lumi-space-xs);
-		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
-	}
-
-	.lumi-number-input:focus-within .lumi-number-input__label {
-		color: var(--input-accent);
 	}
 
 	.lumi-number-input__wrapper {
@@ -185,13 +183,14 @@
 		transition: var(--lumi-transition-control);
 	}
 
-	.lumi-number-input__wrapper:hover:not(:focus-within) {
+	.lumi-number-input:not(.lumi-number-input--invalid)
+		.lumi-number-input__wrapper:hover:not(:focus-within) {
 		border-color: var(--lumi-color-border-strong);
 		background: var(--lumi-color-control-hover-fill);
 	}
 
 	.lumi-number-input__wrapper:focus-within {
-		border-color: var(--input-accent);
+		border-color: var(--lumi-control-accent);
 		background: var(--number-bg-focus);
 		box-shadow: var(--lumi-control-focus-shadow);
 	}
@@ -244,21 +243,25 @@
 	}
 
 	.lumi-number-input__btn:hover:not(:disabled) {
-		color: var(--input-accent);
+		color: var(--lumi-control-accent);
 		background: color-mix(
 			in srgb,
-			var(--input-accent) 8%,
+			var(--lumi-control-accent) 8%,
 			color-mix(in srgb, var(--number-bg) 90%, var(--lumi-color-surface) 10%)
 		);
 	}
 
 	.lumi-number-input__btn:active:not(:disabled) {
-		background: color-mix(in srgb, var(--input-accent) 14%, transparent);
+		background: color-mix(in srgb, var(--lumi-control-accent) 14%, transparent);
 	}
 
 	.lumi-number-input__btn:focus-visible {
 		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-focus-outline-offset);
+	}
+
+	.lumi-number-input--invalid {
+		--number-border: var(--lumi-control-accent);
 	}
 
 	.lumi-number-input--sm .lumi-number-input__wrapper {

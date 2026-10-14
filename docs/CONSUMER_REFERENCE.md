@@ -421,9 +421,9 @@ import type { ButtonProps, LumiColor, LumiSize } from '@lumi-ui/svelte';
 | Component          | Key props                                                                                      | Notes                            |
 | ------------------ | ---------------------------------------------------------------------------------------------- | -------------------------------- |
 | `Button`           | `variant`, native `type`, `color`, `size`, `disabled`, `loading`, `icon`                       | Icon-only needs `aria-label`     |
-| `Input`            | `bind:value`, `label`, `name`, `type`, `color`, `size`, validation states, `disabled`          | Native input types               |
-| `NumberInput`      | `bind:value`, `min`, `max`, `step`, `label`, `color`, `size`                                   | Constrained numeric              |
-| `Textarea`         | `bind:value`, `label`, `rows`, `maxlength`, `showCount`, `color`, `size`                       | Multiline + char count           |
+| `Input`            | `bind:value`, `label`, `name`, `type`, `color`, `size`, `error`, `hint`, `disabled`            | Native input types               |
+| `NumberInput`      | `bind:value`, `min`, `max`, `step`, `label`, `color`, `size`, `error`, `hint`                  | Constrained numeric              |
+| `Textarea`         | `bind:value`, `label`, `rows`, `maxlength`, `showCount`, `color`, `size`, `error`, `hint`      | Multiline + char count           |
 | `Checkbox`         | `bind:checked`, `label`, `color`, `size`, `disabled`                                           | Form boolean                     |
 | `Radio`            | `bind:group`, `value`, `name`, `label`, `description`, `option`, `busy`, `color`, `size`       | One in a named native group      |
 | `Switch`           | `bind:checked`, `label`, `color`, `size`, `disabled`                                           | Immediate toggle                 |

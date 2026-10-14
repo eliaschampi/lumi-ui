@@ -374,7 +374,7 @@
 										onclick={handleSelectCellClick}
 									>
 										<Checkbox
-											aria-label={`Select row ${index + 1}`}
+											aria-label={`Seleccionar fila ${index + 1}`}
 											checked={isSelected}
 											size="sm"
 											onchange={(checked) => handleRowSelect(rowData, checked)}
@@ -412,7 +412,7 @@
 	</div>
 
 	{#if pagination && !loading}
-		<div class="lumi-table__pagination" aria-label="Paginación de la tabla">
+		<div class="lumi-table__pagination">
 			{#if paginationSlot}
 				{@render paginationSlot(paginationData)}
 			{:else}
@@ -454,7 +454,7 @@
 									class:lumi-table__pagination-page--active={activePage ===
 										page}
 									aria-current={activePage === page ? 'page' : undefined}
-									aria-label={`Page ${page}`}
+									aria-label={`Página ${page}`}
 									onclick={() => goToPage(page)}
 								>
 									{page}
@@ -566,26 +566,20 @@
 	.lumi-table--layout-fixed
 		.lumi-table__tbody
 		:global(.lumi-table-column--main) {
-		width: var(--lumi-table-column-main-width, 48%);
+		width: var(--lumi-table-column-main-width);
 		min-width: var(--lumi-table-column-main-min-width);
 	}
 
 	.lumi-table--layout-fixed
 		.lumi-table__thead
 		:global(.lumi-table-column--actions) {
-		width: var(
-			--lumi-table-column-actions-width,
-			calc(var(--lumi-space-6xl) + var(--lumi-space-xl))
-		);
+		width: var(--lumi-table-column-actions-width);
 	}
 
 	.lumi-table--layout-fixed
 		.lumi-table__thead
 		:global(.lumi-table-column--compact) {
-		width: var(
-			--lumi-table-column-compact-width,
-			calc(var(--lumi-space-6xl) + var(--lumi-space-2xs))
-		);
+		width: var(--lumi-table-column-compact-width);
 	}
 
 	/* ── Table header ─────────────────────────── */
@@ -604,7 +598,7 @@
 					100%
 			),
 			var(--lumi-color-surface-glass-strong);
-		border-bottom: var(--lumi-border-width-thin) solid
+		border-block-end: var(--lumi-border-width-thin) solid
 			var(--lumi-color-border-strong);
 		position: sticky;
 		top: 0;
@@ -614,7 +608,7 @@
 	.lumi-table__th,
 	.lumi-table__thead :global(th) {
 		padding: var(--lumi-space-md) var(--lumi-space-lg);
-		text-align: left;
+		text-align: start;
 		font-size: var(--lumi-font-size-xs);
 		font-weight: var(--lumi-font-weight-semibold);
 		color: color-mix(
@@ -630,16 +624,14 @@
 	/* ── Body rows ────────────────────────────── */
 
 	.lumi-table__tbody .lumi-table__row {
-		border-bottom: var(--lumi-border-width-thin) solid
+		border-block-end: var(--lumi-border-width-thin) solid
 			color-mix(in srgb, var(--lumi-color-border) 72%, transparent);
-		border-left: var(--lumi-border-width-thick) solid transparent;
-		transition:
-			background-color var(--lumi-duration-fast) var(--lumi-easing-default),
-			border-left-color var(--lumi-duration-fast) var(--lumi-easing-default);
+		border-inline-start: var(--lumi-border-width-thick) solid transparent;
+		transition: var(--lumi-transition-control);
 	}
 
 	.lumi-table__tbody .lumi-table__row:last-child {
-		border-bottom: none;
+		border-block-end: none;
 	}
 
 	.lumi-table__row--clickable {
@@ -655,7 +647,7 @@
 	/* Hover uses color and border accent; transforms are unreliable on table rows. */
 	.lumi-table--hover .lumi-table__tbody .lumi-table__row:hover {
 		background: var(--table-row-hover-bg);
-		border-left-color: color-mix(
+		border-inline-start-color: color-mix(
 			in srgb,
 			var(--lumi-color-primary) 18%,
 			var(--lumi-color-border)
@@ -664,7 +656,7 @@
 
 	.lumi-table__tbody .lumi-table__row.lumi-table__row--selected {
 		background: var(--table-row-active-bg);
-		border-left-color: var(--lumi-color-primary);
+		border-inline-start-color: var(--lumi-color-primary);
 		box-shadow: inset 0 0 0 var(--lumi-border-width-thin)
 			color-mix(in srgb, var(--lumi-color-primary) 18%, transparent);
 	}
@@ -696,7 +688,7 @@
 	.lumi-table__th--select,
 	.lumi-table__td--select {
 		width: var(--lumi-space-3xl);
-		padding-right: var(--lumi-space-xs);
+		padding-inline-end: var(--lumi-space-xs);
 		text-align: center;
 	}
 
@@ -730,13 +722,7 @@
 			color-mix(in srgb, currentColor 18%, transparent);
 		border-top-color: currentColor;
 		border-radius: var(--lumi-radius-full);
-		animation: lumi-table-spin var(--lumi-duration-spin) linear infinite;
-	}
-
-	@keyframes lumi-table-spin {
-		to {
-			transform: rotate(360deg);
-		}
+		animation: lumi-spin var(--lumi-duration-spin) linear infinite;
 	}
 
 	/* ── Empty state ──────────────────────────── */
@@ -773,7 +759,7 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: var(--lumi-space-md);
-		padding-top: var(--lumi-space-sm);
+		padding-block-start: var(--lumi-space-sm);
 	}
 
 	.lumi-table__pagination-info {

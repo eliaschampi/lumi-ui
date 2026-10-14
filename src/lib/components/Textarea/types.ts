@@ -1,4 +1,5 @@
 import type { LumiColor, LumiControlSize } from '../config';
+import type { FieldError } from '../Field';
 
 export type TextareaSize = LumiControlSize;
 export type TextareaColor = LumiColor;
@@ -12,9 +13,9 @@ export interface TextareaProps {
 	label?: string;
 	/** Placeholder text */
 	placeholder?: string;
-	/** Error state */
-	error?: boolean | string;
-	/** Hint text */
+	/** Invalid state; a string is also shown as the message */
+	error?: FieldError;
+	/** Helper text below the field; an error message replaces it */
 	hint?: string;
 	/** Maximum character length */
 	maxlength?: number;
@@ -26,7 +27,7 @@ export interface TextareaProps {
 	rows?: number;
 	/** Size variant */
 	size?: TextareaSize;
-	/** Color variant for focus state */
+	/** Accent color while focused */
 	color?: TextareaColor;
 	/** Required field indicator */
 	required?: boolean;

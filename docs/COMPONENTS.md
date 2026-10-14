@@ -131,6 +131,7 @@ Non-component root exports from `@lumi-ui/svelte`. Use these to compose custom U
 | `LumiSize`, `LumiCompactSize`, `LumiControlSize`, `LumiDisplaySize`, `LumiExtendedSize`, `LumiIconSize` | types         | Semantic size unions consumed by component `size` props                                      |
 | `LumiTransition`                                                                                        | type          | `keyof typeof LUMI_CONFIG.transitions` (`fast` \| `base` \| `slow` \| `slower`)              |
 | `ChartColor`, `ChartSeriesPoint`, `ChartValueFormat`                                                    | types         | Chart data contracts shared with `DashboardChart`                                            |
+| `FieldError`                                                                                            | type          | `error` prop of `Input`, `Textarea`, `Select`, `NumberInput`: `true` or a message            |
 | `IconComponent`, `IconName`                                                                             | types         | Lucide component type and registry key union                                                 |
 
 Contracts: [`config.ts`](../src/lib/components/config.ts), [`portal.ts`](../src/lib/actions/portal.ts), [`icons.ts`](../src/lib/utils/icons.ts), [`charts.ts`](../src/lib/types/charts.ts).

@@ -3,6 +3,7 @@
  */
 
 import type { LumiColor, LumiExtendedSize } from '../config';
+import type { FieldError } from '../Field';
 
 export type InputType =
 	| 'text'
@@ -61,50 +62,23 @@ export interface InputProps {
 	/** Whether to show icon after input */
 	iconAfter?: boolean;
 
-	/** Whether icon has no border */
-	iconNoBorder?: boolean;
-
 	/** Trailing action icon (e.g. password toggle) */
 	actionIcon?: string;
 
 	/** Accessible label for the action icon */
 	actionLabel?: string;
 
-	/** Color variant */
+	/** Accent color while focused */
 	color?: InputColor;
 
-	/** Success state */
-	success?: boolean;
+	/** Invalid state; a string is also shown as the message */
+	error?: FieldError;
 
-	/** Danger state */
-	danger?: boolean;
-
-	/** Warning state */
-	warning?: boolean;
-
-	/** Success message text */
-	successText?: string;
-
-	/** Danger message text */
-	dangerText?: string;
-
-	/** Warning message text */
-	warningText?: string;
-
-	/** Description text below input */
-	descriptionText?: string;
+	/** Helper text below the field; an error message replaces it */
+	hint?: string;
 
 	/** Size variant */
 	size?: InputSize;
-
-	/** Success validation icon */
-	valIconSuccess?: string;
-
-	/** Danger validation icon */
-	valIconDanger?: string;
-
-	/** Warning validation icon */
-	valIconWarning?: string;
 
 	/** Whether input is disabled */
 	disabled?: boolean;

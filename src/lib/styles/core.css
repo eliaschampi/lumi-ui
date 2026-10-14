@@ -50,6 +50,13 @@ html {
 	}
 }
 
+@media (hover: none) {
+	/* Touch has no hover, so a lift would stick after a tap; presses still scale. */
+	:root {
+		--lumi-interactive-lift: 0px;
+	}
+}
+
 body {
 	min-height: 100dvh;
 	color: var(--lumi-color-text);

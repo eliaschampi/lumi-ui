@@ -38,11 +38,6 @@
 		var(--lumi-color-primary) 10%,
 		var(--lumi-color-white)
 	);
-	--lumi-color-primary-300: color-mix(
-		in oklch,
-		var(--lumi-color-primary) 45%,
-		var(--lumi-color-white)
-	);
 	--lumi-color-secondary: var(--lumi-brand-secondary);
 	--lumi-color-secondary-solid: var(--lumi-brand-secondary);
 
@@ -112,14 +107,6 @@
 		in srgb,
 		var(--lumi-color-text-muted) 72%,
 		var(--lumi-color-surface-raised)
-	);
-
-	/* --- DERIVED PRIMARY RAMP ------------------------------------------------ */
-	--lumi-color-primary-500: var(--lumi-color-primary);
-	--lumi-color-primary-600: color-mix(
-		in oklch,
-		var(--lumi-color-primary) 86%,
-		var(--lumi-color-black)
 	);
 
 	/* --- DERIVED BACKGROUND -------------------------------------------------- */
@@ -339,12 +326,6 @@
 		color-mix(in oklch, var(--lumi-color-white) 62%, transparent) 0%,
 		color-mix(in oklch, var(--lumi-color-surface-card) 78%, transparent) 100%
 	);
-	--lumi-sidebar-header-sheen: linear-gradient(
-		145deg,
-		color-mix(in oklch, var(--lumi-color-white) 58%, transparent) 0%,
-		transparent 44%
-	);
-	--lumi-sidebar-header-sheen-opacity: 0.52;
 	--lumi-gradient-glass-total-summary: linear-gradient(
 		145deg,
 		color-mix(in oklch, var(--lumi-color-primary) 2.5%, transparent) 0%,
@@ -583,7 +564,6 @@
 	/* ========================================================================== */
 	--lumi-blur-sm: 6px;
 	--lumi-blur-md: 12px;
-	--lumi-blur-lg: 20px;
 	--lumi-color-overlay: color-mix(
 		in oklch,
 		var(--lumi-color-text) 42%,
@@ -606,8 +586,9 @@
 	--lumi-interactive-press-scale: calc(1 - 0.02 * var(--lumi-motion-scale));
 	--lumi-interactive-hover-scale: calc(1 + 0.02 * var(--lumi-motion-scale));
 	--lumi-interactive-zoom-scale: calc(1 + 0.08 * var(--lumi-motion-scale));
-	--lumi-transition-all: all var(--lumi-duration-base)
-		var(--lumi-easing-default);
+	/* 1 while the nearest interactive surface is hovered or keyboard-focused.
+	   Nested tiles and glyphs react to their container, never to themselves. */
+	--lumi-surface-hover: 0;
 	--lumi-transition-colors:
 		color var(--lumi-duration-base) var(--lumi-easing-default),
 		background-color var(--lumi-duration-base) var(--lumi-easing-default),
@@ -715,7 +696,6 @@
 	--lumi-max-width-6xl: 72rem;
 	--lumi-prose-max-width: 58ch;
 	--lumi-dashboard-card-grid-min: 17.5rem;
-	--lumi-dashboard-card-grid-max: 21rem;
 	--lumi-card-media-height: 12.5rem;
 	--lumi-card-media-hover-scale: 1.04;
 	--lumi-drive-file-grid-min-desktop: 10.5rem;
@@ -726,10 +706,6 @@
 	--lumi-drive-file-card-padding: var(--lumi-space-sm);
 	--lumi-drive-file-card-padding-mobile: var(--lumi-space-xs);
 	--lumi-drive-tag-dot-size: var(--lumi-space-xs);
-	--lumi-drive-selection-dot-size: var(--lumi-icon-xs);
-	--lumi-drive-scope-control-min-width: 13.75rem;
-	--lumi-drive-scope-control-basis: 15rem;
-	--lumi-drive-search-control-min-width: 15rem;
 	--lumi-drive-content-min-height: 26.25rem;
 	--lumi-drive-loading-min-height: 13.75rem;
 	--lumi-page-sidebar-drawer-width: var(--lumi-sidebar-width-mobile);
@@ -756,7 +732,6 @@
 	--lumi-duration-shimmer: calc(var(--lumi-duration-slower) * 3);
 
 	--lumi-easing-default: cubic-bezier(0.22, 1, 0.36, 1);
-	--lumi-easing-in: cubic-bezier(0.4, 0, 1, 1);
 	--lumi-easing-out: cubic-bezier(0, 0, 0.2, 1);
 	--lumi-easing-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 	--lumi-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -782,11 +757,6 @@
 		in oklch,
 		var(--lumi-color-primary) 18%,
 		var(--lumi-color-black)
-	);
-	--lumi-color-primary-300: color-mix(
-		in oklch,
-		var(--lumi-color-primary) 50%,
-		var(--lumi-color-white)
 	);
 	--lumi-color-secondary: color-mix(
 		in oklch,
@@ -819,12 +789,7 @@
 		var(--lumi-color-text) 60%,
 		var(--lumi-color-surface)
 	);
-	/* --- DERIVED RAMP / TEXT -------------------------------------------------- */
-	--lumi-color-primary-600: color-mix(
-		in oklch,
-		var(--lumi-color-primary) 35%,
-		var(--lumi-color-white)
-	);
+	/* --- DERIVED TEXT ------------------------------------------------------- */
 	--lumi-color-text-inverse: var(--lumi-color-black);
 	--lumi-color-placeholder: color-mix(
 		in srgb,
@@ -978,12 +943,6 @@
 		color-mix(in oklch, var(--lumi-color-white) 8%, transparent) 0%,
 		color-mix(in oklch, var(--lumi-color-surface-card) 84%, transparent) 100%
 	);
-	--lumi-sidebar-header-sheen: linear-gradient(
-		145deg,
-		color-mix(in oklch, var(--lumi-color-white) 14%, transparent) 0%,
-		transparent 46%
-	);
-	--lumi-sidebar-header-sheen-opacity: 0.42;
 	--lumi-gradient-glass-total-summary: linear-gradient(
 		145deg,
 		color-mix(in oklch, var(--lumi-color-primary) 2.2%, transparent) 0%,

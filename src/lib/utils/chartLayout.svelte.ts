@@ -1,6 +1,8 @@
 import { portal } from '../actions/portal';
+import { CHART_LABEL_GAP, CHART_PADDING } from './chartCoordinates';
 
 const INITIAL_CHART_WIDTH = 320;
+const MAX_GUTTER_RATIO = 1 / 3;
 
 const TOOLTIP_PAD = 8;
 const TOOLTIP_OFFSET_X = 14;
@@ -123,6 +125,39 @@ export function useChartInteraction() {
 					clear();
 				}
 			};
+		}
+	};
+}
+
+/**
+ * Widens the value-axis gutter to its widest rendered label so none clips,
+ * capped so pathological magnitudes cannot collapse the plot.
+ */
+export function useChartGutter(chartWidth: () => number) {
+	let labelWidth = $state(0);
+	const left = $derived(
+		Math.max(
+			CHART_PADDING.left,
+			Math.min(
+				Math.ceil(labelWidth) + CHART_LABEL_GAP,
+				chartWidth() * MAX_GUTTER_RATIO
+			)
+		)
+	);
+	return {
+		get left() {
+			return left;
+		},
+		measure(node: SVGGElement) {
+			const read = () => {
+				if (node.ownerSVGElement?.getBoundingClientRect().width)
+					labelWidth = node.getBBox().width;
+			};
+			// Measure before first paint; the observer follows ticks and fonts.
+			read();
+			const observer = new ResizeObserver(read);
+			observer.observe(node);
+			return { destroy: () => observer.disconnect() };
 		}
 	};
 }

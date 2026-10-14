@@ -3,7 +3,9 @@ import type {
 	ChartSeriesPoint,
 	ChartValueFormat
 } from '../types/charts';
+import { CHART_AXIS_STEP } from './chartFormat';
 
+/** Most value-axis intervals; nice steps may need fewer. */
 export const CHART_Y_TICKS = 4;
 export const CHART_MAX_X_LABELS = 7;
 export const CHART_PADDING = {
@@ -12,6 +14,9 @@ export const CHART_PADDING = {
 	bottom: 32,
 	left: 48
 } as const;
+/** Space between a value-axis label and the plot. */
+export const CHART_LABEL_GAP = 8;
+const ELLIPSIS = '\u2026';
 
 export const CHART_COLOR_VARS: Record<ChartColor, string> = {
 	primary: 'var(--lumi-color-primary)',
@@ -22,20 +27,25 @@ export const CHART_COLOR_VARS: Record<ChartColor, string> = {
 	info: 'var(--lumi-color-info)'
 };
 
-/** Nice upper bound on a 1-2-5 ladder. Non-finite or non-positive → 10. */
-export function ceilNice(value: number): number {
-	if (!Number.isFinite(value) || value <= 0) return 10;
-	const magnitude = Math.max(
-		Number.MIN_VALUE,
-		10 ** Math.floor(Math.log10(value))
-	);
-	const normalized = value / magnitude;
+/** Smallest 1-2-5 step at or above `value`, never finer than `minimum`. */
+function niceStep(value: number, minimum: number): number {
+	const step = Math.max(value, minimum);
+	const magnitude = 10 ** Math.floor(Math.log10(step));
 	const nice =
-		normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
-	return Math.max(value, Math.min(Number.MAX_VALUE, nice * magnitude));
+		step <= magnitude
+			? 1
+			: step <= 2 * magnitude
+				? 2
+				: step <= 5 * magnitude
+					? 5
+					: 10;
+	return nice * magnitude;
 }
 
-/** Shared zero baseline and overflow-safe scale for finite cartesian values. */
+/**
+ * Shared zero baseline and overflow-safe scale for finite cartesian values.
+ * Ticks land on round steps the axis format can print exactly.
+ */
 export function chartScale(
 	series: readonly { data: readonly ChartSeriesPoint[] }[],
 	format: ChartValueFormat,
@@ -53,49 +63,53 @@ export function chartScale(
 			count++;
 		}
 	}
-	const upper =
-		format === 'score'
-			? Math.max(20, ceilNice(max))
-			: max > 0
-				? ceilNice(max)
-				: min < 0
-					? 0
-					: 10;
-	const lower = min < 0 ? -ceilNice(-min) : 0;
-	const magnitude = Math.max(
-		Math.abs(upper),
-		Math.abs(lower),
-		Number.MIN_VALUE
-	);
-	const range = upper / magnitude - lower / magnitude;
+	const top =
+		format === 'score' ? Math.max(20, max) : max > 0 || min < 0 ? max : 10;
+	const minimum = CHART_AXIS_STEP[format];
+	// Divide before subtracting so opposite extremes cannot overflow.
+	let step = niceStep(top / CHART_Y_TICKS - min / CHART_Y_TICKS, minimum);
+	let upper = Math.ceil(top / step);
+	let lower = Math.floor(min / step);
+	while (upper - lower > CHART_Y_TICKS) {
+		step = niceStep(step * 1.5, minimum);
+		upper = Math.ceil(top / step);
+		lower = Math.floor(min / step);
+	}
+	// Positions use step indices; only labels need values, clamped at the float limit.
+	const span = upper - lower;
 	return {
 		hasValues: count > 0,
-		ratio: (value: number) => (upper / magnitude - value / magnitude) / range,
-		ticks: Array.from(
-			{ length: CHART_Y_TICKS + 1 },
-			(_, index) =>
-				(lower / magnitude + (range / CHART_Y_TICKS) * index) * magnitude
-		)
+		ratio: (value: number) => (upper - value / step) / span,
+		ticks: Array.from({ length: span + 1 }, (_, offset) => {
+			const index = lower + offset;
+			return {
+				value:
+					Math.max(
+						-Number.MAX_VALUE,
+						Math.min(Number.MAX_VALUE, index * step)
+					) || 0,
+				ratio: (upper - index) / span
+			};
+		})
 	};
 }
 
-export function truncateAxisLabel(label: string, maxLength: number): string {
+/** Code-point-safe prefix plus ellipsis; an empty prefix hides the label. */
+export function ellipsize(
+	characters: readonly string[],
+	count: number
+): string {
+	return count > 0
+		? `${characters.slice(0, count).join('').trimEnd()}${ELLIPSIS}`
+		: '';
+}
+
+/** Optional hard cap in code points, ellipsis included; unbounded by default. */
+export function truncateAxisLabel(label: string, maxLength = Infinity): string {
 	const limit = Math.max(0, Math.floor(maxLength));
 	if (!Number.isFinite(limit) || label.length <= limit) return label;
-	let end = 0;
-	let prefixEnd = 0;
-	let count = 0;
-	for (const character of label) {
-		if (count === limit) {
-			return limit > 3
-				? `${label.slice(0, prefixEnd)}...`
-				: label.slice(0, end);
-		}
-		if (count === limit - 3) prefixEnd = end;
-		end += character.length;
-		count++;
-	}
-	return label;
+	const characters = Array.from(label);
+	return characters.length <= limit ? label : ellipsize(characters, limit - 1);
 }
 
 export function computeSparseXLabels(

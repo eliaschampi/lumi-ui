@@ -1,9 +1,16 @@
-import { CHART_PADDING, truncateAxisLabel } from './chartCoordinates';
+import {
+	CHART_PADDING,
+	ellipsize,
+	truncateAxisLabel
+} from './chartCoordinates';
 
 interface ChartAxisLayout {
 	labels: readonly { label: string }[];
+	/** Plot start; follows the measured value-axis gutter. */
+	left: number;
 	width: number;
-	maxLength: number;
+	/** Optional consumer cap; measured fitting applies either way. */
+	maxLength?: number;
 }
 
 // Keep the Text node retained by Svelte while measuring fitted content.
@@ -12,10 +19,28 @@ function setAxisText(node: SVGTextElement, value: string) {
 		node.firstChild.nodeValue = value;
 }
 
-/** Fits only the bounded axis candidates; the chart's data stays untouched. */
+/** Longest code-point prefix whose ellipsized form fits; none hides the text. */
+function shortenAxisText(text: SVGTextElement, budget: number) {
+	const characters = Array.from(text.textContent ?? '');
+	let low = 0;
+	let high = characters.length - 1;
+	while (low < high) {
+		const mid = Math.ceil((low + high) / 2);
+		setAxisText(text, ellipsize(characters, mid));
+		if (text.getBBox().width <= budget) low = mid;
+		else high = mid - 1;
+	}
+	setAxisText(text, ellipsize(characters, low));
+}
+
+/**
+ * Fits only the bounded axis candidates; the chart's data stays untouched.
+ * Full labels win over label count: fewer evenly spaced labels are shown
+ * before any is shortened, and only a label wider than half the plot is.
+ */
 function layoutAxis(
 	node: SVGGElement,
-	{ labels, width, maxLength }: ChartAxisLayout
+	{ labels, left, width, maxLength }: ChartAxisLayout
 ) {
 	const texts = Array.from(node.querySelectorAll('text'));
 	if (!texts.length) return;
@@ -24,34 +49,17 @@ function layoutAxis(
 	}
 	if (!node.ownerSVGElement?.getBoundingClientRect().width) return;
 	const gap = node.getBBox().height / 2;
-	const available = width - CHART_PADDING.left - CHART_PADDING.right;
+	const right = width - CHART_PADDING.right;
 	const minVisible = Math.min(2, texts.length);
-	const budget = (available - gap * (minVisible - 1)) / minVisible;
+	const budget = (right - left - gap * (minVisible - 1)) / minVisible;
 	const boxes = texts.map((text) => {
 		let box = text.getBBox();
 		if (box.width > budget) {
-			const characters = Array.from(text.textContent ?? '');
-			const suffix = '...'.slice(0, characters.length);
-			let low = 0;
-			let high = characters.length - suffix.length;
-			setAxisText(text, suffix);
-			if (text.getBBox().width > budget) setAxisText(text, '');
-			else {
-				while (low < high) {
-					const mid = Math.ceil((low + high) / 2);
-					setAxisText(text, characters.slice(0, mid).join('') + suffix);
-					if (text.getBBox().width <= budget) low = mid;
-					else high = mid - 1;
-				}
-				setAxisText(text, characters.slice(0, low).join('') + suffix);
-			}
+			shortenAxisText(text, budget);
 			box = text.getBBox();
 		}
-		const left = Math.max(
-			CHART_PADDING.left,
-			Math.min(box.x, width - CHART_PADDING.right - box.width)
-		);
-		return { left, right: left + box.width, shift: left - box.x };
+		const start = Math.max(left, Math.min(box.x, right - box.width));
+		return { left: start, right: start + box.width, shift: start - box.x };
 	});
 	let visible: number[] = [];
 	for (let count = texts.length; count > 0; count--) {
@@ -73,7 +81,8 @@ function layoutAxis(
 		const transform = `translate(${boxes[index].shift})`;
 		if (text.getAttribute('transform') !== transform)
 			text.setAttribute('transform', transform);
-		text.style.visibility = visible.includes(index) ? '' : 'hidden';
+		// Labels render hidden so unfitted text never paints.
+		text.style.visibility = visible.includes(index) ? 'visible' : 'hidden';
 	});
 }
 

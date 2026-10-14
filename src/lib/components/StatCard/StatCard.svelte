@@ -20,12 +20,7 @@
 	});
 </script>
 
-<Card
-	{href}
-	hoverable={hoverable ?? Boolean(href)}
-	class={cardClasses}
-	aria-label={href ? title : undefined}
->
+<Card {href} hoverable={hoverable ?? Boolean(href)} class={cardClasses}>
 	<div class="lumi-stat-card__container">
 		<div class="lumi-stat-card__header">
 			<Title {title} size="sm" {color} />
@@ -50,14 +45,13 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: var(--lumi-space-xs);
+		margin-block-end: var(--lumi-space-xs);
 	}
 
 	.lumi-stat-card__value {
 		font-size: var(--lumi-font-size-3xl);
 		font-weight: var(--lumi-font-weight-bold);
 		line-height: var(--lumi-line-height-tight);
-		margin-bottom: 0;
 		color: var(--lumi-color-text);
 		overflow-wrap: break-word;
 	}

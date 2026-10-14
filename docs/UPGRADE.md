@@ -2,6 +2,35 @@
 
 Consumer migration for **0.1.5 → 0.2.x** and later. Use **pnpm** only. Source remains authoritative.
 
+## 0.5.0 → 0.6.0
+
+Dependencies are unchanged. **Breaking:** form fields share one validation model, and unused tokens are removed. Every other change keeps its API.
+
+**Fields.** `Input`, `Textarea`, `Select` and `NumberInput` accept `error?: FieldError` (`true` marks the field invalid; a message also shows it) and `hint?: string` (helper text that an error replaces). Labels mark `required` fields with a decorative `*` on every field, not only `Textarea`.
+
+| Before (0.5.0)                                                                                              | After (0.6.0)                                         |
+| ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `<Input danger={Boolean(errors.x)} dangerText={errors.x}>`                                                  | `<Input error={errors.x}>`                            |
+| `<Input descriptionText="…">`                                                                               | `<Input hint="…">`                                    |
+| `<Select error={Boolean(errors.x)} errorMessage={errors.x}>`                                                | `<Select error={errors.x}>`                           |
+| `Input` `success`, `warning`, `successText`, `warningText`, `valIconSuccess/Danger/Warning`, `iconNoBorder` | Removed (unused); invalid fields show the danger icon |
+| `.lumi-select--error`, `.lumi-input-container--has-state`, `.lumi-textarea--error`                          | `--invalid` modifiers                                 |
+
+Labels no longer repeat as `aria-label` when a visible label exists. Only a missing label falls back to the placeholder.
+
+**Tokens removed** (no references in Lumi or its consumers): `--lumi-blur-lg`, `--lumi-color-primary-300/500/600`, `--lumi-dashboard-card-grid-max`, `--lumi-drive-scope-control-basis`, `--lumi-drive-scope-control-min-width`, `--lumi-drive-search-control-min-width`, `--lumi-drive-selection-dot-size`, `--lumi-easing-in`, `--lumi-sidebar-header-sheen`, `--lumi-sidebar-header-sheen-opacity`, `--lumi-transition-all`.
+
+**Corrected behavior**
+
+- Link and button `Card`s no longer replace their content with `title` as the accessible name; `StatCard` values and `QuickAccessCard` descriptions are announced again. Pass `aria-label` only for a deliberate override.
+- `Checkbox` animates again: the check draws as a pen stroke and the indeterminate dash grows from its center. The previous transition never ran because the icon mounts already checked.
+- Hover lifts no longer stick after a tap on touch screens; press feedback remains. Additive `--lumi-surface-hover` lets content follow its interactive surface: an `IconBadge` inside a link `Card` lifts and tilts its glyph on hover or keyboard focus.
+- Icon tiles (`IconBadge`, `InfoItem`) draw their top sheen with the theme's elevation rim, so dark mode loses the bright edge and `IconBadge` its doubled rim.
+- `Table` announces every control in Spanish like its visible defaults, mirrors row accents in RTL and drops an invalid `aria-label` on its pagination wrapper.
+- Chart category labels and series legends keep their full text; the former 12-character default cut is gone, and `…` appears only when the measured space cannot hold a label. Pass `xLabelMaxLength` to restore a hard cap. Value axes use exact round ticks (no more `13`/`38` or repeated `2 M`), compact currency above one thousand (`S/ 1.5 M`) and a gutter sized to their widest label.
+
+Migrate field props with the table above, then review forms, cards and charts in light/dark mode.
+
 ## 0.4.2 → 0.5.0
 
 Public component props and exports remain compatible; dependencies are unchanged. Review these corrected behaviors when upgrading:

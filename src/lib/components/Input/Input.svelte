@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { FieldLabel, FieldMessage } from '../Field';
 	import { Icon } from '../Icon';
 	import type { InputProps } from './types';
 
@@ -18,19 +19,10 @@
 		actionIcon = '',
 		actionLabel = '',
 		iconAfter = false,
-		iconNoBorder = false,
 		color = 'primary',
-		success = false,
-		danger = false,
-		warning = false,
-		successText = '',
-		dangerText = '',
-		warningText = '',
-		descriptionText = '',
+		error = false,
+		hint = '',
 		size = 'md',
-		valIconSuccess = 'checkCircle',
-		valIconDanger = 'xCircle',
-		valIconWarning = 'alertTriangle',
 		disabled = false,
 		readonly = false,
 		required = false,
@@ -43,57 +35,23 @@
 		'onaction-click': onActionClick
 	}: InputProps = $props();
 
-	let internalError = $state('');
+	// Set by validate() from native constraints; cleared once the value is valid.
+	let nativeError = $state('');
 	let inputElement: HTMLInputElement | undefined = $state();
 
 	const instanceId = $props.id();
 	const inputId = `lumi-input-${instanceId}`;
-	const msgId = `${inputId}-msg`;
+	const messageId = `${inputId}-message`;
 
-	// ── Derived state ──────────────────────────
-	const inputState = $derived.by(() => {
-		if (danger || internalError) return 'danger';
-		if (warning) return 'warning';
-		if (success) return 'success';
-		return 'default';
-	});
-
-	const hasState = $derived(inputState !== 'default');
-	const activeColor = $derived(hasState ? inputState : color);
-
-	const message = $derived.by(() => {
-		switch (inputState) {
-			case 'success':
-				return successText;
-			case 'danger':
-				return danger ? dangerText || internalError : internalError;
-			case 'warning':
-				return warningText;
-			default:
-				return '';
-		}
-	});
-
-	const validationIcon = $derived.by(() => {
-		switch (inputState) {
-			case 'success':
-				return valIconSuccess;
-			case 'danger':
-				return valIconDanger;
-			case 'warning':
-				return valIconWarning;
-			default:
-				return '';
-		}
-	});
-
-	const hasPrefix = $derived(!!(icon && !iconAfter));
-	const hasSuffix = $derived(
-		!!(validationIcon || actionIcon || (icon && iconAfter))
+	const invalid = $derived(Boolean(error) || nativeError !== '');
+	const errorText = $derived(
+		(typeof error === 'string' && error) || nativeError
 	);
-	const hasFooter = $derived(!!(message || descriptionText));
+	const showLabel = $derived(Boolean(label) && !labelPlaceholder);
+	const hasPrefix = $derived(Boolean(icon) && !iconAfter);
+	const hasTrailingIcon = $derived(Boolean(icon) && iconAfter);
+	const hasSuffix = $derived(invalid || Boolean(actionIcon) || hasTrailingIcon);
 
-	// ── Methods ────────────────────────────────
 	function handleIconClick(event: MouseEvent): void {
 		inputElement?.focus();
 		onIconClick?.(event);
@@ -105,8 +63,8 @@
 	}
 
 	function handleInput(event: Event): void {
-		if (internalError && inputElement) {
-			internalError = inputElement.validity.valid
+		if (nativeError && inputElement) {
+			nativeError = inputElement.validity.valid
 				? ''
 				: inputElement.validationMessage;
 		}
@@ -116,7 +74,7 @@
 	export function validate(): boolean {
 		if (!inputElement) return true;
 		const { valid } = inputElement.validity;
-		internalError = valid ? '' : inputElement.validationMessage;
+		nativeError = valid ? '' : inputElement.validationMessage;
 		return valid;
 	}
 
@@ -131,40 +89,40 @@
 	}
 </script>
 
+{#snippet iconSlot(position: 'before' | 'after')}
+	{#if onIconClick}
+		<button
+			type="button"
+			class="lumi-input__icon lumi-input__icon--{position}"
+			aria-label={iconLabel || 'Input icon'}
+			{disabled}
+			onclick={handleIconClick}
+		>
+			<Icon {icon} {size} />
+		</button>
+	{:else}
+		<span
+			class="lumi-input__icon lumi-input__icon--{position}"
+			aria-hidden="true"
+		>
+			<Icon {icon} {size} />
+		</span>
+	{/if}
+{/snippet}
+
 <div
 	class="lumi-input-container lumi-input-container--{size} {className}"
-	class:lumi-input-container--has-state={hasState}
+	class:lumi-input-container--invalid={invalid}
 	class:lumi-input-container--disabled={disabled}
-	style:--input-color="var(--lumi-color-{activeColor})"
+	style:--lumi-control-accent="var(--lumi-color-{invalid ? 'danger' : color})"
 >
-	{#if label && !labelPlaceholder}
-		<label for={inputId} class="lumi-input__label">
-			{label}
-		</label>
+	{#if showLabel}
+		<FieldLabel for={inputId} {label} {required} />
 	{/if}
 
 	<div class="lumi-input__wrapper">
 		{#if hasPrefix}
-			{#if onIconClick}
-				<button
-					type="button"
-					class="lumi-input__icon lumi-input__icon--before"
-					class:lumi-input__icon--no-border={iconNoBorder}
-					aria-label={iconLabel || 'Input icon'}
-					{disabled}
-					onclick={handleIconClick}
-				>
-					<Icon {icon} {size} />
-				</button>
-			{:else}
-				<span
-					class="lumi-input__icon lumi-input__icon--before"
-					class:lumi-input__icon--no-border={iconNoBorder}
-					aria-hidden="true"
-				>
-					<Icon {icon} {size} />
-				</span>
-			{/if}
+			{@render iconSlot('before')}
 		{/if}
 
 		<input
@@ -182,12 +140,10 @@
 			{required}
 			placeholder={labelPlaceholder || placeholder}
 			aria-label={ariaLabel ||
-				label ||
-				labelPlaceholder ||
-				placeholder ||
+				(showLabel ? undefined : labelPlaceholder || placeholder) ||
 				undefined}
-			aria-invalid={inputState === 'danger' || undefined}
-			aria-describedby={hasFooter ? msgId : undefined}
+			aria-invalid={invalid || undefined}
+			aria-describedby={errorText || hint ? messageId : undefined}
 			class="lumi-input lumi-autofill"
 			class:lumi-input--has-prefix={hasPrefix}
 			class:lumi-input--has-suffix={hasSuffix}
@@ -198,13 +154,13 @@
 
 		{#if hasSuffix}
 			<div class="lumi-input__suffix">
-				{#if validationIcon}
-					<div
+				{#if invalid}
+					<span
 						class="lumi-input__validation-icon lumi-input__suffix-item"
 						aria-hidden="true"
 					>
-						<Icon icon={validationIcon} {size} />
-					</div>
+						<Icon icon="xCircle" {size} />
+					</span>
 				{/if}
 
 				{#if actionIcon}
@@ -219,48 +175,14 @@
 					</button>
 				{/if}
 
-				{#if icon && iconAfter}
-					{#if onIconClick}
-						<button
-							type="button"
-							class="lumi-input__icon lumi-input__icon--after lumi-input__suffix-item"
-							class:lumi-input__icon--no-border={iconNoBorder}
-							aria-label={iconLabel || 'Input icon'}
-							{disabled}
-							onclick={handleIconClick}
-						>
-							<Icon {icon} {size} />
-						</button>
-					{:else}
-						<span
-							class="lumi-input__icon lumi-input__icon--after lumi-input__suffix-item"
-							class:lumi-input__icon--no-border={iconNoBorder}
-							aria-hidden="true"
-						>
-							<Icon {icon} {size} />
-						</span>
-					{/if}
+				{#if hasTrailingIcon}
+					{@render iconSlot('after')}
 				{/if}
 			</div>
 		{/if}
 	</div>
 
-	<div
-		id={msgId}
-		class="lumi-input__footer"
-		class:lumi-input__footer--visible={hasFooter}
-		aria-live="polite"
-	>
-		{#if message}
-			<span class="lumi-input__message lumi-input__message--{inputState}">
-				{message}
-			</span>
-		{:else if descriptionText}
-			<span class="lumi-input__description">
-				{descriptionText}
-			</span>
-		{/if}
-	</div>
+	<FieldMessage id={messageId} error={errorText} {hint} />
 </div>
 
 <style>
@@ -268,7 +190,6 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		--lumi-control-accent: var(--input-color);
 		--input-border: var(--lumi-color-control-border);
 		--input-bg: var(--lumi-color-control-fill);
 		--input-bg-focus: var(--lumi-color-control-focus-fill);
@@ -284,28 +205,13 @@
 		--lumi-control-autofill-bg: var(--input-bg-focus);
 	}
 
-	/* States unify border to the active color */
-	.lumi-input-container--has-state {
-		--input-border: var(--input-color);
+	.lumi-input-container--invalid {
+		--input-border: var(--lumi-control-accent);
 	}
 
 	.lumi-input-container--disabled {
 		opacity: var(--lumi-opacity-disabled);
 		pointer-events: none;
-	}
-
-	/* ── Label ────────────────────────────────── */
-	.lumi-input__label {
-		font-size: var(--lumi-font-size-sm);
-		font-weight: var(--lumi-font-weight-semibold);
-		color: var(--lumi-color-text);
-		cursor: pointer;
-		margin-block-end: var(--lumi-space-xs);
-		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
-	}
-
-	.lumi-input-container:focus-within .lumi-input__label {
-		color: var(--input-color);
 	}
 
 	/* ── Wrapper ──────────────────────────────── */
@@ -322,14 +228,14 @@
 		overflow: hidden;
 	}
 
-	.lumi-input-container:not(.lumi-input-container--has-state)
+	.lumi-input-container:not(.lumi-input-container--invalid)
 		.lumi-input__wrapper:hover:not(:focus-within) {
 		border-color: var(--lumi-color-border-strong);
 		background: var(--lumi-color-control-hover-fill);
 	}
 
 	.lumi-input__wrapper:focus-within {
-		border-color: var(--input-color);
+		border-color: var(--lumi-control-accent);
 		background: var(--input-bg-focus);
 		box-shadow: var(--lumi-control-focus-shadow);
 	}
@@ -427,12 +333,12 @@
 
 	.lumi-input-container:focus-within .lumi-input__icon,
 	.lumi-input-container:focus-within .lumi-input__action {
-		color: var(--input-color);
+		color: var(--lumi-control-accent);
 	}
 
 	.lumi-input__icon:hover,
 	.lumi-input__action:hover {
-		color: var(--input-color);
+		color: var(--lumi-control-accent);
 	}
 
 	.lumi-input__icon:focus-visible,
@@ -441,11 +347,11 @@
 		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
-	.lumi-input__icon--before:not(.lumi-input__icon--no-border) {
+	.lumi-input__icon--before {
 		border-inline-end: var(--lumi-border-width-thin) solid
 			var(--lumi-color-border-light);
 	}
-	.lumi-input__icon--after:not(.lumi-input__icon--no-border) {
+	.lumi-input__icon--after {
 		border-inline-start: var(--lumi-border-width-thin) solid
 			var(--lumi-color-border-light);
 	}
@@ -453,42 +359,6 @@
 	.lumi-input__validation-icon {
 		display: inline-flex;
 		align-items: center;
-		color: var(--input-color);
-	}
-
-	/* ── Footer (messages) ────────────────────── */
-	.lumi-input__footer {
-		display: grid;
-		grid-template-rows: 0fr;
-		margin-block-start: 0;
-		overflow: hidden;
-		transition:
-			grid-template-rows var(--lumi-duration-base) var(--lumi-easing-default),
-			margin-block-start var(--lumi-duration-base) var(--lumi-easing-default);
-	}
-
-	.lumi-input__footer--visible {
-		grid-template-rows: 1fr;
-		margin-block-start: var(--lumi-space-xs);
-	}
-
-	.lumi-input__footer > span {
-		overflow: hidden;
-		min-height: 0;
-	}
-
-	.lumi-input__message,
-	.lumi-input__description {
-		font-size: var(--lumi-font-size-xs);
-		padding-top: var(--lumi-space-2xs);
-	}
-
-	.lumi-input__message {
-		color: var(--input-color);
-		font-weight: var(--lumi-font-weight-medium);
-	}
-
-	.lumi-input__description {
-		color: var(--lumi-color-text-muted);
+		color: var(--lumi-control-accent);
 	}
 </style>

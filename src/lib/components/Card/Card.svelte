@@ -116,7 +116,7 @@
 		class={cardClasses}
 		style={cardStyles}
 		{onclick}
-		aria-label={ariaLabel || title || undefined}
+		aria-label={ariaLabel || undefined}
 		aria-current={selected ? 'true' : undefined}
 	>
 		{@render cardContent()}
@@ -127,7 +127,7 @@
 		class={cardClasses}
 		style={cardStyles}
 		{onclick}
-		aria-label={ariaLabel || title || undefined}
+		aria-label={ariaLabel || undefined}
 		aria-pressed={selected}
 	>
 		{@render cardContent()}
@@ -153,7 +153,7 @@
 		flex-direction: column;
 		transition: var(--lumi-transition-interactive);
 		width: 100%;
-		text-align: left;
+		text-align: start;
 		color: var(--lumi-color-text);
 		appearance: none;
 		font: inherit;
@@ -195,6 +195,16 @@
 		border-color: var(--lumi-color-border-interactive);
 		background: var(--lumi-gradient-card-hover);
 		box-shadow: var(--lumi-shadow-md);
+	}
+
+	.lumi-card--interactive:focus-visible {
+		--lumi-surface-hover: 1;
+	}
+
+	@media (hover: hover) {
+		.lumi-card--hoverable:hover {
+			--lumi-surface-hover: 1;
+		}
 	}
 
 	.lumi-card--interactive:active {

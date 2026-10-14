@@ -1,4 +1,5 @@
 import type { LumiColor, LumiControlSize } from '../config';
+import type { FieldError } from '../Field';
 
 export type NumberInputColor = LumiColor;
 export type NumberInputSize = LumiControlSize;
@@ -25,8 +26,14 @@ export interface NumberInputProps {
 	/** Placeholder text */
 	placeholder?: string;
 
-	/** Color variant */
+	/** Accent color while focused */
 	color?: NumberInputColor;
+
+	/** Invalid state; a string is also shown as the message */
+	error?: FieldError;
+
+	/** Helper text below the field; an error message replaces it */
+	hint?: string;
 
 	/** Size variant */
 	size?: NumberInputSize;

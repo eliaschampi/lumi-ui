@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { FieldLabel, FieldMessage } from '../Field';
 	import type { TextareaProps } from './types';
 
 	let {
@@ -28,25 +29,16 @@
 
 	const instanceId = $props.id();
 	const id = `lumi-textarea-${instanceId}`;
-	// error: boolean → invalid only; string → invalid + message.
+	const messageId = `${id}-message`;
+	const invalid = $derived(Boolean(error));
 	const errorText = $derived(typeof error === 'string' ? error : '');
-	const hasError = $derived(errorText.length > 0);
-	const isInvalid = $derived(Boolean(error));
-	const activeColor = $derived(isInvalid ? 'danger' : color);
-	const describedBy = $derived.by(() => {
-		const ids: string[] = [];
-		if (hasError) ids.push(`${id}-error`);
-		if (hint) ids.push(`${id}-hint`);
-		return ids.join(' ');
-	});
 
 	const classes = $derived(
 		[
 			'lumi-textarea',
 			`lumi-textarea--${size}`,
-			isInvalid && 'lumi-textarea--error',
+			invalid && 'lumi-textarea--invalid',
 			disabled && 'lumi-textarea--disabled',
-			readonly && 'lumi-textarea--readonly',
 			className
 		]
 			.filter(Boolean)
@@ -65,14 +57,12 @@
 	export const blur = () => textareaRef?.blur();
 </script>
 
-<div class={classes} style:--textarea-color="var(--lumi-color-{activeColor})">
+<div
+	class={classes}
+	style:--lumi-control-accent="var(--lumi-color-{invalid ? 'danger' : color})"
+>
 	{#if label}
-		<label for={id} class="lumi-textarea__label">
-			{label}
-			{#if required}
-				<span class="lumi-textarea__required">*</span>
-			{/if}
-		</label>
+		<FieldLabel for={id} {label} {required} />
 	{/if}
 
 	<div class="lumi-textarea__wrapper">
@@ -87,9 +77,9 @@
 			{rows}
 			{maxlength}
 			{value}
-			aria-label={ariaLabel || label || placeholder || undefined}
-			aria-invalid={isInvalid || undefined}
-			aria-describedby={describedBy || undefined}
+			aria-label={ariaLabel || (label ? undefined : placeholder) || undefined}
+			aria-invalid={invalid || undefined}
+			aria-describedby={errorText || hint ? messageId : undefined}
 			class="lumi-textarea__input lumi-autofill"
 			oninput={handleInput}
 			{onfocus}
@@ -102,25 +92,14 @@
 		{/if}
 	</div>
 
-	{#if hasError}
-		<div id={`${id}-error`} class="lumi-textarea__error" aria-live="polite">
-			{errorText}
-		</div>
-	{/if}
-
-	{#if hint}
-		<div id={`${id}-hint`} class="lumi-textarea__hint">{hint}</div>
-	{/if}
+	<FieldMessage id={messageId} error={errorText} {hint} />
 </div>
 
 <style>
 	.lumi-textarea {
 		display: flex;
 		flex-direction: column;
-		gap: var(--lumi-space-xs);
 		width: 100%;
-		--textarea-color: var(--lumi-color-primary);
-		--lumi-control-accent: var(--textarea-color);
 		--textarea-bg: var(--lumi-color-control-fill);
 		--textarea-bg-focus: var(--lumi-color-control-focus-fill);
 		--lumi-control-autofill-bg: var(--textarea-bg);
@@ -128,24 +107,6 @@
 
 	.lumi-textarea:focus-within {
 		--lumi-control-autofill-bg: var(--textarea-bg-focus);
-	}
-
-	.lumi-textarea__label {
-		font-size: var(--lumi-font-size-sm);
-		font-weight: var(--lumi-font-weight-semibold);
-		color: var(--lumi-color-text);
-		cursor: pointer;
-		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
-	}
-
-	.lumi-textarea__required {
-		color: var(--lumi-color-danger);
-		margin-inline-start: var(--lumi-space-2xs);
-	}
-
-	.lumi-textarea:focus-within .lumi-textarea__label,
-	.lumi-textarea--error .lumi-textarea__label {
-		color: var(--textarea-color);
 	}
 
 	.lumi-textarea__wrapper {
@@ -178,7 +139,7 @@
 
 	.lumi-textarea__input:focus {
 		outline: none;
-		border-color: var(--textarea-color);
+		border-color: var(--lumi-control-accent);
 		background: var(--textarea-bg-focus);
 		box-shadow: var(--lumi-control-focus-shadow);
 	}
@@ -207,20 +168,6 @@
 		pointer-events: none;
 	}
 
-	.lumi-textarea__error,
-	.lumi-textarea__hint {
-		font-size: var(--lumi-font-size-xs);
-		margin-block-start: var(--lumi-space-2xs);
-	}
-
-	.lumi-textarea__error {
-		color: var(--lumi-color-danger);
-	}
-
-	.lumi-textarea__hint {
-		color: var(--lumi-color-text-muted);
-	}
-
 	/* Size variants */
 	.lumi-textarea--sm .lumi-textarea__input {
 		padding: var(--lumi-space-xs) var(--lumi-space-sm);
@@ -238,8 +185,8 @@
 	}
 
 	/* State variants */
-	.lumi-textarea--error .lumi-textarea__input {
-		border-color: var(--textarea-color);
+	.lumi-textarea--invalid .lumi-textarea__input {
+		border-color: var(--lumi-control-accent);
 	}
 
 	.lumi-textarea--disabled .lumi-textarea__input {

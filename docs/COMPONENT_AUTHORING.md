@@ -302,18 +302,18 @@ Reference implementations: `Dialog`, `Dropdown`, `Context`, `Select`, `Tooltip`.
 
 Forms and interactive peers should feel like one system:
 
-| Concern            | Approach                                                                                             |
-| ------------------ | ---------------------------------------------------------------------------------------------------- |
-| Heights            | `--lumi-control-height-xs` … `--lumi-control-height-xl`                                              |
-| Radius             | `--lumi-radius-control`                                                                              |
-| Fill / border      | `--lumi-color-control-*`                                                                             |
-| Accent             | `--lumi-control-accent` on the control root (drives focus fill, ring, and outline)                   |
-| Focus (field)      | `--lumi-control-focus-shadow` on the shell / peer visual (re-declared on form roots in `core.css`)   |
-| Focus (affordance) | `--lumi-focus-outline` + offset; outline is re-declared on interactive roots so local accent wins    |
-| Motion             | `--lumi-transition-control` (+ `transform` only when lift/press is used)                             |
-| Autofill           | Class `lumi-autofill` + `--lumi-control-autofill-bg` (default + `:focus-within` focus fill)          |
-| Labels             | Consistent label + description + message stack; prefer `:focus-within` for label accent color        |
-| Validation         | Prefer explicit `error` / `success` / `warning` or a single state model — stay consistent with peers |
+| Concern            | Approach                                                                                              |
+| ------------------ | ----------------------------------------------------------------------------------------------------- |
+| Heights            | `--lumi-control-height-xs` … `--lumi-control-height-xl`                                               |
+| Radius             | `--lumi-radius-control`                                                                               |
+| Fill / border      | `--lumi-color-control-*`                                                                              |
+| Accent             | `--lumi-control-accent` on the control root (drives focus fill, ring, and outline)                    |
+| Focus (field)      | `--lumi-control-focus-shadow` on the shell / peer visual (re-declared on form roots in `core.css`)    |
+| Focus (affordance) | `--lumi-focus-outline` + offset; outline is re-declared on interactive roots so local accent wins     |
+| Motion             | `--lumi-transition-control` (+ `transform` only when lift/press is used)                              |
+| Autofill           | Class `lumi-autofill` + `--lumi-control-autofill-bg` (default + `:focus-within` focus fill)           |
+| Labels             | `FieldLabel` (accent on `:focus-within`, decorative `*` for `required`) above the shell               |
+| Validation         | `error?: FieldError` (`true` or a message) plus `hint`; render internal `FieldLabel` / `FieldMessage` |
 
 When adding a new control, **side-by-side with Input** at the sizes that control actually supports and match padding/typography. If you introduce a new interactive root that uses `--lumi-focus-outline` or `--lumi-control-focus-shadow`, add its class to the re-declaration list in `core.css` (never bake those recipes only on `:root`). Do not invent private focus-ring or transition variables.
 

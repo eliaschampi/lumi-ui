@@ -2,6 +2,7 @@
 	import { tick } from 'svelte';
 	import { portal } from '../../actions/portal';
 	import { createFloating } from '../../utils/floating.svelte';
+	import { FieldLabel, FieldMessage } from '../Field';
 	import Icon from '../Icon/Icon.svelte';
 	import { LUMI_CONFIG } from '../config';
 	import type { SelectProps, SelectValue } from './types';
@@ -25,7 +26,7 @@
 		autocomplete = false,
 		searchMode = 'client',
 		error = false,
-		errorMessage = '',
+		hint = '',
 		noDataText = 'Sin opciones disponibles',
 		width = '100%',
 		valueKey = 'value',
@@ -106,7 +107,7 @@
 	const uniqueId = $props.id();
 	const inputId = `lumi-select-${uniqueId}`;
 	const dropdownId = `lumi-select-dropdown-${uniqueId}`;
-	const errorId = `${inputId}-error`;
+	const messageId = `${inputId}-message`;
 
 	// ── Normalize options ──────────────────────
 	const normalizedOptions = $derived.by(() => {
@@ -158,8 +159,11 @@
 			return '';
 		}
 	});
-	const selectFocusColor = $derived(
-		error ? 'var(--lumi-color-danger)' : 'var(--lumi-color-primary)'
+	const invalid = $derived(Boolean(error));
+	const errorText = $derived(typeof error === 'string' ? error : '');
+	// Repeated on the portaled listbox, which no longer inherits from the root.
+	const accent = $derived(
+		`var(--lumi-color-${invalid ? 'danger' : 'primary'})`
 	);
 
 	const isFilterActive = $derived.by(() => {
@@ -380,15 +384,14 @@
 	class="lumi-select lumi-select--{size} {className}"
 	class:lumi-select--active={floating.isOpen}
 	class:lumi-select--disabled={disabled}
-	class:lumi-select--error={error}
+	class:lumi-select--invalid={invalid}
 	class:lumi-select--loading={loading}
-	style={width ? `width: ${width}` : undefined}
+	style:width
+	style:--lumi-control-accent={accent}
 	onfocusout={handleFocusOut}
 >
 	{#if label}
-		<label for={inputId} class="lumi-select__label">
-			{label}
-		</label>
+		<FieldLabel for={inputId} {label} />
 	{/if}
 
 	<div class="lumi-select__container">
@@ -412,10 +415,9 @@
 			aria-activedescendant={focusedIndex > -1
 				? getOptionId(focusedIndex)
 				: undefined}
-			aria-label={ariaLabel || label || placeholder}
-			aria-invalid={error || undefined}
-			aria-errormessage={error && errorMessage ? errorId : undefined}
-			aria-describedby={error && errorMessage ? errorId : undefined}
+			aria-label={ariaLabel || (label ? undefined : placeholder) || undefined}
+			aria-invalid={invalid || undefined}
+			aria-describedby={errorText || hint ? messageId : undefined}
 			aria-busy={loading || undefined}
 			value={displayValue}
 			onclick={handleInputClick}
@@ -456,7 +458,7 @@
 			id={dropdownId}
 			class="lumi-select__dropdown"
 			style={floating.styleString}
-			style:--select-focus={selectFocusColor}
+			style:--lumi-control-accent={accent}
 			role="listbox"
 			aria-label={label || placeholder}
 			aria-busy={loading || undefined}
@@ -510,15 +512,7 @@
 		</div>
 	{/if}
 
-	<div
-		class="lumi-select__footer"
-		class:lumi-select__footer--visible={!!(error && errorMessage)}
-		aria-live="polite"
-	>
-		{#if error && errorMessage}
-			<span id={errorId} class="lumi-select__error">{errorMessage}</span>
-		{/if}
-	</div>
+	<FieldMessage id={messageId} error={errorText} {hint} />
 </div>
 
 <style>
@@ -528,9 +522,7 @@
 		font-family: var(--lumi-font-family-sans);
 		display: flex;
 		flex-direction: column;
-		--lumi-control-accent: var(--select-focus);
 		--select-border: var(--lumi-color-control-border);
-		--select-focus: var(--lumi-color-primary);
 		--select-bg: var(--lumi-color-control-fill);
 		--select-bg-focus: var(--lumi-color-control-focus-fill);
 		--lumi-control-autofill-bg: var(--select-bg);
@@ -538,22 +530,6 @@
 
 	.lumi-select:focus-within {
 		--lumi-control-autofill-bg: var(--select-bg-focus);
-	}
-
-	/* ── Label ────────────────────────────────── */
-	.lumi-select__label {
-		display: block;
-		font-size: var(--lumi-font-size-sm);
-		font-weight: var(--lumi-font-weight-semibold);
-		color: var(--lumi-color-text);
-		cursor: pointer;
-		margin-block-end: var(--lumi-space-xs);
-		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
-	}
-
-	.lumi-select:focus-within .lumi-select__label,
-	.lumi-select--active .lumi-select__label {
-		color: var(--select-focus);
 	}
 
 	/* ── Container ────────────────────────────── */
@@ -572,7 +548,7 @@
 	}
 
 	.lumi-select:not(
-			.lumi-select--error,
+			.lumi-select--invalid,
 			.lumi-select--active,
 			.lumi-select--disabled
 		)
@@ -583,7 +559,7 @@
 
 	.lumi-select:focus-within .lumi-select__container,
 	.lumi-select--active .lumi-select__container {
-		border-color: var(--select-focus);
+		border-color: var(--lumi-control-accent);
 		background: var(--select-bg-focus);
 		box-shadow: var(--lumi-control-focus-shadow);
 	}
@@ -645,7 +621,7 @@
 
 	.lumi-select--active .lumi-select__arrow {
 		transform: rotate(180deg);
-		color: var(--select-focus);
+		color: var(--lumi-control-accent);
 	}
 
 	/* ── Clear button ─────────────────────────── */
@@ -654,7 +630,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: var(--lumi-space-2xs);
-		margin-right: var(--lumi-space-xs);
+		margin-inline-end: var(--lumi-space-xs);
 		background: transparent;
 		border: none;
 		border-radius: var(--lumi-radius-full);
@@ -741,17 +717,21 @@
 	}
 
 	.lumi-select__option--focused:not(.lumi-select__option--disabled) {
-		background: color-mix(in srgb, var(--select-focus) 10%, transparent);
-		border-color: color-mix(in srgb, var(--select-focus) 22%, transparent);
+		background: color-mix(in srgb, var(--lumi-control-accent) 10%, transparent);
+		border-color: color-mix(
+			in srgb,
+			var(--lumi-control-accent) 22%,
+			transparent
+		);
 	}
 
 	.lumi-select__option--selected {
-		color: var(--select-focus);
+		color: var(--lumi-control-accent);
 		font-weight: var(--lumi-font-weight-semibold);
 	}
 
 	.lumi-select__option--selected.lumi-select__option--focused {
-		background: color-mix(in srgb, var(--select-focus) 12%, transparent);
+		background: color-mix(in srgb, var(--lumi-control-accent) 12%, transparent);
 	}
 
 	.lumi-select__option--disabled {
@@ -762,7 +742,7 @@
 	.lumi-select__option-check {
 		display: inline-flex;
 		flex-shrink: 0;
-		color: var(--select-focus);
+		color: var(--lumi-control-accent);
 	}
 
 	.lumi-select__option-label {
@@ -782,33 +762,6 @@
 		padding: var(--lumi-space-lg) var(--lumi-space-md);
 		color: var(--lumi-color-text-muted);
 		font-size: var(--lumi-font-size-sm);
-	}
-
-	/* ── Footer (error message) ───────────────── */
-	.lumi-select__footer {
-		display: grid;
-		grid-template-rows: 0fr;
-		margin-block-start: 0;
-		overflow: hidden;
-		transition:
-			grid-template-rows var(--lumi-duration-base) var(--lumi-easing-default),
-			margin-block-start var(--lumi-duration-base) var(--lumi-easing-default);
-	}
-
-	.lumi-select__footer--visible {
-		grid-template-rows: 1fr;
-		margin-block-start: var(--lumi-space-xs);
-	}
-
-	.lumi-select__footer > span {
-		overflow: hidden;
-		min-height: 0;
-	}
-
-	.lumi-select__error {
-		font-size: var(--lumi-font-size-xs);
-		color: var(--lumi-color-danger);
-		padding-top: var(--lumi-space-2xs);
 	}
 
 	/* ── Size variants ────────────────────────── */
@@ -844,26 +797,19 @@
 		pointer-events: none;
 	}
 
-	.lumi-select--error {
-		--select-border: var(--lumi-color-danger);
-		--select-focus: var(--lumi-color-danger);
+	.lumi-select--invalid {
+		--select-border: var(--lumi-control-accent);
 	}
 
 	/* ── Spinner ──────────────────────────────── */
 	.lumi-select__spinner {
 		width: 1em;
 		height: 1em;
-		color: var(--select-focus);
+		color: var(--lumi-control-accent);
 		border: var(--lumi-border-width-thick) solid
 			color-mix(in srgb, currentColor 18%, transparent);
 		border-top-color: currentColor;
 		border-radius: var(--lumi-radius-full);
-		animation: lumi-select-spin var(--lumi-duration-spin) linear infinite;
-	}
-
-	@keyframes lumi-select-spin {
-		to {
-			transform: rotate(360deg);
-		}
+		animation: lumi-spin var(--lumi-duration-spin) linear infinite;
 	}
 </style>

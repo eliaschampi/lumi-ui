@@ -237,4 +237,5 @@ export type {
 	ChartSeriesPoint,
 	ChartValueFormat
 } from './types/charts';
+export type { FieldError } from './components/Field';
 export type { IconComponent, IconName } from './utils/icons';

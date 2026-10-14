@@ -120,12 +120,11 @@
 		border-radius: var(--lumi-radius-tile);
 		border: var(--lumi-border-width-thin) solid var(--info-icon-border);
 		background: var(--info-icon-bg);
-		box-shadow: inset 0 var(--lumi-border-width-thin) 0
-			color-mix(in srgb, var(--lumi-color-white) 30%, transparent);
+		box-shadow: var(--lumi-elevation-rim);
 	}
 
 	.lumi-info-item--vertical .lumi-info-item__icon {
-		margin-bottom: var(--lumi-space-2xs);
+		margin-block-end: var(--lumi-space-2xs);
 	}
 
 	.lumi-info-item__content {

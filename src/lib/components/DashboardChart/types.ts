@@ -19,6 +19,10 @@ export interface DashboardChartProps {
 	color?: ChartColor;
 	height?: number;
 	valueFormat?: DashboardChartValueFormat;
+	/**
+	 * Optional hard cap in characters, ellipsis included. Labels otherwise keep
+	 * their full text and shorten only when wider than the measured axis allows.
+	 */
 	xLabelMaxLength?: number;
 	emptyMessage?: string;
 	'aria-label'?: string;
