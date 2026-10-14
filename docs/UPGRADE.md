@@ -16,7 +16,7 @@ Dependencies are unchanged. **Breaking:** form fields share one validation model
 | `Input` `success`, `warning`, `successText`, `warningText`, `valIconSuccess/Danger/Warning`, `iconNoBorder` | Removed (unused); invalid fields show the danger icon |
 | `.lumi-select--error`, `.lumi-input-container--has-state`, `.lumi-textarea--error`                          | `--invalid` modifiers                                 |
 
-Labels no longer repeat as `aria-label` when a visible label exists. Only a missing label falls back to the placeholder.
+From a Lumi checkout, `node scripts/migrate-0.6.mjs <app-dir>` reports these call sites and `--write` rewrites them; run `svelte-check` afterwards. Labels no longer repeat as `aria-label` when a visible label exists. Only a missing label falls back to the placeholder.
 
 **Tokens removed** (no references in Lumi or its consumers): `--lumi-blur-lg`, `--lumi-color-primary-300/500/600`, `--lumi-dashboard-card-grid-max`, `--lumi-drive-scope-control-basis`, `--lumi-drive-scope-control-min-width`, `--lumi-drive-search-control-min-width`, `--lumi-drive-selection-dot-size`, `--lumi-easing-in`, `--lumi-sidebar-header-sheen`, `--lumi-sidebar-header-sheen-opacity`, `--lumi-transition-all`.
 
