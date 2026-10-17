@@ -1,3 +1,4 @@
+import type { Snippet } from 'svelte';
 import type { LumiColor, LumiExtendedSize } from '../config';
 
 export type ProgressColor = LumiColor;
@@ -36,4 +37,7 @@ export interface ProgressProps {
 
 	/** Accessible label for progressbar */
 	'aria-label'?: string;
+
+	/** Custom label content (shown with `showLabel`) */
+	labelSnippet?: Snippet<[{ value: number; max: number }]>;
 }

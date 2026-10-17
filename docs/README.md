@@ -1,29 +1,31 @@
 # Lumi UI Documentation
 
-Five documents cover the library. Source remains authoritative for exact APIs.
+Six documents cover the library. Source remains authoritative for exact APIs.
 
-| Document                                            | Covers                                                                                      |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| **[Guide](./GUIDE.md)**                             | Install, first page, theming, layouts, core CSS, design language, library design, release   |
-| **[Components](./COMPONENTS.md)**                   | Every root-exported component, selection matrix, contracts                                  |
-| **[Component authoring](./COMPONENT_AUTHORING.md)** | How to build or change a component: skeleton, prop contract, CSS, a11y, pre-merge checklist |
-| **[Consumer reference](./CONSUMER_REFERENCE.md)**   | Compact setup, theming, layout classes, and component usage for product apps                |
-| **[Upgrade](./UPGRADE.md)**                         | Consumer migration notes through 0.5.0                                                      |
+| Document                                            | Covers                                                                                            |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **[Guide](./GUIDE.md)**                             | Install, styles, icons, language, theming, layouts, CSS, design language, library design, release |
+| **[Components](./COMPONENTS.md)**                   | Every root-exported component, selection matrix, contracts                                        |
+| **[Component authoring](./COMPONENT_AUTHORING.md)** | How to build or change a component: skeleton, prop contract, CSS, a11y, pre-merge checklist       |
+| **[Consumer reference](./CONSUMER_REFERENCE.md)**   | Compact setup, theming, layout classes, and component usage for product apps                      |
+| **[Upgrade](./UPGRADE.md)**                         | Consumer migration notes and codemods through 1.0.0                                               |
+| **[1.0 review](./REFACTOR_REVIEW.md)**              | What changed in 1.0, measured evidence, remaining considerations                                  |
 
 Coding agents: [AGENTS.md](../AGENTS.md) → [Agent Guide](./AGENT_GUIDE.md). Working pages: the [`lumi-web`](https://github.com/eliaschampi/lumi-web) showcase.
 
 ## Authority
 
-| Question                     | Source of truth                                                                                                                                    |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Repository rules             | [`AGENTS.md`](../AGENTS.md)                                                                                                                        |
-| Entry points, peer versions  | [`package.json`](../package.json)                                                                                                                  |
-| Exported symbols             | Root or subpath `index.ts`                                                                                                                         |
-| Props and snippets           | Component `types.ts` **and** `.svelte` (`types.ts` is not always exhaustive)                                                                       |
-| Tokens and CSS classes       | [`tokens.base.css`](../src/lib/styles/tokens.base.css), [`core.css`](../src/lib/styles/core.css), [`patterns.css`](../src/lib/styles/patterns.css) |
-| Intent and composition       | [Guide](./GUIDE.md)                                                                                                                                |
-| App integration recipes      | [Consumer reference](./CONSUMER_REFERENCE.md)                                                                                                      |
-| Breaking / visual migrations | [Upgrade](./UPGRADE.md)                                                                                                                            |
+| Question                     | Source of truth                                                                                                                                                                                                                                      |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repository rules             | [`AGENTS.md`](../AGENTS.md)                                                                                                                                                                                                                          |
+| Entry points, peer versions  | [`package.json`](../package.json)                                                                                                                                                                                                                    |
+| Exported symbols             | Root or subpath `index.ts`                                                                                                                                                                                                                           |
+| Props and snippets           | Component `types.ts` **and** `.svelte` (`types.ts` is not always exhaustive)                                                                                                                                                                         |
+| Tokens and CSS classes       | [`tokens.base.css`](../src/lib/styles/tokens.base.css), [`base.css`](../src/lib/styles/base.css), [`layout.css`](../src/lib/styles/layout.css), [`utilities.css`](../src/lib/styles/utilities.css), [`patterns.css`](../src/lib/styles/patterns.css) |
+| Built-in copy                | [`i18n/en.ts`](../src/lib/i18n/en.ts), [`i18n/es.ts`](../src/lib/i18n/es.ts)                                                                                                                                                                         |
+| Intent and composition       | [Guide](./GUIDE.md)                                                                                                                                                                                                                                  |
+| App integration recipes      | [Consumer reference](./CONSUMER_REFERENCE.md)                                                                                                                                                                                                        |
+| Breaking / visual migrations | [Upgrade](./UPGRADE.md)                                                                                                                                                                                                                              |
 
 ## When Public Behavior Changes
 

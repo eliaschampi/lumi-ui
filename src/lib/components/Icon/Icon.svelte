@@ -1,26 +1,16 @@
 <script module lang="ts">
-	const SIZE_TOKENS = {
-		xs: 'var(--lumi-icon-xs)',
-		sm: 'var(--lumi-icon-sm)',
-		md: 'var(--lumi-icon-md)',
-		lg: 'var(--lumi-icon-lg)',
-		xl: 'var(--lumi-icon-xl)',
-		'2xl': 'var(--lumi-icon-2xl)'
-	} as const;
+	const SCALE = /^(xs|sm|md|lg|xl|2xl)$/;
+	const ROLE = /^(primary|secondary|success|warning|danger|info)$/;
 
-	const COLOR_TOKENS = {
-		primary: 'var(--lumi-color-primary)',
-		secondary: 'var(--lumi-color-secondary)',
-		success: 'var(--lumi-color-success)',
-		warning: 'var(--lumi-color-warning)',
-		danger: 'var(--lumi-color-danger)',
-		info: 'var(--lumi-color-info)',
-		muted: 'var(--lumi-color-text-muted)'
-	} as const;
+	function paint(color: string): string | undefined {
+		if (color === 'inherit') return undefined;
+		if (color === 'muted') return 'var(--lumi-color-text-muted)';
+		return ROLE.test(color) ? `var(--lumi-color-${color})` : color;
+	}
 </script>
 
 <script lang="ts">
-	import { getIcon } from '../../utils/icons';
+	import { resolveIcon } from '../../utils/icons';
 	import type { IconProps } from './types';
 
 	const {
@@ -32,53 +22,26 @@
 		'aria-label': ariaLabel
 	}: IconProps = $props();
 
-	// String → registry lookup | Component → passthrough
-	const ResolvedIcon = $derived.by(() => {
-		if (!icon) return null;
-		if (typeof icon === 'string') return getIcon(icon);
-		return icon;
-	});
-
-	const classes = $derived.by(() => {
-		return ['lumi-icon', className].filter(Boolean).join(' ');
-	});
-
+	const Resolved = $derived(resolveIcon(icon));
+	// Default size and inherited color come from CSS; emit only overrides.
 	const style = $derived.by(() => {
-		const resolvedSize = SIZE_TOKENS[size as keyof typeof SIZE_TOKENS] ?? size;
-		const entries = [`--lumi-icon-size: ${resolvedSize}`];
-
-		if (color !== 'inherit') {
-			const resolvedColor =
-				COLOR_TOKENS[color as keyof typeof COLOR_TOKENS] ?? color;
-			entries.push(`--lumi-icon-color: ${resolvedColor}`);
-		}
-
-		return entries.join('; ');
+		const tint = paint(color);
+		const length =
+			size === 'md' ? '' : SCALE.test(size) ? `var(--lumi-icon-${size})` : size;
+		const rules = [
+			length && `--lumi-icon-size: ${length}`,
+			tint && `--lumi-icon-color: ${tint}`
+		].filter(Boolean);
+		return rules.length ? rules.join('; ') : undefined;
 	});
-
-	const accessibilityProps = $derived(
-		ariaLabel ? { role: 'img', 'aria-label': ariaLabel } : {}
-	);
 </script>
 
-{#if ResolvedIcon}
-	<ResolvedIcon
-		class={classes}
+{#if Resolved}
+	<!-- Lucide hides the icon unless an aria-* key is present, so spread conditionally. -->
+	<Resolved
+		class={className ? `lumi-icon ${className}` : 'lumi-icon'}
 		{style}
 		strokeWidth={stroke}
-		{...accessibilityProps}
+		{...ariaLabel ? { role: 'img', 'aria-label': ariaLabel } : {}}
 	/>
 {/if}
-
-<style>
-	:global(.lumi-icon) {
-		display: inline-block;
-		width: var(--lumi-icon-size);
-		height: var(--lumi-icon-size);
-		flex-shrink: 0;
-		vertical-align: middle;
-		color: var(--lumi-icon-color, inherit);
-		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
-		user-select: none;
-	}
-</style>

@@ -1,6 +1,6 @@
 # Lumi UI Agent Instructions
 
-Shared Lumi UI source of truth for Coedula, Aeduca, and Faztore.
+Lightweight, bilingual (English + Spanish) Svelte 5 component library; shared source of truth for Coedula, Aeduca, and Faztore.
 
 ## Documentation Routing
 
@@ -22,16 +22,20 @@ Documentation explains intent; exports, TypeScript contracts, component source, 
 6. Semantic APIs: `tone`, `color`, `size`, `variant`, `orientation`, `clearable`, `selected`, `disabled`, `loading`, `aria-*`.
 7. Overlays portal out of clipped parents and preserve keyboard/focus behavior.
 8. Reusable non-primitives → future `src/lib/patterns/`; not `src/lib/components/` or `src/lib/styles/patterns.css`.
+9. Weight is a feature: fixed icons deep-import `@lucide/svelte/icons/<name>` (never string names inside the library); re-measure budgets in README before merging.
+10. User-visible and `aria-*` defaults come from `src/lib/i18n` (`import * as en` + module `COPY`, `useLumiLocale`); keep `en.ts`, `es.ts` and `types.ts` in parity.
+11. A component's CSS lives in its scoped `<style>`, in `base.css` recipes, or in a stylesheet it imports (layer `lumi.components`); never depend on `utilities.css` or `patterns.css`.
 
 ## Library Layers
 
-| Path                               | Role                                                                                                                    |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/components`               | Public Svelte surface; new entries must be primitive and reusable                                                       |
-| `src/lib/styles/tokens.base.css`   | Default token contract and product identity (azure primary, orchid secondary, warm-paper surfaces; curated OKLCH seeds) |
-| `src/lib/styles/core.css`          | Domain-neutral layout, surface, and utility classes                                                                     |
-| `src/lib/styles/patterns.css`      | Domain-neutral reusable composition patterns                                                                            |
-| `src/lib/actions`, `src/lib/utils` | Internal primitives shared by components                                                                                |
+| Path                               | Role                                                                                                                             |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/components`               | Public Svelte surface; new entries must be primitive and reusable                                                                |
+| `src/lib/styles/tokens.base.css`   | Default token contract and product identity (azure primary, orchid secondary, warm-paper surfaces; curated OKLCH seeds)          |
+| `src/lib/styles/base.css`          | Reset, control contracts and shared recipes (spinner, skeleton, switcher, icon, sr-only); `core.css` = base + layout + utilities |
+| `src/lib/i18n`                     | Built-in copy (English default, Spanish) and locale/currency/time-zone context                                                   |
+| `src/lib/styles/patterns.css`      | Domain-neutral reusable composition patterns                                                                                     |
+| `src/lib/actions`, `src/lib/utils` | Internal primitives shared by components                                                                                         |
 
 Entry points, ownership, principles: [Guide §7](./docs/GUIDE.md#7-library-design).
 

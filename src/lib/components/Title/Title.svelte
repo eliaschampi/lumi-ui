@@ -7,37 +7,25 @@
 		level = 3,
 		size = 'md',
 		color = 'text',
-		icon = '',
+		icon,
 		iconColor,
 		title = '',
 		subtitle = '',
-		class: className = ''
+		class: className
 	}: TitleProps = $props();
 
 	const headingTag = $derived(`h${level}` as `h${TitleLevel}`);
-
-	const titleClasses = $derived.by(() => {
-		return [
-			'lumi-title',
-			`lumi-title--${size}`,
-			icon && 'lumi-title--with-icon',
-			subtitle && 'lumi-title--with-subtitle',
-			className
-		]
-			.filter(Boolean)
-			.join(' ');
-	});
-
-	const styleVars = $derived(
-		`--title-color: var(--lumi-color-${color}); --title-icon-color: var(--lumi-color-${iconColor ?? color});`
-	);
 </script>
 
-<div class={titleClasses} style={styleVars}>
+<div
+	class={['lumi-title', `lumi-title--${size}`, className]}
+	style:--title-color="var(--lumi-color-{color})"
+	style:--title-icon-color="var(--lumi-color-{iconColor ?? color})"
+>
 	{#if icon}
-		<div class="lumi-title__icon">
+		<span class="lumi-title__icon" aria-hidden="true">
 			<Icon {icon} {size} />
-		</div>
+		</span>
 	{/if}
 
 	<div class="lumi-title__content">
@@ -55,7 +43,6 @@
 	.lumi-title {
 		display: flex;
 		align-items: center;
-		font-family: var(--lumi-font-family-sans);
 		line-height: var(--lumi-line-height-normal);
 		gap: var(--lumi-space-sm);
 		color: var(--title-color);

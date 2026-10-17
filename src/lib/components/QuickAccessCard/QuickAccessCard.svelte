@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Title from '../Title/Title.svelte';
-	import IconBadge from '../IconBadge/IconBadge.svelte';
 	import { Card } from '../Card';
+	import { IconBadge } from '../IconBadge';
+	import { Title } from '../Title';
 	import type { QuickAccessCardProps } from './types';
 
 	const {
@@ -13,13 +13,9 @@
 		hoverable = true,
 		class: className = ''
 	}: QuickAccessCardProps = $props();
-
-	const cardClasses = $derived(
-		['lumi-quick-access-card', className].filter(Boolean).join(' ')
-	);
 </script>
 
-<Card {href} {hoverable} class={cardClasses}>
+<Card {href} {hoverable} class="lumi-quick-access-card {className}">
 	<div class="lumi-quick-access-card__container">
 		<IconBadge {icon} {color} size="lg" />
 		<Title {title} size="md" {color} />
@@ -39,6 +35,5 @@
 	.lumi-quick-access-card__description {
 		font-size: var(--lumi-font-size-sm);
 		color: var(--lumi-color-text-muted);
-		margin: 0;
 	}
 </style>

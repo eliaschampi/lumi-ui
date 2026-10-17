@@ -1,169 +1,171 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { portal } from '../../actions/portal';
 	import { createFloating } from '../../utils/floating.svelte';
-	import { LUMI_CONFIG } from '../config';
+	import { DURATION_FAST, motion } from '../config';
 	import type { TooltipPlacement, TooltipProps } from './types';
-
-	interface Props extends TooltipProps {
-		children?: Snippet;
-		content?: Snippet;
-	}
 
 	const {
 		text = '',
 		color = 'primary',
-		placement,
-		position,
+		placement = 'top',
 		delay = 0,
-		class: className = '',
+		class: className,
 		children,
 		content
-	}: Props = $props();
-	const resolvedPlacement = $derived(placement ?? position ?? 'top');
+	}: TooltipProps = $props();
 
 	const instanceId = $props.id();
 	const tooltipId = `lumi-tooltip-${instanceId}`;
+	const FOCUSABLE =
+		'a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])';
 
-	let isVisible = $state(false);
-	let showTimeout: number | null = null;
-	let triggerRef: HTMLDivElement | undefined = $state();
-	let tooltipRef: HTMLDivElement | undefined = $state();
+	let visible = $state(false);
+	let showTimer: ReturnType<typeof setTimeout> | undefined;
+	let hideTimer: ReturnType<typeof setTimeout> | undefined;
+	let triggerRef: HTMLSpanElement | undefined = $state();
+	let bubbleRef: HTMLDivElement | undefined = $state();
 	let arrowRef: HTMLSpanElement | undefined = $state();
 
 	const floating = createFloating(
 		() => triggerRef,
-		() => tooltipRef,
+		() => bubbleRef,
 		() => ({
-			placement: resolvedPlacement,
-			offset: LUMI_CONFIG.floating.tooltip.offset,
-			maxHeight: LUMI_CONFIG.floating.tooltip.maxHeight,
-			viewportPadding: LUMI_CONFIG.floating.tooltip.viewportPadding,
+			placement,
+			offset: 10,
+			maxHeight: 300,
+			viewportPadding: 8,
 			zIndex: 'var(--lumi-z-tooltip)',
-			strategy: 'fixed' as const,
-			arrow: arrowRef
-				? {
-						element: arrowRef,
-						padding: LUMI_CONFIG.floating.tooltip.arrowPadding
-					}
-				: undefined
+			arrow: arrowRef ? { element: arrowRef, padding: 12 } : undefined
 		})
 	);
 
 	const side = $derived(
 		floating.resolvedPlacement.split('-')[0] as TooltipPlacement
 	);
-	const tooltipClasses = $derived(
-		['lumi-tooltip__content', `lumi-tooltip--${side}`, className]
-			.filter(Boolean)
-			.join(' ')
-	);
 
-	const tooltipStyles = $derived.by(() => {
-		const { arrowX, arrowY } = floating.position;
-		const x =
-			arrowX != null
-				? `${arrowX}px`
-				: 'calc(50% - var(--lumi-tooltip-arrow) / 2)';
-		const y =
-			arrowY != null
-				? `${arrowY}px`
-				: 'calc(50% - var(--lumi-tooltip-arrow) / 2)';
-		return [
-			floating.styleString,
-			`--lumi-tooltip-arrow-x: ${x}`,
-			`--lumi-tooltip-arrow-y: ${y}`,
-			`--tooltip-accent: var(--lumi-color-${color})`
-		].join('; ');
-	});
-
-	function clearShowTimeout(): void {
-		if (showTimeout !== null) {
-			clearTimeout(showTimeout);
-			showTimeout = null;
-		}
-	}
-
-	function showTooltip(): void {
-		clearShowTimeout();
-		if (isVisible) {
-			floating.updatePosition();
+	// The description lives in the DOM from SSR on. It is attached to the
+	// first focusable element inside, else to a focusable ancestor, else the
+	// wrapper becomes focusable. Re-attached when the child rewrites its ids.
+	function attach(): void {
+		if (!triggerRef) return;
+		const target =
+			triggerRef.querySelector<HTMLElement>(FOCUSABLE) ??
+			triggerRef.parentElement?.closest<HTMLElement>(FOCUSABLE);
+		if (!target) {
+			// Writing an unchanged value would still notify the observer.
+			if (triggerRef.getAttribute('aria-describedby') === tooltipId) return;
+			triggerRef.tabIndex = 0;
+			triggerRef.setAttribute('aria-describedby', tooltipId);
 			return;
 		}
-		const reveal = (): void => {
-			isVisible = true;
-			floating.open();
-		};
-		if (delay > 0) {
-			showTimeout = window.setTimeout(() => {
-				showTimeout = null;
-				reveal();
-			}, delay);
-		} else {
-			reveal();
-		}
-	}
-
-	function hideTooltip(): void {
-		clearShowTimeout();
-		isVisible = false;
-		floating.close();
-	}
-
-	function handleFocusOut(event: FocusEvent): void {
-		const next = event.relatedTarget as Node | null;
-		if (next && triggerRef?.contains(next)) return;
-		hideTooltip();
+		const ids = target.getAttribute('aria-describedby');
+		if (!ids?.split(' ').includes(tooltipId))
+			target.setAttribute(
+				'aria-describedby',
+				ids ? `${ids} ${tooltipId}` : tooltipId
+			);
 	}
 
 	$effect(() => {
-		if (!isVisible) return;
-		const onKey = (e: KeyboardEvent) => {
-			if (e.key === 'Escape') hideTooltip();
+		if (!triggerRef) return;
+		attach();
+		const observer = new MutationObserver(attach);
+		observer.observe(triggerRef, {
+			subtree: true,
+			childList: true,
+			attributeFilter: ['aria-describedby']
+		});
+		return () => observer.disconnect();
+	});
+
+	function show(): void {
+		clearTimeout(hideTimer);
+		if (visible) return;
+		clearTimeout(showTimer);
+		showTimer = setTimeout(() => {
+			visible = true;
+			floating.open();
+		}, delay);
+	}
+
+	// A short grace period lets the pointer travel onto the bubble (WCAG 1.4.13).
+	function hide(now = false): void {
+		clearTimeout(showTimer);
+		clearTimeout(hideTimer);
+		const close = () => {
+			visible = false;
+			floating.close();
 		};
-		document.addEventListener('keydown', onKey);
-		return () => document.removeEventListener('keydown', onKey);
+		if (now) close();
+		else hideTimer = setTimeout(close, 100);
+	}
+
+	$effect(() => {
+		if (!visible) return;
+		// Capture phase runs before an enclosing dialog's Escape handler.
+		// An open menu or listbox owns its Escape; the tooltip yields to it.
+		const onkeydown = (event: KeyboardEvent) => {
+			const target = event.target as Element;
+			if (
+				event.key !== 'Escape' ||
+				target.closest?.('[role="menu"], [role="listbox"]') ||
+				target.getAttribute?.('aria-expanded') === 'true'
+			)
+				return;
+			event.preventDefault();
+			event.stopPropagation();
+			hide(true);
+		};
+		document.addEventListener('keydown', onkeydown, true);
+		return () => document.removeEventListener('keydown', onkeydown, true);
 	});
 
 	$effect(() => () => {
-		clearShowTimeout();
+		clearTimeout(showTimer);
+		clearTimeout(hideTimer);
 		floating.close();
 	});
 </script>
 
-<div
+{#snippet body()}
+	{#if content}{@render content()}{:else}{text}{/if}
+{/snippet}
+
+<!-- svelte-ignore a11y_no_static_element_interactions (Hover only mirrors focus; the description is exposed through aria-describedby.) -->
+<span
 	bind:this={triggerRef}
 	class="lumi-tooltip"
-	role="group"
-	aria-describedby={isVisible ? tooltipId : undefined}
-	onmouseenter={showTooltip}
-	onmouseleave={hideTooltip}
-	onfocusin={showTooltip}
-	onfocusout={handleFocusOut}
+	onpointerenter={show}
+	onpointerleave={() => hide()}
+	onfocusin={show}
+	onfocusout={() => hide(true)}
 >
-	{#if children}
-		{@render children()}
-	{/if}
-</div>
+	{@render children?.()}
+	<span id={tooltipId} class="lumi-sr-only">{@render body()}</span>
+</span>
 
-{#if isVisible}
+{#if visible}
+	<!-- Visual copy; assistive tech reads the description above. -->
 	<div
-		bind:this={tooltipRef}
+		bind:this={bubbleRef}
 		use:portal
-		id={tooltipId}
-		class={tooltipClasses}
-		style={tooltipStyles}
-		role="tooltip"
-		transition:fade={{ duration: LUMI_CONFIG.transitions.fast }}
+		class={['lumi-tooltip__content', `lumi-tooltip--${side}`, className]}
+		style={floating.styleString}
+		style:--lumi-control-accent="var(--lumi-color-{color})"
+		style:--lumi-tooltip-arrow-x={floating.position.arrowX != null
+			? `${floating.position.arrowX}px`
+			: 'calc(50% - var(--lumi-tooltip-arrow) / 2)'}
+		style:--lumi-tooltip-arrow-y={floating.position.arrowY != null
+			? `${floating.position.arrowY}px`
+			: 'calc(50% - var(--lumi-tooltip-arrow) / 2)'}
+		aria-hidden="true"
+		onpointerenter={show}
+		onpointerleave={() => hide()}
+		transition:fade={{ duration: motion(DURATION_FAST) }}
 	>
-		{#if content}
-			{@render content()}
-		{:else}
-			{text}
-		{/if}
-		<span bind:this={arrowRef} class="lumi-tooltip__arrow" aria-hidden="true"
-		></span>
+		{@render body()}
+		<span bind:this={arrowRef} class="lumi-tooltip__arrow"></span>
 	</div>
 {/if}
 
@@ -178,15 +180,13 @@
 		--lumi-tooltip-bg: var(--lumi-color-surface-raised);
 		--lumi-tooltip-border: color-mix(
 			in oklch,
-			var(--tooltip-accent, var(--lumi-color-border-strong)) 32%,
+			var(--lumi-control-accent, var(--lumi-color-border-strong)) 32%,
 			var(--lumi-color-border-strong)
 		);
 		--lumi-tooltip-arrow: var(--lumi-space-xs);
 		--lumi-tooltip-tuck: calc(
 			(var(--lumi-tooltip-arrow) / 2) + var(--lumi-border-width-thin)
 		);
-		position: fixed;
-		z-index: var(--lumi-z-tooltip);
 		padding: var(--lumi-space-xs) var(--lumi-space-sm);
 		max-width: calc(var(--lumi-space-5xl) * 3);
 		border: var(--lumi-border-width-thin) solid var(--lumi-tooltip-border);
@@ -194,12 +194,10 @@
 		background: var(--lumi-tooltip-bg);
 		color: var(--lumi-color-text);
 		box-shadow: var(--lumi-shadow-md);
-		font-family: var(--lumi-font-family-sans);
 		font-size: var(--lumi-font-size-xs);
 		font-weight: var(--lumi-font-weight-medium);
 		line-height: var(--lumi-line-height-snug);
 		text-align: center;
-		pointer-events: none;
 	}
 
 	/* Tip edges only; square tucks under the bubble so it is one shape. */

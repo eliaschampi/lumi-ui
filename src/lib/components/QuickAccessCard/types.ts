@@ -1,3 +1,4 @@
+import type { IconSource } from '../../utils/icons';
 import type { LumiColor } from '../config';
 
 export interface QuickAccessCardProps {
@@ -6,7 +7,7 @@ export interface QuickAccessCardProps {
 	/** Description text */
 	description: string;
 	/** Lucide icon name */
-	icon: string;
+	icon: IconSource;
 	/** Semantic color */
 	color?: LumiColor;
 	/** Whether card shows hover effects */

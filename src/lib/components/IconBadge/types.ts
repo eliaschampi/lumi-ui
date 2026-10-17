@@ -1,8 +1,9 @@
+import type { IconSource } from '../../utils/icons';
 import type { LumiColor, LumiDisplaySize } from '../config';
 
 export interface IconBadgeProps {
 	/** Icon name from the icon registry */
-	icon: string;
+	icon: IconSource;
 
 	/** Badge color variant */
 	color?: LumiColor;

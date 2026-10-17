@@ -1,81 +1,35 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import { Icon } from '../Icon';
+	import { IconBadge } from '../IconBadge';
 	import type { InfoItemProps } from './types';
-
-	interface Props extends InfoItemProps {
-		children?: Snippet;
-		iconSlot?: Snippet;
-		labelSlot?: Snippet;
-	}
 
 	const {
 		layout = 'horizontal',
-		icon = '',
+		icon,
 		iconColor = 'primary',
 		label = '',
 		value = '',
-		class: className = '',
-		children,
-		iconSlot,
-		labelSlot
-	}: Props = $props();
-
-	const hasIcon = $derived(!!(icon || iconSlot));
-
-	const classes = $derived(
-		['lumi-info-item', `lumi-info-item--${layout}`, className]
-			.filter(Boolean)
-			.join(' ')
-	);
-
-	const styleVars = $derived(`--_accent: var(--lumi-color-${iconColor});`);
+		class: className,
+		children
+	}: InfoItemProps = $props();
 </script>
 
-<div class={classes} style={styleVars}>
-	{#if hasIcon}
-		<div class="lumi-info-item__icon">
-			{#if iconSlot}
-				{@render iconSlot()}
-			{:else}
-				<Icon {icon} size="sm" />
-			{/if}
-		</div>
+<div class={['lumi-info-item', `lumi-info-item--${layout}`, className]}>
+	{#if icon}
+		<IconBadge {icon} color={iconColor} class="lumi-info-item__icon" />
 	{/if}
 
-	<div class="lumi-info-item__content">
-		<div class="lumi-info-item__label">
-			{#if labelSlot}
-				{@render labelSlot()}
-			{:else}
-				{label}
-			{/if}
-		</div>
-
-		<div class="lumi-info-item__value">
-			{#if children}
-				{@render children()}
-			{:else}
-				{value}
-			{/if}
-		</div>
-	</div>
+	<dl class="lumi-info-item__content">
+		<dt class="lumi-info-item__label">{label}</dt>
+		<dd class="lumi-info-item__value">
+			{#if children}{@render children()}{:else}{value}{/if}
+		</dd>
+	</dl>
 </div>
 
 <style>
 	.lumi-info-item {
 		--info-shell-bg: var(--lumi-color-control-fill);
 		--info-shell-border: var(--lumi-color-border);
-		--info-icon-bg: color-mix(
-			in srgb,
-			var(--_accent, var(--lumi-color-primary)) 12%,
-			transparent
-		);
-		--info-icon-border: color-mix(
-			in srgb,
-			var(--_accent, var(--lumi-color-primary)) 20%,
-			transparent
-		);
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
 		align-items: center;
@@ -85,24 +39,9 @@
 		border: var(--lumi-border-width-thin) solid var(--info-shell-border);
 		border-radius: var(--lumi-radius-panel);
 		background: var(--info-shell-bg);
-		transition: var(--lumi-transition-control);
 	}
 
-	.lumi-info-item:hover {
-		border-color: color-mix(
-			in srgb,
-			var(--_accent, var(--lumi-color-primary)) 24%,
-			var(--info-shell-border)
-		);
-		box-shadow: 0 0 0 var(--lumi-border-width-thin)
-			color-mix(
-				in srgb,
-				var(--_accent, var(--lumi-color-primary)) 10%,
-				transparent
-			);
-	}
-
-	.lumi-info-item--horizontal:has(> .lumi-info-item__icon) {
+	.lumi-info-item--horizontal:has(> :global(.lumi-info-item__icon)) {
 		grid-template-columns: auto minmax(0, 1fr);
 	}
 
@@ -110,20 +49,7 @@
 		align-items: start;
 	}
 
-	.lumi-info-item__icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: calc(var(--lumi-icon-sm) + var(--lumi-space-lg));
-		height: calc(var(--lumi-icon-sm) + var(--lumi-space-lg));
-		color: var(--_accent, var(--lumi-color-primary));
-		border-radius: var(--lumi-radius-tile);
-		border: var(--lumi-border-width-thin) solid var(--info-icon-border);
-		background: var(--info-icon-bg);
-		box-shadow: var(--lumi-elevation-rim);
-	}
-
-	.lumi-info-item--vertical .lumi-info-item__icon {
+	.lumi-info-item--vertical > :global(.lumi-info-item__icon) {
 		margin-block-end: var(--lumi-space-2xs);
 	}
 

@@ -8,62 +8,71 @@ export function getPortalOrigin(node: HTMLElement): HTMLElement | null {
 }
 
 /**
- * Usage: <div use:portal={'css-selector'}> or <div use:portal={element}>
- * Default target is document.body
+ * Inside an open modal, layers must stay in its subtree: `aria-modal` hides
+ * everything else from assistive tech. A modal that is a containing block
+ * for fixed descendants (transform, filter, contain…) would offset fixed
+ * layers, so those fall back to the body.
  */
-export function portal(
-	node: HTMLElement,
-	target: HTMLElement | string = 'body'
-) {
+function containsFixed(element: HTMLElement): boolean {
+	const style = getComputedStyle(element);
+	const set = (value: string | undefined) => (value || 'none') !== 'none';
+	return (
+		set(style.transform) ||
+		set(style.perspective) ||
+		set(style.filter) ||
+		set(style.backdropFilter) ||
+		/paint|layout|strict|content/.test(style.contain ?? '') ||
+		/transform|perspective|filter/.test(style.willChange ?? '')
+	);
+}
+
+function defaultTarget(node: HTMLElement): HTMLElement {
+	const modal = node.parentElement?.closest<HTMLElement>('[aria-modal="true"]');
+	return modal && !containsFixed(modal) ? modal : node.ownerDocument.body;
+}
+
+/**
+ * Move a node out of clipped or stacked ancestors:
+ * `use:portal`, `use:portal={'css-selector'}` or `use:portal={element}`.
+ * Without a target it joins the nearest open modal, else `document.body`.
+ * Modal roots themselves pass `'body'`.
+ */
+export function portal(node: HTMLElement, target?: HTMLElement | string) {
 	origins.set(node, node.parentElement);
 	let activeTarget: HTMLElement | null = null;
 	let updateVersion = 0;
 	let destroyed = false;
 
-	async function resolveTarget(
-		nextTarget: HTMLElement | string
-	): Promise<HTMLElement | null> {
-		const resolved =
-			typeof nextTarget === 'string'
-				? (document.querySelector(nextTarget) as HTMLElement | null)
-				: nextTarget;
-
-		if (resolved) return resolved;
-
-		await tick();
-		return typeof nextTarget === 'string'
-			? (document.querySelector(nextTarget) as HTMLElement | null)
-			: nextTarget;
+	function query(next: HTMLElement | string | undefined): HTMLElement | null {
+		if (next === undefined) return defaultTarget(node);
+		return typeof next === 'string'
+			? node.ownerDocument.querySelector<HTMLElement>(next)
+			: next;
 	}
 
-	async function update(nextTarget: HTMLElement | string) {
+	async function update(next?: HTMLElement | string) {
 		const version = ++updateVersion;
-		const resolved = await resolveTarget(nextTarget);
-		if (
-			destroyed ||
-			version !== updateVersion ||
-			!resolved ||
-			resolved === activeTarget
-		)
-			return;
-
+		let resolved = query(next);
+		if (!resolved) {
+			await tick();
+			resolved = query(next);
+		}
+		if (destroyed || version !== updateVersion || !resolved) return;
+		if (resolved === activeTarget) return;
 		activeTarget = resolved;
 		resolved.appendChild(node);
-		node.hidden = false;
-	}
-
-	function destroy() {
-		destroyed = true;
-		updateVersion += 1;
-		node.parentNode?.removeChild(node);
-		origins.delete(node);
-		activeTarget = null;
 	}
 
 	update(target);
 
 	return {
 		update,
-		destroy
+		destroy() {
+			destroyed = true;
+			updateVersion += 1;
+			node.remove();
+			origins.delete(node);
+			activeTarget = null;
+		}
 	};
 }

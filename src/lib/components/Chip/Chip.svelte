@@ -1,63 +1,45 @@
-<script lang="ts">
-	import type { Snippet } from 'svelte';
-	import { Icon } from '../Icon';
-	import type { ChipProps } from './types';
+<script module lang="ts">
+	import * as en from '../../i18n/en';
 
-	interface Props extends ChipProps {
-		children?: Snippet;
-	}
+	const COPY = { chipRemove: en.chipRemove };
+</script>
+
+<script lang="ts">
+	import X from '@lucide/svelte/icons/x';
+	import { Icon } from '../Icon';
+	import { useLumiLocale } from '../../i18n';
+	import type { ChipProps } from './types';
 
 	const {
 		color = 'primary',
 		size = 'md',
-		icon = '',
+		icon,
 		closable = false,
-		class: className = '',
+		class: className,
 		children,
+		closeLabel,
 		onclose,
 		onclick
-	}: Props = $props();
+	}: ChipProps = $props();
 
-	// Computed classes
-	const classes = $derived(
-		[
-			'lumi-chip',
-			`lumi-chip--${color}`,
-			`lumi-chip--${size}`,
-			onclick && 'lumi-chip--interactive',
-			className
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
-
+	const i18n = useLumiLocale(COPY);
 	const iconSize = $derived(size === 'sm' ? 'xs' : 'sm');
-
-	// Event handlers
-	const handleClose = (event: MouseEvent) => {
-		event.stopPropagation();
-		onclose?.(event);
-	};
 </script>
 
 {#snippet content()}
-	{#if icon}
-		<span class="lumi-chip__icon">
-			<Icon {icon} size={iconSize} />
-		</span>
-	{/if}
-
-	<span class="lumi-chip__text">
-		{#if children}
-			{@render children()}
-		{/if}
-	</span>
+	{#if icon}<Icon {icon} size={iconSize} />{/if}
+	<span class="lumi-chip__text">{@render children?.()}</span>
 {/snippet}
 
-<div
-	class={classes}
-	style:--chip-color="var(--lumi-color-{color})"
-	style:--chip-bg="var(--lumi-color-{color}-bg)"
+<!-- The action and the remove control are siblings, never nested. -->
+<span
+	class={[
+		'lumi-chip',
+		size === 'sm' && 'lumi-chip--sm',
+		onclick && 'lumi-chip--interactive',
+		className
+	]}
+	style:--lumi-control-accent="var(--lumi-color-{color})"
 >
 	{#if onclick}
 		<button type="button" class="lumi-chip__action" {onclick}>
@@ -68,22 +50,25 @@
 	{/if}
 
 	{#if closable}
-		<!-- Close button -->
 		<button
 			type="button"
 			class="lumi-chip__close"
-			aria-label="Cerrar chip"
-			onclick={handleClose}
+			aria-label={closeLabel ?? i18n.t.chipRemove}
+			onclick={(event) => {
+				event.stopPropagation();
+				onclose?.(event);
+			}}
 		>
-			<Icon icon="x" size="sm" />
+			<X aria-hidden="true" />
 		</button>
 	{/if}
-</div>
+</span>
 
 <style>
-	/* ============================================================================
-	 * CHIP COMPONENT - Beautiful & Consistent
-	 * ============================================================================ */
+	.lumi-chip__close :global(svg) {
+		inline-size: var(--lumi-chip-close-icon);
+		block-size: var(--lumi-chip-close-icon);
+	}
 
 	.lumi-chip {
 		--lumi-chip-padding-block: var(--lumi-space-xs);
@@ -92,9 +77,7 @@
 		--lumi-chip-font-size: var(--lumi-font-size-sm);
 		--lumi-chip-min-height: var(--lumi-control-height-sm);
 		--lumi-chip-close-size: var(--lumi-space-md);
-		--chip-color: var(--lumi-color-primary);
-		--chip-bg: var(--lumi-color-primary-bg);
-		--lumi-control-accent: var(--chip-color);
+		--lumi-chip-close-icon: var(--lumi-icon-sm);
 		display: inline-flex;
 		align-items: center;
 		align-self: flex-start;
@@ -111,10 +94,14 @@
 		white-space: nowrap;
 		cursor: default;
 		user-select: none;
-		background: var(--chip-bg);
-		color: var(--chip-color);
+		background: color-mix(
+			in oklch,
+			var(--lumi-control-accent) var(--lumi-state-bg-strength),
+			var(--lumi-color-surface)
+		);
+		color: var(--lumi-control-accent);
 		border: var(--lumi-border-width-thin) solid
-			color-mix(in srgb, var(--chip-color) 24%, transparent);
+			color-mix(in srgb, var(--lumi-control-accent) 24%, transparent);
 		box-shadow: inset 0 var(--lumi-border-width-thin) 0
 			color-mix(in srgb, var(--lumi-color-white) 18%, transparent);
 	}
@@ -127,6 +114,7 @@
 		--lumi-chip-font-size: var(--lumi-font-size-xs);
 		--lumi-chip-min-height: var(--lumi-control-height-xs);
 		--lumi-chip-close-size: var(--lumi-space-sm);
+		--lumi-chip-close-icon: var(--lumi-icon-xs);
 	}
 
 	.lumi-chip__action {
@@ -142,31 +130,15 @@
 		cursor: pointer;
 	}
 
-	/* Icon styling */
-	.lumi-chip__icon {
-		flex-shrink: 0;
-		color: currentColor;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	/* Text styling */
 	.lumi-chip__text {
-		display: flex;
-		align-items: center;
-		justify-content: center;
 		min-width: 0;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		line-height: inherit;
 	}
 
-	/* Close button styling */
 	.lumi-chip__close {
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		display: inline-grid;
+		place-items: center;
 		width: var(--lumi-chip-close-size);
 		height: var(--lumi-chip-close-size);
 		padding: 0;
@@ -194,9 +166,13 @@
 	.lumi-chip--interactive:hover {
 		background: color-mix(
 			in srgb,
-			var(--chip-color) 16%,
+			var(--lumi-control-accent) 16%,
 			var(--lumi-color-surface-card)
 		);
-		border-color: color-mix(in srgb, var(--chip-color) 34%, transparent);
+		border-color: color-mix(
+			in srgb,
+			var(--lumi-control-accent) 34%,
+			transparent
+		);
 	}
 </style>

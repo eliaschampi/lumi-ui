@@ -1,59 +1,30 @@
-/**
- * Notification Component Types
- * Toast notification; placement is owned by the consumer stack
- * (`.lumi-toast-portal` in core.css).
- */
+import type { LumiColor } from '../config';
 
-export type NotificationColor =
-	'success' | 'warning' | 'danger' | 'info' | 'primary';
-/** @deprecated Use `NotificationColor`; legacy `error` maps to `danger`. */
-export type NotificationType =
-	'success' | 'warning' | 'error' | 'info' | 'primary';
+export type NotificationColor = Exclude<LumiColor, 'secondary'>;
 
 export interface NotificationProps {
-	/**
-	 * Semantic accent color
-	 * @default "primary"
-	 */
+	/** @default "primary" */
 	color?: NotificationColor;
 
-	/** @deprecated Use `color` instead. */
-	type?: NotificationType;
-
-	/**
-	 * Notification title
-	 */
 	title?: string;
 
-	/**
-	 * Notification message
-	 */
 	message?: string;
 
-	/**
-	 * Whether notification can be closed
-	 * @default true
-	 */
+	/** @default true */
 	closable?: boolean;
 
 	/**
-	 * Auto-dismiss duration in milliseconds (0 = no auto-dismiss)
+	 * Auto-dismiss after this many milliseconds; pauses while hovered or
+	 * focused. `0` keeps it until closed.
 	 * @default 0
 	 */
 	duration?: number;
 
-	/**
-	 * Whether notification is active/visible (bindable)
-	 */
+	/** Visible state (bindable) */
 	active?: boolean;
 
-	/**
-	 * Custom CSS class
-	 */
 	class?: string;
 
-	/**
-	 * Close event handler
-	 */
+	/** Fires once the notification has left (after its exit transition) */
 	onclose?: () => void;
 }

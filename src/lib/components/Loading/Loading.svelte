@@ -1,54 +1,39 @@
-<script lang="ts">
-	import type { Snippet } from 'svelte';
-	import type { LoadingProps } from './types';
+<script module lang="ts">
+	import * as en from '../../i18n/en';
 
-	interface Props extends LoadingProps {
-		children?: Snippet;
-	}
+	const COPY = { loading: en.loading };
+</script>
+
+<script lang="ts">
+	import { useLumiLocale } from '../../i18n';
+	import type { LoadingProps } from './types';
 
 	const {
 		size = 'md',
 		color = 'primary',
 		text = '',
-		class: className = '',
+		class: className,
 		children
-	}: Props = $props();
+	}: LoadingProps = $props();
 
-	const classes = $derived(
-		[
-			'lumi-loading',
-			`lumi-loading--${size}`,
-			`lumi-loading--${color}`,
-			className
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
-
-	const styleVars = $derived(`--loading-color: var(--lumi-color-${color});`);
-	const ariaLabel = $derived(text || (children ? undefined : 'Loading'));
+	const i18n = useLumiLocale(COPY);
 </script>
 
 <div
-	class={classes}
-	style={styleVars}
+	class={['lumi-loading', size !== 'md' && `lumi-loading--${size}`, className]}
+	style:--lumi-control-accent="var(--lumi-color-{color})"
 	role="status"
-	aria-live="polite"
-	aria-label={ariaLabel}
+	aria-label={text || children ? undefined : i18n.t.loading}
 >
-	<div class="lumi-loading__indicator" aria-hidden="true">
-		<span class="lumi-loading__ring"></span>
+	<span class="lumi-loading__indicator" aria-hidden="true">
+		<span class="lumi-spinner lumi-loading__ring"></span>
 		<span class="lumi-loading__core"></span>
-	</div>
+	</span>
 
 	{#if text || children}
-		<div class="lumi-loading__text">
-			{#if children}
-				{@render children()}
-			{:else}
-				{text}
-			{/if}
-		</div>
+		<span class="lumi-loading__text">
+			{#if children}{@render children()}{:else}{text}{/if}
+		</span>
 	{/if}
 </div>
 
@@ -59,9 +44,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: var(--lumi-space-md);
-		font-family: var(--lumi-font-family-sans);
-		color: var(--loading-color);
-		transition: var(--lumi-transition-colors);
+		color: var(--lumi-control-accent);
 		--loading-ring-size: var(--lumi-space-3xl);
 		--loading-core-size: var(--lumi-space-lg);
 	}
@@ -77,11 +60,7 @@
 	.lumi-loading__ring {
 		position: absolute;
 		inset: 0;
-		border-radius: var(--lumi-radius-full);
-		border: var(--lumi-border-width-thick) solid
-			color-mix(in srgb, currentColor 18%, transparent);
-		border-top-color: currentColor;
-		animation: lumi-spin var(--lumi-duration-spin) linear infinite;
+		--lumi-spinner-size: 100%;
 	}
 
 	.lumi-loading__core {

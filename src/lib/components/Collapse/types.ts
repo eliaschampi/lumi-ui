@@ -1,34 +1,28 @@
+import type { Snippet } from 'svelte';
 import type { LumiColor, LumiControlSize } from '../config';
 
 export type CollapseColor = LumiColor;
 export type CollapseSize = LumiControlSize;
-export type CollapseRadius = 'none' | 'sm' | 'md' | 'lg' | 'full';
 
 export interface CollapseProps {
-	/** Title text */
 	title?: string;
 
-	/** Whether open by default */
-	defaultOpen?: boolean;
+	/** Expanded state (bindable) */
+	open?: boolean;
 
-	/** Color variant */
+	/** Accent for focus and the open chevron @default "primary" */
 	color?: CollapseColor;
 
-	/** Size variant */
+	/** @default "md" */
 	size?: CollapseSize;
 
-	/** Border radius variant */
-	radius?: CollapseRadius;
-
-	/** Whether disabled */
 	disabled?: boolean;
 
-	/** Custom class */
 	class?: string;
 
-	/** Toggle event handler */
-	ontoggle?: (isOpen: boolean) => void;
+	/** Panel content; stays in the DOM (and in search indexes) while closed */
+	children?: Snippet;
 
-	/** Change event handler */
-	onchange?: (isOpen: boolean) => void;
+	/** Fires with the new state after a user toggle */
+	ontoggle?: (open: boolean) => void;
 }

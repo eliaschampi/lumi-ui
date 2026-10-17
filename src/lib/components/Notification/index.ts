@@ -1,11 +1,2 @@
-/**
- * Notification Component
- * Toast notifications with positioning and queue management
- */
-
 export { default as Notification } from './Notification.svelte';
-export type {
-	NotificationColor,
-	NotificationProps,
-	NotificationType
-} from './types';
+export type { NotificationColor, NotificationProps } from './types';

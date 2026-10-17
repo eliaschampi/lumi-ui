@@ -1,33 +1,19 @@
+import type { Snippet } from 'svelte';
+import type { IconSource } from '../../utils/icons';
 import type { LumiColor, LumiControlSize } from '../config';
 
 export type ContextSize = LumiControlSize;
 
 export interface ContextProps {
-	/** Size of the context menu */
+	/** Minimum menu width @default "md" */
 	size?: ContextSize;
 
-	/** Whether to close on click */
-	closeOnClick?: boolean;
-
-	/** Whether to close on scroll */
-	closeOnScroll?: boolean;
-
-	/** CSS selector for context items */
-	itemSelector?: string;
-
-	/** Maximum height for context menu */
-	maxHeight?: number;
-
-	/** Minimum distance from viewport edges */
-	viewportPadding?: number;
-
-	/** Custom class */
 	class?: string;
 
-	/** Accessible label for the context menu */
+	/** Defaults to the localized "Context menu" */
 	'aria-label'?: string;
 
-	/** Open event handler */
+	/** Opened at the pointer; `top`/`left` are the resolved menu coordinates */
 	onopen?: (
 		event: MouseEvent,
 		data?: unknown,
@@ -35,29 +21,26 @@ export interface ContextProps {
 		left?: number
 	) => void;
 
-	/** Close event handler */
 	onclose?: () => void;
+
+	/** Menu content; receives the `data` passed to `open(event, data)` */
+	children?: Snippet<[{ data: unknown }]>;
 }
 
 export interface ContextItemProps {
-	/** Item title */
 	title?: string;
 
-	/** Item icon */
-	icon?: string;
+	icon?: IconSource;
 
-	/** Keyboard shortcut */
+	/** Keyboard hint shown at the end, e.g. "⌘C" */
 	shortcut?: string;
 
-	/** Whether item is disabled */
 	disabled?: boolean;
 
-	/** Item color variant */
+	/** Semantic accent, e.g. `danger` for destructive items */
 	color?: LumiColor;
 
-	/** Custom class */
 	class?: string;
 
-	/** Click event handler */
 	onclick?: (event: MouseEvent) => void;
 }

@@ -1,96 +1,53 @@
-<script lang="ts">
-	import type { Snippet } from 'svelte';
-	import { Icon } from '../Icon';
-	import type { EmptyStateProps } from './types';
+<script module lang="ts">
+	import * as en from '../../i18n/en';
 
-	interface Props extends EmptyStateProps {
-		visual?: Snippet;
-		titleSlot?: Snippet;
-		descriptionSlot?: Snippet;
-		actions?: Snippet;
-	}
-
-	const {
-		title = 'No hay datos disponibles aquí',
-		description = '',
-		image = '',
-		icon = '',
-		iconColor = 'muted',
-		class: className = '',
-		visual,
-		titleSlot,
-		descriptionSlot,
-		actions
-	}: Props = $props();
-
-	const classes = $derived(
-		['lumi-empty-state', className].filter(Boolean).join(' ')
-	);
-
-	const imageUrl = $derived.by(() => {
-		if (!image) return '';
-
-		// If it's already a full URL, return as is
-		if (image.startsWith('http') || image.startsWith('/')) {
-			return image;
-		}
-
-		// Otherwise, assume it's in assets
-		return `/assets/images/${image}`;
-	});
+	const COPY = { emptyTitle: en.emptyTitle };
 </script>
 
-<div class={classes}>
-	<!-- Image/Icon -->
-	<div class="lumi-empty-state__visual">
-		{#if visual}
-			{@render visual()}
-		{:else if image}
-			<img
-				src={imageUrl}
-				alt={title || 'Empty state'}
-				class="lumi-empty-state__image"
-			/>
-		{:else if icon}
-			<div class="lumi-empty-state__icon">
-				<Icon {icon} size="2xl" color={iconColor} />
-			</div>
-		{:else}
-			<div class="lumi-empty-state__default-icon">
-				<Icon icon="inbox" size="2xl" color="muted" />
-			</div>
-		{/if}
-	</div>
+<script lang="ts">
+	import Inbox from '@lucide/svelte/icons/inbox';
+	import { Icon } from '../Icon';
+	import { useLumiLocale } from '../../i18n';
+	import type { EmptyStateProps } from './types';
 
-	<!-- Content -->
+	const {
+		title,
+		description = '',
+		image = '',
+		icon = Inbox,
+		iconColor = 'muted',
+		class: className,
+		visual,
+		actions
+	}: EmptyStateProps = $props();
+
+	const i18n = useLumiLocale(COPY);
+</script>
+
+<div class={['lumi-empty-state', className]}>
+	{#if visual}
+		{@render visual()}
+	{:else if image}
+		<img
+			src={image}
+			alt=""
+			class="lumi-empty-state__image"
+			loading="lazy"
+			decoding="async"
+		/>
+	{:else}
+		<span class="lumi-empty-state__icon" aria-hidden="true">
+			<Icon {icon} size="xl" color={iconColor} />
+		</span>
+	{/if}
+
 	<div class="lumi-empty-state__content">
-		<!-- Title -->
-		{#if title || titleSlot}
-			<h3 class="lumi-empty-state__title">
-				{#if titleSlot}
-					{@render titleSlot()}
-				{:else}
-					{title}
-				{/if}
-			</h3>
+		<p class="lumi-empty-state__title">{title ?? i18n.t.emptyTitle}</p>
+		{#if description}
+			<p class="lumi-empty-state__description">{description}</p>
 		{/if}
-
-		<!-- Description -->
-		{#if description || descriptionSlot}
-			<p class="lumi-empty-state__description">
-				{#if descriptionSlot}
-					{@render descriptionSlot()}
-				{:else}
-					{description}
-				{/if}
-			</p>
-		{/if}
-
-		<!-- Actions -->
 		{#if actions}
-			<div class="lumi-empty-state__actions">
-				{@render actions()}
-			</div>
+			<div class="lumi-empty-state__actions">{@render actions()}</div>
 		{/if}
 	</div>
 </div>
@@ -104,103 +61,53 @@
 		gap: var(--lumi-space-lg);
 		padding: var(--lumi-space-2xl);
 		text-align: center;
-		font-family: var(--lumi-font-family-sans);
 		line-height: var(--lumi-line-height-normal);
-		transition: var(--lumi-transition-control);
 	}
 
-	/* Visual container */
-	.lumi-empty-state__visual {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: var(--lumi-space-4xl);
-		height: var(--lumi-space-4xl);
-		color: var(--lumi-color-text-muted);
+	/* A quiet round well keeps the glyph calm on any surface. */
+	.lumi-empty-state__icon {
+		display: grid;
+		place-items: center;
+		inline-size: var(--lumi-space-4xl);
+		block-size: var(--lumi-space-4xl);
+		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-light);
+		border-radius: var(--lumi-radius-full);
+		background: color-mix(in srgb, var(--lumi-color-text) 4%, transparent);
 	}
 
-	/* Icon styling */
-	.lumi-empty-state__icon,
-	.lumi-empty-state__default-icon {
-		width: 100%;
-		height: 100%;
-		opacity: 0.6;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		transition: var(--lumi-transition-opacity);
-	}
-
-	/* Default icon */
-	.lumi-empty-state__default-icon {
-		opacity: 0.4;
-	}
-
-	/* Image styling */
 	.lumi-empty-state__image {
-		width: 100%;
-		height: 100%;
+		inline-size: calc(var(--lumi-space-4xl) * 2);
+		max-inline-size: 100%;
+		block-size: auto;
 		object-fit: contain;
-		border-radius: var(--lumi-radius-tile);
-		opacity: 0.8;
-		transition: var(--lumi-transition-opacity);
 	}
 
-	/* Content container */
 	.lumi-empty-state__content {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: var(--lumi-space-md);
-		max-width: var(--lumi-max-width-sm);
+		gap: var(--lumi-space-sm);
+		max-inline-size: var(--lumi-max-width-sm);
 	}
 
-	/* Title */
 	.lumi-empty-state__title {
-		margin: 0;
-		font-size: var(--lumi-font-size-xl);
-		font-weight: var(--lumi-font-weight-semibold);
 		color: var(--lumi-color-text);
+		font-size: var(--lumi-font-size-lg);
+		font-weight: var(--lumi-font-weight-semibold);
 		line-height: var(--lumi-line-height-tight);
 	}
 
-	/* Description */
 	.lumi-empty-state__description {
-		margin: 0;
-		font-size: var(--lumi-font-size-base);
-		font-weight: var(--lumi-font-weight-normal);
 		color: var(--lumi-color-text-muted);
-		line-height: var(--lumi-line-height-normal);
+		font-size: var(--lumi-font-size-sm);
 	}
 
-	/* Actions container — centered with the title/description block */
 	.lumi-empty-state__actions {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: center;
 		gap: var(--lumi-space-sm);
-		margin-top: var(--lumi-space-sm);
-	}
-
-	/* Hover effects */
-	.lumi-empty-state:hover .lumi-empty-state__visual {
-		transform: scale(var(--lumi-interactive-hover-scale));
-	}
-
-	.lumi-empty-state:hover .lumi-empty-state__icon,
-	.lumi-empty-state:hover .lumi-empty-state__default-icon {
-		opacity: 0.8;
-	}
-
-	.lumi-empty-state:hover .lumi-empty-state__image {
-		opacity: 1;
-	}
-
-	/* Focus styles */
-	.lumi-empty-state:focus-visible {
-		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-focus-outline-offset);
-		border-radius: var(--lumi-surface-radius);
+		margin-block-start: var(--lumi-space-sm);
 	}
 </style>

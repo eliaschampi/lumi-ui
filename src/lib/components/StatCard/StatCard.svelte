@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Title from '../Title/Title.svelte';
-	import IconBadge from '../IconBadge/IconBadge.svelte';
 	import { Card } from '../Card';
+	import { IconBadge } from '../IconBadge';
+	import { Title } from '../Title';
 	import type { StatCardProps } from './types';
 
 	const {
@@ -14,13 +14,13 @@
 		subtitle = '',
 		class: className = ''
 	}: StatCardProps = $props();
-
-	const cardClasses = $derived.by(() => {
-		return ['lumi-stat-card', className].filter(Boolean).join(' ');
-	});
 </script>
 
-<Card {href} hoverable={hoverable ?? Boolean(href)} class={cardClasses}>
+<Card
+	{href}
+	hoverable={hoverable ?? Boolean(href)}
+	class="lumi-stat-card {className}"
+>
 	<div class="lumi-stat-card__container">
 		<div class="lumi-stat-card__header">
 			<Title {title} size="sm" {color} />
@@ -51,6 +51,7 @@
 	.lumi-stat-card__value {
 		font-size: var(--lumi-font-size-3xl);
 		font-weight: var(--lumi-font-weight-bold);
+		font-variant-numeric: tabular-nums;
 		line-height: var(--lumi-line-height-tight);
 		color: var(--lumi-color-text);
 		overflow-wrap: break-word;

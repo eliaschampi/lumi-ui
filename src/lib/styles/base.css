@@ -1,0 +1,569 @@
+/* ========================================================================== */
+/* Lumi UI Base                                                               */
+/* Reset, accent-aware control contracts, surfaces, shared component          */
+/* recipes (icon, spinner, skeleton, switcher, sr-only), scrollbars and       */
+/* keyframes. Required by every component.                                    */
+/* ========================================================================== */
+/* Cascade layers, weakest first; every Lumi stylesheet repeats this order so */
+/* import order never changes it. lumi.components holds shared stylesheets    */
+/* that components import (e.g. Field/field.css). Component-scoped <style>    */
+/* blocks stay unlayered, as does any app CSS, so both win over all layers.   */
+@layer lumi.tokens, lumi.base, lumi.components, lumi.layout, lumi.patterns, lumi.utilities;
+
+@layer lumi.base {
+	/* ========================================================================== */
+	/* GLOBAL RESET */
+	/* ========================================================================== */
+	*,
+	*::before,
+	*::after {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+	}
+
+	html {
+		font-family: var(--lumi-font-family-sans);
+		font-size: var(--lumi-font-size-sm);
+		line-height: var(--lumi-line-height-normal);
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		scroll-behavior: smooth;
+		-webkit-text-size-adjust: 100%;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		/* One global guard instead of a block per component. --lumi-motion-scale
+		   flattens every lift/press/zoom magnitude at the token level; the resets
+		   below collapse durations and stop looping animations. Durations land on a
+		   non-zero value so transitionend/animationend listeners still fire.
+		   Layered !important outranks every unlayered rule, even !important ones:
+		   motion that is essential must be conveyed without animation. */
+		:root {
+			--lumi-motion-scale: 0;
+		}
+
+		html {
+			scroll-behavior: auto;
+		}
+
+		*,
+		*::before,
+		*::after {
+			animation-duration: 1ms !important;
+			animation-delay: 0ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 1ms !important;
+			transition-delay: 0ms !important;
+			scroll-behavior: auto !important;
+		}
+	}
+
+	@media (hover: none) {
+		/* Touch has no hover, so a lift would stick after a tap; presses still scale. */
+		:root {
+			--lumi-interactive-lift: 0px;
+		}
+	}
+
+	body {
+		min-height: 100dvh;
+		color: var(--lumi-color-text);
+		background:
+			var(--lumi-app-background-accent) center / auto no-repeat,
+			radial-gradient(
+					circle at center,
+					var(--lumi-app-pattern-dot-color) 0 var(--lumi-app-pattern-dot-size),
+					transparent var(--lumi-app-pattern-dot-edge)
+				)
+				0 0 / var(--lumi-app-pattern-size) var(--lumi-app-pattern-size) repeat,
+			linear-gradient(
+					var(--lumi-app-pattern-line-color) var(--lumi-border-width-thin),
+					transparent var(--lumi-border-width-thin)
+				)
+				0 0 / var(--lumi-app-pattern-size) var(--lumi-app-pattern-size) repeat,
+			linear-gradient(
+					90deg,
+					var(--lumi-app-pattern-line-color) var(--lumi-border-width-thin),
+					transparent var(--lumi-border-width-thin)
+				)
+				0 0 / var(--lumi-app-pattern-size) var(--lumi-app-pattern-size) repeat,
+			var(--lumi-gradient-app);
+		background-color: var(--lumi-color-background);
+		transition:
+			color var(--lumi-duration-base) var(--lumi-easing-default),
+			background var(--lumi-duration-base) var(--lumi-easing-default);
+		overflow-x: hidden;
+	}
+
+	::selection {
+		background: color-mix(in srgb, var(--lumi-color-primary) 28%, transparent);
+		color: var(--lumi-color-text);
+	}
+
+	/* ========================================================================== */
+	/* SHARED COMPONENT PRIMITIVES */
+	/* ========================================================================== */
+	/* Tokens that embed var(--lumi-control-accent) must be re-declared on each
+	   interactive root. A :root-only value resolves accent to primary at
+	   declaration time and inherits that baked color, ignoring local accents. */
+	:where(
+		.lumi-field,
+		.lumi-switcher,
+		.lumi-tabs,
+		.lumi-chip,
+		.lumi-tag-option,
+		.lumi-list-item,
+		.lumi-dropdown,
+		.lumi-dropdown-item,
+		.lumi-context-item,
+		.lumi-sidebar-item,
+		.lumi-dialog,
+		.lumi-alert,
+		.lumi-notification,
+		.lumi-collapse,
+		.lumi-file-upload,
+		.lumi-table,
+		.lumi-line-chart,
+		.lumi-drive-sidebar__close
+	) {
+		--lumi-focus-outline: var(--lumi-border-width-thick) solid
+			color-mix(
+				in srgb,
+				var(--lumi-control-accent, var(--lumi-color-primary))
+					var(--lumi-focus-outline-strength),
+				transparent
+			);
+	}
+
+	/* Accent-aware focus rings. Same re-declaration rule as the outline above: the
+	   :root definition in tokens.base.css can only ever resolve to primary. */
+	:where(
+		.lumi-button,
+		.lumi-card,
+		.lumi-field,
+		.lumi-checkbox,
+		.lumi-radio,
+		.lumi-switch,
+		.lumi-switcher,
+		.lumi-slider,
+		.lumi-chip,
+		.lumi-tag-option,
+		.lumi-tabs,
+		.lumi-table,
+		.lumi-dialog,
+		.lumi-dropdown,
+		.lumi-file-upload,
+		.lumi-item-row,
+		.lumi-drive-file-card
+	) {
+		--lumi-focus-ring: 0 0 0 var(--lumi-border-width-thick)
+			color-mix(
+				in srgb,
+				var(--lumi-control-accent, var(--lumi-color-primary))
+					var(--lumi-control-focus-ring-strength),
+				transparent
+			);
+		--lumi-focus-ring-offset:
+			0 0 0 var(--lumi-border-width-thick)
+				color-mix(in srgb, var(--lumi-color-background) 88%, transparent),
+			0 0 0 calc(var(--lumi-border-width-thick) * 2)
+				var(--lumi-control-accent, var(--lumi-color-primary));
+	}
+
+	:where(.lumi-field, .lumi-checkbox, .lumi-radio, .lumi-switch, ) {
+		--lumi-color-control-focus-fill: color-mix(
+			in srgb,
+			var(--lumi-color-control-fill) 84%,
+			var(--lumi-control-accent, var(--lumi-color-primary)) 16%
+		);
+		--lumi-control-focus-shadow:
+			var(--lumi-focus-ring), var(--lumi-control-shadow);
+	}
+
+	:where(.lumi-checkbox, .lumi-radio, .lumi-switch) {
+		--lumi-control-active-fill: color-mix(
+			in srgb,
+			var(--lumi-control-accent, var(--lumi-color-primary)) 10%,
+			var(--lumi-color-control-fill)
+		);
+		--lumi-control-active-border: color-mix(
+			in srgb,
+			var(--lumi-control-accent, var(--lumi-color-primary)) 55%,
+			transparent
+		);
+		--lumi-control-active-shadow: var(--lumi-shadow-sm);
+	}
+
+	/* Shared autofill override — UA yellow only yields to a large inset shadow. */
+	:where(.lumi-autofill):autofill,
+	:where(.lumi-autofill):-webkit-autofill {
+		-webkit-text-fill-color: var(--lumi-color-text);
+		caret-color: var(--lumi-color-text);
+		box-shadow: inset 0 0 0 100vmax
+			var(--lumi-control-autofill-bg, var(--lumi-color-control-fill));
+		transition: background-color calc(var(--lumi-duration-slower) * 20)
+			var(--lumi-easing-default);
+	}
+
+	:where(.lumi-surface, .lumi-card, .lumi-navbar, .lumi-sidebar, .lumi-dialog) {
+		background: var(--lumi-surface-bg, var(--lumi-floating-surface-bg));
+		border: var(
+			--lumi-surface-border,
+			var(--lumi-border-width-thin) solid var(--lumi-floating-surface-border)
+		);
+		border-radius: var(--lumi-surface-radius-local, var(--lumi-surface-radius));
+		box-shadow: var(--lumi-surface-shadow, var(--lumi-floating-surface-shadow));
+	}
+
+	/* Blur on translucent shells; cards opt in via --lumi-surface-blur-filter. */
+	:where(.lumi-surface, .lumi-navbar, .lumi-dialog) {
+		backdrop-filter: blur(var(--lumi-surface-blur, var(--lumi-blur-sm)))
+			saturate(var(--lumi-surface-saturation));
+		-webkit-backdrop-filter: blur(var(--lumi-surface-blur, var(--lumi-blur-sm)))
+			saturate(var(--lumi-surface-saturation));
+	}
+
+	:where(.lumi-card) {
+		backdrop-filter: var(--lumi-surface-blur-filter, none);
+		-webkit-backdrop-filter: var(--lumi-surface-blur-filter, none);
+	}
+
+	.lumi-card--ambient::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		pointer-events: none;
+		background:
+			radial-gradient(
+				circle at top right,
+				color-mix(in srgb, var(--lumi-color-primary) 4.5%, transparent),
+				transparent 52%
+			),
+			linear-gradient(
+				145deg,
+				color-mix(in srgb, var(--lumi-color-primary-bg) 28%, transparent),
+				transparent 62%
+			);
+		z-index: 0;
+	}
+
+	/* ========================================================================== */
+	/* SCROLLBAR SYSTEM */
+	/* ========================================================================== */
+	:where(
+		.lumi-scrollbar,
+		.lumi-dashboard-layout__content,
+		.lumi-table__wrapper,
+		.lumi-switcher,
+		.lumi-list
+	) {
+		scrollbar-width: thin;
+		scrollbar-color: var(--lumi-color-border-strong) transparent;
+	}
+
+	:where(
+		.lumi-scrollbar,
+		.lumi-dashboard-layout__content,
+		.lumi-table__wrapper,
+		.lumi-switcher,
+		.lumi-list
+	)::-webkit-scrollbar {
+		width: var(--lumi-space-2xs);
+		height: var(--lumi-space-2xs);
+	}
+
+	:where(
+		.lumi-scrollbar,
+		.lumi-dashboard-layout__content,
+		.lumi-table__wrapper,
+		.lumi-switcher,
+		.lumi-list
+	)::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	:where(
+		.lumi-scrollbar,
+		.lumi-dashboard-layout__content,
+		.lumi-table__wrapper,
+		.lumi-switcher,
+		.lumi-list
+	)::-webkit-scrollbar-thumb {
+		border-radius: var(--lumi-radius-full);
+		background: color-mix(
+			in srgb,
+			var(--lumi-color-border-strong) 78%,
+			transparent
+		);
+	}
+
+	:where(
+			.lumi-scrollbar,
+			.lumi-dashboard-layout__content,
+			.lumi-table__wrapper,
+			.lumi-switcher,
+			.lumi-list
+		)::-webkit-scrollbar-thumb:hover {
+		background: var(--lumi-color-border-strong);
+	}
+
+	/* ========================================================================== */
+	/* SHARED RECIPES — one global class per visual role                         */
+	/* ========================================================================== */
+	/* Icon (Icon component and direct Lucide imports that pass class="lumi-icon"). */
+	.lumi-icon {
+		display: inline-block;
+		width: var(--lumi-icon-size, var(--lumi-icon-md));
+		height: var(--lumi-icon-size, var(--lumi-icon-md));
+		flex-shrink: 0;
+		vertical-align: middle;
+		color: var(--lumi-icon-color, inherit);
+		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
+		user-select: none;
+	}
+
+	/* Visually hidden, still announced. !important: layered rules lose to any
+	   unlayered component or app rule, and hidden text must stay hidden. */
+	.lumi-sr-only {
+		position: absolute !important;
+		width: 1px !important;
+		height: 1px !important;
+		margin: -1px !important;
+		padding: 0 !important;
+		overflow: hidden !important;
+		clip-path: inset(50%) !important;
+		white-space: nowrap !important;
+		border: 0 !important;
+	}
+
+	/* Spinner (Button, Select, Table, Loading): currentColor 18% track + solid
+	   arc. Size with --lumi-spinner-size; color follows `color`. */
+	.lumi-spinner {
+		display: inline-block;
+		flex-shrink: 0;
+		inline-size: var(--lumi-spinner-size, 1em);
+		block-size: var(--lumi-spinner-size, 1em);
+		border: var(--lumi-border-width-thick) solid
+			color-mix(in srgb, currentColor 18%, transparent);
+		border-top-color: currentColor;
+		border-radius: var(--lumi-radius-full);
+		animation: lumi-spin var(--lumi-duration-spin) linear infinite;
+	}
+
+	/* Skeleton placeholder (Skeleton, Image, Table): one soft shimmer pass per
+	   cycle in reading direction; static under reduced motion. Size it from
+	   outside. */
+	.lumi-skeleton {
+		display: block;
+		border-radius: var(--lumi-radius-control);
+		background: linear-gradient(
+				90deg,
+				var(--lumi-skeleton-base, var(--lumi-color-background-secondary)) 25%,
+				var(--lumi-skeleton-highlight, var(--lumi-color-background-hover)) 50%,
+				var(--lumi-skeleton-base, var(--lumi-color-background-secondary)) 75%
+			)
+			0 0 / 200% 100%;
+		animation: lumi-shimmer var(--lumi-duration-shimmer) linear infinite;
+	}
+
+	.lumi-skeleton:dir(rtl) {
+		animation-direction: reverse;
+	}
+
+	.lumi-skeleton--text {
+		block-size: 1em;
+		border-radius: var(--lumi-radius-sm);
+	}
+
+	.lumi-skeleton--rect {
+		block-size: var(--lumi-control-height-md);
+	}
+
+	.lumi-skeleton--circle {
+		inline-size: var(--lumi-space-xxl);
+		aspect-ratio: 1;
+		border-radius: var(--lumi-radius-full);
+	}
+
+	/* Switcher (Tabs, SegmentedControl, ToggleGroup): glass shell + elevated
+	   active pill. Set --lumi-control-accent on the root; options are buttons or
+	   labels wrapping a visually hidden input. */
+	.lumi-switcher {
+		/* Alias read by the shell and its options; the accent may come from an
+		   ancestor (Tabs) or this element (SegmentedControl, ToggleGroup). */
+		--lumi-switcher-accent: var(
+			--lumi-control-accent,
+			var(--lumi-color-primary)
+		);
+		display: inline-flex;
+		align-items: stretch;
+		gap: var(--lumi-space-2xs);
+		max-width: 100%;
+		padding: var(--lumi-space-2xs);
+		background: color-mix(
+			in srgb,
+			var(--lumi-color-surface-glass-strong) 78%,
+			var(--lumi-color-background-hover) 22%
+		);
+		border: var(--lumi-border-width-thin) solid
+			color-mix(
+				in srgb,
+				var(--lumi-color-border-glass) 72%,
+				var(--lumi-color-border-strong) 28%
+			);
+		border-radius: var(--lumi-radius-panel);
+		box-shadow: var(--lumi-control-shadow);
+		overflow-x: auto;
+		overflow-y: hidden;
+		overscroll-behavior-inline: contain;
+		user-select: none;
+		transition: var(--lumi-transition-control);
+	}
+
+	.lumi-switcher:hover {
+		border-color: var(--lumi-color-border-strong);
+	}
+
+	.lumi-switcher:focus-within {
+		border-color: color-mix(
+			in srgb,
+			var(--lumi-switcher-accent) 30%,
+			var(--lumi-color-border-strong)
+		);
+	}
+
+	.lumi-switcher--vertical {
+		flex-direction: column;
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+
+	.lumi-switcher--vertical > .lumi-switcher__option {
+		justify-content: flex-start;
+		width: 100%;
+		min-width: 0;
+		text-align: start;
+	}
+
+	.lumi-switcher__option {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--lumi-space-xs);
+		min-width: max-content;
+		min-height: var(--lumi-control-height-sm);
+		padding: var(--lumi-space-xs) var(--lumi-space-md);
+		font: inherit;
+		font-size: var(--lumi-font-size-sm);
+		font-weight: var(--lumi-font-weight-medium);
+		line-height: var(--lumi-line-height-tight);
+		color: var(--lumi-color-text-muted);
+		white-space: nowrap;
+		background: transparent;
+		border: var(--lumi-border-width-thin) solid transparent;
+		border-radius: var(--lumi-radius-control);
+		cursor: pointer;
+		transition: var(--lumi-transition-interactive);
+	}
+
+	.lumi-switcher__option:hover:not(
+			.lumi-switcher__option--active,
+			.lumi-switcher__option--disabled
+		) {
+		color: var(--lumi-color-text);
+		background: color-mix(in srgb, var(--lumi-switcher-accent) 9%, transparent);
+	}
+
+	.lumi-switcher__option--active {
+		color: var(--lumi-switcher-accent);
+		font-weight: var(--lumi-font-weight-semibold);
+		background: linear-gradient(
+			145deg,
+			color-mix(
+				in srgb,
+				var(--lumi-color-surface-card-hover) 88%,
+				var(--lumi-switcher-accent) 12%
+			),
+			var(--lumi-color-surface-card)
+		);
+		border-color: color-mix(
+			in srgb,
+			var(--lumi-switcher-accent) 28%,
+			var(--lumi-color-border)
+		);
+		box-shadow: var(--lumi-shadow-sm);
+	}
+
+	.lumi-switcher__option:focus-visible,
+	.lumi-switcher__option:has(> input:focus-visible) {
+		outline: var(--lumi-focus-outline);
+		outline-offset: var(--lumi-focus-outline-offset);
+	}
+
+	.lumi-switcher__option--disabled {
+		opacity: var(--lumi-opacity-disabled);
+		cursor: not-allowed;
+	}
+
+	/* ========================================================================== */
+	/* ANIMATIONS (shared keyframes) */
+	/* ========================================================================== */
+	@keyframes lumi-spin {
+		from {
+			transform: rotate(0deg);
+		}
+
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@keyframes lumi-pulse {
+		0%,
+		100% {
+			opacity: 1;
+		}
+
+		50% {
+			opacity: 0.5;
+		}
+	}
+
+	@keyframes lumi-fade-in {
+		from {
+			opacity: 0;
+		}
+
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes lumi-shimmer {
+		from {
+			background-position: 100% 0;
+		}
+
+		to {
+			background-position: -100% 0;
+		}
+	}
+
+	/* Compact heading scale on small screens. */
+	@media (max-width: 48rem) {
+		h1 {
+			font-size: var(--lumi-font-size-2xl);
+		}
+
+		h2 {
+			font-size: var(--lumi-font-size-xl);
+		}
+
+		h3 {
+			font-size: var(--lumi-font-size-lg);
+		}
+	}
+}

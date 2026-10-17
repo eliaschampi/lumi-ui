@@ -1,36 +1,35 @@
-<script lang="ts">
-	import type { Snippet } from 'svelte';
-	import Title from '../Title/Title.svelte';
-	import type { PageHeaderProps } from './types';
+<script module lang="ts">
+	import * as en from '../../i18n/en';
 
-	interface Props extends PageHeaderProps {
-		actions?: Snippet;
-	}
+	const COPY = { pageActions: en.pageActions };
+</script>
+
+<script lang="ts">
+	import { Title } from '../Title';
+	import { useLumiLocale } from '../../i18n';
+	import type { PageHeaderProps } from './types';
 
 	const {
 		size = 'lg',
-		class: className = '',
+		level = 1,
+		class: className,
 		actions,
 		...titleProps
-	}: Props = $props();
+	}: PageHeaderProps = $props();
 
-	const classes = $derived(
-		['lumi-page-header', actions && 'lumi-page-header--with-actions', className]
-			.filter(Boolean)
-			.join(' ')
-	);
+	const i18n = useLumiLocale(COPY);
 </script>
 
-<header class={classes}>
+<header class={['lumi-page-header', className]}>
 	<div class="lumi-page-header__title">
-		<Title {...titleProps} {size} />
+		<Title {...titleProps} {size} {level} />
 	</div>
 
 	{#if actions}
 		<div
 			class="lumi-page-header__actions"
 			role="group"
-			aria-label="Acciones de página"
+			aria-label={i18n.t.pageActions}
 		>
 			{@render actions()}
 		</div>

@@ -15,74 +15,61 @@
 		class: className = '',
 		children,
 		onchange,
-		'aria-label': ariaLabel = ''
+		'aria-label': ariaLabel
 	}: RadioProps = $props();
 
-	const instanceId = $props.id();
-	const radioId = `lumi-radio-${instanceId}`;
-
-	const isChecked = $derived(group === value);
-	const isOptionCard = $derived(!!description || option);
+	const uid = $props.id();
+	const labelId = `lumi-radio-${uid}-label`;
+	const descriptionId = `lumi-radio-${uid}-description`;
+	const checked = $derived(group === value);
 
 	function handleChange(event: Event): void {
-		if (disabled || busy || isChecked) return;
 		group = value;
 		onchange?.(value, event);
 	}
 </script>
 
 <label
-	class="lumi-radio lumi-radio--{size} lumi-radio--{color} {className}"
-	class:lumi-radio-option={isOptionCard}
-	class:lumi-radio-option--busy={busy}
-	class:lumi-radio--checked={isChecked}
-	class:lumi-radio--disabled={disabled}
-	class:lumi-radio--card={!!description}
+	class={[
+		'lumi-radio',
+		`lumi-radio--${size}`,
+		(option || description) && 'lumi-radio-option',
+		description && 'lumi-radio--card',
+		busy && 'lumi-radio-option--busy',
+		checked && 'lumi-radio--checked',
+		disabled && 'lumi-radio--disabled',
+		className
+	]}
 	style:--radio-color="var(--lumi-color-{color})"
 	aria-busy={busy || undefined}
 >
 	<input
-		id={radioId}
 		type="radio"
+		class="lumi-sr-only"
 		{name}
 		{value}
-		checked={isChecked}
+		{checked}
 		disabled={disabled || busy}
-		aria-label={ariaLabel || label || description || undefined}
-		class="lumi-radio__input"
+		aria-label={ariaLabel}
+		aria-labelledby={description && !ariaLabel ? labelId : undefined}
+		aria-describedby={description ? descriptionId : undefined}
 		onchange={handleChange}
 	/>
-
-	{#if description}
-		<div class="lumi-radio__header">
-			<div class="lumi-radio__visual" aria-hidden="true">
-				<div class="lumi-radio__circle"></div>
-			</div>
-			{#if label || children}
-				<span class="lumi-radio__label">
-					{#if children}
-						{@render children()}
-					{:else}
-						{label}
-					{/if}
-				</span>
+	<span class="lumi-radio__visual" aria-hidden="true">
+		<span class="lumi-radio__circle"></span>
+	</span>
+	{#if label || children}
+		<span id={labelId} class="lumi-radio__label">
+			{#if children}
+				{@render children()}
+			{:else}
+				{label}
 			{/if}
-		</div>
-		<span class="lumi-radio__description">{description}</span>
-	{:else}
-		<div class="lumi-radio__visual" aria-hidden="true">
-			<div class="lumi-radio__circle"></div>
-		</div>
-
-		{#if label || children}
-			<span class="lumi-radio__label">
-				{#if children}
-					{@render children()}
-				{:else}
-					{label}
-				{/if}
-			</span>
-		{/if}
+		</span>
+	{/if}
+	{#if description}
+		<span id={descriptionId} class="lumi-radio__description">{description}</span
+		>
 	{/if}
 </label>
 
@@ -92,7 +79,6 @@
 		--radio-size: var(--lumi-icon-md);
 		--radio-dot-size: var(--lumi-space-sm);
 		--radio-label-size: var(--lumi-font-size-base);
-		--radio-color: var(--lumi-color-primary);
 		--lumi-control-accent: var(--radio-color);
 
 		position: relative;
@@ -102,14 +88,6 @@
 		cursor: pointer;
 		user-select: none;
 		font-family: var(--lumi-font-family-sans);
-	}
-
-	.lumi-radio__input {
-		position: absolute;
-		opacity: 0;
-		pointer-events: none;
-		width: 0;
-		height: 0;
 	}
 
 	.lumi-radio__visual {
@@ -162,11 +140,12 @@
 		gap: var(--lumi-space-sm);
 	}
 
+	/* Card: dot + label on the first row, description aligned under the label. */
 	.lumi-radio.lumi-radio-option.lumi-radio--card {
-		display: flex;
-		flex-direction: column;
-		align-items: stretch;
-		gap: var(--lumi-space-2xs);
+		display: grid;
+		grid-template-columns: var(--radio-size) minmax(0, 1fr);
+		column-gap: var(--lumi-space-sm);
+		row-gap: var(--lumi-space-2xs);
 	}
 
 	@media (hover: hover) {
@@ -189,19 +168,8 @@
 		pointer-events: none;
 	}
 
-	.lumi-radio__header {
-		display: flex;
-		align-items: center;
-		gap: var(--lumi-space-sm);
-		width: 100%;
-		min-width: 0;
-	}
-
 	.lumi-radio__description {
-		display: block;
-		width: 100%;
-		margin: 0;
-		padding-inline-start: calc(var(--radio-size) + var(--lumi-space-sm));
+		grid-column: 2;
 		font-size: var(--lumi-font-size-xs);
 		font-weight: var(--lumi-font-weight-normal);
 		line-height: var(--lumi-line-height-normal);
@@ -213,12 +181,6 @@
 		--radio-size: var(--lumi-icon-sm);
 		--radio-dot-size: var(--lumi-space-xs);
 		--radio-label-size: var(--lumi-font-size-sm);
-	}
-
-	.lumi-radio--lg {
-		--radio-size: var(--lumi-icon-lg);
-		--radio-dot-size: var(--lumi-space-md);
-		--radio-label-size: var(--lumi-font-size-lg);
 	}
 
 	/* ── States ───────────────────────────────────────────────── */
@@ -238,8 +200,7 @@
 		transform: scale(1);
 	}
 
-	.lumi-radio__input:focus-visible + .lumi-radio__visual,
-	.lumi-radio__input:focus-visible ~ .lumi-radio__header .lumi-radio__visual {
+	input:focus-visible + .lumi-radio__visual {
 		box-shadow: var(--lumi-control-focus-shadow);
 	}
 

@@ -1,55 +1,48 @@
+import type { HTMLInputAttributes } from 'svelte/elements';
 import type { LumiColor, LumiControlSize } from '../config';
 import type { FieldError } from '../Field';
 
 export type NumberInputColor = LumiColor;
 export type NumberInputSize = LumiControlSize;
 
-export interface NumberInputProps {
-	/** Current value (bindable) */
+/**
+ * Stepper field for bounded numbers; Arrow Up/Down step from the keyboard.
+ * Native input attributes (`name`, `inputmode`, events…) pass through to
+ * the `<input>`; `class` styles the field root.
+ */
+export interface NumberInputProps extends Omit<
+	HTMLInputAttributes,
+	| 'type'
+	| 'value'
+	| 'min'
+	| 'max'
+	| 'step'
+	| 'size'
+	| 'color'
+	| 'class'
+	| 'children'
+	| 'onchange'
+> {
+	/** Bindable value */
 	value?: number;
-
-	/** Form field name */
-	name?: string;
-
-	/** Minimum value */
+	/** Lower bound; also the snapping origin for `step` */
 	min?: number;
-
-	/** Maximum value */
+	/** Upper bound */
 	max?: number;
-
-	/** Step increment */
+	/** Step increment @default 1 */
 	step?: number;
-
-	/** Label text */
+	/** Visible label above the field */
 	label?: string;
-
-	/** Placeholder text */
-	placeholder?: string;
-
-	/** Accent color while focused */
+	/** Accent while focused @default 'primary' */
 	color?: NumberInputColor;
-
 	/** Invalid state; a string is also shown as the message */
 	error?: FieldError;
-
 	/** Helper text below the field; an error message replaces it */
 	hint?: string;
-
-	/** Size variant */
+	/** @default 'md' */
 	size?: NumberInputSize;
-
-	/** Whether the input is disabled */
-	disabled?: boolean;
-
-	/** Required field indicator */
-	required?: boolean;
-
-	/** Accessible label when visible label is not provided */
-	'aria-label'?: string;
-
-	/** Custom class */
+	/** Field root class */
 	class?: string;
-
-	/** Change handler */
+	/** Committed value after a step or blur */
 	onchange?: (value: number) => void;
 }

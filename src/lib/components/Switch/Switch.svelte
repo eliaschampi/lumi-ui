@@ -11,54 +11,41 @@
 		class: className = '',
 		children,
 		onchange,
-		'aria-label': ariaLabel = ''
+		'aria-label': ariaLabel
 	}: SwitchProps = $props();
 
-	const instanceId = $props.id();
-	const switchId = `lumi-switch-${instanceId}`;
-
-	const classes = $derived(
-		[
-			'lumi-switch',
-			`lumi-switch--${size}`,
-			`lumi-switch--${color}`,
-			checked && 'lumi-switch--checked',
-			disabled && 'lumi-switch--disabled',
-			className
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
-
-	function handleChange(event: Event) {
-		if (disabled) return;
-		const target = event.target as HTMLInputElement;
-		checked = target.checked;
+	function handleChange(event: Event): void {
+		checked = (event.currentTarget as HTMLInputElement).checked;
 		onchange?.(checked, event);
 	}
 </script>
 
 <label
-	for={switchId}
-	class={classes}
+	class={[
+		'lumi-switch',
+		`lumi-switch--${size}`,
+		checked && 'lumi-switch--checked',
+		disabled && 'lumi-switch--disabled',
+		className
+	]}
 	style:--switch-color="var(--lumi-color-{color})"
+	style:--switch-solid="var(--lumi-color-{color}-solid)"
+	style:--switch-foreground="var(--lumi-color-{color}-foreground)"
 >
 	<input
-		id={switchId}
 		type="checkbox"
 		role="switch"
+		class="lumi-sr-only"
 		{name}
 		{checked}
 		{disabled}
-		aria-checked={checked}
-		aria-label={ariaLabel || label || undefined}
-		class="lumi-switch__input"
+		aria-label={ariaLabel}
 		onchange={handleChange}
 	/>
 
-	<div class="lumi-switch__track" aria-hidden="true">
-		<div class="lumi-switch__thumb"></div>
-	</div>
+	<span class="lumi-switch__track" aria-hidden="true">
+		<span class="lumi-switch__thumb"></span>
+	</span>
 
 	{#if label || children}
 		<span class="lumi-switch__label">
@@ -79,7 +66,6 @@
 		--switch-thumb: calc(var(--switch-track-h) - var(--switch-inset) * 2);
 		--switch-travel: calc(var(--switch-track-w) - var(--switch-track-h));
 		--switch-stretch: var(--lumi-space-2xs);
-		--switch-color: var(--lumi-color-primary);
 		--switch-label-size: var(--lumi-font-size-base);
 		--lumi-control-accent: var(--switch-color);
 
@@ -90,14 +76,6 @@
 		cursor: pointer;
 		user-select: none;
 		font-family: var(--lumi-font-family-sans);
-	}
-
-	.lumi-switch__input {
-		position: absolute;
-		opacity: 0;
-		pointer-events: none;
-		width: 0;
-		height: 0;
 	}
 
 	.lumi-switch__track {
@@ -138,12 +116,15 @@
 		line-height: var(--lumi-line-height-tight);
 	}
 
+	/* Checked pairs the role's solid with its foreground thumb (≥ 3:1). */
 	.lumi-switch--checked .lumi-switch__track {
-		background: var(--switch-color);
+		background: var(--switch-solid);
 		box-shadow: var(--lumi-control-active-shadow);
 	}
 
 	.lumi-switch--checked .lumi-switch__thumb {
+		background: var(--switch-foreground);
+		border-color: transparent;
 		transform: translateX(var(--switch-travel));
 	}
 
@@ -168,7 +149,7 @@
 		transform: translateX(calc(var(--switch-travel) - var(--switch-stretch)));
 	}
 
-	.lumi-switch__input:focus-visible + .lumi-switch__track {
+	input:focus-visible + .lumi-switch__track {
 		box-shadow: var(--lumi-control-focus-shadow);
 	}
 

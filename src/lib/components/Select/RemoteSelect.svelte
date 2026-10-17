@@ -1,7 +1,17 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+
+	const COPY = {
+		noResults: en.noResults,
+		selectMinQuery: en.selectMinQuery,
+		selectSearchError: en.selectSearchError
+	};
+</script>
+
 <script lang="ts" generics="TItem">
-	import { onDestroy } from 'svelte';
+	import { useLumiLocale } from '../../i18n';
 	import Select from './Select.svelte';
-	import type { SelectOption } from './types';
+	import type { SelectOption, SelectProps } from './types';
 
 	export type RemoteSelectSearchParamValue =
 		string | number | boolean | null | undefined;
@@ -10,23 +20,46 @@
 		RemoteSelectSearchParamValue
 	>;
 
-	export interface RemoteSelectProps<TItem> {
+	/** Field props forwarded to the underlying Select. */
+	type FieldProps = Pick<
+		SelectProps,
+		| 'label'
+		| 'placeholder'
+		| 'name'
+		| 'aria-label'
+		| 'size'
+		| 'color'
+		| 'disabled'
+		| 'required'
+		| 'clearable'
+		| 'error'
+		| 'hint'
+		| 'width'
+		| 'class'
+	>;
+
+	export interface RemoteSelectProps<TItem> extends FieldProps {
+		/** Selected option value (bindable) */
 		value?: string;
+		/** Selected item (bindable); its label shows without a search */
 		selected?: TItem | null;
+		/** GET endpoint answering `{ items: TItem[] }` (or `{ message }` on error) */
 		endpoint: string;
-		label?: string;
-		placeholder?: string;
-		disabled?: boolean;
-		clearable?: boolean;
-		minQueryLength: number;
-		debounceMs: number;
-		limit: number;
-		noResultsText?: string;
+		/** Characters required before searching @default 1 */
+		minQueryLength?: number;
+		/** Delay before a request @default 250 */
+		debounceMs?: number;
+		/** Sent as the `limit` parameter @default 20 */
+		limit?: number;
+		/** Query parameter name @default 'q' */
 		searchParam?: string;
-		errorMessageFallback: string;
+		noResultsText?: string;
+		/** Shown when a request fails without a server `message` */
+		errorMessageFallback?: string;
 		getOptionValue: (item: TItem) => string;
 		getOptionLabel: (item: TItem) => string;
 		getOptionDisabled?: (item: TItem) => boolean;
+		/** Extra query parameters, read on every request */
 		getSearchParams?: () => RemoteSelectSearchParams;
 		onchange?: (item: TItem | null) => void;
 	}
@@ -35,46 +68,42 @@
 		value = $bindable(''),
 		selected = $bindable(null),
 		endpoint,
-		label = '',
-		placeholder = '',
-		disabled = false,
-		clearable = true,
-		minQueryLength,
-		debounceMs,
-		limit,
-		noResultsText,
+		error,
+		minQueryLength = 1,
+		debounceMs = 250,
+		limit = 20,
 		searchParam = 'q',
+		noResultsText,
 		errorMessageFallback,
 		getOptionValue,
 		getOptionLabel,
 		getOptionDisabled,
 		getSearchParams,
-		onchange
+		onchange,
+		...field
 	}: RemoteSelectProps<TItem> = $props();
 
+	const i18n = useLumiLocale(COPY);
 	let loading = $state(false);
 	let errorMessage = $state('');
 	let results = $state<TItem[]>([]);
-	let appliedQuery = $state('');
-	let searchTimer: number | null = null;
-	let abortSearch: AbortController | null = null;
+	let query = $state('');
+	let timer: ReturnType<typeof setTimeout> | undefined;
+	let request: AbortController | undefined;
 
-	const selectedLabel = $derived(selected ? getOptionLabel(selected) : '');
 	const emptyText = $derived(
-		appliedQuery.length < minQueryLength
-			? `Ingresa ${minQueryLength} caracteres`
-			: (noResultsText ?? 'Sin resultados')
+		query.length < minQueryLength
+			? i18n.t.selectMinQuery(minQueryLength)
+			: (noResultsText ?? i18n.t.noResults)
 	);
 	const options = $derived.by<SelectOption[]>(() => {
-		const selectedItem = selected;
-		const selectedValue = selectedItem ? getOptionValue(selectedItem) : null;
-		const items = selectedItem
+		const current = selected ? getOptionValue(selected) : null;
+		const items = selected
 			? [
-					selectedItem,
-					...results.filter((item) => getOptionValue(item) !== selectedValue)
+					selected,
+					...results.filter((item) => getOptionValue(item) !== current)
 				]
 			: results;
-
 		return items.map((item) => ({
 			value: getOptionValue(item),
 			label: getOptionLabel(item),
@@ -82,135 +111,92 @@
 		}));
 	});
 
-	function clearTimer(): void {
-		if (!searchTimer) return;
-		window.clearTimeout(searchTimer);
-		searchTimer = null;
+	function cancel(): void {
+		clearTimeout(timer);
+		request?.abort();
 	}
 
-	function cancelSearch(): void {
-		abortSearch?.abort();
-		abortSearch = null;
+	function select(item: TItem | null): void {
+		selected = item;
+		value = item ? getOptionValue(item) : '';
+		onchange?.(item);
 	}
 
-	function clearSelection(): void {
-		value = '';
-		selected = null;
-		results = [];
-		onchange?.(null);
-	}
-
-	function serializeSearchParams(query: string): string {
-		const params: RemoteSelectSearchParams = {
-			...getSearchParams?.(),
-			[searchParam]: query,
-			limit
-		};
-
-		return Object.entries(params)
-			.flatMap(([key, entryValue]) =>
-				entryValue == null
-					? []
-					: [
-							`${encodeURIComponent(key)}=${encodeURIComponent(String(entryValue))}`
-						]
-			)
-			.join('&');
-	}
-
-	function handleSearch(query: string): void {
-		const nextQuery = query.trim();
-		appliedQuery = nextQuery;
+	function handleSearch(text: string): void {
+		query = text.trim();
 		errorMessage = '';
-		clearTimer();
-		cancelSearch();
-
-		if (selected && nextQuery !== selectedLabel.trim()) {
-			value = '';
-			selected = null;
-			onchange?.(null);
-		}
-
-		if (nextQuery.length < minQueryLength) {
+		cancel();
+		if (selected && query !== getOptionLabel(selected).trim()) select(null);
+		if (query.length < minQueryLength) {
 			loading = false;
 			results = [];
 			return;
 		}
-
 		loading = true;
-		searchTimer = window.setTimeout(() => {
-			void searchItems(nextQuery);
-		}, debounceMs);
+		timer = setTimeout(() => void search(query), debounceMs);
 	}
 
-	async function searchItems(query: string): Promise<void> {
-		abortSearch = new AbortController();
-		const signal = abortSearch.signal;
+	function fail(message: string): void {
+		errorMessage = message || errorMessageFallback || i18n.t.selectSearchError;
+		results = [];
+	}
+
+	async function search(text: string): Promise<void> {
+		const controller = (request = new AbortController());
+		const params = new URLSearchParams();
+		for (const [key, entry] of Object.entries({
+			...getSearchParams?.(),
+			[searchParam]: text,
+			limit
+		})) {
+			if (entry != null) params.set(key, String(entry));
+		}
 
 		try {
-			const response = await fetch(
-				`${endpoint}?${serializeSearchParams(query)}`,
-				{ signal }
-			);
-			const payload = (await response.json()) as {
-				message?: string;
+			const response = await fetch(`${endpoint}?${params}`, {
+				signal: controller.signal
+			});
+			const payload = (await response.json().catch(() => ({}))) as {
+				message?: unknown;
 				items?: TItem[];
 			};
-
 			if (!response.ok) {
-				throw new Error(payload.message || errorMessageFallback);
+				// Only a server-provided message is user-facing copy.
+				fail(typeof payload.message === 'string' ? payload.message : '');
+			} else if (text === query) {
+				results = payload.items ?? [];
 			}
-			if (signal.aborted || query !== appliedQuery) return;
-
-			results = payload.items ?? [];
-		} catch (caught) {
-			if (
-				signal.aborted ||
-				(caught instanceof Error && caught.name === 'AbortError')
-			)
-				return;
-			errorMessage =
-				caught instanceof Error ? caught.message : errorMessageFallback;
-			results = [];
+		} catch {
+			// Network and parse failures never surface their raw text.
+			if (!controller.signal.aborted) fail('');
 		} finally {
-			if (!signal.aborted) loading = false;
+			if (!controller.signal.aborted) loading = false;
 		}
 	}
 
-	function handleChange(nextValue: string | number | object | null): void {
-		if (typeof nextValue !== 'string') {
-			clearSelection();
+	function handleChange(next: unknown): void {
+		if (typeof next !== 'string') {
+			results = [];
+			select(null);
 			return;
 		}
-
-		const currentSelected =
-			selected && getOptionValue(selected) === nextValue ? selected : null;
-		value = nextValue;
-		selected =
-			currentSelected ??
-			results.find((item) => getOptionValue(item) === nextValue) ??
-			null;
-		onchange?.(selected);
+		const match = (item: TItem | null) =>
+			item && getOptionValue(item) === next ? item : null;
+		select(match(selected) ?? results.find(match) ?? null);
 	}
 
-	onDestroy(() => {
-		clearTimer();
-		cancelSearch();
-	});
+	$effect(() => cancel);
 </script>
 
 <Select
-	bind:value
-	{label}
+	{...field}
+	value={selected ? getOptionValue(selected) : value}
 	{options}
-	{placeholder}
-	autocomplete
+	searchable
 	searchMode="server"
 	{loading}
-	error={errorMessage}
+	error={errorMessage || error}
 	noDataText={emptyText}
-	{disabled}
-	{clearable}
 	onsearch={handleSearch}
 	onchange={handleChange}
 />

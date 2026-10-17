@@ -1,23 +1,29 @@
+import type { Snippet } from 'svelte';
+import type { IconSource } from '../../utils/icons';
 import type { LumiColor } from '../config';
 
 export type EmptyStateColor = LumiColor | 'muted';
 
 export interface EmptyStateProps {
-	/** Title text */
+	/** Defaults to the localized "Nothing here yet" */
 	title?: string;
 
-	/** Description text */
 	description?: string;
 
-	/** Image filename or URL */
+	/** Illustration URL (decorative); takes precedence over `icon` */
 	image?: string;
 
-	/** Icon name (alternative to image) */
-	icon?: string;
+	/** @default Inbox */
+	icon?: IconSource;
 
-	/** Icon color */
+	/** @default "muted" */
 	iconColor?: EmptyStateColor;
 
-	/** Custom class */
 	class?: string;
+
+	/** Custom visual, replacing image and icon */
+	visual?: Snippet;
+
+	/** Calls to action under the text */
+	actions?: Snippet;
 }

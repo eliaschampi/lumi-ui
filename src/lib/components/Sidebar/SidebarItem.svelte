@@ -1,67 +1,52 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
 	import type { SidebarItemProps } from './types';
 
-	interface Props extends SidebarItemProps {
-		children?: Snippet;
-		icon?: Snippet;
-	}
-
 	const {
-		active = false,
+		current = false,
 		collapsed = false,
-		href = undefined,
+		href,
 		level = 'root',
-		expanded = undefined,
-		class: className = '',
+		expanded,
+		class: className,
 		onclick,
 		children,
 		icon
-	}: Props = $props();
+	}: SidebarItemProps = $props();
 
-	const itemClasses = $derived.by(() =>
-		[
-			'lumi-sidebar-item',
-			`lumi-sidebar-item--${level}`,
-			active && 'lumi-sidebar-item--active',
-			collapsed && 'lumi-sidebar-item--collapsed',
-			className
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
-
-	const ariaCurrent = $derived(active ? 'page' : undefined);
-	const ariaExpanded = $derived(
-		expanded === undefined ? undefined : expanded ? 'true' : 'false'
-	);
+	const classes = $derived([
+		'lumi-sidebar-item',
+		level === 'sub' && 'lumi-sidebar-item--sub',
+		current && 'lumi-sidebar-item--active',
+		collapsed && 'lumi-sidebar-item--collapsed',
+		className
+	]);
 </script>
 
 {#snippet content()}
 	{#if icon}
-		<span class="lumi-sidebar-item__icon">
-			{@render icon()}
-		</span>
+		<span class="lumi-sidebar-item__icon">{@render icon()}</span>
 	{/if}
-	{#if !collapsed}
-		<span class="lumi-sidebar-item__text">
-			{#if children}
-				{@render children()}
-			{/if}
-		</span>
-	{/if}
+	<!-- Collapsed rails keep the label for assistive tech. -->
+	<span class={collapsed ? 'lumi-sr-only' : 'lumi-sidebar-item__text'}>
+		{@render children?.()}
+	</span>
 {/snippet}
 
 {#if href}
-	<a {href} class={itemClasses} aria-current={ariaCurrent} {onclick}>
+	<a
+		{href}
+		class={classes}
+		aria-current={current ? 'page' : undefined}
+		{onclick}
+	>
 		{@render content()}
 	</a>
 {:else}
 	<button
 		type="button"
-		class={itemClasses}
-		aria-pressed={active}
-		aria-expanded={ariaExpanded}
+		class={classes}
+		aria-current={current || undefined}
+		aria-expanded={expanded}
 		{onclick}
 	>
 		{@render content()}

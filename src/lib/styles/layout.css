@@ -1,0 +1,452 @@
+/* ========================================================================== */
+/* Lumi UI Layout                                                           */
+/* App and dashboard shells, two-column and page-sidebar                  */
+/* layouts, scroll wells, containers and centered pages. Optional.          */
+/* ========================================================================== */
+@layer lumi.tokens, lumi.base, lumi.components, lumi.layout, lumi.patterns, lumi.utilities;
+
+@layer lumi.layout {
+	/* ========================================================================== */
+	/* APP LAYOUT SYSTEM */
+	/* ========================================================================== */
+	#app {
+		min-height: 100dvh;
+		width: 100%;
+		background: transparent;
+		color: var(--lumi-color-text);
+		transition:
+			color var(--lumi-duration-base) var(--lumi-easing-default),
+			background var(--lumi-duration-base) var(--lumi-easing-default);
+	}
+
+	/* Dashboard layout */
+	.lumi-dashboard-layout {
+		--lumi-shell-padding: var(--lumi-layout-shell-padding);
+		display: grid;
+		height: 100dvh;
+		padding: max(var(--lumi-shell-padding), var(--lumi-safe-area-top))
+			max(var(--lumi-shell-padding), var(--lumi-safe-area-right))
+			max(var(--lumi-shell-padding), var(--lumi-safe-area-bottom))
+			max(var(--lumi-shell-padding), var(--lumi-safe-area-left));
+		gap: var(--lumi-layout-shell-gap);
+		grid-template-areas:
+			'sidebar navbar'
+			'sidebar content';
+		grid-template-columns: var(--lumi-sidebar-width) minmax(0, 1fr);
+		grid-template-rows: auto minmax(0, 1fr);
+		transition: grid-template-columns var(--lumi-duration-base)
+			var(--lumi-easing-default);
+	}
+
+	.lumi-dashboard-layout.lumi-sidebar--is-collapsed {
+		grid-template-columns: var(--lumi-sidebar-width-collapsed) minmax(0, 1fr);
+	}
+
+	/* ========================================================================== */
+	/* MAIN CONTENT AREA */
+	/* ========================================================================== */
+	/* Navbar - branch chip and shell actions */
+	.lumi-navbar-branch {
+		min-width: 0;
+		max-width: var(--lumi-navbar-branch-max-width);
+	}
+
+	.lumi-navbar-branch__chip {
+		max-width: 100%;
+		min-width: 0;
+	}
+
+	.lumi-navbar-user-dropdown {
+		max-width: var(--lumi-navbar-user-dropdown-max-width);
+	}
+
+	.lumi-dashboard-layout__content {
+		grid-area: content;
+		position: relative;
+		min-width: 0;
+		min-height: 0;
+		background: var(--lumi-dashboard-content-bg);
+		border-radius: var(--lumi-layout-floating-radius);
+		padding: var(--lumi-layout-content-padding);
+		overflow-y: auto;
+		overflow-x: hidden;
+	}
+
+	/* ========================================================================== */
+	/* MOBILE OVERLAY */
+	/* ========================================================================== */
+	.lumi-mobile-overlay {
+		display: none;
+		position: fixed;
+		inset: 0;
+		background: var(--lumi-color-overlay);
+		z-index: calc(var(--lumi-z-sidebar) - 1);
+		cursor: pointer;
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			opacity var(--lumi-duration-base) var(--lumi-easing-default),
+			visibility var(--lumi-duration-base) var(--lumi-easing-default);
+	}
+
+	/* ========================================================================== */
+	/* TWO-COLUMN LAYOUT SYSTEM */
+	/* ========================================================================== */
+	.lumi-layout--two-columns {
+		display: grid;
+		grid-template-columns:
+			minmax(var(--lumi-layout-sidebar-min-width), 30%)
+			minmax(0, 1fr);
+		gap: var(--lumi-space-lg);
+		width: 100%;
+	}
+
+	.lumi-layout--sidebar-left,
+	.lumi-layout--content-right {
+		min-width: 0;
+	}
+
+	/* ========================================================================== */
+	/* PAGE SIDEBAR SHELL */
+	/* ========================================================================== */
+	.lumi-page-sidebar-layout {
+		align-items: start;
+	}
+
+	.lumi-page-sidebar__desktop {
+		position: sticky;
+		inset-block-start: 0;
+		align-self: start;
+		min-width: 0;
+	}
+
+	.lumi-page-sidebar__card {
+		--lumi-page-sidebar-gradient: var(--lumi-gradient-glass-sidebar);
+		height: 100%;
+		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
+		background:
+			var(--lumi-page-sidebar-gradient), var(--lumi-color-surface-card);
+		box-shadow: var(--lumi-shadow-sm);
+	}
+
+	.lumi-page-sidebar__content,
+	.lumi-page-sidebar__section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--lumi-space-sm);
+	}
+
+	.lumi-page-sidebar__label {
+		margin: 0;
+		font-size: var(--lumi-font-size-xs);
+		font-weight: var(--lumi-font-weight-semibold);
+		letter-spacing: var(--lumi-letter-spacing-wide);
+		text-transform: uppercase;
+		color: var(--lumi-color-text-muted);
+	}
+
+	.lumi-page-sidebar__header-actions {
+		flex-wrap: wrap;
+		justify-content: flex-end;
+	}
+
+	.lumi-page-sidebar__bounded-list {
+		max-height: var(--lumi-page-sidebar-list-max-height);
+		min-height: 0;
+		overflow-x: hidden;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		padding: var(--lumi-space-xs);
+		border-radius: var(--lumi-radius-panel);
+		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
+		background: var(--lumi-page-sidebar-list-bg);
+	}
+
+	/* Recessed internally scrolling surface (the design-language "well" role on
+	   the inset ladder step). Retune the cap per surface through
+	   --lumi-scroll-well-max-height. */
+	.lumi-scroll-well {
+		max-height: var(--lumi-scroll-well-max-height);
+		min-height: 0;
+		overflow-x: hidden;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		padding: var(--lumi-space-sm);
+		border-radius: var(--lumi-radius-panel);
+		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
+		background: var(--lumi-scroll-well-bg);
+	}
+
+	.lumi-page-sidebar__radio-group {
+		display: grid;
+		gap: var(--lumi-space-sm);
+	}
+
+	.lumi-page-sidebar__radio-option {
+		display: flex;
+		flex-direction: column;
+		gap: var(--lumi-space-2xs);
+	}
+
+	.lumi-page-sidebar__radio-description {
+		font-size: var(--lumi-font-size-xs);
+		color: var(--lumi-color-text-muted);
+		padding-left: calc(var(--lumi-icon-md) + var(--lumi-space-sm));
+	}
+
+	.lumi-page-sidebar__backdrop {
+		display: none;
+		border: none;
+		padding: 0;
+		margin: 0;
+		cursor: pointer;
+	}
+
+	.lumi-page-sidebar__modal,
+	.lumi-page-sidebar__drawer {
+		display: none;
+	}
+
+	.lumi-page-sidebar__drawer-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	@media (max-width: 64rem) {
+		.lumi-page-sidebar-layout {
+			grid-template-columns: 1fr;
+		}
+
+		.lumi-page-sidebar__desktop {
+			display: none;
+		}
+
+		.lumi-page-sidebar__header-actions {
+			justify-content: flex-start;
+		}
+
+		.lumi-page-sidebar__backdrop {
+			display: block;
+			position: absolute;
+			inset: 0;
+			background: var(--lumi-color-overlay);
+			animation: lumi-fade-in var(--lumi-duration-base)
+				var(--lumi-easing-default);
+		}
+		.lumi-page-sidebar__modal {
+			display: block;
+			position: fixed;
+			inset: 0;
+			z-index: var(--lumi-z-modal-backdrop);
+		}
+
+		.lumi-page-sidebar__drawer {
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			width: min(var(--lumi-page-sidebar-drawer-width), 85vw);
+			padding: max(var(--lumi-space-sm), var(--lumi-safe-area-top))
+				max(var(--lumi-space-sm), var(--lumi-safe-area-right))
+				max(var(--lumi-space-sm), var(--lumi-safe-area-bottom))
+				max(var(--lumi-space-sm), var(--lumi-safe-area-left));
+			overflow-y: auto;
+			overscroll-behavior: contain;
+			animation: lumi-page-sidebar-slide var(--lumi-duration-slow)
+				var(--lumi-easing-bounce);
+		}
+	}
+
+	@keyframes lumi-page-sidebar-slide {
+		from {
+			transform: translateX(-100%);
+			opacity: 0;
+		}
+		to {
+			transform: translateX(0);
+			opacity: 1;
+		}
+	}
+
+	/* ========================================================================== */
+	/* CONTAINERS AND CENTERED PAGES */
+	/* ========================================================================== */
+
+	/* Container - Centered with max-width */
+	.lumi-container {
+		width: 100%;
+		margin-inline: auto;
+		padding-left: max(var(--lumi-space-md), var(--lumi-safe-area-left));
+		padding-right: max(var(--lumi-space-md), var(--lumi-safe-area-right));
+	}
+
+	.lumi-container--sm {
+		max-width: var(--lumi-container-width-sm);
+	}
+
+	/* Centered card layout (sign-in, onboarding) */
+	.lumi-centered-layout {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 100dvh;
+		padding: var(--lumi-space-lg);
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+
+	.lumi-centered-card {
+		width: 100%;
+		max-width: var(--lumi-centered-card-width-md);
+	}
+
+	.lumi-centered-card--md {
+		max-width: var(--lumi-centered-card-width-md);
+	}
+
+	/* ========================================================================== */
+	/* BRAND: horizontal wordmark on dark chrome (auth topbar, sidebar header) */
+	/* ========================================================================== */
+	[data-theme='dark'] .lumi-brand-logo-wordmark {
+		filter: var(--lumi-brand-logo-filter-dark);
+		opacity: var(--lumi-brand-logo-opacity-dark);
+	}
+
+	/* ========================================================================== */
+	/* RESPONSIVE SHELLS */
+	/* ========================================================================== */
+	/* Tablet & Mobile Layout (64rem / 1024px and below) */
+	@media (max-width: 64rem) {
+		/* Transform to mobile layout - remove sidebar from grid */
+		.lumi-dashboard-layout {
+			grid-template-areas:
+				'navbar'
+				'content';
+			grid-template-columns: 1fr;
+			--lumi-shell-padding: var(--lumi-layout-shell-padding-tablet);
+		}
+
+		/* Override any collapsed state classes */
+		.lumi-dashboard-layout.lumi-sidebar--is-collapsed {
+			grid-template-columns: 1fr;
+		}
+
+		/* When mobile sidebar is open, prevent body scroll */
+		.lumi-dashboard-layout.lumi-sidebar--mobile-open {
+			overflow: hidden;
+		}
+
+		/* Mobile overlay — base rule already owns opacity/visibility/transition */
+		.lumi-mobile-overlay {
+			display: block;
+		}
+
+		/* Show overlay when sidebar is open */
+		.lumi-dashboard-layout.lumi-sidebar--mobile-open .lumi-mobile-overlay {
+			opacity: 1;
+			visibility: visible;
+		}
+
+		/* Content adjustments */
+		.lumi-dashboard-layout__content {
+			padding: var(--lumi-layout-content-padding-tablet);
+			border-radius: var(--lumi-layout-floating-radius-tablet);
+		}
+
+		/* Two-column layout becomes single column */
+		.lumi-layout--two-columns {
+			grid-template-columns: 1fr;
+			gap: var(--lumi-space-md);
+		}
+	}
+
+	@media (max-width: 48rem) {
+		.lumi-dashboard-layout {
+			--lumi-shell-padding: var(--lumi-layout-shell-padding-mobile);
+		}
+
+		.lumi-dashboard-layout__content {
+			padding: var(--lumi-layout-content-padding-mobile);
+			border-radius: var(--lumi-layout-floating-radius-mobile);
+		}
+
+		.lumi-navbar-branch {
+			max-width: var(--lumi-navbar-branch-max-width-mobile);
+		}
+	}
+
+	@media (max-width: 30rem) {
+		.lumi-dashboard-layout__content {
+			padding: var(--lumi-layout-content-padding-compact);
+		}
+	}
+
+	@media (min-width: 80rem) {
+		.lumi-dashboard-layout__content {
+			padding: var(--lumi-space-xl);
+		}
+	}
+
+	@media (min-width: 96rem) {
+		.lumi-container--ultrawide {
+			max-width: var(--lumi-container-width-2xl);
+		}
+	}
+}
+
+/* Overrides of component-owned classes stay unlayered: component styles are
+   unlayered too, so these keep winning by specificity as before. */
+.lumi-navbar-branch__chip .lumi-chip__text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	min-width: 0;
+	max-width: var(--lumi-navbar-branch-text-max-width);
+}
+
+.lumi-page-sidebar__header-actions
+	.lumi-button.lumi-page-sidebar__mobile-trigger {
+	display: none;
+}
+
+.lumi-page-sidebar__radio-group .lumi-radio {
+	width: 100%;
+	padding: var(--lumi-space-sm) var(--lumi-space-md);
+	border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
+	border-radius: var(--lumi-radius-option);
+	background: var(--lumi-color-surface-card);
+	transition: var(--lumi-transition-colors);
+}
+
+.lumi-page-sidebar__radio-group .lumi-radio:not(.lumi-radio--disabled):hover {
+	border-color: var(--lumi-color-border-interactive);
+	background: color-mix(
+		in srgb,
+		var(--lumi-color-primary) 8%,
+		var(--lumi-color-surface-card)
+	);
+}
+
+.lumi-page-sidebar__radio-group .lumi-radio--checked {
+	border-color: var(--lumi-color-border-interactive);
+	background: color-mix(
+		in srgb,
+		var(--lumi-color-primary) 12%,
+		var(--lumi-color-surface-card)
+	);
+}
+
+@media (max-width: 64rem) {
+	.lumi-page-sidebar__header-actions
+		.lumi-button.lumi-page-sidebar__mobile-trigger {
+		display: inline-flex;
+	}
+}
+
+@media (max-width: 48rem) {
+	.lumi-navbar-branch__chip .lumi-chip__text {
+		max-width: var(--lumi-navbar-branch-text-max-width-mobile);
+	}
+}

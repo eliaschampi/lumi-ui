@@ -4,30 +4,31 @@
 	const {
 		label,
 		color = 'primary',
-		active = false,
+		selected = false,
 		disabled = false,
+		class: className = '',
 		onclick
 	}: TagOptionProps = $props();
 </script>
 
 <button
 	type="button"
-	class="lumi-tag-option lumi-tag-option--{color}"
-	class:lumi-tag-option--active={active}
-	class:lumi-tag-option--disabled={disabled}
-	style:--color="var(--lumi-color-{color})"
-	aria-pressed={active}
+	class={[
+		'lumi-tag-option',
+		selected && 'lumi-tag-option--selected',
+		className
+	]}
+	style:--lumi-control-accent="var(--lumi-color-{color})"
+	aria-pressed={selected}
 	{disabled}
 	{onclick}
 >
-	<span class="lumi-tag-option__dot"></span>
+	<span class="lumi-tag-option__dot" aria-hidden="true"></span>
 	<span class="lumi-tag-option__label">{label}</span>
 </button>
 
 <style>
 	.lumi-tag-option {
-		--color: var(--lumi-color-primary);
-		--lumi-control-accent: var(--color);
 		display: flex;
 		align-items: center;
 		gap: var(--lumi-space-sm);
@@ -47,10 +48,14 @@
 	.lumi-tag-option:hover {
 		border-color: color-mix(
 			in srgb,
-			var(--color) 26%,
+			var(--lumi-control-accent) 26%,
 			var(--lumi-color-border)
 		);
-		background: color-mix(in srgb, var(--color) 4%, var(--lumi-color-surface));
+		background: color-mix(
+			in srgb,
+			var(--lumi-control-accent) 4%,
+			var(--lumi-color-surface)
+		);
 	}
 
 	.lumi-tag-option:focus-visible {
@@ -58,22 +63,29 @@
 		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
-	.lumi-tag-option--active {
+	.lumi-tag-option--selected {
 		border-color: color-mix(
 			in srgb,
-			var(--color) 40%,
+			var(--lumi-control-accent) 40%,
 			var(--lumi-color-border)
 		);
-		background: color-mix(in srgb, var(--color) 8%, var(--lumi-color-surface));
+		background: color-mix(
+			in srgb,
+			var(--lumi-control-accent) 8%,
+			var(--lumi-color-surface)
+		);
 	}
 
-	.lumi-tag-option--active:hover {
-		background: color-mix(in srgb, var(--color) 14%, var(--lumi-color-surface));
+	.lumi-tag-option--selected:hover {
+		background: color-mix(
+			in srgb,
+			var(--lumi-control-accent) 14%,
+			var(--lumi-color-surface)
+		);
 	}
 
-	.lumi-tag-option--disabled {
+	.lumi-tag-option:disabled {
 		opacity: var(--lumi-opacity-disabled);
-		cursor: not-allowed;
 		pointer-events: none;
 	}
 
@@ -82,9 +94,9 @@
 		height: var(--lumi-icon-xs);
 		border-radius: var(--lumi-radius-full);
 		flex-shrink: 0;
-		background: var(--color);
+		background: var(--lumi-control-accent);
 		box-shadow: 0 0 0 var(--lumi-border-width-thick)
-			color-mix(in srgb, var(--color) 20%, transparent);
+			color-mix(in srgb, var(--lumi-control-accent) 20%, transparent);
 	}
 
 	.lumi-tag-option__label {

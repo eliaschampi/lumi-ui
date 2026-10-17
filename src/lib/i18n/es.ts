@@ -1,0 +1,92 @@
+import type { LumiMessages } from './types';
+
+/** Spanish copy. */
+export const lumiEs: LumiMessages = {
+	close: 'Cerrar',
+	cancel: 'Cancelar',
+	apply: 'Aplicar',
+	clear: 'Limpiar',
+	search: 'Buscar…',
+	loading: 'Cargando…',
+	noData: 'No hay datos disponibles',
+	noResults: 'Sin resultados',
+	options: 'Opciones',
+
+	alertDismiss: 'Cerrar alerta',
+	notificationDismiss: 'Cerrar notificación',
+	notifications: 'Notificaciones',
+	chipRemove: 'Quitar',
+	dialog: 'Diálogo',
+	dialogClose: 'Cerrar diálogo',
+	emptyTitle: 'Aún no hay nada aquí',
+	imageError: 'Imagen no disponible',
+	progress: 'Progreso',
+
+	errorBadRequestKicker: 'Solicitud inválida',
+	errorBadRequestTitle: 'Algo no cuadra en esta solicitud',
+	errorBadRequestDescription:
+		'Revisa los datos enviados o vuelve a la pantalla anterior para intentarlo con información válida.',
+	errorNotFoundKicker: 'Página no encontrada',
+	errorNotFoundTitle: 'Esta página no existe o cambió de lugar',
+	errorNotFoundDescription:
+		'Vuelve al inicio y continúa desde una sección disponible para ti.',
+	errorServerKicker: 'Error del servidor',
+	errorServerTitle: 'No pudimos completar esta operación',
+	errorServerDescription:
+		'Ocurrió un problema inesperado. Recarga la página o vuelve al inicio.',
+	errorBack: 'Volver',
+	errorHome: 'Ir al inicio',
+	errorRetry: 'Reintentar',
+
+	avatar: 'Avatar',
+	avatarGroup: (count) => (count === 1 ? '1 miembro' : `${count} miembros`),
+	unnamed: 'Sin nombre',
+
+	numberDecrease: 'Disminuir',
+	numberIncrease: 'Aumentar',
+	selectPlaceholder: 'Selecciona…',
+	selectEmpty: 'Sin opciones disponibles',
+	selectLoading: 'Cargando opciones…',
+	selectClear: 'Limpiar selección',
+	selectOpen: 'Abrir opciones',
+	selectClose: 'Cerrar opciones',
+	slider: 'Valor',
+	dateFrom: 'Desde',
+	dateTo: 'Hasta',
+	fileUploadTitle: 'Sube tus archivos',
+	fileUploadHint: 'Arrastra archivos aquí o haz clic para seleccionar',
+	fileUploadAddMore: 'Agregar más archivos',
+	fileUploadList: 'Archivos seleccionados',
+	fileUploadRemove: (name) => `Quitar ${name}`,
+	fileUploadMaxSize: (size) => `Tamaño máximo: ${size}`,
+	fileUploadType: (name) => `${name}: este tipo de archivo no está permitido`,
+	selectMinQuery: (count) =>
+		`Escribe al menos ${count} ${count === 1 ? 'carácter' : 'caracteres'}`,
+	selectSearchError: 'No se pudo buscar. Inténtalo de nuevo.',
+
+	tableSelectAll: 'Seleccionar todas las filas',
+	tableSelectRow: (row) => `Seleccionar fila ${row}`,
+	pagination: 'Paginación',
+	paginationPrevious: 'Anterior',
+	paginationNext: 'Siguiente',
+	paginationPage: (page) => `Página ${page}`,
+	paginationRange: (from, to, total) => `Mostrando ${from}–${to} de ${total}`,
+	paginationStatus: (page, pages) => `Página ${page} de ${pages}`,
+	chart: 'Gráfico',
+	chartBar: 'Gráfico de barras',
+	chartDonut: 'Gráfico de anillo',
+	chartSeries: 'Series del gráfico',
+	chartEmpty: 'No hay datos suficientes para mostrar este gráfico.',
+
+	tabs: 'Pestañas',
+	contextMenu: 'Menú contextual',
+	sidebar: 'Barra lateral',
+	sidebarToggle: 'Mostrar u ocultar la barra lateral',
+	pageActions: 'Acciones de la página',
+	pageSidebarTitle: 'Filtros',
+	pageSidebarClose: 'Cerrar panel lateral',
+
+	messages: 'Mensajes',
+	messagesLatest: 'Ir al último mensaje',
+	messagesLoadingEarlier: 'Cargando mensajes anteriores…'
+};

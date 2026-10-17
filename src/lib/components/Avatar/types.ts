@@ -1,3 +1,4 @@
+import type { Snippet } from 'svelte';
 import type { LumiColor, LumiDisplaySize } from '../config';
 
 export type AvatarColor = LumiColor;
@@ -5,44 +6,31 @@ export type AvatarSize = LumiDisplaySize;
 
 export interface AvatarProps {
 	/**
-	 * Text to display in avatar (will generate initials)
+	 * Person or entity name: drives the initials and the accessible name.
+	 * Up to two characters without spaces are shown as given ("AL").
 	 */
-	text?: string;
+	name?: string;
 
-	/**
-	 * Image source for avatar
-	 */
+	/** Image URL; initials or the icon show when it is missing or fails */
 	src?: string;
 
 	/**
-	 * Icon name to display
+	 * Fallback content instead of initials, e.g. an icon sized `60%`:
+	 * `<Avatar><User size="60%" /></Avatar>`
 	 */
-	icon?: string;
+	children?: Snippet;
 
 	/**
-	 * Alt text for image
+	 * Accessible name override. `""` marks the avatar decorative, e.g. next
+	 * to a visible name.
 	 */
 	alt?: string;
 
-	/**
-	 * Color variant
-	 * @default "primary"
-	 */
+	/** @default "primary" */
 	color?: AvatarColor;
 
-	/**
-	 * Size variant
-	 * @default "md"
-	 */
+	/** @default "md" */
 	size?: AvatarSize;
 
-	/**
-	 * Custom CSS class
-	 */
 	class?: string;
-
-	/**
-	 * Image error event handler
-	 */
-	onerror?: (event: Event) => void;
 }

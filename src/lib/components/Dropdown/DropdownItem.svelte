@@ -1,12 +1,7 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
 	import { getContext } from 'svelte';
-	import Icon from '../Icon/Icon.svelte';
+	import { Icon } from '../Icon';
 	import type { DropdownItemProps } from './types';
-
-	interface Props extends DropdownItemProps {
-		children?: Snippet;
-	}
 
 	const {
 		children,
@@ -15,51 +10,24 @@
 		color,
 		disabled = false,
 		submit = false,
-		selected = false,
-		class: className = '',
+		selected,
+		class: className,
 		onclick
-	}: Props = $props();
+	}: DropdownItemProps = $props();
 
-	const closeDropdown = getContext<() => void>('dropdownClose');
-
-	const itemClasses = $derived.by(() =>
-		[
-			'lumi-dropdown-item',
-			selected && 'lumi-dropdown-item--selected',
-			disabled && 'lumi-dropdown-item--disabled',
-			className
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
-
-	const colorStyle = $derived(
-		color
-			? `--_accent: var(--lumi-color-${color}); --_accent-bg: var(--lumi-color-${color}-bg)`
-			: undefined
-	);
+	// Absent inside a `Context` menu, which closes through its own click handler.
+	const closeDropdown = getContext<(() => void) | undefined>('dropdownClose');
 
 	function handleClick(event: MouseEvent): void {
 		if (disabled) {
 			event.preventDefault();
-			event.stopPropagation();
 			return;
 		}
-
 		onclick?.(event);
-
-		if (event.defaultPrevented) {
-			return;
-		}
-
-		if (submit) {
-			// Defer closing to allow form submission to bubble
-			setTimeout(() => {
-				closeDropdown?.();
-			}, 0);
-		} else {
-			closeDropdown?.();
-		}
+		if (event.defaultPrevented) return;
+		// A submit item lets the event reach its form before the menu unmounts.
+		if (submit) setTimeout(() => closeDropdown?.());
+		else closeDropdown?.();
 	}
 
 	function handleLinkKeydown(event: KeyboardEvent): void {
@@ -70,123 +38,98 @@
 </script>
 
 {#snippet itemContent()}
-	{#if icon}
-		<div class="lumi-dropdown-item__icon">
-			<Icon {icon} size="sm" />
-		</div>
-	{/if}
-
-	<span class="lumi-dropdown-item__content">
-		{#if children}
-			{@render children()}
-		{/if}
-	</span>
+	{#if icon}<Icon {icon} size="sm" />{/if}
+	<span class="lumi-dropdown-item__content">{@render children?.()}</span>
 {/snippet}
 
-{#if href}
-	<a
-		{href}
-		class={itemClasses}
-		style={colorStyle}
-		role="menuitem"
-		aria-current={selected ? 'true' : undefined}
-		aria-disabled={disabled || undefined}
-		tabindex="-1"
-		onclick={handleClick}
-		onkeydown={handleLinkKeydown}
-	>
-		{@render itemContent()}
-	</a>
-{:else}
-	<button
-		type={submit ? 'submit' : 'button'}
-		{disabled}
-		class={itemClasses}
-		style={colorStyle}
-		role="menuitem"
-		aria-current={selected ? 'true' : undefined}
-		aria-disabled={disabled || undefined}
-		tabindex="-1"
-		onclick={handleClick}
-	>
-		{@render itemContent()}
-	</button>
-{/if}
+<svelte:element
+	this={href ? 'a' : 'button'}
+	{href}
+	type={href ? undefined : submit ? 'submit' : 'button'}
+	disabled={href ? undefined : disabled}
+	class={[
+		'lumi-dropdown-item',
+		selected && 'lumi-dropdown-item--selected',
+		disabled && 'lumi-dropdown-item--disabled',
+		className
+	]}
+	style:--lumi-control-accent={color && `var(--lumi-color-${color})`}
+	role={selected === undefined ? 'menuitem' : 'menuitemradio'}
+	aria-checked={selected}
+	aria-disabled={disabled || undefined}
+	tabindex="-1"
+	onclick={handleClick}
+	onkeydown={href ? handleLinkKeydown : undefined}
+>
+	{@render itemContent()}
+</svelte:element>
 
 <style>
+	/* The one menu-item recipe, shared by DropdownItem and ContextItem. A
+	   `color` sets the accent; uncolored items keep neutral icons. */
 	.lumi-dropdown-item {
-		--lumi-control-accent: var(--lumi-color-primary);
-		--dropdown-item-hover-bg: color-mix(
-			in srgb,
-			var(--lumi-color-primary) 4%,
-			transparent
+		--lumi-dropdown-item-accent: var(
+			--lumi-control-accent,
+			var(--lumi-color-primary)
 		);
-		--dropdown-item-lift: var(--lumi-interactive-lift);
-		width: 100%;
-		padding: var(--lumi-space-sm) var(--lumi-space-md);
-		cursor: pointer;
-		transition: var(--lumi-transition-interactive);
-		user-select: none;
-		color: var(--lumi-color-text);
-		font-size: var(--lumi-font-size-sm);
-		line-height: var(--lumi-line-height-normal);
 		display: flex;
 		align-items: center;
 		gap: var(--lumi-space-md);
+		inline-size: 100%;
+		padding: var(--lumi-space-sm) var(--lumi-space-md);
 		background: transparent;
-		border: none;
+		border: 0;
 		border-radius: var(--lumi-radius-control);
-		text-align: left;
+		color: var(--lumi-color-text);
+		font: inherit;
+		font-size: var(--lumi-font-size-sm);
+		line-height: var(--lumi-line-height-normal);
+		text-align: start;
 		text-decoration: none;
+		cursor: pointer;
+		user-select: none;
+		transition: var(--lumi-transition-control);
 	}
 
-	.lumi-dropdown-item:hover:not(.lumi-dropdown-item--disabled) {
-		background: var(--_accent-bg, var(--dropdown-item-hover-bg));
-		color: var(--lumi-color-text);
-		transform: translateY(var(--dropdown-item-lift));
+	.lumi-dropdown-item:hover:not(.lumi-dropdown-item--disabled),
+	.lumi-dropdown-item:focus-visible {
+		background: color-mix(
+			in srgb,
+			var(--lumi-dropdown-item-accent) 8%,
+			transparent
+		);
 	}
 
 	.lumi-dropdown-item:focus-visible {
-		background: var(--dropdown-item-hover-bg);
 		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
-	.lumi-dropdown-item:active:not(.lumi-dropdown-item--disabled) {
-		transform: none;
+	.lumi-dropdown-item > :global(.lumi-icon) {
+		color: var(--lumi-control-accent, var(--lumi-color-text-muted));
 	}
 
 	.lumi-dropdown-item--selected {
+		color: var(--lumi-dropdown-item-accent);
 		font-weight: var(--lumi-font-weight-semibold);
-		color: var(--lumi-color-primary);
 	}
 
-	.lumi-dropdown-item--selected .lumi-dropdown-item__icon {
-		color: var(--lumi-color-primary);
-	}
-
-	.lumi-dropdown-item__icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: var(--_accent, var(--lumi-color-text-muted));
-		flex-shrink: 0;
-		width: var(--lumi-icon-sm);
-		height: var(--lumi-icon-sm);
-	}
-
-	.lumi-dropdown-item:hover .lumi-dropdown-item__icon {
+	.lumi-dropdown-item--selected > :global(.lumi-icon),
+	.lumi-dropdown-item:hover > :global(.lumi-icon) {
 		color: inherit;
 	}
 
 	.lumi-dropdown-item__content {
+		display: flex;
 		flex: 1;
-		white-space: nowrap;
+		align-items: center;
+		gap: var(--lumi-space-lg);
+		min-inline-size: 0;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
-	/* States */
 	.lumi-dropdown-item--disabled {
 		opacity: var(--lumi-opacity-disabled);
 		cursor: not-allowed;

@@ -1,3 +1,5 @@
+import type { Snippet } from 'svelte';
+import type { IconSource } from '../../utils/icons';
 import type { LumiColor } from '../config';
 
 export type InfoItemLayout = 'horizontal' | 'vertical';
@@ -8,7 +10,7 @@ export interface InfoItemProps {
 	layout?: InfoItemLayout;
 
 	/** Icon name */
-	icon?: string;
+	icon?: IconSource;
 
 	/** Icon color */
 	iconColor?: InfoItemColor;
@@ -21,4 +23,7 @@ export interface InfoItemProps {
 
 	/** Custom class */
 	class?: string;
+
+	/** Rich value content, replacing `value` */
+	children?: Snippet;
 }

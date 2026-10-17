@@ -1,3 +1,4 @@
+import type { IconSource } from '../../utils/icons';
 import type { Snippet } from 'svelte';
 import type { LumiColor } from '../config';
 
@@ -18,7 +19,7 @@ export interface Tab {
 	/**
 	 * Tab icon name
 	 */
-	icon?: string;
+	icon?: IconSource;
 
 	/**
 	 * Whether tab is disabled
@@ -60,6 +61,11 @@ export interface TabsProps {
 	 * Custom CSS class
 	 */
 	class?: string;
+
+	/**
+	 * Single panel for navigation-only tabs (when no tab has `content`)
+	 */
+	children?: Snippet;
 
 	/**
 	 * Tab change event handler

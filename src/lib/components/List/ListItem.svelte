@@ -1,263 +1,214 @@
 <script lang="ts">
 	import { Icon } from '../Icon';
-	import type { ListItemProps } from './types';
+	import type { ListItemProps, ListText } from './types';
 
 	const {
 		title,
-		subtitle,
+		description,
 		icon,
-		disabled = false,
-		clickable = false,
-		active = false,
-		class: className = '',
+		leading,
+		trailing,
+		href,
 		onclick,
-		children,
-		avatar,
-		titleSlot,
-		subtitleSlot
+		selected = false,
+		disabled = false,
+		class: className
 	}: ListItemProps = $props();
 
-	const classes = $derived(
-		[
-			'lumi-list-item',
-			disabled && 'lumi-list-item--disabled',
-			clickable && 'lumi-list-item--clickable',
-			active && 'lumi-list-item--active',
-			className
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
-
-	const handleClick = (event: MouseEvent) => {
-		if (!disabled && onclick) {
-			onclick(event);
-		}
-	};
+	const interactive = $derived(!disabled && Boolean(href || onclick));
 </script>
 
-{#snippet listItemContent()}
-	{#if avatar}
-		<div class="lumi-list-item__avatar">
-			{@render avatar()}
-		</div>
-	{/if}
-
-	{#if icon}
-		<div class="lumi-list-item__icon">
-			<Icon {icon} size="var(--list-icon-size, var(--lumi-icon-md))" />
-		</div>
-	{/if}
-
-	<div class="lumi-list-item__content">
-		{#if title || titleSlot}
-			<div class="lumi-list-item__title">
-				{#if titleSlot}
-					{@render titleSlot()}
-				{:else}
-					{title}
-				{/if}
-			</div>
-		{/if}
-
-		{#if subtitle || subtitleSlot}
-			<div class="lumi-list-item__subtitle">
-				{#if subtitleSlot}
-					{@render subtitleSlot()}
-				{:else}
-					{subtitle}
-				{/if}
-			</div>
-		{/if}
-	</div>
-
-	{#if children}
-		<div class="lumi-list-item__actions">
-			{@render children()}
-		</div>
-	{/if}
+{#snippet text(value: ListText)}
+	{#if typeof value === 'function'}{@render value()}{:else}{value}{/if}
 {/snippet}
 
-{#if clickable}
-	<button
-		type="button"
-		class={classes}
-		onclick={handleClick}
-		{disabled}
-		aria-current={active ? 'true' : undefined}
-	>
-		{@render listItemContent()}
-	</button>
-{:else}
-	<div
-		class={classes}
-		aria-current={active ? 'true' : undefined}
-		aria-disabled={disabled ? 'true' : undefined}
-	>
-		{@render listItemContent()}
-	</div>
-{/if}
+<li
+	class={[
+		'lumi-list-item',
+		interactive && 'lumi-list-item--interactive',
+		selected && 'lumi-list-item--selected',
+		disabled && 'lumi-list-item--disabled',
+		className
+	]}
+>
+	{#if leading}
+		<span class="lumi-list-item__leading">{@render leading()}</span>
+	{:else if icon}
+		<Icon {icon} size="var(--lumi-list-icon-size, var(--lumi-icon-sm))" />
+	{/if}
+
+	<span class="lumi-list-item__content">
+		<!-- The title is the single target; ::after stretches it over the row. -->
+		{#if href && !disabled}
+			<a
+				{href}
+				class="lumi-list-item__title lumi-list-item__target"
+				aria-current={selected || undefined}
+				{onclick}
+			>
+				{@render text(title ?? '')}
+			</a>
+		{:else if onclick}
+			<button
+				type="button"
+				class="lumi-list-item__title lumi-list-item__target"
+				aria-current={selected || undefined}
+				{disabled}
+				{onclick}
+			>
+				{@render text(title ?? '')}
+			</button>
+		{:else if title}
+			<span class="lumi-list-item__title">{@render text(title)}</span>
+		{/if}
+		{#if description}
+			<span class="lumi-list-item__description">
+				{@render text(description)}
+			</span>
+		{/if}
+	</span>
+
+	{#if trailing}
+		<span class="lumi-list-item__trailing">{@render trailing()}</span>
+	{/if}
+</li>
 
 <style>
 	.lumi-list-item {
-		--lumi-control-accent: var(--list-accent, var(--lumi-color-primary));
-		--list-item-hover-bg: color-mix(
-			in srgb,
-			var(--list-accent, var(--lumi-color-primary)) 4%,
-			transparent
+		--lumi-list-item-accent: var(
+			--lumi-control-accent,
+			var(--lumi-color-primary)
 		);
-		--list-item-active-bg: color-mix(
-			in srgb,
-			var(--list-accent, var(--lumi-color-primary)) 8%,
-			transparent
-		);
-		--list-item-lift: var(--lumi-interactive-lift);
 		position: relative;
 		display: flex;
 		align-items: center;
 		gap: var(--lumi-space-md);
-		min-height: calc(var(--lumi-space-xxl) + var(--lumi-space-2xs));
+		min-block-size: calc(var(--lumi-space-xxl) + var(--lumi-space-2xs));
 		padding: var(
-			--list-item-padding,
+			--lumi-list-item-padding,
 			var(--lumi-space-sm) var(--lumi-space-md)
 		);
 		border-radius: var(--lumi-radius-control);
-		transition: var(--lumi-transition-interactive);
-		cursor: default;
-		background: transparent;
 		color: var(--lumi-color-text);
-		text-decoration: none;
-		width: 100%;
-		text-align: left;
 		line-height: var(--lumi-line-height-normal);
-		font: inherit;
-		border: none;
-		user-select: none;
+		transition: var(--lumi-transition-interactive);
 	}
 
-	/* Media */
-	.lumi-list-item__avatar {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: var(--lumi-space-xl);
-		height: var(--lumi-space-xl);
-		flex-shrink: 0;
-		border-radius: var(--lumi-radius-full);
-		overflow: hidden;
-	}
-
-	.lumi-list-item__icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: var(--list-icon-size, var(--lumi-icon-sm));
-		height: var(--list-icon-size, var(--lumi-icon-sm));
-		flex-shrink: 0;
+	.lumi-list-item > :global(.lumi-icon) {
 		color: var(--lumi-color-text-muted);
-		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
-	/* Content */
+	.lumi-list-item__leading {
+		display: inline-flex;
+		flex-shrink: 0;
+	}
+
 	.lumi-list-item__content {
-		flex: 1;
-		min-width: 0;
 		display: flex;
+		flex: 1;
 		flex-direction: column;
-		justify-content: center;
 		gap: var(--lumi-space-2xs);
+		min-inline-size: 0;
 	}
 
 	.lumi-list-item__title {
-		font-size: var(--list-item-title-size, var(--lumi-font-size-base));
-		font-weight: var(--lumi-font-weight-medium);
-		color: inherit;
-		line-height: var(--lumi-line-height-tight);
 		overflow: hidden;
+		color: inherit;
+		font: inherit;
+		font-size: var(--lumi-font-size-sm);
+		font-weight: var(--lumi-font-weight-medium);
+		line-height: var(--lumi-line-height-tight);
+		text-align: start;
+		text-decoration: none;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
 
-	.lumi-list-item__subtitle {
-		font-size: var(--list-item-subtitle-size, var(--lumi-font-size-sm));
-		color: var(--lumi-color-text-muted);
-		line-height: var(--lumi-line-height-normal);
-	}
-
-	/* Actions */
-	.lumi-list-item__actions {
-		display: flex;
-		align-items: center;
-		gap: var(--lumi-space-sm);
-		margin-left: auto;
-	}
-
-	/* States */
-	.lumi-list-item--disabled {
-		opacity: var(--lumi-opacity-disabled);
-		cursor: not-allowed;
-	}
-
-	.lumi-list-item--clickable {
+	button.lumi-list-item__title {
+		padding: 0;
+		background: none;
+		border: 0;
 		cursor: pointer;
 	}
 
-	.lumi-list-item--clickable:hover:not(.lumi-list-item--active):not(
-			.lumi-list-item--disabled
-		) {
-		background: var(--list-item-hover-bg);
-		transform: translateY(var(--list-item-lift));
+	.lumi-list-item__target::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
 	}
 
-	.lumi-list-item--clickable:hover .lumi-list-item__icon {
-		color: inherit;
+	.lumi-list-item__target:focus-visible {
+		outline: none;
 	}
 
-	.lumi-list-item--clickable:focus-visible {
-		background: var(--list-item-hover-bg);
+	.lumi-list-item__target:focus-visible::after {
 		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
-	.lumi-list-item--clickable:active:not(.lumi-list-item--disabled) {
+	.lumi-list-item__description {
+		color: var(--lumi-color-text-muted);
+		font-size: var(--lumi-font-size-xs);
+	}
+
+	/* Above the stretched target so actions stay independently clickable. */
+	.lumi-list-item__trailing {
+		position: relative;
+		display: flex;
+		flex-shrink: 0;
+		align-items: center;
+		gap: var(--lumi-space-sm);
+		margin-inline-start: auto;
+	}
+
+	.lumi-list-item--interactive:hover {
+		background: color-mix(
+			in srgb,
+			var(--lumi-list-item-accent) 5%,
+			transparent
+		);
+		transform: translateY(var(--lumi-interactive-lift));
+	}
+
+	.lumi-list-item--interactive:hover > :global(.lumi-icon) {
+		color: inherit;
+	}
+
+	.lumi-list-item--interactive:active {
 		transform: none;
 	}
 
-	/* Active state */
-	.lumi-list-item--active {
-		background: var(--list-item-active-bg);
+	.lumi-list-item--selected,
+	.lumi-list-item--selected:hover {
+		background: color-mix(
+			in srgb,
+			var(--lumi-list-item-accent) 9%,
+			transparent
+		);
 		box-shadow: var(--lumi-shadow-sm);
+		transform: none;
 	}
 
-	.lumi-list-item--active::before {
+	.lumi-list-item--selected::before {
 		content: '';
 		position: absolute;
-		left: var(--lumi-space-2xs);
-		top: var(--lumi-space-xs);
-		bottom: var(--lumi-space-xs);
-		width: var(--lumi-border-width-thick);
+		inset-block: var(--lumi-space-xs);
+		inset-inline-start: var(--lumi-space-2xs);
+		inline-size: var(--lumi-border-width-thick);
 		border-radius: var(--lumi-radius-full);
-		background: var(--list-accent, var(--lumi-color-primary));
+		background: var(--lumi-list-item-accent);
 	}
 
-	.lumi-list-item--clickable.lumi-list-item--active:hover {
-		background: var(--list-item-active-bg);
-		transform: none;
-	}
-
-	.lumi-list-item--active .lumi-list-item__title {
+	.lumi-list-item--selected .lumi-list-item__title {
 		font-weight: var(--lumi-font-weight-semibold);
 	}
 
-	.lumi-list-item--active .lumi-list-item__icon {
-		color: var(--list-accent, var(--lumi-color-primary));
+	.lumi-list-item--selected > :global(.lumi-icon) {
+		color: var(--lumi-list-item-accent);
 	}
 
-	.lumi-list-item--active .lumi-list-item__subtitle {
-		color: color-mix(
-			in srgb,
-			var(--list-accent, var(--lumi-color-primary)) 70%,
-			var(--lumi-color-text-muted)
-		);
+	.lumi-list-item--disabled {
+		opacity: var(--lumi-opacity-disabled);
 	}
 </style>

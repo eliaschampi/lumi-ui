@@ -1,3 +1,5 @@
+import type { Snippet } from 'svelte';
+import type { IconSource } from '../../utils/icons';
 import type { LumiColor, LumiCompactSize } from '../config';
 
 export type ChipColor = LumiColor;
@@ -19,7 +21,7 @@ export interface ChipProps {
 	/**
 	 * Icon to display before the text
 	 */
-	icon?: string;
+	icon?: IconSource;
 
 	/**
 	 * Whether the chip can be closed
@@ -31,6 +33,12 @@ export interface ChipProps {
 	 * Custom CSS class
 	 */
 	class?: string;
+
+	/** Remove button name, e.g. "Remove filter: Paid"; defaults to the localized "Remove" */
+	closeLabel?: string;
+
+	/** Label content */
+	children?: Snippet;
 
 	/**
 	 * Close event handler

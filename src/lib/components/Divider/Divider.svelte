@@ -1,142 +1,98 @@
 <script lang="ts">
-	import { Icon } from '../Icon';
 	import type { DividerProps } from './types';
 
 	const {
-		position = 'center',
-		icon = undefined,
-		text = undefined,
-		spaced = true,
-		'aria-label': ariaLabel = '',
-		class: className = '',
-		onclick
+		orientation = 'horizontal',
+		align = 'center',
+		label,
+		variant = 'solid',
+		spacing = 'md',
+		class: className
 	}: DividerProps = $props();
 
-	const hasContent = $derived(!!icon || !!text);
-
-	const dividerClasses = $derived.by(() => {
-		return [
-			'lumi-divider',
-			`lumi-divider--${position}`,
-			onclick && 'lumi-divider--interactive',
-			hasContent && 'lumi-divider--with-content',
-			spaced && 'lumi-divider--spaced',
-			className
-		]
-			.filter(Boolean)
-			.join(' ');
-	});
+	const classes = $derived([
+		'lumi-divider',
+		orientation === 'vertical' && 'lumi-divider--vertical',
+		variant === 'dashed' && 'lumi-divider--dashed',
+		className
+	]);
+	// The default spacing lives in CSS; only a change is written inline.
+	const space = $derived(
+		spacing === 'md'
+			? undefined
+			: spacing === 'none'
+				? '0'
+				: `var(--lumi-space-${spacing})`
+	);
+	const vertical = $derived(
+		orientation === 'vertical' ? 'vertical' : undefined
+	);
 </script>
 
-{#snippet dividerContent()}
-	{#if hasContent && position !== 'left'}
-		<span class="lumi-divider__line lumi-divider__line--before"></span>
-	{/if}
-
-	{#if hasContent}
-		<span class="lumi-divider__content">
-			{#if icon}
-				<Icon {icon} size="sm" class="lumi-divider__icon" />
-			{:else}
-				<span>{text}</span>
-			{/if}
-		</span>
-	{/if}
-
-	{#if hasContent && position !== 'right'}
-		<span class="lumi-divider__line lumi-divider__line--after"></span>
-	{:else if !hasContent}
-		<span class="lumi-divider__line lumi-divider__line--full"></span>
-	{/if}
-{/snippet}
-
-{#if onclick}
-	<button
-		type="button"
-		class={dividerClasses}
-		{onclick}
-		aria-label={ariaLabel || text || icon || 'Divider button'}
+{#if label}
+	<div
+		class={[classes, `lumi-divider--labeled lumi-divider--${align}`]}
+		style:--lumi-divider-space={space}
+		role="separator"
+		aria-orientation={vertical}
+		aria-label={label}
 	>
-		{@render dividerContent()}
-	</button>
-{:else}
-	<div class={dividerClasses} role="separator">
-		{@render dividerContent()}
+		<span class="lumi-divider__label">{label}</span>
 	</div>
+{:else}
+	<hr
+		class={classes}
+		style:--lumi-divider-space={space}
+		aria-orientation={vertical}
+	/>
 {/if}
 
 <style>
 	.lumi-divider {
+		--lumi-divider-line: var(--lumi-border-width-thin)
+			var(--lumi-divider-style, solid) var(--lumi-color-border);
+		flex-shrink: 0;
+		margin-block: var(--lumi-divider-space, var(--lumi-space-md));
+		border: 0;
+		border-block-start: var(--lumi-divider-line);
+		color: var(--lumi-color-text-muted);
+	}
+
+	.lumi-divider--dashed {
+		--lumi-divider-style: dashed;
+	}
+
+	.lumi-divider--vertical {
+		align-self: stretch;
+		margin-block: 0;
+		margin-inline: var(--lumi-divider-space, var(--lumi-space-md));
+		border-block-start: 0;
+		border-inline-start: var(--lumi-divider-line);
+	}
+
+	/* Labeled: the line is drawn by the pseudo-elements around the label. */
+	.lumi-divider--labeled {
 		display: flex;
 		align-items: center;
-		width: 100%;
-		color: var(--lumi-color-text-muted);
-		background: transparent;
-		border: none;
-		padding: 0;
+		gap: var(--lumi-space-sm);
+		border: 0;
 	}
 
-	.lumi-divider--spaced {
-		margin: var(--lumi-space-md) 0;
-	}
-
-	.lumi-divider__line {
+	.lumi-divider--labeled::before,
+	.lumi-divider--labeled::after {
+		content: '';
 		flex: 1;
-		height: var(--lumi-border-width-thin);
-		background: linear-gradient(
-			90deg,
-			var(--lumi-color-border-light),
-			var(--lumi-color-border),
-			var(--lumi-color-border-light)
-		);
+		border-block-start: var(--lumi-divider-line);
 	}
 
-	.lumi-divider__line--full {
-		width: 100%;
+	.lumi-divider--start::before,
+	.lumi-divider--end::after {
+		display: none;
 	}
 
-	.lumi-divider__line--before {
-		margin-inline-end: var(--lumi-space-sm);
-	}
-
-	.lumi-divider__line--after {
-		margin-inline-start: var(--lumi-space-sm);
-	}
-
-	.lumi-divider__content {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: var(--lumi-space-xs) var(--lumi-space-sm);
-		color: var(--lumi-color-text-muted);
-		font-size: var(--lumi-font-size-sm);
+	.lumi-divider__label {
+		font-size: var(--lumi-font-size-xs);
 		font-weight: var(--lumi-font-weight-medium);
 		white-space: nowrap;
-		background: var(--lumi-color-surface-overlay);
-		border-radius: var(--lumi-surface-radius);
-		border: none;
-		min-width: fit-content;
-		flex-shrink: 0;
-		transition: var(--lumi-transition-colors);
-	}
-
-	.lumi-divider__icon {
-		width: var(--lumi-icon-sm);
-		height: var(--lumi-icon-sm);
-		color: inherit;
-	}
-
-	.lumi-divider:hover .lumi-divider__line {
-		background: var(--lumi-color-border-strong);
-	}
-
-	.lumi-divider--interactive {
-		cursor: pointer;
-	}
-
-	.lumi-divider--interactive:focus-visible {
-		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-focus-outline-offset);
-		border-radius: var(--lumi-radius-control);
 	}
 </style>

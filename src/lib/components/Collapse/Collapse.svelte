@@ -1,156 +1,112 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import { slide } from 'svelte/transition';
-	import { cubicOut } from 'svelte/easing';
-	import { LUMI_CONFIG } from '../config';
 	import type { CollapseProps } from './types';
 
-	interface Props extends CollapseProps {
-		children?: Snippet;
-		titleSnippet?: Snippet;
-	}
-
-	const {
+	let {
 		title = '',
-		defaultOpen = false,
+		open = $bindable(false),
 		color = 'primary',
 		size = 'md',
-		radius = 'md',
 		disabled = false,
-		class: className = '',
-		ontoggle,
-		onchange,
+		class: className,
 		children,
-		titleSnippet
-	}: Props = $props();
+		ontoggle
+	}: CollapseProps = $props();
 
-	// svelte-ignore state_referenced_locally
-	let isOpen = $state(defaultOpen);
 	const instanceId = $props.id();
 	const panelId = `lumi-collapse-panel-${instanceId}`;
 
-	const collapseClasses = $derived.by(() => {
-		return [
-			'lumi-collapse',
-			`lumi-collapse--${color}`,
-			`lumi-collapse--${size}`,
-			`lumi-collapse--radius-${radius}`,
-			isOpen && 'lumi-collapse--open',
-			disabled && 'lumi-collapse--disabled',
-			className
-		]
-			.filter(Boolean)
-			.join(' ');
-	});
-
-	const triggerClasses = $derived.by(() => {
-		return [
-			'lumi-collapse__trigger',
-			isOpen && 'lumi-collapse__trigger--open',
-			disabled && 'lumi-collapse__trigger--disabled'
-		]
-			.filter(Boolean)
-			.join(' ');
-	});
-
-	function toggleCollapse(): void {
-		if (disabled) return;
-
-		isOpen = !isOpen;
-		ontoggle?.(isOpen);
-		onchange?.(isOpen);
+	function toggle(): void {
+		open = !open;
+		ontoggle?.(open);
 	}
 </script>
 
 <div
-	class={collapseClasses}
+	class={[
+		'lumi-collapse',
+		size !== 'md' && `lumi-collapse--${size}`,
+		open && 'lumi-collapse--open',
+		disabled && 'lumi-collapse--disabled',
+		className
+	]}
 	style:--lumi-control-accent="var(--lumi-color-{color})"
 >
 	<button
-		class={triggerClasses}
-		aria-expanded={isOpen}
+		type="button"
+		class="lumi-collapse__trigger"
+		aria-expanded={open}
 		aria-controls={panelId}
 		{disabled}
-		type="button"
-		onclick={toggleCollapse}
+		onclick={toggle}
 	>
-		<div class="lumi-collapse__header">
-			<div class="lumi-collapse__title">
-				{#if titleSnippet}
-					{@render titleSnippet()}
-				{:else}
-					{title}
-				{/if}
-			</div>
-			<div
-				class="lumi-collapse__icon"
-				class:lumi-collapse__icon--rotated={isOpen}
-			>
-				<svg
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				>
-					<polyline points="6 9 12 15 18 9"></polyline>
-				</svg>
-			</div>
-		</div>
+		<span class="lumi-collapse__title">{title}</span>
+		<svg
+			class="lumi-collapse__icon"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			stroke-linecap="round"
+			stroke-linejoin="round"
+			aria-hidden="true"
+		>
+			<polyline points="6 9 12 15 18 9"></polyline>
+		</svg>
 	</button>
 
-	{#if isOpen}
-		<div
-			id={panelId}
-			class="lumi-collapse__content"
-			class:lumi-collapse__content--open={isOpen}
-			transition:slide={{
-				duration: LUMI_CONFIG.transitions.slow,
-				easing: cubicOut
-			}}
-		>
-			<div class="lumi-collapse__body">
-				{#if children}
-					{@render children()}
-				{/if}
-			</div>
+	<!-- Always rendered: the grid row animates open in CSS and `inert` keeps
+	     the closed panel out of the tab order. -->
+	<div id={panelId} class="lumi-collapse__content" inert={!open}>
+		<div class="lumi-collapse__clip">
+			<div class="lumi-collapse__body">{@render children?.()}</div>
 		</div>
-	{/if}
+	</div>
 </div>
 
 <style>
 	.lumi-collapse {
+		--collapse-padding: var(--lumi-space-md) var(--lumi-space-lg);
+		--collapse-min-height: var(--lumi-control-height-lg);
+		--collapse-title-size: var(--lumi-font-size-base);
+		--collapse-body-padding: var(--lumi-space-lg);
 		position: relative;
 		isolation: isolate;
+		margin-block-end: var(--lumi-space-sm);
+		overflow: hidden;
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
 		border-radius: var(--lumi-surface-radius);
 		background:
 			var(--lumi-gradient-subtle), var(--lumi-color-surface-glass-strong);
 		box-shadow: var(--lumi-shadow-sm);
-		overflow: hidden;
 		transition: var(--lumi-transition-control);
-		margin-bottom: var(--lumi-space-sm);
+	}
+
+	.lumi-collapse--sm {
+		--collapse-padding: var(--lumi-space-sm) var(--lumi-space-md);
+		--collapse-min-height: var(--lumi-control-height-md);
+		--collapse-title-size: var(--lumi-font-size-sm);
+		--collapse-body-padding: var(--lumi-space-md);
+	}
+
+	.lumi-collapse--lg {
+		--collapse-padding: var(--lumi-space-lg) var(--lumi-space-xl);
+		--collapse-min-height: var(--lumi-control-height-xl);
+		--collapse-title-size: var(--lumi-font-size-lg);
+		--collapse-body-padding: var(--lumi-space-xl);
 	}
 
 	.lumi-collapse::before {
 		content: '';
 		position: absolute;
 		inset: 0;
+		z-index: -1;
 		border-radius: inherit;
-		pointer-events: none;
 		background: var(--lumi-gradient-card-sheen);
 		opacity: var(--lumi-card-sheen-opacity);
-		z-index: 0;
+		pointer-events: none;
 	}
 
-	.lumi-collapse__trigger,
-	.lumi-collapse__content {
-		position: relative;
-		z-index: 1;
-	}
-
-	.lumi-collapse:hover:not(.lumi-collapse--disabled):not(.lumi-collapse--open) {
+	.lumi-collapse:hover:not(.lumi-collapse--disabled, .lumi-collapse--open) {
 		border-color: var(--lumi-color-border-strong);
 	}
 
@@ -161,45 +117,31 @@
 
 	.lumi-collapse--disabled {
 		opacity: var(--lumi-opacity-disabled);
-		cursor: not-allowed;
-		pointer-events: none;
-		background: var(--lumi-color-background-secondary);
 	}
 
-	/* Radius variants */
-	.lumi-collapse--radius-none {
-		border-radius: var(--lumi-radius-none);
-	}
-
-	.lumi-collapse--radius-sm {
-		border-radius: var(--lumi-radius-sm);
-	}
-
-	.lumi-collapse--radius-md {
-		border-radius: var(--lumi-radius-md);
-	}
-
-	.lumi-collapse--radius-lg {
-		border-radius: var(--lumi-radius-lg);
-	}
-
-	.lumi-collapse--radius-full {
-		border-radius: var(--lumi-radius-full);
-	}
-
-	/* Trigger button */
 	.lumi-collapse__trigger {
-		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--lumi-space-md);
+		inline-size: 100%;
+		min-block-size: var(--collapse-min-height);
+		padding: var(--collapse-padding);
 		background: transparent;
-		border: none;
+		border: 0;
+		color: var(--lumi-color-text);
+		font: inherit;
+		text-align: start;
 		cursor: pointer;
-		padding: 0;
-		margin: 0;
 		transition: var(--lumi-transition-control);
-		text-align: left;
 	}
 
-	.lumi-collapse__trigger:hover:not(.lumi-collapse__trigger--disabled) {
+	.lumi-collapse__trigger:disabled {
+		cursor: not-allowed;
+	}
+
+	.lumi-collapse__trigger:hover:enabled,
+	.lumi-collapse__trigger:focus-visible {
 		background: color-mix(
 			in srgb,
 			var(--lumi-color-surface-glass) 55%,
@@ -208,122 +150,54 @@
 	}
 
 	.lumi-collapse__trigger:focus-visible {
-		background: color-mix(
-			in srgb,
-			var(--lumi-color-surface-glass) 55%,
-			transparent
-		);
 		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
-	.lumi-collapse__trigger--disabled {
-		cursor: not-allowed;
-	}
-
-	/* Header */
-	.lumi-collapse__header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: var(--lumi-space-md);
-		padding: var(--lumi-space-md) var(--lumi-space-lg);
-		min-height: var(--lumi-control-height-lg);
-	}
-
-	/* Title */
 	.lumi-collapse__title {
-		font-size: var(--lumi-font-size-base);
+		font-size: var(--collapse-title-size);
 		font-weight: var(--lumi-font-weight-medium);
-		color: var(--lumi-color-text);
-		line-height: var(--lumi-line-height-normal);
-		margin: 0;
 	}
 
-	/* Size variants */
-	.lumi-collapse--sm .lumi-collapse__header {
-		padding: var(--lumi-space-sm) var(--lumi-space-md);
-		min-height: var(--lumi-control-height-md);
-	}
-
-	.lumi-collapse--sm .lumi-collapse__title {
-		font-size: var(--lumi-font-size-sm);
-	}
-
-	.lumi-collapse--sm .lumi-collapse__body {
-		padding: var(--lumi-space-md);
-	}
-
-	.lumi-collapse--md .lumi-collapse__header {
-		padding: var(--lumi-space-md) var(--lumi-space-lg);
-		min-height: var(--lumi-control-height-lg);
-	}
-
-	.lumi-collapse--md .lumi-collapse__title {
-		font-size: var(--lumi-font-size-base);
-	}
-
-	.lumi-collapse--md .lumi-collapse__body {
-		padding: var(--lumi-space-lg);
-	}
-
-	.lumi-collapse--lg .lumi-collapse__header {
-		padding: var(--lumi-space-lg) var(--lumi-space-xl);
-		min-height: var(--lumi-control-height-xl);
-	}
-
-	.lumi-collapse--lg .lumi-collapse__title {
-		font-size: var(--lumi-font-size-lg);
-	}
-
-	.lumi-collapse--lg .lumi-collapse__body {
-		padding: var(--lumi-space-xl);
-	}
-
-	/* Icon */
 	.lumi-collapse__icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: var(--lumi-icon-md);
-		height: var(--lumi-icon-md);
+		flex-shrink: 0;
+		inline-size: var(--lumi-icon-md);
+		block-size: var(--lumi-icon-md);
 		color: var(--lumi-color-text-muted);
 		transition:
 			transform var(--lumi-duration-slow) var(--lumi-easing-default),
 			color var(--lumi-duration-fast) var(--lumi-easing-default);
-		flex-shrink: 0;
-	}
-
-	.lumi-collapse__icon svg {
-		width: 100%;
-		height: 100%;
-	}
-
-	.lumi-collapse__icon--rotated {
-		transform: rotate(180deg);
 	}
 
 	.lumi-collapse--open .lumi-collapse__icon {
 		color: var(--lumi-control-accent);
+		transform: rotate(180deg);
 	}
 
-	/* Content */
+	/* 0fr → 1fr animates to the content's real height without measuring. */
 	.lumi-collapse__content {
+		display: grid;
+		grid-template-rows: 0fr;
+		border-block-start: var(--lumi-border-width-thin) solid transparent;
+		transition:
+			grid-template-rows var(--lumi-duration-slow) var(--lumi-easing-default),
+			border-color var(--lumi-duration-slow) var(--lumi-easing-default);
+	}
+
+	.lumi-collapse--open .lumi-collapse__content {
+		grid-template-rows: 1fr;
+		border-block-start-color: var(--lumi-color-border-glass);
+	}
+
+	.lumi-collapse__clip {
+		min-block-size: 0;
 		overflow: hidden;
-		border-top: var(--lumi-border-width-thin) solid transparent;
-		transition: border-color var(--lumi-duration-slow)
-			var(--lumi-easing-default);
 	}
 
-	.lumi-collapse__content--open {
-		border-top-color: var(--lumi-color-border-glass);
-	}
-
-	/* Body */
 	.lumi-collapse__body {
-		padding: var(--lumi-space-lg);
+		padding: var(--collapse-body-padding);
 		color: var(--lumi-color-text-muted);
-		line-height: var(--lumi-line-height-relaxed);
 		font-size: var(--lumi-font-size-sm);
+		line-height: var(--lumi-line-height-relaxed);
 	}
 </style>

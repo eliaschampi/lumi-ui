@@ -1,218 +1,156 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+
+	const COPY = { imageError: en.imageError };
+</script>
+
 <script lang="ts">
-	import ImageOff from '@lucide/svelte/icons/image-off';
+	import { useLumiLocale } from '../../i18n';
 	import type { ImageProps } from './types';
 
 	const {
 		src,
-		srcSet = '',
-		sizes = '',
 		alt = '',
 		width,
 		height,
+		srcset,
+		sizes,
+		ratio,
+		fit = 'cover',
 		radius = 'lg',
 		loading = 'lazy',
-		decoding = 'async',
-		fetchPriority = 'auto',
-		isZoomed = false,
-		removeWrapper = false,
-		disableSkeleton = false,
-		errorLabel = 'Imagen no disponible',
-		class: className = '',
+		fetchpriority,
+		zoom = false,
+		errorLabel,
+		class: className,
 		onload,
 		onerror
 	}: ImageProps = $props();
 
-	let isLoading = $state(true);
-	let hasError = $state(false);
+	const i18n = useLumiLocale(COPY);
 
-	const classes = $derived.by(() => {
-		return [
-			'lumi-image',
-			radius !== 'none' && `lumi-image--radius-${radius}`,
-			isZoomed && 'lumi-image--zoomed',
-			isLoading && 'lumi-image--loading',
-			hasError && 'lumi-image--error',
-			className
-		]
-			.filter(Boolean)
-			.join(' ');
-	});
-
-	const wrapperStyles = $derived.by(() => {
-		const styles: string[] = [];
-		if (width) styles.push(`width: ${width}px`);
-		if (height) styles.push(`height: ${height}px`);
-		return styles.join('; ');
-	});
-
-	const handleImageLoad = (event: Event) => {
-		isLoading = false;
-		hasError = false;
-		onload?.(event);
-	};
-
-	const handleImageError = () => {
-		isLoading = false;
-		hasError = true;
-		onerror?.();
-	};
-
-	$effect(() => {
-		isLoading = Boolean(src);
-		hasError = false;
-	});
+	// Keyed by URL so a new `src` starts fresh without an effect. The image is
+	// never hidden while loading: server-rendered pixels paint before hydration.
+	let loadedSrc = $state('');
+	let failedSrc = $state('');
 </script>
 
-{#if !removeWrapper}
-	<div class={classes} style={wrapperStyles} aria-busy={isLoading}>
-		<!-- Main image -->
+<div
+	class={[
+		'lumi-image',
+		ratio && 'lumi-image--ratio',
+		fit === 'contain' && 'lumi-image--contain',
+		zoom && 'lumi-image--zoom',
+		loadedSrc !== src && failedSrc !== src && 'lumi-skeleton',
+		className
+	]}
+	style:--lumi-image-radius={radius === 'lg'
+		? undefined
+		: radius === 'none'
+			? '0'
+			: `var(--lumi-radius-${radius})`}
+	style:aspect-ratio={ratio ??
+		(width && height ? `${width} / ${height}` : undefined)}
+	style:inline-size={width && !ratio ? `${width}px` : undefined}
+	style:block-size={height && !width && !ratio ? `${height}px` : undefined}
+>
+	{#if failedSrc === src}
+		<div
+			class="lumi-image__error"
+			role={alt ? 'img' : undefined}
+			aria-label={alt || undefined}
+		>
+			<svg
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<rect x="3" y="3" width="18" height="18" rx="2" />
+				<circle cx="9" cy="9" r="2" />
+				<path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21" />
+				<path d="m3 3 18 18" />
+			</svg>
+			<span>{errorLabel ?? i18n.t.imageError}</span>
+		</div>
+	{:else}
 		<img
 			{src}
 			{alt}
-			srcset={srcSet}
+			{srcset}
 			{sizes}
 			{width}
 			{height}
-			class="lumi-image__img"
 			{loading}
-			{decoding}
-			fetchpriority={fetchPriority}
-			aria-hidden={hasError || undefined}
-			onload={handleImageLoad}
-			onerror={handleImageError}
+			{fetchpriority}
+			decoding="async"
+			onload={(event) => {
+				loadedSrc = src;
+				onload?.(event);
+			}}
+			onerror={(event) => {
+				failedSrc = src;
+				onerror?.(event);
+			}}
 		/>
-
-		<!-- Loading skeleton -->
-		{#if !disableSkeleton && isLoading}
-			<div class="lumi-image__skeleton" aria-hidden="true"></div>
-		{/if}
-
-		{#if hasError}
-			<div class="lumi-image__error-state" role="status">
-				<ImageOff class="lumi-image__error-icon" aria-hidden="true" />
-				<span>{errorLabel}</span>
-			</div>
-		{/if}
-	</div>
-{:else}
-	<!-- Without wrapper -->
-	<img
-		{src}
-		{alt}
-		srcset={srcSet}
-		{sizes}
-		{width}
-		{height}
-		class="{classes} lumi-image__img"
-		style={wrapperStyles}
-		{loading}
-		{decoding}
-		fetchpriority={fetchPriority}
-		onload={handleImageLoad}
-		onerror={handleImageError}
-	/>
-{/if}
+	{/if}
+</div>
 
 <style>
+	/* The frame shows the shared skeleton until the image reports load; the
+	   background only applies once loaded (letterboxing for `contain`). */
 	.lumi-image {
 		position: relative;
 		display: inline-block;
+		max-inline-size: 100%;
 		overflow: hidden;
+		border-radius: var(--lumi-image-radius, var(--lumi-radius-lg));
+	}
+
+	.lumi-image:not(.lumi-skeleton) {
 		background: var(--lumi-color-background-secondary);
 	}
 
-	.lumi-image__img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
+	.lumi-image--ratio {
 		display: block;
-		transition:
-			opacity var(--lumi-duration-base) var(--lumi-easing-default),
-			transform var(--lumi-duration-slow) var(--lumi-easing-default);
+		inline-size: 100%;
 	}
 
-	/* Radius variants */
-	.lumi-image--radius-sm {
-		border-radius: var(--lumi-radius-sm);
+	img {
+		display: block;
+		inline-size: 100%;
+		block-size: 100%;
+		object-fit: cover;
+		transition: transform var(--lumi-duration-slow) var(--lumi-easing-default);
 	}
 
-	.lumi-image--radius-md {
-		border-radius: var(--lumi-radius-md);
+	.lumi-image--contain img {
+		object-fit: contain;
 	}
 
-	.lumi-image--radius-lg {
-		border-radius: var(--lumi-radius-lg);
-	}
-
-	.lumi-image--radius-full {
-		border-radius: var(--lumi-radius-full);
-	}
-
-	/* Loading skeleton */
-	.lumi-image__skeleton {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(
-			90deg,
-			var(--lumi-color-background-secondary) 25%,
-			var(--lumi-color-background-hover) 50%,
-			var(--lumi-color-background-secondary) 75%
-		);
-		background-size: 200% 100%;
-		animation: lumi-shimmer var(--lumi-duration-shimmer) linear infinite;
-	}
-
-	/* Zoom effect */
-	.lumi-image--zoomed:hover .lumi-image__img {
+	.lumi-image--zoom:hover img {
 		transform: scale(var(--lumi-interactive-zoom-scale));
 	}
 
-	.lumi-image__img.lumi-image--zoomed:hover {
-		transform: scale(var(--lumi-interactive-zoom-scale));
-	}
-
-	.lumi-image__error-state {
-		position: absolute;
-		inset: 0;
+	.lumi-image__error {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		gap: var(--lumi-space-xs);
+		block-size: 100%;
+		min-block-size: var(--lumi-space-4xl);
 		padding: var(--lumi-space-md);
 		color: var(--lumi-color-text-muted);
 		font-size: var(--lumi-font-size-xs);
 		text-align: center;
 	}
 
-	:global(.lumi-image__error-icon) {
-		width: var(--lumi-icon-lg);
-		height: var(--lumi-icon-lg);
-	}
-
-	/* Loading state */
-	.lumi-image--loading .lumi-image__img,
-	.lumi-image__img.lumi-image--loading,
-	.lumi-image--error .lumi-image__img,
-	.lumi-image__img.lumi-image--error {
-		opacity: 0;
-	}
-
-	/* Error state */
-	.lumi-image--error {
-		background: var(--lumi-color-background-secondary);
-	}
-
-	/* Animations */
-	@keyframes lumi-shimmer {
-		0% {
-			background-position: -200% 0;
-		}
-		100% {
-			background-position: 200% 0;
-		}
+	.lumi-image__error svg {
+		inline-size: var(--lumi-icon-lg);
+		block-size: var(--lumi-icon-lg);
 	}
 </style>

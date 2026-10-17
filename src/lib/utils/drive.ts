@@ -1,5 +1,20 @@
+import Building from '@lucide/svelte/icons/building';
+import Building2 from '@lucide/svelte/icons/building-2';
+import Clock from '@lucide/svelte/icons/clock';
+import FileIcon from '@lucide/svelte/icons/file';
+import FileText from '@lucide/svelte/icons/file-text';
+import Folder from '@lucide/svelte/icons/folder';
+import HardDrive from '@lucide/svelte/icons/hard-drive';
+import Image from '@lucide/svelte/icons/image';
+import Music from '@lucide/svelte/icons/music';
+import Trash2 from '@lucide/svelte/icons/trash-2';
+import User from '@lucide/svelte/icons/user';
+import Video from '@lucide/svelte/icons/video';
 import type { LumiColor } from '../components/config';
-import type { IconName } from './icons';
+import { lumiDriveEn } from '../i18n/drive';
+import type { LumiDriveMessages, LumiFormatLocale } from '../i18n/types';
+import { dateFormat, DEFAULT_LOCALE } from './format';
+import type { IconComponent, IconSource } from './icons';
 
 export { formatFileSize } from './file';
 
@@ -17,7 +32,7 @@ export interface DriveScopeOption {
 	value: DriveScope;
 	name: string;
 	description: string;
-	icon: string;
+	icon: IconComponent;
 	color: LumiColor;
 }
 
@@ -32,8 +47,9 @@ export interface DriveTagOption {
 
 export interface DriveMenuOption {
 	name: string;
+	description?: string;
 	value: string;
-	icon: string;
+	icon: IconSource;
 }
 
 /** Maximum upload file size: 50MB */
@@ -97,15 +113,15 @@ const DRIVE_IMAGE_VARIANT_SET: ReadonlySet<DriveImageVariant> = new Set([
 	'preview',
 	'original'
 ]);
-const DRIVE_FILE_ICONS = {
-	dir: 'folder',
-	img: 'image',
-	vid: 'video',
-	aud: 'music',
-	doc: 'fileText',
-	zip: 'file',
-	otr: 'file'
-} as const satisfies Record<DriveFileType, IconName>;
+const DRIVE_FILE_ICONS: Record<DriveFileType, IconComponent> = {
+	dir: Folder,
+	img: Image,
+	vid: Video,
+	aud: Music,
+	doc: FileText,
+	zip: FileIcon,
+	otr: FileIcon
+};
 const DRIVE_FILE_COLORS = {
 	dir: 'primary',
 	img: 'success',
@@ -160,26 +176,20 @@ export function getSafeDriveExtension(originalName: string): string {
 }
 
 /**
- * Validate file/folder names. Returns null if valid.
+ * Validate file/folder names. Returns null if valid, otherwise a message.
  */
-export function validateDriveName(value: string): string | null {
+export function validateDriveName(
+	value: string,
+	t: LumiDriveMessages = lumiDriveEn
+): string | null {
 	const normalized = normalizeDriveName(value);
 
-	if (!normalized) {
-		return 'El nombre es obligatorio';
-	}
-
+	if (!normalized) return t.driveNameRequired;
 	if (normalized.length > MAX_DRIVE_NAME_LENGTH) {
-		return `El nombre no puede superar ${MAX_DRIVE_NAME_LENGTH} caracteres`;
+		return t.driveNameTooLong(MAX_DRIVE_NAME_LENGTH);
 	}
-
-	if (normalized === '.' || normalized === '..') {
-		return 'Nombre de archivo inválido';
-	}
-
-	if (hasInvalidDriveNameChars(normalized)) {
-		return 'El nombre contiene caracteres inválidos';
-	}
+	if (normalized === '.' || normalized === '..') return t.driveNameInvalid;
+	if (hasInvalidDriveNameChars(normalized)) return t.driveNameInvalidChars;
 
 	return null;
 }
@@ -222,9 +232,9 @@ function hasInvalidDriveNameChars(value: string): boolean {
 }
 
 /**
- * Get the Lucide icon name for a file type
+ * Get the Lucide icon for a file type
  */
-export function getFileIcon(type: DriveFileType): IconName {
+export function getFileIcon(type: DriveFileType): IconComponent {
 	return DRIVE_FILE_ICONS[type];
 }
 
@@ -235,21 +245,24 @@ export function getFileColor(type: DriveFileType) {
 	return DRIVE_FILE_COLORS[type];
 }
 
-const DRIVE_TYPE_LABELS: Record<DriveFileType, string> = {
-	dir: 'Carpeta',
-	img: 'Imagen',
-	vid: 'Video',
-	aud: 'Audio',
-	doc: 'Documento',
-	zip: 'Comprimido',
-	otr: 'Archivo'
-};
+const DRIVE_TYPE_LABEL_KEYS = {
+	dir: 'driveFolder',
+	img: 'driveImage',
+	vid: 'driveVideo',
+	aud: 'driveAudio',
+	doc: 'driveDocument',
+	zip: 'driveArchive',
+	otr: 'driveFile'
+} as const satisfies Record<DriveFileType, keyof LumiDriveMessages>;
 
 /**
  * Get display label for a drive file type.
  */
-export function getDriveTypeLabel(type: DriveFileType): string {
-	return DRIVE_TYPE_LABELS[type] ?? 'Archivo';
+export function getDriveTypeLabel(
+	type: DriveFileType,
+	t: LumiDriveMessages = lumiDriveEn
+): string {
+	return t[DRIVE_TYPE_LABEL_KEYS[type] ?? 'driveFile'];
 }
 
 /**
@@ -298,57 +311,93 @@ export function getDriveServeUrl(
 	return query ? `${path}?${query}` : path;
 }
 
-const DRIVE_DATE_FORMATTER = new Intl.DateTimeFormat('es-PE', {
-	timeZone: 'America/Lima',
-	year: 'numeric',
-	month: 'short',
-	day: 'numeric'
-});
+type DriveDateLocale = Pick<LumiFormatLocale, 'locale' | 'timeZone'>;
 
-const DRIVE_DATE_TIME_FORMATTER = new Intl.DateTimeFormat('es-PE', {
-	timeZone: 'America/Lima',
-	year: 'numeric',
-	month: 'short',
-	day: 'numeric',
+const DRIVE_DATE = { year: 'numeric', month: 'short', day: 'numeric' } as const;
+const DRIVE_DATE_TIME = {
+	...DRIVE_DATE,
 	hour: '2-digit',
 	minute: '2-digit'
-});
+} as const;
 
-function toDriveDate(value: string): Date | null {
+const DEFAULT_DATE_FORMAT: DriveDateLocale = { locale: DEFAULT_LOCALE };
+
+function formatDriveInstant(
+	value: string,
+	{ locale, timeZone }: DriveDateLocale,
+	options: Intl.DateTimeFormatOptions
+): string {
 	const date = new Date(value);
-	return Number.isNaN(date.getTime()) ? null : date;
+	if (Number.isNaN(date.getTime())) return '—';
+	return dateFormat(locale, { ...options, timeZone }).format(date);
 }
 
-export function formatDriveDate(value: string): string {
-	const date = toDriveDate(value);
-	return date ? DRIVE_DATE_FORMATTER.format(date) : '—';
+/** Short date ("Oct 16, 2026"); invalid input renders an em dash. */
+export function formatDriveDate(
+	value: string,
+	format: DriveDateLocale = DEFAULT_DATE_FORMAT
+): string {
+	return formatDriveInstant(value, format, DRIVE_DATE);
 }
 
-export function formatDriveDateTime(value: string): string {
-	const date = toDriveDate(value);
-	return date ? DRIVE_DATE_TIME_FORMATTER.format(date) : '—';
+/** Short date with time; invalid input renders an em dash. */
+export function formatDriveDateTime(
+	value: string,
+	format: DriveDateLocale = DEFAULT_DATE_FORMAT
+): string {
+	return formatDriveInstant(value, format, DRIVE_DATE_TIME);
+}
+
+const DRIVE_TAGS = [
+	{
+		tone: 'favorite',
+		color: 'secondary',
+		hash: 'fb7185',
+		key: 'driveTagFavorite'
+	},
+	{
+		tone: 'highlight',
+		color: 'success',
+		hash: '47b57c',
+		key: 'driveTagHighlight'
+	},
+	{ tone: 'work', color: 'warning', hash: 'faa75f', key: 'driveTagWork' },
+	{ tone: 'personal', color: 'info', hash: '42a5f5', key: 'driveTagPersonal' }
+] as const satisfies readonly (Omit<DriveTagOption, 'name'> & {
+	key: DriveTagKey;
+})[];
+
+type DriveTagKey =
+	| 'driveTagFavorite'
+	| 'driveTagHighlight'
+	| 'driveTagWork'
+	| 'driveTagPersonal';
+
+function toTag(
+	{ key, ...tag }: (typeof DRIVE_TAGS)[number],
+	t: LumiDriveMessages
+): DriveTagOption {
+	return { ...tag, name: t[key] };
 }
 
 /**
- * Tag options for Drive
- * `hash` is what gets stored in DB, `color` comes from Lumi tokens.
+ * Tag options for Drive. `hash` is what gets stored in the database; `color`
+ * comes from Lumi tokens.
  */
-export const TAG_OPTIONS: DriveTagOption[] = [
-	{ tone: 'favorite', color: 'secondary', hash: 'fb7185', name: 'Favoritos' },
-	{ tone: 'highlight', color: 'success', hash: '47b57c', name: 'Destacados' },
-	{ tone: 'work', color: 'warning', hash: 'faa75f', name: 'Trabajo' },
-	{ tone: 'personal', color: 'info', hash: '42a5f5', name: 'Personal' }
-];
+export function getDriveTagOptions(
+	t: LumiDriveMessages = lumiDriveEn
+): DriveTagOption[] {
+	return DRIVE_TAGS.map((tag) => toTag(tag, t));
+}
 
 export function getDriveTagByHash(
-	hash: string | null | undefined
+	hash: string | null | undefined,
+	t: LumiDriveMessages = lumiDriveEn
 ): DriveTagOption | null {
-	if (!hash) {
-		return null;
-	}
-
+	if (!hash) return null;
 	const normalizedHash = hash.toLowerCase();
-	return TAG_OPTIONS.find((tag) => tag.hash === normalizedHash) ?? null;
+	const tag = DRIVE_TAGS.find((option) => option.hash === normalizedHash);
+	return tag ? toTag(tag, t) : null;
 }
 
 /** CSS `var(--lumi-color-*)` for tag dots (semantic `color` is not a paint value). */
@@ -359,44 +408,70 @@ export function driveTagColorCssVar(color: DriveTagOption['color']): string {
 /**
  * Sidebar menu options for Drive navigation
  */
-export const DRIVE_MENU_OPTIONS: {
+export function getDriveMenuOptions(t: LumiDriveMessages = lumiDriveEn): {
 	main: DriveMenuOption[];
 	trash: DriveMenuOption[];
-} = {
-	main: [
-		{ name: 'Recientes', value: 'recent', icon: 'clock' },
-		{ name: 'Archivos pesados', value: 'heavy', icon: 'hardDrive' }
-	],
-	trash: [{ name: 'Papelera', value: 'trash', icon: 'trash' }]
-};
+} {
+	return {
+		main: [
+			{
+				name: t.driveRecent,
+				description: t.driveRecentHint,
+				value: 'recent',
+				icon: Clock
+			},
+			{
+				name: t.driveHeavy,
+				description: t.driveHeavyHint,
+				value: 'heavy',
+				icon: HardDrive
+			}
+		],
+		trash: [
+			{
+				name: t.driveTrash,
+				description: t.driveTrashHint,
+				value: 'trash',
+				icon: Trash2
+			}
+		]
+	};
+}
 
 /**
  * Drive scope options for UI selectors
  */
-export const DRIVE_SCOPE_OPTIONS: DriveScopeOption[] = [
-	{
-		value: 'shared',
-		name: 'Institucional',
-		description: 'Visible para usuarios autorizados del sistema',
-		icon: 'building',
-		color: 'info'
-	},
-	{
-		value: 'user_private',
-		name: 'Personal',
-		description: 'Visible solo para ti',
-		icon: 'user',
-		color: 'secondary'
-	}
-];
+export function getDriveScopeOptions(
+	t: LumiDriveMessages = lumiDriveEn
+): DriveScopeOption[] {
+	return [
+		{
+			value: 'shared',
+			name: t.driveScopeShared,
+			description: t.driveScopeSharedHint,
+			icon: Building,
+			color: 'info'
+		},
+		{
+			value: 'user_private',
+			name: t.driveScopePrivate,
+			description: t.driveScopePrivateHint,
+			icon: User,
+			color: 'secondary'
+		}
+	];
+}
 
-export const DRIVE_SCOPE_SEGMENT_OPTIONS = DRIVE_SCOPE_OPTIONS.map(
-	(scopeOption) => ({
-		value: scopeOption.value,
-		label: scopeOption.name,
-		icon: scopeOption.value === 'shared' ? 'building2' : 'user'
-	})
-);
+/** Scope options shaped for `SegmentedControl`. */
+export function getDriveScopeSegmentOptions(
+	t: LumiDriveMessages = lumiDriveEn
+): { value: DriveScope; label: string; icon: IconComponent }[] {
+	return getDriveScopeOptions(t).map((scope) => ({
+		value: scope.value,
+		label: scope.name,
+		icon: scope.value === 'shared' ? Building2 : scope.icon
+	}));
+}
 
 /** Interface for breadcrumb items in Drive navigation */
 export interface DriveBreadcrumb {

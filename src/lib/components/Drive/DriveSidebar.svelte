@@ -1,12 +1,21 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+	import { lumiDriveEn } from '../../i18n/drive';
+
+	const COPY = { ...lumiDriveEn, close: en.close };
+</script>
+
 <script lang="ts">
-	import { Icon } from '../Icon';
+	import HardDrive from '@lucide/svelte/icons/hard-drive';
+	import { CloseButton } from '../CloseButton';
 	import { List, ListItem } from '../List';
 	import { Progress } from '../Progress';
 	import { SegmentedControl } from '../SegmentedControl';
+	import { useLumiLocale } from '../../i18n';
 	import {
-		DRIVE_MENU_OPTIONS,
-		DRIVE_SCOPE_SEGMENT_OPTIONS,
 		formatFileSize,
+		getDriveMenuOptions,
+		getDriveScopeSegmentOptions,
 		isValidDriveScope,
 		type DriveMenuOption,
 		type DriveScope
@@ -40,6 +49,9 @@
 		onclose
 	}: Props = $props();
 
+	const i18n = useLumiLocale(COPY);
+	const menuOptions = $derived(getDriveMenuOptions(i18n.t));
+	const scopeOptions = $derived(getDriveScopeSegmentOptions(i18n.t));
 	const effectiveScope = $derived(currentScope ?? 'shared');
 	const isMyDriveActive = $derived(!selectedMenu);
 	const storageColor = $derived(
@@ -53,28 +65,21 @@
 
 {#if closable}
 	<div class="lumi-drive-sidebar__header">
-		<span class="lumi-text--sm lumi-font--bold">Drive</span>
-		<button
-			type="button"
-			class="lumi-drive-sidebar__close"
-			onclick={onclose}
-			aria-label="Cerrar"
-		>
-			<Icon icon="x" size="sm" />
-		</button>
+		<span class="lumi-drive-sidebar__title">{i18n.t.driveTitle}</span>
+		<CloseButton label={i18n.t.close} onclick={onclose} />
 	</div>
 {/if}
 
 {#if showScopeControl}
 	<div class="lumi-page-sidebar__section">
-		<p class="lumi-page-sidebar__label">Espacio</p>
+		<p class="lumi-page-sidebar__label">{i18n.t.driveScope}</p>
 		<div class="lumi-drive-sidebar__scope">
 			<SegmentedControl
 				value={effectiveScope}
-				options={DRIVE_SCOPE_SEGMENT_OPTIONS}
+				options={scopeOptions}
 				color="info"
 				fullWidth
-				aria-label="Seleccionar espacio de Drive"
+				aria-label={i18n.t.driveScopeLabel}
 				onchange={(value) => {
 					if (typeof value === 'string' && isValidDriveScope(value)) {
 						onscopechange?.(value);
@@ -86,35 +91,30 @@
 {/if}
 
 <div class="lumi-page-sidebar__section">
-	<p class="lumi-page-sidebar__label">Navegación</p>
+	<p class="lumi-page-sidebar__label">{i18n.t.driveNavigation}</p>
 	<List size="sm" color="primary" class="lumi-drive-sidebar__nav">
 		<ListItem
-			title="Mi unidad"
-			subtitle="Archivos y carpetas"
-			icon="hardDrive"
-			clickable
-			active={isMyDriveActive}
+			title={i18n.t.driveMyDrive}
+			description={i18n.t.driveMyDriveHint}
+			icon={HardDrive}
+			selected={isMyDriveActive}
 			onclick={() => onmenuselect?.(null)}
 		/>
-		{#each DRIVE_MENU_OPTIONS.main as menu (menu.value)}
+		{#each menuOptions.main as menu (menu.value)}
 			<ListItem
 				title={menu.name}
-				subtitle={menu.value === 'recent'
-					? 'Actividad reciente'
-					: 'Mayor tamaño'}
+				description={menu.description}
 				icon={menu.icon}
-				clickable
-				active={selectedMenu?.value === menu.value}
+				selected={selectedMenu?.value === menu.value}
 				onclick={() => onmenuselect?.(menu)}
 			/>
 		{/each}
-		{#each DRIVE_MENU_OPTIONS.trash as menu (menu.value)}
+		{#each menuOptions.trash as menu (menu.value)}
 			<ListItem
 				title={menu.name}
-				subtitle="Eliminados temporalmente"
+				description={menu.description}
 				icon={menu.icon}
-				clickable
-				active={selectedMenu?.value === menu.value}
+				selected={selectedMenu?.value === menu.value}
 				onclick={() => onmenuselect?.(menu)}
 			/>
 		{/each}
@@ -122,18 +122,30 @@
 </div>
 
 <div class="lumi-page-sidebar__section">
-	<p class="lumi-page-sidebar__label">Almacenamiento</p>
+	<p class="lumi-page-sidebar__label">{i18n.t.driveStorage}</p>
 	<Progress value={storageInfo.percentage} color={storageColor} />
 	<div class="lumi-drive-sidebar__storage-meta">
-		<span class="lumi-text--xs lumi-text--muted">
-			{formatFileSize(storageInfo.used)} de {formatFileSize(storageInfo.total)}
+		<span class="lumi-drive-sidebar__meta">
+			{i18n.t.driveStorageUsage(
+				formatFileSize(storageInfo.used),
+				formatFileSize(storageInfo.total)
+			)}
 		</span>
-		<span class="lumi-text--xs lumi-text--muted">{storageInfo.percentage}%</span
-		>
+		<span class="lumi-drive-sidebar__meta">{storageInfo.percentage}%</span>
 	</div>
 </div>
 
 <style>
+	.lumi-drive-sidebar__title {
+		font-size: var(--lumi-font-size-sm);
+		font-weight: var(--lumi-font-weight-bold);
+	}
+
+	.lumi-drive-sidebar__meta {
+		color: var(--lumi-color-text-muted);
+		font-size: var(--lumi-font-size-xs);
+	}
+
 	:global(.lumi-drive-sidebar__nav) {
 		max-height: var(--lumi-drive-sidebar-nav-max-height);
 		overflow-x: hidden;
@@ -149,29 +161,6 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-	}
-
-	.lumi-drive-sidebar__close {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: var(--lumi-space-2xs);
-		border: none;
-		border-radius: var(--lumi-radius-full);
-		background: transparent;
-		color: var(--lumi-color-text-muted);
-		cursor: pointer;
-		transition: var(--lumi-transition-control);
-	}
-
-	.lumi-drive-sidebar__close:hover {
-		background: var(--lumi-color-background-hover);
-		color: var(--lumi-color-text);
-	}
-
-	.lumi-drive-sidebar__close:focus-visible {
-		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
 	.lumi-drive-sidebar__storage-meta {

@@ -1,57 +1,28 @@
+import type { LumiChoiceOption } from '../../types/choice';
 import type { LumiColor } from '../config';
 
-// Lumi UI - SegmentedControl Component Types
-
-export interface SegmentedControlOption {
-	/** Unique value */
-	value: string | number;
-
-	/** Visible label — omit for icon-only options */
-	label?: string;
-
-	/** Accessible label for icon-only options */
-	ariaLabel?: string;
-
-	/** Optional icon name */
-	icon?: string;
-
-	/** Whether disabled */
-	disabled?: boolean;
-}
+/** One segment; shares its shape with ToggleGroup options. */
+export type SegmentedControlOption = LumiChoiceOption;
 
 export type SegmentedControlColor = LumiColor;
 
 export interface SegmentedControlProps {
-	/** Selected value */
+	/** Selected value (bindable); `''` when cleared */
 	value?: string | number;
-
-	/** Array of options */
 	options: SegmentedControlOption[];
-
-	/** Color variant */
+	/** Accent of the active segment @default 'primary' */
 	color?: SegmentedControlColor;
-
-	/** Whether disabled */
 	disabled?: boolean;
-
-	/** Stretch to available width */
+	/** Stretch segments across the available width */
 	fullWidth?: boolean;
-
-	/** Layout orientation */
+	/** @default 'horizontal' */
 	orientation?: 'horizontal' | 'vertical';
-
-	/** Compact padding for icon-only options (no labels) */
+	/** Compact padding for icon-only options */
 	iconOnly?: boolean;
-
-	/** Allow selecting the active option again to clear it */
+	/** Activating the selected option again clears it */
 	clearable?: boolean;
-
-	/** Custom class */
 	class?: string;
-
-	/** Change event handler */
-	onchange?: (value: string | number) => void;
-
-	/** Accessible group label */
+	/** Accessible group name */
 	'aria-label'?: string;
+	onchange?: (value: string | number) => void;
 }

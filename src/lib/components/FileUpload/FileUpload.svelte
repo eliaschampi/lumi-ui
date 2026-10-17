@@ -1,18 +1,53 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+
+	const COPY = {
+		fileUploadTitle: en.fileUploadTitle,
+		fileUploadHint: en.fileUploadHint,
+		fileUploadAddMore: en.fileUploadAddMore,
+		fileUploadList: en.fileUploadList,
+		fileUploadRemove: en.fileUploadRemove,
+		fileUploadMaxSize: en.fileUploadMaxSize,
+		fileUploadType: en.fileUploadType
+	};
+
+	/** Native `accept` semantics (`.ext`, `type/*`, `type/sub`) for dropped files. */
+	function accepts(file: File, accept: string | undefined): boolean {
+		if (!accept) return true;
+		const name = file.name.toLowerCase();
+		const type = file.type.toLowerCase();
+		return accept.split(',').some((token) => {
+			const rule = token.trim().toLowerCase();
+			if (!rule || rule === '*' || rule === '*/*') return true;
+			if (rule.startsWith('.')) return name.endsWith(rule);
+			if (rule.endsWith('/*')) return type.startsWith(rule.slice(0, -1));
+			return type === rule;
+		});
+	}
+
+	let sequence = 0;
+</script>
+
 <script lang="ts">
-	import { Icon } from '../Icon';
-	import { Loading } from '../Loading';
+	import CircleCheck from '@lucide/svelte/icons/circle-check';
+	import CloudUpload from '@lucide/svelte/icons/cloud-upload';
+	import FileIcon from '@lucide/svelte/icons/file';
+	import Plus from '@lucide/svelte/icons/plus';
+	import X from '@lucide/svelte/icons/x';
+	import { useLumiLocale } from '../../i18n';
 	import { formatFileSize } from '../../utils/file';
+	import Icon from '../Icon/Icon.svelte';
 	import type { FileUploadFile, FileUploadProps } from './types';
 
 	let {
 		files = $bindable([]),
-		placeholderText = 'Sube tus archivos',
-		hintText = 'Arrastra archivos aquí o haz clic para seleccionar',
-		accept = '*',
+		placeholderText,
+		hintText,
+		accept,
 		multiple = false,
 		maxSize = 0,
 		disabled = false,
-		addMoreText = 'Agregar más archivos',
+		addMoreText,
 		class: className = '',
 		validateFile,
 		oninvalid,
@@ -21,540 +56,394 @@
 		onremove
 	}: FileUploadProps = $props();
 
-	let fileInputRef: HTMLInputElement | undefined = $state();
-	let isDragging = $state(false);
-	const canTriggerDialogFromDropzone = $derived(
-		!disabled && !(multiple && files.length > 0)
-	);
+	let picker: HTMLInputElement | undefined = $state();
+	let dragging = $state(false);
 
-	const dropzoneClasses = $derived.by(() => {
-		const hasError = files.some((file) => file.status === 'error');
-		return [
-			'lumi-file-upload__dropzone',
-			isDragging && 'lumi-file-upload__dropzone--dragging',
-			disabled && 'lumi-file-upload__dropzone--disabled',
-			!canTriggerDialogFromDropzone &&
-				'lumi-file-upload__dropzone--files-added',
-			hasError && 'lumi-file-upload__dropzone--error'
-		]
-			.filter(Boolean)
-			.join(' ');
-	});
+	const i18n = useLumiLocale(COPY);
+	const invalid = $derived(files.some((file) => file.status === 'error'));
 
-	function buildMaxSizeMessage(file: File): string {
-		if (maxSizeErrorMessage) {
-			return maxSizeErrorMessage(file, maxSize);
+	function validate(file: File): string | null {
+		if (!accepts(file, accept)) return i18n.t.fileUploadType(file.name);
+		if (maxSize > 0 && file.size > maxSize) {
+			return (
+				maxSizeErrorMessage?.(file, maxSize) ??
+				i18n.t.fileUploadMaxSize(formatFileSize(maxSize))
+			);
 		}
-
-		return `Tamaño máximo: ${formatFileSize(maxSize)}`;
+		return validateFile?.(file) ?? null;
 	}
 
-	function processFiles(fileList: File[]): void {
-		if (disabled || fileList.length === 0) {
-			return;
-		}
-
-		const nextFiles: FileUploadFile[] = [];
-
-		for (const file of fileList) {
-			let validationMessage: string | null = null;
-
-			if (maxSize > 0 && file.size > maxSize) {
-				validationMessage = buildMaxSizeMessage(file);
-			}
-
-			if (!validationMessage && validateFile) {
-				validationMessage = validateFile(file);
-			}
-
-			if (validationMessage && oninvalid) {
-				oninvalid(validationMessage, file);
+	function add(list: FileList | null | undefined): void {
+		if (disabled || !list?.length) return;
+		const next: FileUploadFile[] = [];
+		for (const file of list) {
+			const error = validate(file);
+			if (error && oninvalid) {
+				oninvalid(error, file);
 				continue;
 			}
-
-			nextFiles.push({
-				id: `${file.name}-${file.lastModified}-${Math.random().toString(36).substring(2, 11)}`,
+			next.push({
+				id: `lumi-file-${++sequence}`,
 				file,
-				status: validationMessage ? 'error' : 'selected',
+				status: error ? 'error' : 'selected',
 				progress: 0,
-				error: validationMessage || undefined
+				error: error ?? undefined
 			});
 		}
-
-		if (nextFiles.length === 0) {
-			return;
-		}
-
-		files = multiple ? [...files, ...nextFiles] : [nextFiles[0]];
+		if (!next.length) return;
+		files = multiple ? [...files, ...next] : next.slice(0, 1);
 		onchange?.(files);
 	}
 
-	function handleFileChange(event: Event): void {
-		const target = event.currentTarget as HTMLInputElement | null;
-		if (!target?.files) {
-			return;
-		}
-
-		processFiles(Array.from(target.files));
-		target.value = '';
-	}
-
-	function handleDragOver(event: DragEvent): void {
-		event.preventDefault();
-		if (!disabled) {
-			isDragging = true;
-		}
-	}
-
-	function handleDragLeave(event: DragEvent): void {
-		event.preventDefault();
-		isDragging = false;
-	}
-
-	function handleDrop(event: DragEvent): void {
-		event.preventDefault();
-		if (disabled) {
-			return;
-		}
-
-		isDragging = false;
-		if (!event.dataTransfer?.files) {
-			return;
-		}
-
-		processFiles(Array.from(event.dataTransfer.files));
-	}
-
-	function handleDropzoneClick(event: MouseEvent): void {
-		if (disabled || !canTriggerDialogFromDropzone) {
-			return;
-		}
-
-		const target = event.target as HTMLElement;
-		if (
-			target.closest('.lumi-file-upload__file-item') ||
-			target.closest('.lumi-file-upload__add-more')
-		) {
-			return;
-		}
-
-		fileInputRef?.click();
-	}
-
-	function handleDropzoneKeydown(event: KeyboardEvent): void {
-		if (
-			!canTriggerDialogFromDropzone ||
-			(event.key !== 'Enter' && event.key !== ' ')
-		) {
-			return;
-		}
-
-		const target = event.target as HTMLElement;
-		if (
-			target.closest('.lumi-file-upload__file-item') ||
-			target.closest('.lumi-file-upload__add-more')
-		) {
-			return;
-		}
-
-		event.preventDefault();
-		fileInputRef?.click();
-	}
-
-	function openFileDialog(): void {
-		if (!disabled) {
-			fileInputRef?.click();
-		}
-	}
-
-	function removeFile(id: string): void {
+	function remove(id: string): void {
 		files = files.filter((file) => file.id !== id);
 		onremove?.(id);
 		onchange?.(files);
 	}
 
-	export const clear = (): void => {
-		files = [];
-		onchange?.(files);
-	};
+	function handleDrop(event: DragEvent): void {
+		event.preventDefault();
+		dragging = false;
+		add(event.dataTransfer?.files);
+	}
+
+	function handlePick(event: Event): void {
+		const input = event.currentTarget as HTMLInputElement;
+		add(input.files);
+		input.value = '';
+	}
 </script>
 
-<div class="lumi-file-upload {className}">
-	<div
-		class={dropzoneClasses}
-		onclick={handleDropzoneClick}
-		onkeydown={handleDropzoneKeydown}
-		ondragover={handleDragOver}
-		ondragleave={handleDragLeave}
-		ondrop={handleDrop}
-		role="button"
-		tabindex={canTriggerDialogFromDropzone ? 0 : -1}
-		aria-disabled={disabled || !canTriggerDialogFromDropzone}
-		aria-label="Zona para subir archivos"
-	>
-		<input
-			bind:this={fileInputRef}
-			type="file"
-			{accept}
-			{multiple}
+<div
+	class={[
+		'lumi-file-upload',
+		dragging && 'lumi-file-upload--dragging',
+		disabled && 'lumi-file-upload--disabled',
+		invalid && 'lumi-file-upload--invalid',
+		className
+	]}
+	role="presentation"
+	ondragover={(event) => {
+		event.preventDefault();
+		dragging = !disabled;
+	}}
+	ondragleave={(event) => {
+		// Ignore moves between children of the zone.
+		if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+			dragging = false;
+		}
+	}}
+	ondrop={handleDrop}
+>
+	<input
+		bind:this={picker}
+		type="file"
+		hidden
+		{accept}
+		{multiple}
+		{disabled}
+		onchange={handlePick}
+	/>
+
+	{#if files.length === 0}
+		<button
+			type="button"
+			class="lumi-file-upload__placeholder"
 			{disabled}
-			class="lumi-file-upload__input"
-			onchange={handleFileChange}
-		/>
-
-		{#if files.length === 0}
-			<div class="lumi-file-upload__placeholder">
-				<div class="lumi-file-upload__icon-wrapper">
-					<Icon
-						icon="upload"
-						size="xl"
-						class="lumi-file-upload__placeholder-icon"
-					/>
-				</div>
-				<span class="lumi-file-upload__placeholder-text">{placeholderText}</span
+			onclick={() => picker?.click()}
+		>
+			<span class="lumi-file-upload__glyph" aria-hidden="true">
+				<Icon icon={CloudUpload} size="xl" />
+			</span>
+			<span class="lumi-file-upload__title">
+				{placeholderText ?? i18n.t.fileUploadTitle}
+			</span>
+			<span class="lumi-file-upload__hint">
+				{hintText ?? i18n.t.fileUploadHint}
+			</span>
+		</button>
+	{:else}
+		<ul class="lumi-file-upload__list" aria-label={i18n.t.fileUploadList}>
+			{#each files as item (item.id)}
+				<li
+					class="lumi-file-upload__item lumi-file-upload__item--{item.status}"
 				>
-				<span class="lumi-file-upload__placeholder-info">{hintText}</span>
-			</div>
-		{:else}
-			<div
-				class="lumi-file-upload__file-list"
-				role="list"
-				aria-label="Archivos subidos"
+					<span class="lumi-file-upload__file-icon" aria-hidden="true">
+						<Icon icon={FileIcon} size="md" />
+					</span>
+					<span class="lumi-file-upload__details">
+						<span class="lumi-file-upload__name" title={item.file.name}>
+							{item.file.name}
+						</span>
+						<span class="lumi-file-upload__meta">
+							{item.status === 'error'
+								? item.error
+								: formatFileSize(item.file.size)}
+						</span>
+					</span>
+					{#if item.status === 'uploading'}
+						<span
+							class="lumi-spinner lumi-file-upload__spinner"
+							aria-hidden="true"
+						></span>
+					{:else if item.status === 'success'}
+						<Icon icon={CircleCheck} color="success" size="md" />
+					{:else if !disabled}
+						<button
+							type="button"
+							class="lumi-file-upload__remove"
+							aria-label={i18n.t.fileUploadRemove(item.file.name)}
+							onclick={() => remove(item.id)}
+						>
+							<Icon icon={X} size="sm" />
+						</button>
+					{/if}
+					{#if item.status === 'uploading' || item.status === 'success'}
+						<span
+							class="lumi-file-upload__progress"
+							style:inline-size="{item.progress}%"
+							role="progressbar"
+							aria-label={item.file.name}
+							aria-valuenow={item.progress}
+							aria-valuemin={0}
+							aria-valuemax={100}
+						></span>
+					{/if}
+				</li>
+			{/each}
+		</ul>
+
+		{#if multiple}
+			<button
+				type="button"
+				class="lumi-file-upload__add"
+				{disabled}
+				onclick={() => picker?.click()}
 			>
-				{#each files as fileWrapper (fileWrapper.id)}
-					<div
-						class="lumi-file-upload__file-item lumi-file-upload__file-item--{fileWrapper.status}"
-						role="listitem"
-						aria-label="Archivo: {fileWrapper.file.name}"
-					>
-						<div class="lumi-file-upload__file-icon">
-							<Icon icon="file" size="lg" />
-						</div>
-
-						<div class="lumi-file-upload__file-item-details">
-							<span
-								class="lumi-file-upload__file-item-name"
-								title={fileWrapper.file.name}
-							>
-								{fileWrapper.file.name}
-							</span>
-							<span class="lumi-file-upload__file-item-info">
-								{#if fileWrapper.status === 'error'}
-									<span class="lumi-text--danger">{fileWrapper.error}</span>
-								{:else}
-									{formatFileSize(fileWrapper.file.size)}
-								{/if}
-							</span>
-						</div>
-
-						<div class="lumi-file-upload__file-item-actions">
-							{#if fileWrapper.status === 'uploading'}
-								<Loading size="sm" color="primary" />
-							{/if}
-							{#if fileWrapper.status === 'success'}
-								<Icon icon="checkCircle" color="success" size="md" />
-							{/if}
-							{#if ['selected', 'error'].includes(fileWrapper.status) && !disabled}
-								<button
-									type="button"
-									class="lumi-file-upload__remove-btn"
-									onclick={() => removeFile(fileWrapper.id)}
-									aria-label="Quitar archivo {fileWrapper.file.name}"
-								>
-									<Icon icon="x" size="sm" />
-								</button>
-							{/if}
-						</div>
-
-						{#if ['uploading', 'success'].includes(fileWrapper.status)}
-							<div class="lumi-file-upload__progress-track">
-								<div
-									class="lumi-file-upload__progress-bar"
-									style="width: {fileWrapper.progress}%"
-									role="progressbar"
-									aria-valuenow={fileWrapper.progress}
-									aria-valuemin={0}
-									aria-valuemax={100}
-								></div>
-							</div>
-						{/if}
-					</div>
-				{/each}
-
-				{#if multiple}
-					<button
-						type="button"
-						class="lumi-file-upload__add-more"
-						onclick={openFileDialog}
-						{disabled}
-					>
-						<Icon icon="plus" size="sm" />
-						<span>{addMoreText}</span>
-					</button>
-				{/if}
-			</div>
+				<Icon icon={Plus} size="sm" />
+				{addMoreText ?? i18n.t.fileUploadAddMore}
+			</button>
 		{/if}
-	</div>
+	{/if}
 </div>
 
 <style>
 	.lumi-file-upload {
-		width: 100%;
-		font-family: var(--lumi-font-family-sans);
-	}
-
-	.lumi-file-upload__dropzone {
+		--lumi-control-accent: var(--lumi-color-primary);
 		display: flex;
 		flex-direction: column;
-		width: 100%;
-		min-height: calc(var(--lumi-space-6xl) + var(--lumi-space-4xl));
-		padding: var(--lumi-space-lg);
+		gap: var(--lumi-space-sm);
+		inline-size: 100%;
+		min-block-size: calc(var(--lumi-space-6xl) + var(--lumi-space-4xl));
+		padding: var(--lumi-space-md);
+		font-family: var(--lumi-font-family-sans);
+		background: var(--lumi-color-surface);
 		border: var(--lumi-border-width-thick) dashed var(--lumi-color-border);
 		border-radius: var(--lumi-radius-panel);
-		background-color: var(--lumi-color-surface);
 		transition: var(--lumi-transition-interactive);
-		position: relative;
-		overflow: hidden;
-		cursor: pointer;
+	}
+
+	.lumi-file-upload:hover,
+	.lumi-file-upload:focus-within,
+	.lumi-file-upload--dragging {
+		border-color: var(--lumi-control-accent);
+	}
+
+	.lumi-file-upload--dragging {
+		background: var(--lumi-color-primary-bg);
+		transform: scale(var(--lumi-interactive-hover-scale));
+	}
+
+	.lumi-file-upload--invalid {
+		--lumi-control-accent: var(--lumi-color-danger);
+		border-color: var(--lumi-color-danger);
+	}
+
+	.lumi-file-upload--disabled {
+		opacity: var(--lumi-opacity-disabled);
+		pointer-events: none;
+		border-style: solid;
+	}
+
+	/* Empty state: the whole zone is one button. */
+	.lumi-file-upload__placeholder {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: var(--lumi-space-xs);
+		padding: var(--lumi-space-lg);
 		font: inherit;
-		text-align: left;
+		color: var(--lumi-color-text-muted);
+		text-align: center;
+		background: transparent;
+		border: 0;
+		border-radius: var(--lumi-radius-control);
+		cursor: pointer;
 	}
 
-	.lumi-file-upload__dropzone:not(.lumi-file-upload__dropzone--disabled):hover {
-		border-color: var(--lumi-color-primary);
-		background-color: var(--lumi-color-background-hover);
-	}
-
-	.lumi-file-upload__dropzone:focus-visible {
-		border-color: var(--lumi-color-primary);
+	.lumi-file-upload__placeholder:focus-visible,
+	.lumi-file-upload__remove:focus-visible,
+	.lumi-file-upload__add:focus-visible {
 		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-focus-outline-offset);
 	}
 
-	.lumi-file-upload__dropzone--dragging {
-		border-color: var(--lumi-color-primary);
-		background-color: var(--lumi-color-primary-bg);
-		transform: scale(var(--lumi-interactive-hover-scale));
-	}
-
-	.lumi-file-upload__dropzone--disabled {
-		opacity: var(--lumi-opacity-disabled);
-		cursor: not-allowed;
-		background-color: var(--lumi-color-background-secondary);
-		border-style: solid;
-	}
-
-	.lumi-file-upload__dropzone--files-added {
-		cursor: default;
-	}
-
-	.lumi-file-upload__dropzone--error {
-		border-color: var(--lumi-color-danger);
-		background-color: var(--lumi-color-danger-bg);
-	}
-
-	.lumi-file-upload__placeholder {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		text-align: center;
-		gap: var(--lumi-space-sm);
-		flex-grow: 1;
-		color: var(--lumi-color-text-muted);
-		padding: var(--lumi-space-lg);
-	}
-
-	.lumi-file-upload__icon-wrapper {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: var(--lumi-space-3xl);
-		height: var(--lumi-space-3xl);
+	.lumi-file-upload__glyph {
+		display: grid;
+		place-items: center;
+		inline-size: var(--lumi-space-3xl);
+		block-size: var(--lumi-space-3xl);
+		margin-block-end: var(--lumi-space-xs);
+		background: var(--lumi-color-background-secondary);
 		border-radius: var(--lumi-radius-full);
-		background-color: var(--lumi-color-background-secondary);
-		color: var(--lumi-color-text-muted);
 		transition: var(--lumi-transition-interactive);
-		margin-bottom: var(--lumi-space-xs);
 	}
 
-	.lumi-file-upload__dropzone:hover .lumi-file-upload__icon-wrapper {
-		background-color: var(--lumi-color-primary-bg);
-		color: var(--lumi-color-primary);
+	.lumi-file-upload__placeholder:hover .lumi-file-upload__glyph {
+		color: var(--lumi-control-accent);
+		background: var(--lumi-color-primary-bg);
 		transform: scale(var(--lumi-interactive-zoom-scale));
 	}
 
-	.lumi-file-upload__placeholder-text {
+	.lumi-file-upload__title {
+		font-size: var(--lumi-font-size-lg);
 		font-weight: var(--lumi-font-weight-medium);
 		color: var(--lumi-color-text);
-		font-size: var(--lumi-font-size-lg);
 	}
 
-	.lumi-file-upload__placeholder-info {
+	.lumi-file-upload__hint {
 		font-size: var(--lumi-font-size-sm);
-		color: var(--lumi-color-text-muted);
 	}
 
-	.lumi-file-upload__input {
-		display: none;
-	}
-
-	.lumi-file-upload__file-list {
+	.lumi-file-upload__list {
 		display: flex;
 		flex-direction: column;
 		gap: var(--lumi-space-sm);
-		width: 100%;
+		margin: 0;
+		padding: 0;
+		list-style: none;
 	}
 
-	.lumi-file-upload__file-item {
+	.lumi-file-upload__item {
+		position: relative;
 		display: grid;
-		grid-template-columns: auto 1fr auto;
+		grid-template-columns: auto minmax(0, 1fr) auto;
 		align-items: center;
 		gap: var(--lumi-space-md);
-		padding: var(--lumi-space-md);
-		min-height: calc(var(--lumi-space-xxl) + var(--lumi-space-lg));
-		background-color: var(--lumi-color-background);
+		padding: var(--lumi-space-sm) var(--lumi-space-md);
+		background: var(--lumi-color-background);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border);
 		border-radius: var(--lumi-radius-control);
-		transition: var(--lumi-transition-control);
-		position: relative;
 		overflow: hidden;
-		cursor: default;
-		flex: 0 0 auto;
+		transition: var(--lumi-transition-control);
 	}
 
-	.lumi-file-upload__file-item:hover {
-		border-color: var(--lumi-color-border-strong);
-		box-shadow: var(--lumi-shadow-sm);
+	.lumi-file-upload__item--success {
+		--lumi-file-tone: var(--lumi-color-success);
+	}
+
+	.lumi-file-upload__item--error {
+		--lumi-file-tone: var(--lumi-color-danger);
+	}
+
+	.lumi-file-upload__item--success,
+	.lumi-file-upload__item--error {
+		color: var(--lumi-file-tone);
+		background: color-mix(
+			in srgb,
+			var(--lumi-file-tone) 6%,
+			var(--lumi-color-surface)
+		);
+		border-color: color-mix(in srgb, var(--lumi-file-tone) 45%, transparent);
 	}
 
 	.lumi-file-upload__file-icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: var(--lumi-space-xxl);
-		height: var(--lumi-space-xxl);
+		display: grid;
+		place-items: center;
+		inline-size: var(--lumi-space-xxl);
+		block-size: var(--lumi-space-xxl);
+		color: inherit;
+		background: color-mix(in srgb, currentColor 10%, transparent);
 		border-radius: var(--lumi-radius-control);
-		background-color: var(--lumi-color-background-secondary);
-		color: var(--lumi-color-text-muted);
 	}
 
-	.lumi-file-upload__file-item-details {
+	.lumi-file-upload__details {
 		display: flex;
 		flex-direction: column;
-		overflow: hidden;
 		gap: var(--lumi-space-2xs);
+		min-inline-size: 0;
 	}
 
-	.lumi-file-upload__file-item-name {
+	.lumi-file-upload__name {
+		overflow: hidden;
+		font-size: var(--lumi-font-size-sm);
 		font-weight: var(--lumi-font-weight-medium);
 		color: var(--lumi-color-text);
-		white-space: nowrap;
-		overflow: hidden;
 		text-overflow: ellipsis;
-		font-size: var(--lumi-font-size-sm);
+		white-space: nowrap;
 	}
 
-	.lumi-file-upload__file-item-info {
+	.lumi-file-upload__meta {
 		font-size: var(--lumi-font-size-xs);
 		color: var(--lumi-color-text-muted);
 	}
 
-	.lumi-file-upload__file-item-actions {
-		display: flex;
-		align-items: center;
-		gap: var(--lumi-space-xs);
+	.lumi-file-upload__item--error .lumi-file-upload__meta {
+		color: var(--lumi-color-danger);
 	}
 
-	.lumi-file-upload__remove-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: none;
-		border: none;
-		cursor: pointer;
+	.lumi-file-upload__spinner {
+		--lumi-spinner-size: var(--lumi-icon-sm);
+		color: var(--lumi-control-accent);
+	}
+
+	.lumi-file-upload__remove {
+		display: grid;
+		place-items: center;
 		padding: var(--lumi-space-xs);
-		border-radius: var(--lumi-radius-full);
 		color: var(--lumi-color-text-muted);
+		background: transparent;
+		border: 0;
+		border-radius: var(--lumi-radius-full);
+		cursor: pointer;
 		transition: var(--lumi-transition-control);
 	}
 
-	.lumi-file-upload__remove-btn:hover {
-		background-color: var(--lumi-color-danger-bg);
+	.lumi-file-upload__remove:hover {
 		color: var(--lumi-color-danger);
+		background: var(--lumi-color-danger-bg);
 	}
 
-	.lumi-file-upload__file-item--uploading .lumi-file-upload__progress-bar {
-		background-color: var(--lumi-color-primary);
-	}
-
-	.lumi-file-upload__file-item--success {
-		border-color: var(--lumi-color-success);
-		background-color: color-mix(
-			in srgb,
-			var(--lumi-color-success) 5%,
-			var(--lumi-color-surface)
-		);
-	}
-
-	.lumi-file-upload__file-item--success .lumi-file-upload__file-icon {
-		background-color: var(--lumi-color-success-bg);
-		color: var(--lumi-color-success);
-	}
-
-	.lumi-file-upload__file-item--error {
-		border-color: var(--lumi-color-danger);
-		background-color: var(--lumi-color-danger-bg);
-	}
-
-	.lumi-file-upload__file-item--error .lumi-file-upload__file-icon {
-		background-color: var(--lumi-color-danger-bg);
-		color: var(--lumi-color-danger);
-	}
-
-	.lumi-file-upload__progress-track {
+	.lumi-file-upload__progress {
 		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		height: var(--lumi-border-width-thick);
-		background-color: transparent;
-		overflow: hidden;
-		grid-column: 1 / -1;
+		inset-block-end: 0;
+		inset-inline-start: 0;
+		block-size: var(--lumi-border-width-thick);
+		background: var(--lumi-file-tone, var(--lumi-control-accent));
+		transition: inline-size var(--lumi-duration-slow) var(--lumi-easing-default);
 	}
 
-	.lumi-file-upload__progress-bar {
-		height: 100%;
-		width: 0;
-		background-color: var(--lumi-color-primary);
-		transition: width var(--lumi-duration-slow) var(--lumi-easing-default);
-	}
-
-	.lumi-file-upload__add-more {
+	.lumi-file-upload__add {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		gap: var(--lumi-space-xs);
 		padding: var(--lumi-space-sm);
+		font: inherit;
+		font-size: var(--lumi-font-size-sm);
+		color: var(--lumi-color-text-muted);
 		background: transparent;
 		border: var(--lumi-border-width-thin) dashed var(--lumi-color-border);
 		border-radius: var(--lumi-radius-control);
-		color: var(--lumi-color-text-muted);
-		font-size: var(--lumi-font-size-sm);
 		cursor: pointer;
 		transition: var(--lumi-transition-control);
-		width: 100%;
-		flex: 0 0 auto;
 	}
 
-	.lumi-file-upload__add-more:hover:not(:disabled) {
-		border-color: var(--lumi-color-primary);
-		color: var(--lumi-color-primary);
-		background-color: var(--lumi-color-primary-bg);
-	}
-
-	.lumi-file-upload__add-more:disabled {
-		cursor: not-allowed;
-		opacity: var(--lumi-opacity-disabled);
+	.lumi-file-upload__add:hover {
+		color: var(--lumi-control-accent);
+		background: var(--lumi-color-primary-bg);
+		border-color: var(--lumi-control-accent);
 	}
 </style>

@@ -1,69 +1,69 @@
-// Lumi UI - Sidebar Component Types
-
 import type { Snippet } from 'svelte';
 
 export interface SidebarProps {
-	/** Whether sidebar is collapsed */
 	collapsed?: boolean;
 
-	/** Whether sidebar is open on mobile */
+	/** Slides the sidebar in on small screens */
 	mobileOpen?: boolean;
 
-	/** Accessible label for the navigation landmark */
-	ariaLabel?: string;
+	/** Navigation landmark name; defaults to the localized "Sidebar" */
+	'aria-label'?: string;
 
-	/** Custom class */
 	class?: string;
+
+	/** Identity area, e.g. `SidebarHeader` */
+	header?: Snippet;
+
+	/** `SidebarItem`s */
+	children?: Snippet;
 }
 
 export interface SidebarItemProps {
-	/** Whether item is active */
-	active?: boolean;
+	/** Current page or section (`aria-current`) */
+	current?: boolean;
 
-	/** Whether sidebar is collapsed */
+	/** Icon-only rail mode */
 	collapsed?: boolean;
 
-	/** Link href */
+	/** Renders a link; otherwise a button */
 	href?: string;
 
-	/** Visual hierarchy inside the sidebar */
+	/** @default "root" */
 	level?: 'root' | 'sub';
 
-	/** Expanded state for items that control nested navigation */
+	/** For group toggles: whether the sub-items are shown */
 	expanded?: boolean;
 
-	/** Custom class */
 	class?: string;
 
-	/** Click event handler */
 	onclick?: (event: MouseEvent) => void;
+
+	/** Leading icon */
+	icon?: Snippet;
+
+	/** Label */
+	children?: Snippet;
 }
 
 export interface SidebarHeaderProps {
-	/** Whether sidebar is collapsed */
 	collapsed?: boolean;
 
-	/** Header cover image source */
 	coverSrc?: string;
 
-	/** Header cover image alternative text */
+	/** `""` (default) treats the cover as decoration */
 	coverAlt?: string;
 
-	/** Custom cover content; takes precedence over coverSrc */
+	/** Custom cover, replacing `coverSrc` */
 	cover?: Snippet;
 
-	/** Primary user or account label */
 	userName: string;
 
-	/** Secondary user/account metadata */
 	userMeta?: string;
 
-	/** Avatar fallback text */
+	/** Initials or name for the avatar; defaults to `userName` */
 	avatarText?: string;
 
-	/** Avatar image source */
 	avatarSrc?: string;
 
-	/** Custom class */
 	class?: string;
 }

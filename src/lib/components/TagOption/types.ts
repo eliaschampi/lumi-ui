@@ -11,11 +11,14 @@ export interface TagOptionProps {
 	 */
 	color?: TagOptionColor;
 
-	/** Whether this option is currently selected */
-	active?: boolean;
+	/** Selected (pressed) state */
+	selected?: boolean;
 
 	/** Whether the option is non-interactive */
 	disabled?: boolean;
+
+	/** Custom class */
+	class?: string;
 
 	/** Click handler */
 	onclick?: () => void;

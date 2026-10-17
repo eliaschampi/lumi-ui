@@ -6,46 +6,31 @@ export interface TableRow {
 	[key: string]: unknown;
 }
 
-export interface TablePaginationData {
-	currentPage: number;
-	totalPages: number;
-	itemsPerPage: number;
-	totalItems: number;
-}
-
 export interface TableProps<TRow extends object = TableRow> {
-	/** Table column sizing strategy */
+	/** Column sizing strategy; `fixed` honors `.lumi-table-column--*` widths */
 	layout?: 'auto' | 'fixed';
 	/** Compact row/cell padding */
 	compact?: boolean;
 	/** Alternate-row background striping */
 	stripe?: boolean;
-	/** Enable row hover highlight */
+	/** Row hover highlight */
 	hover?: boolean;
-	/** Show search input in header */
+	/** Search field in the header (filters locally unless paginating on the server) */
 	search?: boolean;
-	/** Enable row checkbox selection */
+	/** Row checkbox selection */
 	selectable?: boolean;
-	/** Enable pagination controls */
+	/** Pagination footer */
 	pagination?: boolean;
-	/** Pagination strategy. Client slices local data; server expects current page data. */
+	/** `client` slices `data`; `server` expects the current page in `data` */
 	paginationMode?: 'client' | 'server';
 
-	/* ── Localized text ── */
-	/** Text shown when data is empty */
+	/** @default locale "No data available" */
 	noDataText?: string;
-	/** Search input placeholder */
-	searchPlaceholder?: string;
-	/** Loading state text */
-	loadingText?: string;
-	/** Pagination: shown when filtered to zero */
+	/** Empty text while a search filters everything out @default locale "No results" */
 	noResultsText?: string;
-	/** Pagination: label before range (e.g. "Showing") */
-	showingLabel?: string;
-	/** Pagination: label between range and total (e.g. "of") */
-	ofLabel?: string;
+	/** @default locale "Search…" */
+	searchPlaceholder?: string;
 
-	/** Data array */
 	data?: TRow[];
 	/** Page size, rounded down to an integer with a minimum of 1 */
 	itemsPerPage?: number;
@@ -53,13 +38,12 @@ export interface TableProps<TRow extends object = TableRow> {
 	currentPage?: number;
 	/** Server total, normalized to a non-negative integer; defaults to data.length */
 	totalItems?: number;
-	/** Show loading state */
+	/** Skeleton rows while data loads */
 	loading?: boolean;
 	/** Unique row identity when rows lack id or key; strings and numbers are distinct */
 	rowKey?: (row: TRow) => string | number;
-	/** Selected rows (bindable); styling does not depend on checkbox controls */
+	/** Selected rows (bindable) */
 	selected?: TRow[];
-	/** Additional CSS class */
 	class?: string;
 	/** Accessible table name when no visible caption identifies it */
 	'aria-label'?: string;
@@ -71,16 +55,13 @@ export interface TableProps<TRow extends object = TableRow> {
 	thead?: Snippet;
 	/** Cells rendered for each data row */
 	row?: Snippet<[{ row: TRow; index: number }]>;
-	/** Custom pagination content */
-	paginationSlot?: Snippet<[TablePaginationData]>;
 
-	/* ── Event handlers ── */
-	'onrow-click'?: (row: TRow, index: number) => void;
-	/** Also invoked by Enter/Space when no onrow-click handler is supplied */
-	'onrow-dblclick'?: (row: TRow, index: number) => void;
+	onrowclick?: (row: TRow, index: number) => void;
+	/** Also invoked by Enter/Space when no onrowclick handler is supplied */
+	onrowdblclick?: (row: TRow, index: number) => void;
 	/** Complete-row context action; supports pointer, ContextMenu and Shift+F10 */
-	'onrow-contextmenu'?: (event: MouseEvent, row: TRow, index: number) => void;
-	'onrow-select'?: (row: TRow, selected: boolean) => void;
+	onrowcontextmenu?: (event: MouseEvent, row: TRow, index: number) => void;
+	onrowselect?: (row: TRow, selected: boolean) => void;
 	onsearch?: (query: string) => void;
-	'onpage-change'?: (page: number) => void;
+	onpagechange?: (page: number) => void;
 }

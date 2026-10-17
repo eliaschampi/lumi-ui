@@ -71,66 +71,59 @@ Use size aliases from `config.ts` intentionally:
 ## 3. Svelte 5 Implementation Pattern
 
 ```svelte
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+
+	// English defaults this component renders; tree-shaking keeps only these keys.
+	const COPY = { close: en.close };
+</script>
+
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import X from '@lucide/svelte/icons/x'; // fixed icons: deep import, never a string
+	import { useLumiLocale } from '../../i18n';
 	import type { MyComponentProps } from './types';
-	import { LUMI_CONFIG } from '../config';
 
 	interface Props extends MyComponentProps {
 		children?: Snippet;
 	}
 
 	let {
-		color = LUMI_CONFIG.defaults.color,
-		size = LUMI_CONFIG.defaults.size,
+		color = 'primary',
+		size = 'md',
 		variant = 'default',
 		disabled = false,
-		loading = false,
-		'aria-label': ariaLabel = '',
+		'aria-label': ariaLabel,
 		class: className = '',
 		children
 	}: Props = $props();
 
-	const classes = $derived(
-		[
-			'lumi-my-component',
-			`lumi-my-component--${variant}`,
-			`lumi-my-component--${size}`,
-			disabled && 'lumi-my-component--disabled',
-			loading && 'lumi-my-component--loading',
-			className
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
-
-	const styleVars = $derived(
-		`--lumi-my-accent: var(--lumi-color-${color}); --lumi-my-solid: var(--lumi-color-${color}-solid); --lumi-my-foreground: var(--lumi-color-${color}-foreground);`
-	);
+	const i18n = useLumiLocale(COPY); // read i18n.t.* in markup or $derived
 </script>
 
 <div
-	class={classes}
-	style={styleVars}
+	class={[
+		'lumi-my-component',
+		`lumi-my-component--${variant}`,
+		`lumi-my-component--${size}`,
+		disabled && 'lumi-my-component--disabled',
+		className
+	]}
+	style:--lumi-control-accent="var(--lumi-color-{color})"
 	aria-label={ariaLabel || undefined}
 	aria-disabled={disabled || undefined}
 >
-	{#if children}
-		{@render children()}
-	{/if}
+	{@render children?.()}
+	<button type="button" aria-label={i18n.t.close}
+		><X class="lumi-icon" /></button
+	>
 </div>
 
 <style>
 	.lumi-my-component {
-		/* tokens only — set --lumi-control-accent when the control is colorable */
-		--lumi-control-accent: var(--lumi-my-accent);
+		/* tokens only; the accent arrives through --lumi-control-accent */
 		border-radius: var(--lumi-radius-control);
 		transition: var(--lumi-transition-control);
-	}
-
-	.lumi-my-component:focus-visible {
-		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-focus-outline-offset);
 	}
 </style>
 ```
@@ -144,6 +137,11 @@ Use size aliases from `config.ts` intentionally:
 | BEM `lumi-*` classes                                 | Global unscoped class soup                  |
 | `class: className` rename                            | Clash with JS reserved `class`              |
 | Snippets for slots                                   | Legacy `$$slots`                            |
+| `class={[...]}` arrays/objects                       | `.filter(Boolean).join(' ')` builders       |
+| One `style:--lumi-control-accent` from `color`       | Six `.lumi-x--{color}` modifier blocks      |
+| Lowercase callbacks (`onrowclick`)                   | Hyphenated callbacks (`onrow-click`)        |
+| Deep Lucide imports for fixed icons                  | String icon names inside the library        |
+| Copy from `useLumiLocale(COPY)`                      | Hardcoded English or Spanish defaults       |
 | Token CSS variables                                  | Hardcoded `px` colors / one-off fonts       |
 
 ---
@@ -260,6 +258,10 @@ transition:
 	box-shadow var(--lumi-duration-base) var(--lumi-easing-default);
 ```
 
+### Where CSS lives
+
+A component's required CSS lives in its scoped `<style>`, in `base.css` (global recipes) or in a stylesheet the component imports itself (`Field/field.css`, `styles/charts.css`, layer `lumi.components`). Never depend on `utilities.css` or `patterns.css` — pages may not load them. Layout components may rely on `layout.css` shell classes.
+
 ### Responsive
 
 Prefer layout tokens (`--lumi-layout-*`, breakpoints already used in `core.css`) over ad-hoc media queries that redefine the design system.
@@ -324,8 +326,10 @@ One role → one CSS recipe. Match the nearest peer; do not invent a second shel
 | Role                  | Peers                                    | Recipe (tokens only)                                                                                                                                                                                                   |
 | --------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Field / binary active | Input, Checkbox, Radio, Switch           | Control fill/border; active via `--lumi-control-active-*`; field focus via `--lumi-control-focus-shadow`                                                                                                               |
-| Exclusive switcher    | Tabs, SegmentedControl                   | Glass shell (`surface-glass-strong` + `background-hover`, glass/strong border, `--lumi-control-shadow`); 9% accent hover (no lift); elevated **active pill** (surface-card gradient + quiet shadow). Not control-fill. |
-| Spinner               | Button, Select, Table, Loading           | Thick border: `currentColor` 18% track + solid top arc; `calc(var(--lumi-duration-slower) * 2)`; honor `prefers-reduced-motion`                                                                                        |
+| Switcher              | Tabs, SegmentedControl, ToggleGroup      | Glass shell (`surface-glass-strong` + `background-hover`, glass/strong border, `--lumi-control-shadow`); 9% accent hover (no lift); elevated **active pill** (surface-card gradient + quiet shadow). Not control-fill. |
+| Spinner               | Button, Select, Table, Loading           | Global `.lumi-spinner` (base.css): `currentColor` 18% track + solid arc, `--lumi-duration-spin`; reduced motion handled globally                                                                                       |
+| Skeleton              | Skeleton, Image, Table loading           | Global `.lumi-skeleton` (+ `--text`, `--rect`, `--circle`); decorative, the loading region carries `aria-busy`                                                                                                         |
+| Field shell           | Input, NumberInput, Select, Textarea     | `Field/field.css` (`.lumi-field*`, layer `lumi.components`) with `FieldLabel` / `FieldMessage`                                                                                                                         |
 | Icon tile             | IconBadge, InfoItem icon                 | 12% accent fill, 20% accent border, `--lumi-radius-lg`, 30% top sheen; IconBadge may keep `--lumi-shadow-sm` as a free-standing tile                                                                                   |
 | Affordance focus      | Chip close/action, list/menu items, tabs | `--lumi-focus-outline` + offset; set `--lumi-control-accent` on the root                                                                                                                                               |
 
@@ -335,8 +339,8 @@ Surface roles: [GUIDE §6](./GUIDE.md#6-design-language).
 
 ## 9. Content Defaults
 
-- Prefer **empty or neutral English** defaults for user-visible strings in core, or no default copy.
-- Avoid Spanish/English product copy baked into primitives (apps localize).
+- Every user-visible or `aria-*` default comes from `i18n/en.ts` (+ `es.ts`, `types.ts` keep parity); explicit props override it.
+- No product copy in primitives; apps localize through `setLumiLocale`.
 - Avoid hard-coded asset paths like `/assets/images/...` — accept full URLs or leave image slots to the consumer.
 
 ---
@@ -350,7 +354,7 @@ For every touched component:
 - [ ] Props (`color` / `size` / `variant` / state booleans) match peers
 - [ ] No domain words in prop unions, classes, or defaults
 - [ ] Tokens only—no raw hex, rgba, or magic numbers
-- [ ] Defaults language-neutral (empty or neutral English; apps localize)
+- [ ] Defaults from the i18n dictionaries (English + Spanish parity)
 - [ ] Interactive → keyboard operable + accessible name
 - [ ] Every filled chromatic surface uses its paired solid foreground
 - [ ] Text ≥ 4.5:1; required non-text indicators/focus/borders ≥ 3:1

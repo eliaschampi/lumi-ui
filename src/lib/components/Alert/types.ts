@@ -1,30 +1,28 @@
-/**
- * Lumi UI - Alert Component Types
- */
-
+import type { Snippet } from 'svelte';
 import type { LumiColor } from '../config';
 
 export type AlertColor = LumiColor;
 
 export interface AlertProps {
-	/** Whether alert is visible */
-	active?: boolean;
-
-	/** Semantic accent color */
+	/** @default "info" */
 	color?: AlertColor;
 
-	/** @deprecated Use `color` instead. */
-	type?: AlertColor;
-
-	/** Alert title */
 	title?: string;
 
-	/** Whether to show icon */
+	/** Show the status icon @default true */
 	icon?: boolean;
 
-	/** Whether alert is closable */
+	/** Show a dismiss button @default false */
 	closable?: boolean;
 
-	/** Additional CSS classes */
+	/** Visible state (bindable) */
+	active?: boolean;
+
 	class?: string;
+
+	/** Message content */
+	children?: Snippet;
+
+	/** Fires once the alert has left (after its exit transition) */
+	onclose?: () => void;
 }

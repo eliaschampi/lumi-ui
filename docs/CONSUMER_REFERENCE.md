@@ -205,8 +205,7 @@ Import: `@lumi-ui/svelte/styles` = tokens → core → patterns. No Tailwind/Boo
 | Fixed columns (desktop)      | `.lumi-grid .lumi-grid--columns-{2,3,4}-lg`                        |
 | Identity/content split       | `.lumi-grid .lumi-grid--identity-split`                            |
 | Auth / focused task          | `.lumi-centered-layout` + `.lumi-centered-card`                    |
-| Bounded width                | `.lumi-container .lumi-container--{sm,md,lg,xl,2xl}`               |
-| Hero section                 | `.lumi-hero` + `__title` + `__subtitle`                            |
+| Bounded width                | `.lumi-container` (+ `--sm`)                                       |
 | Dashboard analytics          | `.lumi-dashboard-overview-grid` / `.lumi-dashboard-analytics-grid` |
 
 ### Shells & layouts (CSS families)
@@ -217,9 +216,8 @@ Import: `@lumi-ui/svelte/styles` = tokens → core → patterns. No Tailwind/Boo
 | Two column     | `.lumi-layout--two-columns` + `.lumi-layout--sidebar-left` + `.lumi-layout--content-right`; collapses ≤ 64rem                                    |
 | Page sidebar   | `.lumi-page-sidebar-layout`, `__header-actions`, `__mobile-trigger`, `__section`, `__label`, `__radio-group`, `__radio-option`, `__bounded-list` |
 | Scroll well    | `.lumi-scroll-well` recessed scroll surface; `--lumi-scroll-well-max-height` / `--lumi-scroll-well-bg`                                           |
-| Containers     | `.lumi-container--{sm,md,lg,xl,2xl}`; `--wide` ≥ 80rem; `--ultrawide` ≥ 96rem                                                                    |
+| Containers     | `.lumi-container` (+ `--sm`); `--ultrawide` ≥ 96rem                                                                                              |
 | Centered task  | `.lumi-centered-layout` + `.lumi-centered-card--{sm,md,lg,xl}`; combine with `Card`                                                              |
-| Hero           | `.lumi-hero`, `.lumi-hero__title`, `.lumi-hero__subtitle`                                                                                        |
 | Dashboard data | `.lumi-dashboard-overview-grid` (≤ 68.75rem); `.lumi-dashboard-analytics-grid` (≤ 61.25rem)                                                      |
 
 ### Dashboard shell
@@ -244,9 +242,9 @@ Import: `@lumi-ui/svelte/styles` = tokens → core → patterns. No Tailwind/Boo
 >
 	<Sidebar {collapsed} {mobileOpen}>
 		<SidebarHeader title="App" />
-		<SidebarItem href="/" active>Home</SidebarItem>
+		<SidebarItem href="/" current>Home</SidebarItem>
 	</Sidebar>
-	<Navbar ontoggle-sidebar={toggleSidebar} />
+	<Navbar ontogglesidebar={toggleSidebar} />
 	<main class="lumi-dashboard-layout__content">{@render children?.()}</main>
 	<button
 		type="button"
@@ -297,18 +295,17 @@ Import: `@lumi-ui/svelte/styles` = tokens → core → patterns. No Tailwind/Boo
 
 Always include `.lumi-grid`; modifiers alone don't set `display:grid`.
 
-| Modifier                         | Behavior                                                                                |
-| -------------------------------- | --------------------------------------------------------------------------------------- |
-| `--responsive`                   | Auto-fit from `--lumi-grid-responsive-min`; 1 col ≤ 48rem                               |
-| `--auto-fit` / `--auto-fill`     | Fluid tracks from `--lumi-grid-auto-min`; 1 col ≤ 30rem                                 |
-| `--cards`                        | Fluid auto-fill from `--lumi-dashboard-card-grid-min`; left-aligned; no forced collapse |
-| `--identity-split`               | Weighted identity/content split; 1 col ≤ 64rem                                          |
-| `--columns-{1..6}`               | Exact count; 2–4 → auto-fit ≤ 48rem; 2–6 → 1 col ≤ 30rem                                |
-| `--columns-{2,3,4}-lg`           | Explicit columns only ≥ 64rem                                                           |
-| `--gap-{2xs,xs,sm,md,lg,xl,xxl}` | Tokenized gap                                                                           |
-| `.lumi-grid-item--span-all`      | Child spans all columns                                                                 |
+| Modifier                    | Behavior                                                                                |
+| --------------------------- | --------------------------------------------------------------------------------------- |
+| `--responsive`              | Auto-fit from `--lumi-grid-responsive-min`; 1 col ≤ 48rem                               |
+| `--cards`                   | Fluid auto-fill from `--lumi-dashboard-card-grid-min`; left-aligned; no forced collapse |
+| `--identity-split`          | Weighted identity/content split; 1 col ≤ 64rem                                          |
+| `--columns-{1..4}`          | Exact count; 2–4 → auto-fit ≤ 48rem, 1 col ≤ 30rem                                      |
+| `--columns-{2,3,4}-lg`      | Explicit columns only ≥ 64rem                                                           |
+| `--gap-{sm,md,lg,xl}`       | Tokenized gap                                                                           |
+| `.lumi-grid-item--span-all` | Child spans all columns                                                                 |
 
-Fluid families clamp their minimum track to the containing block. Use `--auto-fit` for a fixed row that should fill its width and `--cards` for variable-length card collections.
+Fluid families clamp their minimum track to the containing block. Use `--responsive` for rows that should fill their width and `--cards` for variable-length card collections.
 
 ### Flex / Stack / Container
 
@@ -322,7 +319,7 @@ Fluid families clamp their minimum track to the containing block. Use `--auto-fi
 <!-- Vertical rhythm -->
 <div class="lumi-stack lumi-stack--md">…</div>
 <!-- Bounded container -->
-<main class="lumi-container lumi-container--lg">…</main>
+<main class="lumi-container">…</main>
 <!-- Centered auth/task -->
 <main class="lumi-centered-layout">
 	<Card class="lumi-centered-card lumi-centered-card--md">…</Card>
@@ -331,41 +328,25 @@ Fluid families clamp their minimum track to the containing block. Use `--auto-fi
 
 ### Utility families (complete)
 
-| Concern           | Classes                                                                                                                                                 |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Flex**          | `.lumi-flex--{column,row,row-reverse,column-reverse,wrap,nowrap,center,start,end,between,around,evenly,mobile-column}`                                  |
-| **Flex gap**      | `.lumi-flex--gap-{2xs,xs,sm,md,lg,xl,xxl,3xl}`                                                                                                          |
-| **Flex items**    | `.lumi-flex-item`, `.lumi-flex-item--{auto,grow,shrink,no-shrink}`                                                                                      |
-| **Align**         | `.lumi-align-items--{start,center,end,stretch}` · `.lumi-justify--{start,center,between,end}`                                                           |
-| **Stack**         | `.lumi-stack--{2xs,xs,sm,md,lg,xl,xxl}`                                                                                                                 |
-| **Width**         | `.lumi-width--{full,auto,fit}` · `.lumi-min-width--0` · `.lumi-min-w--{sm,md,lg,xl}` · `.lumi-max-w--{xs..6xl,prose,full}` · `.lumi-width--tablet-full` |
-| **Height**        | `.lumi-h--{full,screen}` · `.lumi-min-h--{full,screen}`                                                                                                 |
-| **Padding**       | `.lumi-padding--{none,2xs,xs,sm,md,lg,xl,xxl,3xl}` · `.lumi-padding-{x,y}--{2xs,xs,sm,md,lg}`                                                           |
-| **Margin**        | `.lumi-margin--{none..xxl}` · `.lumi-margin-{top,bottom}--{2xs..lg}` · `.lumi-mr-auto` · `.lumi-ml-auto`                                                |
-| **Text**          | `.lumi-text--{center,left,right,xs,sm,lg,xl,2xl,3xl,4xl,muted,light,primary,secondary,success,warning,danger,info}`                                     |
-| **Font**          | `.lumi-font--{medium,semibold,bold}` · `.lumi-line-height--relaxed` · `.lumi-text-decoration--none`                                                     |
-| **Text overflow** | `.lumi-text-ellipsis` · `.lumi-text-break` · `.lumi-text-pre-line` · `.lumi-text-clamp--2`                                                              |
-| **Border**        | `.lumi-border` · `.lumi-border--{light,strong,none}`                                                                                                    |
-| **Radius**        | `.lumi-rounded--{none,sm,base,md,lg,xl,full}`                                                                                                           |
-| **Shadow**        | `.lumi-shadow--{none,sm,md,lg,xl}`                                                                                                                      |
-| **Background**    | `.lumi-bg--{transparent,primary,secondary,success,warning,danger,info,surface,control,background,glass}`                                                |
-| **Opacity**       | `.lumi-opacity--{10,20,30,40,50,60,70,80,90}`                                                                                                           |
-| **Display**       | `.lumi-block` · `.lumi-inline-block` · `.lumi-hidden`                                                                                                   |
-| **Position**      | `.lumi-position--{relative,absolute,bottom-right}`                                                                                                      |
-| **Z-index**       | `.lumi-z--{dropdown,modal,tooltip,max}`                                                                                                                 |
-| **Overflow**      | `.lumi-overflow-{hidden,auto,x-auto,y-auto}`                                                                                                            |
-| **Cursor**        | `.lumi-pointer`                                                                                                                                         |
-| **Animation**     | `.lumi-animate-{spin,pulse,fade-in,slide-up}`                                                                                                           |
-| **Mobile**        | `.lumi-hidden-mobile` / `.lumi-visible-mobile` (≤ 48rem only)                                                                                           |
-
-Mobile-only content: combine `.lumi-hidden` + `.lumi-visible-mobile`.
+| Concern                | Classes                                                                                                                                                                                                                                   |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Flex**               | `.lumi-flex`; `.lumi-flex--{column,mobile-column,wrap,nowrap,center,between}`; `.lumi-flex--gap-{2xs,xs,sm,md,lg,xl}`; `.lumi-flex-item--{auto,grow,shrink,no-shrink}`                                                                    |
+| **Align**              | `.lumi-align-items--{start,center,end,stretch}`; `.lumi-justify--{start,center,between,end}`                                                                                                                                              |
+| **Grid**               | `.lumi-grid--{responsive,cards,identity-split,columns-1…4,columns-2-lg…4-lg}`; `.lumi-grid--gap-{sm,md,lg,xl}`; `.lumi-grid-item--span-all`                                                                                               |
+| **Vertical rhythm**    | `.lumi-stack` with `.lumi-stack--{2xs,xs,sm,md,lg,xl}`                                                                                                                                                                                    |
+| **Spacing**            | `.lumi-padding--{none,2xs,xs,sm,md,lg,xl}`; `.lumi-padding-{x,y}--{2xs,xs,sm,md}`; `.lumi-margin--none`; `.lumi-margin-{top,bottom}--{2xs,xs,sm,md,lg}` (logical properties)                                                              |
+| **Size**               | `.lumi-width--{full,tablet-full}`, `.lumi-min-width--0`, `.lumi-min-w--{sm,lg,xl}`, `.lumi-max-w--{sm,lg,4xl,prose,full}`, `.lumi-h--full`, `.lumi-min-h--screen`                                                                         |
+| **Text**               | `.lumi-text--{xs,sm,lg,xl,2xl,4xl}`; `.lumi-text--{center,right}`; `.lumi-text--{muted,primary,secondary,success,warning,danger,info}`; `.lumi-font--{medium,semibold,bold}`; `.lumi-line-height--relaxed`; `.lumi-text-decoration--none` |
+| **Text overflow**      | `.lumi-text-ellipsis`, `.lumi-text-break`, `.lumi-text-pre-line`, `.lumi-text-clamp--{2,3}`; `.lumi-sr-only` (base) hides visually but keeps text for assistive tech                                                                      |
+| **Presentation**       | `.lumi-border`, `.lumi-border--{light,none}`; `.lumi-rounded--{md,lg,xl,full}`; `.lumi-shadow--sm`; `.lumi-bg--{transparent,surface,control,glass,primary}`; `.lumi-opacity--80`                                                          |
+| **Display / position** | `.lumi-block`, `.lumi-hidden`, `.lumi-overflow-hidden`; `.lumi-position--{relative,absolute,bottom-right}`; `.lumi-z--dropdown`                                                                                                           |
 
 ### Breakpoints
 
 | Boundary        | Effect                                                                                                                   |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | ≤ 64rem         | Shell → navbar/content; two-column & identity grids collapse; tablet-full & mobile-column activate; PageSidebar → drawer |
-| ≤ 48rem         | Responsive grid → 1 col; columns 2–4 → auto-fit; patterns stack; visibility helpers; large padding/text compact          |
+| ≤ 48rem         | Responsive grid → 1 col; columns 2–4 → auto-fit; patterns stack; large padding/text compact                              |
 | ≤ 30rem         | Auto grids & columns 2–6 → 1 col; large stack gaps compact                                                               |
 | ≥ 64rem         | `columns-{2,3,4}-lg` activate                                                                                            |
 | ≥ 80rem / 96rem | Wide / ultrawide container caps                                                                                          |
@@ -398,8 +379,8 @@ import type { ButtonProps, LumiColor, LumiSize } from '@lumi-ui/svelte';
 
 ### Semantic scales (shared)
 
-- **color baseline**: `'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info'` (some components expose a documented subset)
-- **size**: `'xs' | 'sm' | 'md' | 'lg' | 'xl'` (varies per component — check `types.ts`)
+- **color**: `'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info'`
+- **size**: per component (`Input` `xs`–`xl`; `Button` `sm`–`xl`; `Select`/`Textarea`/`NumberInput` `sm`–`lg`) — check `types.ts`
 - **variant** (Button): `'filled' | 'border' | 'flat' | 'ghost' | 'gradient'`
 
 ### Choose between similar components
@@ -407,98 +388,105 @@ import type { ButtonProps, LumiColor, LumiSize } from '@lumi-ui/svelte';
 | Need                                                    | Choose                                                        |
 | ------------------------------------------------------- | ------------------------------------------------------------- |
 | Text / numeric / multiline input                        | `Input` / `NumberInput` / `Textarea`                          |
-| Few visible exclusive choices                           | `SegmentedControl`; `Radio` when each needs label/description |
+| One visible exclusive choice                            | `SegmentedControl`; `Radio` when each needs label/description |
+| Several independent toggles or filters                  | `ToggleGroup`; one standalone toggle → `Button pressed`       |
 | Longer or space-constrained choice                      | `Select`; `RemoteSelect` for server search                    |
 | Submitted boolean vs immediate setting                  | `Checkbox` vs `Switch`                                        |
-| Persistent vs transient feedback                        | `Alert` vs `Notification`                                     |
+| Persistent vs transient feedback                        | `Alert` vs `Toaster` (+ `createToaster`)                      |
+| Navigate vs act                                         | `Button href` vs `Button onclick`                             |
 | Generic vs titled dashboard surface                     | `Card` vs `DashboardSection`                                  |
-| Structured records vs short rows                        | `Table` vs `List` / `ListItem`                                |
+| Structured records vs short rows                        | `Table` vs `List` / `ListItem`; person rows → `UserInfo`      |
+| Page through results                                    | `Pagination` (`href` for crawlable links)                     |
 | Anchored / pointer / interruptive / explanatory overlay | `Dropdown` / `Context` / `Dialog` / `Tooltip`                 |
-| No data / failure / pending                             | `EmptyState` / `ErrorState` / `Loading`                       |
+| No data / failure / pending                             | `EmptyState` / `ErrorState` / `Skeleton` or `Loading`         |
+| Conversation                                            | `MessageList` of `Message` rows                               |
 
 ### Actions & Forms
 
-| Component          | Key props                                                                                      | Notes                            |
-| ------------------ | ---------------------------------------------------------------------------------------------- | -------------------------------- |
-| `Button`           | `variant`, native `type`, `color`, `size`, `disabled`, `loading`, `icon`                       | Icon-only needs `aria-label`     |
-| `Input`            | `bind:value`, `label`, `name`, `type`, `color`, `size`, `error`, `hint`, `disabled`            | Native input types               |
-| `NumberInput`      | `bind:value`, `min`, `max`, `step`, `label`, `color`, `size`, `error`, `hint`                  | Constrained numeric              |
-| `Textarea`         | `bind:value`, `label`, `rows`, `maxlength`, `showCount`, `color`, `size`, `error`, `hint`      | Multiline + char count           |
-| `Checkbox`         | `bind:checked`, `label`, `color`, `size`, `disabled`                                           | Form boolean                     |
-| `Radio`            | `bind:group`, `value`, `name`, `label`, `description`, `option`, `busy`, `color`, `size`       | One in a named native group      |
-| `Switch`           | `bind:checked`, `label`, `color`, `size`, `disabled`                                           | Immediate toggle                 |
-| `Slider`           | `bind:value`, `min`, `max`, `step`, `color`, `size`                                            | Range selection                  |
-| `Select`           | `bind:value`, `options`, `autocomplete`, `searchMode`, `clearable`, `loading`, `error`, `size` | Client or server search mode     |
-| `RemoteSelect`     | `bind:value`, `bind:selected`, `endpoint`, debounce/limit inputs, mappers                      | Server-backed debounced search   |
-| `SegmentedControl` | `bind:value`, `options`, `color`, `fullWidth`, `orientation`, `iconOnly`, `clearable`          | Few visible exclusive choices    |
-| `FileUpload`       | `bind:files`, `accept`, `multiple`, `maxSize`                                                  | Queue + validation + removal     |
-| `DateRangeFilter`  | `bind:fromValue`, `bind:toValue`, `compact`, `hideApply`, `onapply`, `onreset`                 | Date range with optional actions |
-| `Fieldset`         | `legend`, `class`                                                                              | Semantic grouping                |
-| `TagOption`        | `active`, `color`, `disabled`, `onclick`                                                       | Compact tag choice               |
+| Component          | Key props                                                                                           | Notes                                |
+| ------------------ | --------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `Button`           | `variant`, native `type`, `color`, `size`, `icon`, `href`, `pressed`, `disabled`, `loading`         | `href` → `<a>`; icon-only needs name |
+| `Input`            | `bind:value`, `label`, `type`, `icon`, `actionIcon` + `onactionclick`, `clearable`, `error`, `hint` | Native input types incl. dates       |
+| `NumberInput`      | `bind:value`, `min`, `max`, `step`, `label`, `error`, `hint`                                        | No implicit bounds                   |
+| `Textarea`         | `bind:value`, `label`, `rows`, `maxlength`, `showCount`, `error`, `hint`                            | Grows with content where supported   |
+| `Checkbox`         | `bind:checked`, `label`, `name`, `value`, `indeterminate`                                           | Form boolean                         |
+| `Radio`            | `bind:group`, `value`, `name`, `label`, `description`, `busy`                                       | One in a named native group          |
+| `Switch`           | `bind:checked`, `label`, `name`                                                                     | Immediate toggle                     |
+| `Slider`           | `bind:value`, `min`, `max`, `step`, `showValue`, `showTooltip`                                      | Range selection                      |
+| `Select`           | `bind:value`, `options`, `searchable`, `searchMode`, `clearable`, `loading`, `error`, `size`        | Client or server search              |
+| `RemoteSelect`     | `bind:value`, `bind:selected`, `endpoint`, mappers; optional `minQueryLength`/`debounceMs`/`limit`  | Debounced, cancellable search        |
+| `SegmentedControl` | `bind:value`, `options`, `fullWidth`, `orientation`, `iconOnly`, `clearable`                        | One exclusive choice                 |
+| `ToggleGroup`      | `bind:value` (array), `options`, `size`, `orientation`, `fullWidth`                                 | Any number pressed                   |
+| `FileUpload`       | `bind:files`, `accept`, `multiple`, `maxSize`, `validateFile`                                       | Queue + validation + removal         |
+| `DateRangeFilter`  | `bind:fromValue`, `bind:toValue`, `compact`, `onapply`                                              | Apply button only with `onapply`     |
+| `Fieldset`         | `legend`                                                                                            | Semantic grouping                    |
+| `TagOption`        | `label`, `color`, `selected`, `onclick`                                                             | Compact tag choice                   |
 
 ### Surfaces & Feedback
 
-| Component          | Key props                                                                                                                  | Notes                                   |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| `Card`             | `title`, `subtitle`, `spaced`, `href`, `clickable`, `hoverable`, `selected`, `class`; snippets `media`, `header`, `footer` | Generic / link / button card            |
-| `DashboardSection` | `title`, snippet `actions`, snippet `footer`                                                                               | Titled section with chrome              |
-| `Alert`            | `color`, `title`, `closable`, `bind:active`                                                                                | Persistent inline message               |
-| `Notification`     | `color`, `title`, `duration`                                                                                               | Transient; wrap in `.lumi-toast-portal` |
-| `Chip`             | `color`, `size`, `closable`, `onclick`, `onclose`                                                                          | Label / status / token                  |
-| `Collapse`         | `title`, `open`, `color`, `size`, `radius`                                                                                 | Expandable disclosure                   |
-| `Divider`          | `label`, `position`                                                                                                        | Visual or labeled separator             |
-| `EmptyState`       | `title`, `description`, `icon`, `color`                                                                                    | No-content guidance                     |
-| `ErrorState`       | `status`, `variant`, `content`, `homeHref`                                                                                 | HTTP error recovery page                |
-| `Loading`          | `color`, `size`                                                                                                            | Local pending spinner                   |
-| `Progress`         | `value`, `color`, `size`, `indeterminate`, `striped`, `animated`, `showLabel`                                              | Determinate / indeterminate             |
-| `Tooltip`          | `text`, `placement`, `color`                                                                                               | Portaled supplemental description       |
+| Component                     | Key props                                                                                                                | Notes                                 |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------- |
+| `Card`                        | `title`, `subtitle`, `spaced`, `href`, `onclick`, `selected`, `hoverable`, `image`; snippets `header`, `footer`, `media` | Generic / link / button card          |
+| `DashboardSection`            | `title`, `subtitle`, `icon`; snippets `actions`, `footer`                                                                | Titled section                        |
+| `Alert`                       | `color`, `title`, `closable`, `bind:active`, `onclose`                                                                   | Persistent inline message             |
+| `Toaster` + `createToaster()` | `toaster`, `placement`; `toaster.show({ title, message, color, duration })`                                              | Transient, portaled, live region      |
+| `Notification`                | `color`, `title`, `message`, `duration`                                                                                  | Rendered in place (Toaster uses it)   |
+| `Chip`                        | `color`, `size`, `icon`, `closable`, `closeLabel`, `onclick`, `onclose`                                                  | Label / status / token                |
+| `Collapse`                    | `title`, `bind:open`, `color`, `size`, `ontoggle`                                                                        | Content stays in the DOM, `inert`     |
+| `Divider`                     | `label`, `align`, `orientation`, `variant`, `spacing`                                                                    | `<hr>` when plain                     |
+| `EmptyState`                  | `title`, `description`, `icon`, `image`; snippet `actions`                                                               | No-content guidance                   |
+| `ErrorState`                  | `status`, `message`, `homeHref`                                                                                          | HTTP error recovery page              |
+| `Loading` / `Skeleton`        | `text`, `size` / `shape`, `width`, `height`, `lines`                                                                     | Unknown vs known layout while pending |
+| `Progress`                    | `value`, `indeterminate`, `striped`, `animated`, `showLabel`                                                             | Determinate / indeterminate           |
+| `Tooltip`                     | `text` or `content`, `placement`, `delay`                                                                                | Describes its focusable child         |
 
 ### Data & Dashboard
 
-| Component                          | Key props                                                                                  | Notes                                         |
-| ---------------------------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------- |
-| `Table`                            | `data`, `rowKey`, `search`, `selectable`, `pagination`, `layout`; snippets `thead` / `row` | Typed records; row snippets                   |
-| `List` / `ListHeader` / `ListItem` | `color`, `size`, `selectable`, `maxHeight`                                                 | Short rows; `maxHeight` is the inner scroller |
-| `InfoItem`                         | `label`, `value`, `color`, `layout`                                                        | Label/value metadata                          |
-| `StatCard`                         | `title`, `value`, `href`, `icon`                                                           | Linked or static metric                       |
-| `DashboardChart`                   | `series`, `color`, `valueFormat`                                                           | Multi-series; non-finite points leave a gap   |
-| `DashboardBarChart`                | `data`, `color`, `valueFormat`                                                             | Single-series bar chart                       |
-| `DashboardDonutChart`              | `data`, `centerLabel`, `centerValue`, `valueFormat`                                        | Ring + legend; empty hides the legend         |
-| `QuickAccessCard`                  | `title`, `description`, `icon`, `href`                                                     | Navigational task card                        |
+| Component                          | Key props                                                                                                               | Notes                                  |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| `Table`                            | `data`, `rowKey`, `search`, `selectable`, `pagination`, `layout`, `loading`; snippets `thead`, `row`                    | Embeds `Pagination`; skeleton loading  |
+| `Pagination`                       | `bind:page`, `pages`, `siblings`, `href`, `compact`, `onpagechange`                                                     | `href` → crawlable `rel` links         |
+| `List` / `ListHeader` / `ListItem` | `color`, `size`, `maxHeight`; item `title`, `description`, `href`/`onclick`, `selected`; snippets `leading`, `trailing` | `<ul>`/`<li>`; stretched target        |
+| `UserInfo`                         | `name`, `description`, `src`, `size`, `href`; snippet `trailing`                                                        | Person row for tables and lists        |
+| `InfoItem`                         | `label`, `value`, `icon`, `layout`                                                                                      | Label/value metadata                   |
+| `StatCard` / `QuickAccessCard`     | `title`, `value` / `description`, `icon`, `href`                                                                        | Metric / navigational card             |
+| `DashboardChart`                   | `series`, `color`, `valueFormat`                                                                                        | Formats with the locale currency       |
+| `DashboardBarChart`                | `data`, `color`, `valueFormat`                                                                                          | Single-series bars                     |
+| `DashboardDonutChart`              | `data`, `centerLabel`, `centerValue`, `valueFormat`                                                                     | Ring + legend                          |
+| `Message` / `MessageList`          | `align`, `variant`, `color`, `name`, `time`, `grouped`; list `busy`, `loading`, `onloadmore`                            | Chat rows; transcript pinned to latest |
 
 ### Navigation & Layout
 
-| Component                                   | Key props / snippets                                                 | Notes                         |
-| ------------------------------------------- | -------------------------------------------------------------------- | ----------------------------- |
-| `Navbar`                                    | snippets: `left`, `center`, `right`; `ontoggle-sidebar`              | Dashboard top bar             |
-| `Sidebar` / `SidebarHeader` / `SidebarItem` | `collapsed`, `mobileOpen`, `active`; `SidebarHeader` snippet `cover` | Responsive primary nav        |
-| `PageHeader`                                | `title`, `subtitle`, snippet `actions`                               | Page identity + actions       |
-| `PageSidebar`                               | `bind:mobileOpen`, `mobileTitle`, snippet `sidebar`                  | Desktop aside + mobile drawer |
-| `Tabs`                                      | `tabs`, `bind:value`, `color`, `orientation`; `Tab.content` panels   | Managed panels stay mounted   |
+| Component                                   | Key props / snippets                                                    | Notes                         |
+| ------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------- |
+| `Navbar`                                    | `title`, snippets `actions`, `user`; `ontogglesidebar`                  | Dashboard top bar             |
+| `Sidebar` / `SidebarHeader` / `SidebarItem` | `collapsed`, `mobileOpen`, `aria-label`; item `href`, `icon`, `current` | Responsive primary nav        |
+| `PageHeader`                                | `title`, `subtitle`, `icon`, `level` (default `1`); snippet `actions`   | Page identity + actions       |
+| `PageSidebar`                               | `bind:mobileOpen`, `mobileTitle`; snippet `sidebar`                     | Desktop aside + mobile drawer |
+| `Tabs`                                      | `tabs`, `bind:value`, `color`, `orientation`; `Tab.content` panels      | Managed panels stay mounted   |
 
 ### Overlays & Menus
 
-| Component                   | Key props                                   | Notes                               |
-| --------------------------- | ------------------------------------------- | ----------------------------------- |
-| `Dialog`                    | `bind:open`, `title`, `size`, `persistent`  | Modal; focus-trapped; Escape closes |
-| `Dropdown` / `DropdownItem` | `bind:open`, `trigger`, `placement`, `size` | Anchored action menu                |
-| `Context` / `ContextItem`   | programmatic open, `size`                   | Pointer/row context menu            |
+| Component                   | Key props                                                                     | Notes                                       |
+| --------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------- |
+| `Dialog`                    | `bind:open`, `title`, `size`, `persistent`, `closeOnEscape`; snippet `footer` | Modal; focus-trapped; put actions in footer |
+| `Dropdown` / `DropdownItem` | `bind:open`, `placement`, `size`; `triggerContent` or `trigger(props)`        | Spread `props` on your own trigger control  |
+| `Context` / `ContextItem`   | programmatic open, `size`                                                     | Pointer/row context menu                    |
 
-`Dropdown` and `Context` are menus — keep menu roles and keyboard behavior.
+`Dropdown` and `Context` are menus — keep menu roles and keyboard behavior. Overlays opened inside a `Dialog` render inside it.
 
 ### Identity & Foundations
 
-| Component         | Key props                                                 |
-| ----------------- | --------------------------------------------------------- |
-| `Avatar`          | `src`, `name`, `size`, `color`                            |
-| `AvatarGroup`     | `items`, `max`                                            |
-| `AvatarPicker`    | `options`, `bind:value`                                   |
-| `Icon`            | `icon` (name string or Lucide component), `size`, `color` |
-| `IconBadge`       | `icon`, `color`, `size`                                   |
-| `StatusIndicator` | `status`, `pulse`, `tooltip`                              |
-| `UserInfo`        | `name`, `subtitle`, `src`                                 |
-| `Image`           | `src`, `alt`, `ratio`                                     |
-| `Title`           | `level`, `size`, `icon`, `color`                          |
+| Component         | Key props                                                                           |
+| ----------------- | ----------------------------------------------------------------------------------- |
+| `Avatar`          | `name`, `src`, `alt`, `size`, `color`; icon as children                             |
+| `AvatarGroup`     | `items` (`{ name, src }`), `max`, `total`, `size`                                   |
+| `AvatarPicker`    | `options`, `bind:value`, `name`                                                     |
+| `Icon`            | `icon` (Lucide component or registered name), `size`, `color`                       |
+| `IconBadge`       | `icon`, `color`, `size`                                                             |
+| `StatusIndicator` | `status`, `pulse`, `tooltip`                                                        |
+| `Image`           | `src`, `alt`, `width`, `height`, `ratio`, `fit`, `fetchpriority`, `srcset`, `sizes` |
+| `Title`           | `title`, `subtitle`, `level`, `size`, `icon`, `color`                               |
 
 ### Drive workspace
 
@@ -511,45 +499,44 @@ import type { ButtonProps, LumiColor, LumiSize } from '@lumi-ui/svelte';
 | `DriveFileUploader` | Upload dialog            |
 | `DriveSidebar`      | Drive navigation sidebar |
 
-Persistence/endpoints stay in the app. Pure helpers: `import { ... } from '@lumi-ui/svelte/drive'`.
+Persistence/endpoints stay in the app. Pure helpers, types and `lumiDriveEs`: `import { ... } from '@lumi-ui/svelte/drive'`.
 
 ### Shared helpers & types
 
 ```ts
 import {
-	LUMI_CONFIG,
-	getIconSize,
+	formatDate,
+	formatNumber,
+	getInitials,
+	lumiEs,
 	portal,
-	getIcon,
-	hasIcon,
-	getAvailableIcons
+	registerIcons,
+	setLumiLocale
 } from '@lumi-ui/svelte';
+import { lumiIcons } from '@lumi-ui/svelte/icons'; // only for string icon names
 import type {
-	LumiColor,
-	LumiSize,
-	LumiCompactSize,
-	LumiControlSize,
-	LumiTransition,
-	IconName,
 	IconComponent,
-	ChartSeriesPoint
+	IconSource,
+	LumiColor,
+	LumiChoiceOption,
+	LumiLocaleOptions
 } from '@lumi-ui/svelte';
 ```
 
-| Export                                                    | Use                                                     |
-| --------------------------------------------------------- | ------------------------------------------------------- |
-| `portal`                                                  | Svelte action: `use:portal` or `use:portal={'#target'}` |
-| `getIcon(name)` / `hasIcon(name)` / `getAvailableIcons()` | Lucide string registry                                  |
-| `getIconSize(size)`                                       | Map `LumiSize` → icon px                                |
-| `LUMI_CONFIG`                                             | Sizes, colors, transitions, floating geometry, defaults |
+| Export                                      | Use                                                                          |
+| ------------------------------------------- | ---------------------------------------------------------------------------- |
+| `setLumiLocale`, `lumiEs`, `lumiEn`         | Built-in copy + `Intl` locale, currency and time zone (root layout)          |
+| `formatNumber`, `formatDate`, `getInitials` | Cached, pure helpers — replace app copies of currency/initials helpers       |
+| `registerIcons`, `getIcon`, `hasIcon`       | Opt-in string icon registry (empty by default)                               |
+| `portal`                                    | Svelte action: `use:portal` (open modal or body) or `use:portal={'#target'}` |
 
-The string registry is convenient but enters the bundle with `Icon`. Passing a direct component through `<Icon>` does not currently remove it; render a deep-imported Lucide component directly when minimizing a custom icon-only path matters.
+Prefer deep Lucide imports (`import Search from '@lucide/svelte/icons/search'`) on public pages; register `lumiIcons` only in layouts that render icon names from data.
 
 ---
 
 ## 5. Patterns CSS
 
-Reusable domain-neutral compositions (included in `@lumi-ui/svelte/styles`). Apply via `class`; use documented BEM children — don't invent modifiers.
+Reusable domain-neutral compositions — opt-in: `import '@lumi-ui/svelte/styles/patterns.css'`. Apply via `class`; use documented BEM children — don't invent modifiers.
 
 | Pattern              | Families & variants                                                                                                                                                          |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -557,12 +544,11 @@ Reusable domain-neutral compositions (included in `@lumi-ui/svelte/styles`). App
 | Filter summary       | `.lumi-filter-summary` + `__eyebrow`, `__title`, `__subtitle`, `__title-row`, `__meta`, `__actions`; `--compact`, `--centered`, color variants                               |
 | Section actions      | `.lumi-section-toolbar`, `.lumi-toolbar-field`, `.lumi-form-action-row`, `.lumi-inline-filters` (+ child/compact variants)                                                   |
 | Ranked metrics       | `.lumi-metric-rank-list` / `.lumi-metric-rank-row`; `--dense`, `--accent-secondary`, `--scroll-capped`                                                                       |
-| Identity & selection | `.lumi-person-cell`, `.lumi-selected-panel`, `.lumi-result-list`, `.lumi-result-option`, `.lumi-placeholder-tile`                                                            |
-| Context panels       | `.lumi-hero-panel`, `.lumi-search-panel` + BEM children                                                                                                                      |
-| Collections          | `.lumi-history-list` / `item`, `.lumi-item-row`, `.lumi-item-list`; interactive/active row variants                                                                          |
+| Identity & selection | `.lumi-person-cell`, `.lumi-selected-panel`, `.lumi-result-list`, `.lumi-placeholder-tile`                                                                                   |
+| Context panels       | `.lumi-search-panel` + BEM children                                                                                                                                          |
+| Collections          | `.lumi-item-row`, `.lumi-item-list`; interactive/active row variants                                                                                                         |
 | Summaries            | `.lumi-total-box`, `.lumi-scan-result`                                                                                                                                       |
-| Small helpers        | `.lumi-cluster--pull-next-up`, `.lumi-container-responsive`, `.lumi-scrollbar`, `.lumi-list-item--stack-actions`                                                             |
-| Toast stack          | `.lumi-toast-portal` — consumer-owned fixed wrapper for `Notification` children                                                                                              |
+| Small helpers        | `.lumi-scrollbar`, `.lumi-list-item--stack-actions`                                                                                                                          |
 | Specialized          | `.lumi-drive-toolbar-card` (via `Card class`, includes blur opt-in), `.lumi-drive-content`, `.lumi-navbar-branch`, `.lumi-navbar-user-dropdown`, `.lumi-brand-logo-wordmark` |
 
 ---
@@ -570,15 +556,14 @@ Reusable domain-neutral compositions (included in `@lumi-ui/svelte/styles`). App
 ## 6. Behavioral checks
 
 - Read `.svelte` when snippets/callbacks matter; several are local, not in exported `*Props`.
-- `RemoteSelect` needs endpoint/query and mapping inputs from its source.
-- Prefer `Button.variant` plus native `type`. The historical visual `type` plus native `button` form remains compatible; `variant` wins visually and `button` wins natively.
-- `Alert`/`Notification` retain legacy `type` (`NotificationType`), while `Dropdown`/`Tooltip` retain legacy `position` (`DropdownPosition`, `TooltipPosition`); new code should use `color` and `placement`.
-- A clickable `Card` renders as a button and must not contain nested interactive controls. Cards that are interactive or include media are hoverable by default.
-- `Progress.animated` implies stripes; `labelSnippet` should be paired with `aria-label` when needed.
+- Built-in copy is English until `setLumiLocale` runs; explicit label props always win.
+- String icon names render nothing until registered; pass components where possible.
+- A clickable `Card` renders as a button and must not contain nested interactive controls.
+- `ListItem` with `href`/`onclick` uses a stretched target, so `trailing` actions stay real siblings.
 - Supply `Table.rowKey` when records lack stable `id` or `key`.
-- `Notification` renders in place; wrap in `.lumi-toast-portal` for a fixed toast stack.
+- Create one `createToaster()` per app in client code; call `show()` from handlers, render one `<Toaster>`.
+- `MessageList` needs a height; pass `busy` while a reply streams and `loading` while history loads.
 - Icon-only controls need an accessible name; decorative nested icons do not.
-- Preserve focus, dismissal, and roles when composing overlays.
 - `Dropdown`/`Context` are menus, not generic popovers — keep menu roles.
 - One `ColorSchemeScript` + one controller instance per app.
 

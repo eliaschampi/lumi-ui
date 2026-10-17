@@ -1,108 +1,134 @@
-<script lang="ts">
-	import type { Snippet } from 'svelte';
-	import { Avatar } from '../Avatar';
-	import type { UserInfoProps } from './types';
+<script module lang="ts">
+	import * as en from '../../i18n/en';
 
-	interface Props extends UserInfoProps {
-		actions?: Snippet;
-	}
+	const COPY = { unnamed: en.unnamed };
+</script>
+
+<script lang="ts">
+	import { Avatar } from '../Avatar';
+	import { useLumiLocale } from '../../i18n';
+	import type { UserInfoProps } from './types';
 
 	const {
 		name = '',
-		lastName = '',
 		description = '',
-		photoUrl = '',
-		avatarColor = 'primary',
-		avatarSize = 'lg',
-		actions,
-		class: className = ''
-	}: Props = $props();
+		src = '',
+		size = 'md',
+		color = 'primary',
+		href,
+		trailing,
+		class: className
+	}: UserInfoProps = $props();
 
-	const classes = $derived(
-		['lumi-user-info', className].filter(Boolean).join(' ')
-	);
-
-	const fullName = $derived(`${name} ${lastName}`.trim() || 'Sin nombre');
-	const avatarText = $derived(getInitials(name, lastName));
-
-	function getInitials(first: string, last = ''): string {
-		const source = `${first} ${last}`.trim();
-		if (!source) return '';
-
-		const parts = source.split(/\s+/).filter(Boolean);
-		return parts
-			.slice(0, 2)
-			.map((part) => part[0]?.toUpperCase() ?? '')
-			.join('');
-	}
+	const i18n = useLumiLocale(COPY);
 </script>
 
-<div class={classes}>
-	<div class="lumi-user-info__identity">
-		<Avatar
-			text={avatarText}
-			src={photoUrl || undefined}
-			size={avatarSize}
-			color={avatarColor}
-		/>
-		<div class="lumi-user-info__copy">
-			<h3 class="lumi-user-info__name">{fullName}</h3>
-			{#if description?.trim()}
-				<p class="lumi-user-info__email">{description}</p>
-			{/if}
-		</div>
-	</div>
-
-	{#if actions}
-		<div class="lumi-user-info__actions">
-			{@render actions()}
-		</div>
+<div
+	class={[
+		'lumi-user-info',
+		size !== 'md' && `lumi-user-info--${size}`,
+		className
+	]}
+>
+	<!-- Decorative: the visible name is the accessible text. -->
+	<Avatar {name} {src} {size} {color} alt="" />
+	<span class="lumi-user-info__text">
+		<svelte:element
+			this={href ? 'a' : 'span'}
+			{href}
+			class="lumi-user-info__name"
+		>
+			{name.trim() || i18n.t.unnamed}
+		</svelte:element>
+		{#if description}
+			<span class="lumi-user-info__description">{description}</span>
+		{/if}
+	</span>
+	{#if trailing}
+		<span class="lumi-user-info__trailing">{@render trailing()}</span>
 	{/if}
 </div>
 
 <style>
 	.lumi-user-info {
+		--lumi-user-info-name: var(--lumi-font-size-sm);
+		--lumi-user-info-description: var(--lumi-font-size-xs);
+		position: relative;
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
 		gap: var(--lumi-space-sm);
-		width: 100%;
+		min-inline-size: 0;
 	}
 
-	.lumi-user-info__identity {
+	.lumi-user-info--sm {
+		gap: var(--lumi-space-xs);
+	}
+
+	.lumi-user-info--lg {
+		--lumi-user-info-name: var(--lumi-font-size-base);
+	}
+
+	.lumi-user-info--xl {
+		--lumi-user-info-name: var(--lumi-font-size-lg);
+		--lumi-user-info-description: var(--lumi-font-size-sm);
+		gap: var(--lumi-space-md);
+	}
+
+	.lumi-user-info__text {
 		display: flex;
-		align-items: center;
-		gap: var(--lumi-space-sm);
-		min-width: 0;
 		flex: 1;
-	}
-
-	.lumi-user-info__copy {
-		display: flex;
 		flex-direction: column;
 		gap: var(--lumi-space-2xs);
-		min-width: 0;
+		min-inline-size: 0;
 	}
 
-	.lumi-user-info__name {
-		margin: 0;
-		font-size: var(--lumi-font-size-base);
-		font-weight: var(--lumi-font-weight-bold);
-		line-height: var(--lumi-line-height-tight);
-		color: var(--lumi-color-text);
-	}
-
-	.lumi-user-info__email {
-		margin: 0;
-		font-size: var(--lumi-font-size-xs);
-		line-height: var(--lumi-line-height-normal);
-		color: var(--lumi-color-text-muted);
+	.lumi-user-info__name,
+	.lumi-user-info__description {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
 
-	.lumi-user-info__actions {
+	.lumi-user-info__name {
+		color: var(--lumi-color-text);
+		font-size: var(--lumi-user-info-name);
+		font-weight: var(--lumi-font-weight-semibold);
+		line-height: var(--lumi-line-height-tight);
+		text-decoration: none;
+	}
+
+	.lumi-user-info__description {
+		color: var(--lumi-color-text-muted);
+		font-size: var(--lumi-user-info-description);
+		line-height: var(--lumi-line-height-normal);
+	}
+
+	/* Stretched link: the whole row is the target, trailing content sits above. */
+	a.lumi-user-info__name::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: var(--lumi-radius-control);
+	}
+
+	a.lumi-user-info__name:hover {
+		color: var(--lumi-color-primary);
+	}
+
+	a.lumi-user-info__name:focus-visible {
+		outline: none;
+	}
+
+	a.lumi-user-info__name:focus-visible::after {
+		outline: var(--lumi-focus-outline);
+		outline-offset: var(--lumi-focus-outline-offset);
+	}
+
+	.lumi-user-info__trailing {
+		position: relative;
+		display: inline-flex;
 		flex-shrink: 0;
+		align-items: center;
+		gap: var(--lumi-space-xs);
 	}
 </style>

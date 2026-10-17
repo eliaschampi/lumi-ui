@@ -1,20 +1,20 @@
 export {
 	ALLOWED_MIME_TYPES,
 	DRIVE_IMAGE_COMPRESSION_THRESHOLD_BYTES,
-	DRIVE_MENU_OPTIONS,
 	DRIVE_PROJECT_STORAGE_LIMIT_BYTES,
-	DRIVE_SCOPE_OPTIONS,
-	DRIVE_SCOPE_SEGMENT_OPTIONS,
 	MAX_DRIVE_NAME_LENGTH,
 	MAX_FILE_SIZE,
-	TAG_OPTIONS,
 	detectFileType,
 	driveTagColorCssVar,
 	formatDriveDate,
 	formatDriveDateTime,
 	formatFileSize,
+	getDriveMenuOptions,
+	getDriveScopeOptions,
+	getDriveScopeSegmentOptions,
 	getDriveServeUrl,
 	getDriveTagByHash,
+	getDriveTagOptions,
 	getDriveTypeLabel,
 	getFileColor,
 	getFileIcon,
@@ -42,4 +42,6 @@ export type {
 	DriveTagTone
 } from './utils/drive';
 
+export { lumiDriveEn, lumiDriveEs } from './i18n';
+export type { LumiDriveMessages } from './i18n';
 export type { DriveFileItem } from './components/Drive';

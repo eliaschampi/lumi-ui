@@ -1,47 +1,53 @@
+import type { Snippet } from 'svelte';
 import type { LumiDisplaySize } from '../config';
 
 export type DialogSize = LumiDisplaySize;
 
 export interface DialogProps {
-	/** Whether dialog is open */
+	/** Visible state (bindable) */
 	open?: boolean;
 
-	/** Dialog title */
+	/** Heading text; also the dialog's accessible name */
 	title?: string;
 
-	/** Size variant */
+	/** @default "md" */
 	size?: DialogSize;
 
-	/** Whether dialog is persistent (can't close on overlay click) */
+	/** Ignore backdrop clicks */
 	persistent?: boolean;
 
-	/** Whether content is scrollable */
+	/** Scroll the body instead of the page when content is tall */
 	scrollable?: boolean;
 
-	/** Whether dialog is full screen */
 	fullScreen?: boolean;
 
-	/** Whether to hide close button */
 	hideClose?: boolean;
 
-	/** Close button aria label */
+	/** Close button name; defaults to the localized "Close dialog" */
 	closeLabel?: string;
 
-	/** Whether to close on escape key */
+	/** @default true */
 	closeOnEscape?: boolean;
 
-	/** Custom class */
 	class?: string;
 
-	/** Close event handler */
+	/** Custom header, replacing `title` */
+	header?: Snippet;
+
+	/** Actions row */
+	footer?: Snippet;
+
+	children?: Snippet;
+
+	/** User dismissed it (close button, Escape or backdrop) */
 	onclose?: () => void;
 
-	/** Open event handler */
+	/** Opening started */
 	onopen?: () => void;
 
-	/** After open event handler */
+	/** Enter transition finished */
 	onafteropen?: () => void;
 
-	/** After close event handler */
+	/** Exit transition finished */
 	onafterclose?: () => void;
 }

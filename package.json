@@ -1,7 +1,7 @@
 {
 	"name": "@lumi-ui/svelte",
-	"version": "0.6.0",
-	"description": "Lumi UI: calm glassmorphic Svelte 5 component library with semantic tokens and reusable patterns.",
+	"version": "1.0.0",
+	"description": "Lightweight Svelte 5 component library: calm glass design, semantic tokens, English and Spanish built in, SSR-first and SEO-friendly.",
 	"type": "module",
 	"packageManager": "pnpm@10.33.2",
 	"license": "MIT",
@@ -17,7 +17,11 @@
 		"components",
 		"design-system",
 		"lumi-ui",
-		"glassmorphism"
+		"glassmorphism",
+		"lightweight",
+		"i18n",
+		"ssr",
+		"accessibility"
 	],
 	"repository": {
 		"type": "git",
@@ -53,7 +57,13 @@
 		},
 		"./drive": {
 			"types": "./dist/drive.d.ts",
+			"svelte": "./dist/drive.js",
 			"default": "./dist/drive.js"
+		},
+		"./icons": {
+			"types": "./dist/icons.d.ts",
+			"svelte": "./dist/icons.js",
+			"default": "./dist/icons.js"
 		},
 		"./color-scheme": {
 			"types": "./dist/color-scheme/index.d.ts",
@@ -61,7 +71,11 @@
 			"default": "./dist/color-scheme/index.js"
 		},
 		"./styles": "./dist/styles/index.css",
+		"./styles/base.css": "./dist/styles/base.css",
+		"./styles/charts.css": "./dist/styles/charts.css",
 		"./styles/core.css": "./dist/styles/core.css",
+		"./styles/layout.css": "./dist/styles/layout.css",
+		"./styles/utilities.css": "./dist/styles/utilities.css",
 		"./styles/patterns.css": "./dist/styles/patterns.css",
 		"./styles/tokens.base.css": "./dist/styles/tokens.base.css"
 	},
@@ -70,7 +84,8 @@
 	},
 	"dependencies": {
 		"@floating-ui/dom": "^1.7.6",
-		"@lucide/svelte": "^1.11.0"
+		"@lucide/svelte": "^1.11.0",
+		"esm-env": "^1.2.2"
 	},
 	"devDependencies": {
 		"@sveltejs/package": "^2.5.5",

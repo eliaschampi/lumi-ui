@@ -27,7 +27,6 @@ export { Chip } from './components/Chip';
 export type {
 	CollapseColor,
 	CollapseProps,
-	CollapseRadius,
 	CollapseSize
 } from './components/Collapse';
 export { Collapse } from './components/Collapse';
@@ -52,10 +51,15 @@ export type {
 export { DashboardDonutChart } from './components/DashboardDonutChart';
 export type { DashboardSectionProps } from './components/DashboardSection';
 export { DashboardSection } from './components/DashboardSection';
+export type { DateRangeFilterProps } from './components/DateRangeFilter';
 export { DateRangeFilter } from './components/DateRangeFilter';
 export type { DialogProps, DialogSize } from './components/Dialog';
 export { Dialog } from './components/Dialog';
-export type { DividerPosition, DividerProps } from './components/Divider';
+export type {
+	DividerAlign,
+	DividerProps,
+	DividerSpacing
+} from './components/Divider';
 export { Divider } from './components/Divider';
 export type { DriveFileItem } from './components/Drive';
 export {
@@ -67,22 +71,17 @@ export {
 	DriveSidebar
 } from './components/Drive';
 export type {
-	DropdownPlacement,
-	DropdownPosition,
 	DropdownItemProps,
+	DropdownPlacement,
 	DropdownProps,
-	DropdownSize,
-	DropdownTrigger
+	DropdownSize
 } from './components/Dropdown';
 export { Dropdown, DropdownItem } from './components/Dropdown';
 export type { EmptyStateColor, EmptyStateProps } from './components/EmptyState';
 export { EmptyState } from './components/EmptyState';
 export type {
-	ErrorStateContent,
-	ErrorStateHomeHref,
 	ErrorStateProps,
-	ErrorStateStatus,
-	ErrorStateVariant
+	ErrorStateStatus
 } from './components/ErrorState';
 export { ErrorState } from './components/ErrorState';
 export type { FieldsetProps } from './components/Fieldset';
@@ -93,8 +92,13 @@ export type {
 	FileUploadStatus
 } from './components/FileUpload';
 export { FileUpload } from './components/FileUpload';
-export type { IconColor, IconProps, IconSource } from './components/Icon';
-export { getAvailableIcons, getIcon, hasIcon, Icon } from './components/Icon';
+export type {
+	IconColor,
+	IconComponent,
+	IconProps,
+	IconSource
+} from './components/Icon';
+export { getIcon, hasIcon, Icon, registerIcons } from './components/Icon';
 export type { IconBadgeProps } from './components/IconBadge';
 export { IconBadge } from './components/IconBadge';
 export type { ImageProps } from './components/Image';
@@ -118,17 +122,28 @@ export type {
 	ListItemProps,
 	ListMaxHeight,
 	ListProps,
-	ListSize
+	ListSize,
+	ListText
 } from './components/List';
 export { List, ListHeader, ListItem } from './components/List';
-export type { LoadingColor, LoadingProps } from './components/Loading';
+export type {
+	LoadingColor,
+	LoadingProps,
+	LoadingSize
+} from './components/Loading';
 export { Loading } from './components/Loading';
+export type {
+	MessageAlign,
+	MessageListProps,
+	MessageProps,
+	MessageVariant
+} from './components/Message';
+export { Message, MessageList } from './components/Message';
 export type { NavbarProps } from './components/Navbar';
 export { Navbar } from './components/Navbar';
 export type {
-	NotificationType,
-	NotificationProps,
-	NotificationColor
+	NotificationColor,
+	NotificationProps
 } from './components/Notification';
 export { Notification } from './components/Notification';
 export type {
@@ -141,6 +156,8 @@ export type { PageHeaderProps } from './components/PageHeader';
 export { PageHeader } from './components/PageHeader';
 export type { PageSidebarProps } from './components/PageSidebar';
 export { PageSidebar } from './components/PageSidebar';
+export type { PaginationProps } from './components/Pagination';
+export { Pagination } from './components/Pagination';
 export type {
 	ProgressColor,
 	ProgressProps,
@@ -172,6 +189,8 @@ export type {
 	SidebarProps
 } from './components/Sidebar';
 export { Sidebar, SidebarHeader, SidebarItem } from './components/Sidebar';
+export type { SkeletonProps, SkeletonShape } from './components/Skeleton';
+export { Skeleton } from './components/Skeleton';
 export type { SliderColor, SliderProps, SliderSize } from './components/Slider';
 export { Slider } from './components/Slider';
 export type { StatCardProps } from './components/StatCard';
@@ -183,11 +202,7 @@ export type {
 export { StatusIndicator } from './components/StatusIndicator';
 export type { SwitchColor, SwitchProps, SwitchSize } from './components/Switch';
 export { Switch } from './components/Switch';
-export type {
-	TablePaginationData,
-	TableProps,
-	TableRow
-} from './components/Table';
+export type { TableProps, TableRow } from './components/Table';
 export { Table } from './components/Table';
 export type {
 	Tab,
@@ -212,30 +227,45 @@ export type {
 } from './components/Title';
 export { Title } from './components/Title';
 export type {
+	ToggleGroupProps,
+	ToggleGroupValue
+} from './components/ToggleGroup';
+export { ToggleGroup } from './components/ToggleGroup';
+export type {
+	Toast,
+	ToasterController,
+	ToasterOptions,
+	ToasterPlacement,
+	ToasterProps,
+	ToastOptions
+} from './components/Toaster';
+export { createToaster, Toaster } from './components/Toaster';
+export type {
 	TooltipColor,
 	TooltipPlacement,
-	TooltipPosition,
 	TooltipProps
 } from './components/Tooltip';
 export { Tooltip } from './components/Tooltip';
 export type { UserInfoProps } from './components/UserInfo';
 export { UserInfo } from './components/UserInfo';
 export { portal } from './actions/portal';
-export { LUMI_CONFIG, getIconSize } from './components/config';
+export { lumiEn, lumiEs, setLumiLocale } from './i18n';
+export type { LumiLocaleOptions, LumiMessages } from './i18n';
+export { formatDate, formatNumber } from './utils/format';
+export type { FormatDateOptions, FormatNumberOptions } from './utils/format';
+export { getInitials } from './utils/initials';
 export type {
 	LumiColor,
 	LumiCompactSize,
 	LumiControlSize,
 	LumiDisplaySize,
 	LumiExtendedSize,
-	LumiIconSize,
-	LumiSize,
-	LumiTransition
+	LumiSize
 } from './components/config';
 export type {
 	ChartColor,
 	ChartSeriesPoint,
 	ChartValueFormat
 } from './types/charts';
+export type { LumiChoiceOption } from './types/choice';
 export type { FieldError } from './components/Field';
-export type { IconComponent, IconName } from './utils/icons';

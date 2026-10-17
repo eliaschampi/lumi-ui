@@ -1,5 +1,3 @@
-// Lumi UI - StatusIndicator Component Types
-
 export type StatusIndicatorStatus =
 	| 'default'
 	| 'active'
@@ -13,18 +11,17 @@ export type StatusIndicatorStatus =
 	| 'info';
 
 export interface StatusIndicatorProps {
-	/** Status type or custom color */
-	status?: StatusIndicatorStatus | string;
+	/** @default "default" */
+	status?: StatusIndicatorStatus;
 
-	/** Active state (boolean) - maps to 'active' or 'inactive' status */
+	/** Shorthand for `status="active"` / `"inactive"`; wins over `status` */
 	active?: boolean;
 
-	/** Whether to show pulse animation */
+	/** Gentle breathing animation (static under reduced motion) */
 	pulse?: boolean;
 
-	/** Tooltip text */
+	/** Accessible name and native tooltip; without it the dot is decorative */
 	tooltip?: string;
 
-	/** Custom class */
 	class?: string;
 }

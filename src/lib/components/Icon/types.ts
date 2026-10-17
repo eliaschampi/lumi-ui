@@ -1,12 +1,11 @@
 import type { LumiColor, LumiSize } from '../config';
-import type { IconComponent } from '../../utils/icons';
+import type { IconSource } from '../../utils/icons';
 
 export type IconColor =
 	LumiColor | 'muted' | 'inherit' | `var(--lumi-${string})`;
-export type IconSource = string | IconComponent;
 
 export interface IconProps {
-	/** Registry name or a directly imported Lucide-compatible component */
+	/** Lucide-compatible component, or a name registered with `registerIcons` */
 	icon?: IconSource;
 
 	/** Semantic color or Lumi color token */

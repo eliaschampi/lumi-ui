@@ -1,3 +1,13 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+
+	const COPY = {
+		chart: en.chart,
+		chartEmpty: en.chartEmpty,
+		chartSeries: en.chartSeries
+	};
+</script>
+
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
 	import {
@@ -16,6 +26,8 @@
 		useChartInteraction,
 		useChartWidth
 	} from '../../utils/chartLayout.svelte';
+	import '../../styles/charts.css';
+	import { useLumiLocale } from '../../i18n';
 	import type { DashboardChartProps } from './types';
 
 	const {
@@ -25,10 +37,12 @@
 		height = 220,
 		valueFormat = 'number',
 		xLabelMaxLength,
-		emptyMessage = 'No hay datos suficientes para mostrar este gráfico.',
-		'aria-label': ariaLabel = 'Gráfico del dashboard',
-		class: className = ''
+		emptyMessage,
+		'aria-label': ariaLabel,
+		class: className
 	}: DashboardChartProps = $props();
+
+	const i18n = useLumiLocale(COPY);
 
 	const layout = useChartWidth();
 	const gutter = useChartGutter(() => layout.chartW);
@@ -43,7 +57,7 @@
 			: [
 					{
 						key: 'default',
-						label: ariaLabel,
+						label: ariaLabel ?? i18n.t.chart,
 						color,
 						data
 					}
@@ -54,9 +68,6 @@
 		normalizedSeries.length === 1
 			? normalizedSeries
 			: normalizedSeries.filter((s) => !hiddenSeries.has(s.key))
-	);
-	const classes = $derived(
-		['lumi-line-chart', className].filter(Boolean).join(' ')
 	);
 	const chartW = $derived(layout.chartW);
 	const chartH = $derived(height);
@@ -74,7 +85,7 @@
 	const yTicks = $derived(
 		scale.ticks.map((tick) => ({
 			y: CHART_PADDING.top + tick.ratio * plotH,
-			label: formatChartValue(tick.value, valueFormat, 'axis')
+			label: formatChartValue(tick.value, valueFormat, 'axis', i18n)
 		}))
 	);
 	const zeroY = $derived(scaleY(0));
@@ -215,12 +226,12 @@
 	}
 </script>
 
-<div bind:this={layout.root} class={classes}>
+<div bind:this={layout.root} class={['lumi-line-chart', className]}>
 	{#if normalizedSeries.length > 1}
 		<div
 			class="lumi-line-chart__legend"
 			role="group"
-			aria-label="Series del gráfico"
+			aria-label={i18n.t.chartSeries}
 		>
 			{#each normalizedSeries as s (s.key)}
 				<button
@@ -244,8 +255,8 @@
 	<div class="lumi-line-chart__plot" style:height="{height}px">
 		{#if !scale.hasValues}
 			<div class="lumi-chart-empty">
-				<p class="lumi-margin--none lumi-text--sm lumi-text--muted">
-					{emptyMessage}
+				<p class="lumi-chart-empty__text">
+					{emptyMessage ?? i18n.t.chartEmpty}
 				</p>
 			</div>
 		{:else}
@@ -255,7 +266,7 @@
 				preserveAspectRatio="xMidYMid meet"
 				class="lumi-chart-svg"
 				role="img"
-				aria-label={ariaLabel}
+				aria-label={ariaLabel ?? i18n.t.chart}
 				aria-describedby={hoveredEntries.length > 0
 					? `${instanceId}-tooltip`
 					: undefined}
@@ -404,7 +415,12 @@
 				></span>
 				<span class="lumi-chart-tooltip__label">{entry.label}</span>
 				<span class="lumi-chart-tooltip__value"
-					>{formatChartValue(entry.point.value, valueFormat, 'tooltip')}</span
+					>{formatChartValue(
+						entry.point.value,
+						valueFormat,
+						'tooltip',
+						i18n
+					)}</span
 				>
 			</div>
 		{/each}

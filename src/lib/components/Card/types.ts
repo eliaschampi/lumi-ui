@@ -1,3 +1,4 @@
+import type { Snippet } from 'svelte';
 /**
  * Lumi UI - Card Component Types
  */
@@ -18,7 +19,10 @@ export interface CardProps {
 	/** Whether card shows hover effects (shadow/transform) */
 	hoverable?: boolean;
 
-	/** Whether card is visually selected */
+	/**
+	 * Selected state: `aria-current` on a link card, `aria-pressed` on a
+	 * clickable card (omit for a plain action)
+	 */
 	selected?: boolean;
 
 	/** Image URL */
@@ -44,4 +48,18 @@ export interface CardProps {
 
 	/** Inline styles */
 	style?: string;
+
+	'aria-label'?: string;
+
+	onclick?: (event: MouseEvent) => void;
+
+	/** Custom media, replacing `image` */
+	media?: Snippet;
+
+	/** Custom header, replacing `title`/`subtitle` */
+	header?: Snippet;
+
+	footer?: Snippet;
+
+	children?: Snippet;
 }

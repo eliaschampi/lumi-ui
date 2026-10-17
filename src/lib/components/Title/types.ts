@@ -1,3 +1,4 @@
+import type { IconSource } from '../../utils/icons';
 import type { LumiColor, LumiDisplaySize } from '../config';
 
 export type TitleColor = LumiColor | 'text';
@@ -18,7 +19,7 @@ export interface TitleProps {
 	color?: TitleColor;
 
 	/** Icon name */
-	icon?: string;
+	icon?: IconSource;
 
 	/** Icon color */
 	iconColor?: TitleColor;

@@ -1,87 +1,72 @@
-// Lumi UI - List Component Types
 import type { Snippet } from 'svelte';
-
+import type { IconSource } from '../../utils/icons';
 import type { LumiColor, LumiCompactSize } from '../config';
 
 export type ListSize = LumiCompactSize;
 export type ListColor = LumiColor;
 export type ListMaxHeight = 'sm' | 'md' | 'lg';
 
+/** Plain text or a snippet for rich content. */
+export type ListText = string | Snippet;
+
 export interface ListProps {
-	/** Size variant */
+	/** @default "md" */
 	size?: ListSize;
 
-	/** Color variant */
+	/** Accent for selection, focus and header (inherits when omitted) */
 	color?: ListColor;
 
-	/** Disabled state */
+	/** Makes every item inert */
 	disabled?: boolean;
 
 	/**
-	 * Bounded inner scroll area (token-based).
-	 * `sm` = 9rem, `md` = 12rem, `lg` = 15rem.
-	 * Omit so the list grows with the parent scroller.
+	 * Caps the height with an inner scroller: `sm` 9rem, `md` 12rem, `lg` 15rem.
+	 * Omit to grow with the parent scroller.
 	 */
 	maxHeight?: ListMaxHeight;
 
-	/** Custom class */
 	class?: string;
+
+	/** `ListItem`s, optionally led by a `ListHeader` */
+	children?: Snippet;
 }
 
 export interface ListItemProps {
-	/** Item title */
-	title?: string;
+	title?: ListText;
 
-	/** Item subtitle */
-	subtitle?: string;
+	/** Secondary line */
+	description?: ListText;
 
-	/** Icon name */
-	icon?: string;
+	/** Leading icon (ignored when `leading` is set) */
+	icon?: IconSource;
 
-	/** Avatar snippet */
-	avatar?: Snippet;
+	/** Leading media, e.g. an `Avatar` */
+	leading?: Snippet;
 
-	/** Disabled state */
-	disabled?: boolean;
+	/** Content after the text, e.g. actions — never nested in the item target */
+	trailing?: Snippet;
 
-	/** Whether item is clickable */
-	clickable?: boolean;
+	/** Renders the item as a link */
+	href?: string;
 
-	/** Active state */
-	active?: boolean;
-
-	/** Custom class */
-	class?: string;
-
-	/** Click handler */
+	/** Renders the item as a button */
 	onclick?: (event: MouseEvent) => void;
 
-	/** Right-side actions snippet */
-	children?: Snippet;
+	/** Current item in the set (`aria-current`) */
+	selected?: boolean;
 
-	/** Custom title snippet */
-	titleSlot?: Snippet;
+	disabled?: boolean;
 
-	/** Custom subtitle snippet */
-	subtitleSlot?: Snippet;
+	class?: string;
 }
 
 export interface ListHeaderProps {
-	/** Header title */
 	title?: string;
 
-	/** Color variant */
-	color?: ListColor;
+	icon?: IconSource;
 
-	/** Icon name */
-	icon?: string;
-
-	/** Custom class */
-	class?: string;
-
-	/** Actions snippet */
+	/** Header actions */
 	actions?: Snippet;
 
-	/** Alternative actions snippet */
-	children?: Snippet;
+	class?: string;
 }

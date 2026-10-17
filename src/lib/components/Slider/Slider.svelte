@@ -1,4 +1,11 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+
+	const COPY = { slider: en.slider };
+</script>
+
 <script lang="ts">
+	import { useLumiLocale } from '../../i18n';
 	import type { SliderProps } from './types';
 
 	let {
@@ -18,8 +25,9 @@
 		onchange
 	}: SliderProps = $props();
 
-	const instanceId = $props.id();
-	const sliderId = $derived(id ?? `lumi-slider-${instanceId}`);
+	const i18n = useLumiLocale(COPY);
+	const uid = $props.id();
+	const sliderId = $derived(id ?? `lumi-slider-${uid}`);
 
 	const percentage = $derived.by(() => {
 		const range = max - min;
@@ -27,28 +35,18 @@
 			return 0;
 		return Math.min(100, Math.max(0, ((value - min) / range) * 100));
 	});
-
-	const styleVars = $derived(
-		`--slider-fill: ${percentage}%; --slider-accent: var(--lumi-color-${color}); --lumi-control-accent: var(--lumi-color-${color});`
-	);
-
-	const classes = $derived(
-		[
-			'lumi-slider',
-			`lumi-slider--${size}`,
-			disabled && 'lumi-slider--disabled',
-			className
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
-
-	function handleChange(): void {
-		onchange?.(value);
-	}
 </script>
 
-<div class={classes} style={styleVars}>
+<div
+	class={[
+		'lumi-slider',
+		`lumi-slider--${size}`,
+		disabled && 'lumi-slider--disabled',
+		className
+	]}
+	style:--slider-fill="{percentage}%"
+	style:--slider-accent="var(--lumi-color-{color})"
+>
 	{#if label}
 		<div class="lumi-slider__header">
 			<label class="lumi-slider__label" for={sliderId}>{label}</label>
@@ -69,8 +67,8 @@
 			{max}
 			{step}
 			{disabled}
-			onchange={handleChange}
-			aria-label={label || 'Slider'}
+			onchange={() => onchange?.(value)}
+			aria-label={label ? undefined : i18n.t.slider}
 		/>
 
 		{#if showTooltip}
@@ -95,7 +93,6 @@
 		gap: var(--lumi-space-sm);
 		width: 100%;
 
-		--slider-accent: var(--lumi-color-primary);
 		--lumi-control-accent: var(--slider-accent);
 		--slider-fill: 0%;
 		--slider-track: color-mix(
@@ -172,97 +169,63 @@
 		cursor: pointer;
 	}
 
-	/* Webkit thumb styling */
+	/* Thumb state lives on the input; both engine pseudo-elements read it. */
+	.lumi-slider__input {
+		--_thumb-scale: 1;
+		--_thumb-ring: 0 0 0 var(--lumi-border-width-thin)
+			color-mix(in srgb, var(--slider-accent) 18%, transparent);
+		--_thumb-shadow: var(--lumi-shadow-sm);
+	}
+
+	.lumi-slider__input:hover,
+	.lumi-slider__input:active {
+		--_thumb-scale: var(--lumi-interactive-zoom-scale);
+		--_thumb-shadow: var(--lumi-shadow-md);
+		--_thumb-ring: 0 0 0 var(--lumi-space-2xs)
+			color-mix(in srgb, var(--slider-accent) 22%, transparent);
+	}
+
+	.lumi-slider__input:focus-visible {
+		--_thumb-shadow: var(--lumi-shadow-md);
+		--_thumb-ring: 0 0 0 var(--lumi-space-2xs)
+			color-mix(
+				in srgb,
+				var(--slider-accent) var(--lumi-control-focus-ring-strength),
+				transparent
+			);
+	}
+
+	.lumi-slider__input:active {
+		--_thumb-ring: 0 0 0 var(--lumi-space-xs)
+			color-mix(in srgb, var(--slider-accent) 26%, transparent);
+	}
+
 	.lumi-slider__input::-webkit-slider-thumb {
 		appearance: none;
-		-webkit-appearance: none;
 		width: var(--_thumb-size);
 		height: var(--_thumb-size);
 		background: var(--lumi-color-surface);
 		border: var(--lumi-border-width-thick) solid var(--slider-accent);
 		border-radius: var(--lumi-radius-full);
-		box-shadow:
-			var(--lumi-shadow-sm),
-			0 0 0 var(--lumi-border-width-thin)
-				color-mix(in srgb, var(--slider-accent) 18%, transparent);
+		box-shadow: var(--_thumb-shadow), var(--_thumb-ring);
+		transform: scale(var(--_thumb-scale));
 		transition:
 			transform var(--lumi-duration-fast) var(--lumi-easing-default),
 			box-shadow var(--lumi-duration-fast) var(--lumi-easing-default);
 	}
 
-	/* Mozilla thumb styling */
+	/* Same rule body; unknown pseudo-elements invalidate a shared selector list. */
 	.lumi-slider__input::-moz-range-thumb {
 		width: var(--_thumb-size);
 		height: var(--_thumb-size);
 		background: var(--lumi-color-surface);
 		border: var(--lumi-border-width-thick) solid var(--slider-accent);
 		border-radius: var(--lumi-radius-full);
-		box-shadow:
-			var(--lumi-shadow-sm),
-			0 0 0 var(--lumi-border-width-thin)
-				color-mix(in srgb, var(--slider-accent) 18%, transparent);
+		box-shadow: var(--_thumb-shadow), var(--_thumb-ring);
+		transform: scale(var(--_thumb-scale));
 		transition:
 			transform var(--lumi-duration-fast) var(--lumi-easing-default),
 			box-shadow var(--lumi-duration-fast) var(--lumi-easing-default);
-	}
-
-	/* Hover */
-	.lumi-slider__input:hover::-webkit-slider-thumb {
-		transform: scale(var(--lumi-interactive-zoom-scale));
-		box-shadow:
-			var(--lumi-shadow-md),
-			0 0 0 var(--lumi-space-2xs)
-				color-mix(in srgb, var(--slider-accent) 22%, transparent);
-	}
-
-	.lumi-slider__input:hover::-moz-range-thumb {
-		transform: scale(var(--lumi-interactive-zoom-scale));
-		box-shadow:
-			var(--lumi-shadow-md),
-			0 0 0 var(--lumi-space-2xs)
-				color-mix(in srgb, var(--slider-accent) 22%, transparent);
-	}
-
-	/* Keyboard focus */
-	.lumi-slider__input:focus-visible::-webkit-slider-thumb {
-		box-shadow:
-			var(--lumi-shadow-md),
-			0 0 0 var(--lumi-space-2xs)
-				color-mix(
-					in srgb,
-					var(--slider-accent) var(--lumi-control-focus-ring-strength),
-					transparent
-				);
-	}
-
-	.lumi-slider__input:focus-visible::-moz-range-thumb {
-		box-shadow:
-			var(--lumi-shadow-md),
-			0 0 0 var(--lumi-space-2xs)
-				color-mix(
-					in srgb,
-					var(--slider-accent) var(--lumi-control-focus-ring-strength),
-					transparent
-				);
-	}
-
-	/* Active dragging states (using :active pseudo-class!) */
-	.lumi-slider__input:active::-webkit-slider-thumb {
-		transform: scale(var(--lumi-interactive-zoom-scale));
-		box-shadow:
-			var(--lumi-shadow-md),
-			0 0 0 var(--lumi-space-xs)
-				color-mix(in srgb, var(--slider-accent) 26%, transparent);
-		transition: none;
-	}
-
-	.lumi-slider__input:active::-moz-range-thumb {
-		transform: scale(var(--lumi-interactive-zoom-scale));
-		box-shadow:
-			var(--lumi-shadow-md),
-			0 0 0 var(--lumi-space-xs)
-				color-mix(in srgb, var(--slider-accent) 26%, transparent);
-		transition: none;
 	}
 
 	/* Glass tooltip */

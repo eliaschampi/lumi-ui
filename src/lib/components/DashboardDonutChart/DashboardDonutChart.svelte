@@ -1,3 +1,12 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+
+	const COPY = {
+		chartDonut: en.chartDonut,
+		chartEmpty: en.chartEmpty
+	};
+</script>
+
 <script lang="ts">
 	import {
 		CHART_COLOR_VARS,
@@ -12,6 +21,8 @@
 		useChartInteraction,
 		useChartWidth
 	} from '../../utils/chartLayout.svelte';
+	import '../../styles/charts.css';
+	import { useLumiLocale } from '../../i18n';
 	import type { DashboardDonutChartProps } from './types';
 
 	const {
@@ -20,10 +31,12 @@
 		centerLabel = '',
 		centerValue = '',
 		valueFormat = 'number',
-		emptyMessage = 'No hay datos suficientes para mostrar este gráfico.',
-		'aria-label': ariaLabel = 'Gráfico circular del dashboard',
-		class: className = ''
+		emptyMessage,
+		'aria-label': ariaLabel,
+		class: className
 	}: DashboardDonutChartProps = $props();
+
+	const i18n = useLumiLocale(COPY);
 
 	const INNER_RADIUS_RATIO = 0.62;
 	const FULL_TURN = Math.PI * 2;
@@ -34,9 +47,6 @@
 
 	const hover = useChartInteraction();
 
-	const classes = $derived(
-		['lumi-donut-chart', className].filter(Boolean).join(' ')
-	);
 	const chartW = $derived(layout.chartW);
 	const chartH = $derived(height);
 	const centerX = $derived(chartW / 2);
@@ -67,9 +77,14 @@
 			return {
 				...slice,
 				fill: CHART_COLOR_VARS[slice.color],
-				formattedValue: formatChartValue(slice.value, valueFormat, 'tooltip'),
+				formattedValue: formatChartValue(
+					slice.value,
+					valueFormat,
+					'tooltip',
+					i18n
+				),
 				ratio,
-				share: hasValues ? formatChartPercent(ratio) : ''
+				share: hasValues ? formatChartPercent(ratio, i18n) : ''
 			};
 		})
 	);
@@ -113,12 +128,12 @@
 	}
 </script>
 
-<div bind:this={layout.root} class={classes}>
+<div bind:this={layout.root} class={['lumi-donut-chart', className]}>
 	<div class="lumi-donut-chart__plot" style:height="{chartH}px">
 		{#if !hasValues}
 			<div class="lumi-chart-empty">
-				<p class="lumi-margin--none lumi-text--sm lumi-text--muted">
-					{emptyMessage}
+				<p class="lumi-chart-empty__text">
+					{emptyMessage ?? i18n.t.chartEmpty}
 				</p>
 			</div>
 		{:else}
@@ -128,7 +143,7 @@
 				preserveAspectRatio="xMidYMid meet"
 				class="lumi-chart-svg"
 				role="img"
-				aria-label={ariaLabel}
+				aria-label={ariaLabel ?? i18n.t.chartDonut}
 				aria-describedby={hovered ? `${instanceId}-tooltip` : undefined}
 				tabindex="0"
 				use:hover.keyboard={arcs.length}

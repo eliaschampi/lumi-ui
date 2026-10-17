@@ -1,7 +1,5 @@
-/**
- * Lumi UI - Input Component Types
- */
-
+import type { HTMLInputAttributes } from 'svelte/elements';
+import type { IconSource } from '../../utils/icons';
 import type { LumiColor, LumiExtendedSize } from '../config';
 import type { FieldError } from '../Field';
 
@@ -23,90 +21,39 @@ export type InputSize = LumiExtendedSize;
 
 export type InputColor = LumiColor;
 
-export interface InputProps {
-	name?: string;
-
-	/** Input type */
+/**
+ * Text field. Native input attributes (`name`, `autocomplete`, `inputmode`,
+ * `min`, `max`, `step`, `maxlength`, `pattern`, `readonly`, events…) pass
+ * through to the `<input>`; `class` styles the field root.
+ */
+export interface InputProps extends Omit<
+	HTMLInputAttributes,
+	'type' | 'value' | 'size' | 'color' | 'class' | 'children'
+> {
+	/** @default 'text' */
 	type?: InputType;
-
-	/** Input value (bindable) */
-	value?: string | number;
-
-	/** Minimum value for numeric/date inputs */
-	min?: string | number;
-
-	/** Maximum value for numeric/date inputs */
-	max?: string | number;
-
-	/** Maximum text length */
-	maxlength?: number;
-
-	/** Step size for numeric/date inputs */
-	step?: string | number;
-
-	/** Label text */
+	/** Bindable value */
+	value?: string | number | null;
+	/** Visible label above the field */
 	label?: string;
-
-	/** Placeholder used in place of the visual label */
-	labelPlaceholder?: string;
-
-	/** Placeholder text */
-	placeholder?: string;
-
-	/** Icon name to display */
-	icon?: string;
-
-	/** Accessible label for the icon button */
-	iconLabel?: string;
-
-	/** Whether to show icon after input */
-	iconAfter?: boolean;
-
-	/** Trailing action icon (e.g. password toggle) */
-	actionIcon?: string;
-
-	/** Accessible label for the action icon */
+	/** Decorative leading icon */
+	icon?: IconSource;
+	/** Trailing action button icon (e.g. password toggle) */
+	actionIcon?: IconSource;
+	/** Accessible name of the action button */
 	actionLabel?: string;
-
-	/** Accent color while focused */
+	/** Show a clear button while the field has a value */
+	clearable?: boolean;
+	/** Accent while focused @default 'primary' */
 	color?: InputColor;
-
 	/** Invalid state; a string is also shown as the message */
 	error?: FieldError;
-
 	/** Helper text below the field; an error message replaces it */
 	hint?: string;
-
-	/** Size variant */
+	/** @default 'md' */
 	size?: InputSize;
-
-	/** Whether input is disabled */
-	disabled?: boolean;
-
-	/** Whether input is readonly */
-	readonly?: boolean;
-
-	/** Whether input is required */
-	required?: boolean;
-
-	/** Accessible label when visual label is not provided */
-	'aria-label'?: string;
-
-	/** Additional CSS classes */
+	/** Field root class */
 	class?: string;
-
-	/** Input event handler */
-	oninput?: (event: Event) => void;
-
-	/** Focus event handler */
-	onfocus?: (event: FocusEvent) => void;
-
-	/** Blur event handler */
-	onblur?: (event: FocusEvent) => void;
-
-	/** Icon click handler */
-	'onicon-click'?: (event: MouseEvent) => void;
-
-	/** Action icon click handler */
-	'onaction-click'?: (event: MouseEvent) => void;
+	/** Action button click */
+	onactionclick?: (event: MouseEvent) => void;
 }

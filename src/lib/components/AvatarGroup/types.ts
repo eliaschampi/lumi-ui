@@ -1,48 +1,31 @@
 import type { AvatarColor, AvatarSize } from '../Avatar/types';
 
 export interface AvatarGroupItem {
-	/**
-	 * Text to display in the avatar (will generate initials)
-	 */
-	text?: string;
+	/** Name for the initials and the group's accessible summary */
+	name?: string;
 
-	/**
-	 * Image source for the avatar
-	 */
+	/** Image URL */
 	src?: string;
-
-	/**
-	 * Alt text for the avatar
-	 */
-	alt?: string;
 }
 
 export interface AvatarGroupProps {
-	/**
-	 * List of members to render as avatars
-	 */
+	/** Members rendered as avatars, in order */
 	items: AvatarGroupItem[];
 
 	/**
-	 * Maximum number of avatars to display before collapsing into a +N badge
+	 * Avatars shown before the rest collapse into a "+N" badge
 	 * @default 4
 	 */
 	max?: number;
 
-	/**
-	 * Avatar size variant
-	 * @default "sm"
-	 */
+	/** Total members when `items` is a partial (e.g. server) page */
+	total?: number;
+
+	/** @default "sm" */
 	size?: AvatarSize;
 
-	/**
-	 * Avatar color variant
-	 * @default "primary"
-	 */
+	/** @default "primary" */
 	color?: AvatarColor;
 
-	/**
-	 * Custom CSS class
-	 */
 	class?: string;
 }

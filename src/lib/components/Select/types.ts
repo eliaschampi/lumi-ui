@@ -1,115 +1,60 @@
-// Lumi UI - Select Component Types
-
-import type { FloatingPlacement } from '../../utils/floating.svelte';
-import type { LumiControlSize } from '../config';
+import type { LumiColor, LumiControlSize } from '../config';
 import type { FieldError } from '../Field';
 
 export type SelectValue = string | number | Record<string, unknown>;
-export type SelectOptionInput =
-	SelectOption | Record<string, unknown> | string | number;
 
 export interface SelectOption {
-	/** Option value */
 	value: SelectValue | null;
-
-	/** Option label */
 	label: string;
-
-	/** Whether option is disabled */
 	disabled?: boolean;
-
-	/** Additional option data */
+	/** Extra data travels with the option untouched */
 	[key: string]: unknown;
 }
+
+/** An option object, or a primitive used as both value and label. */
+export type SelectOptionInput = SelectOption | string | number;
 
 export type SelectSize = LumiControlSize;
 export type SelectSearchMode = 'client' | 'server';
 
 export interface SelectProps {
-	/** Selected value */
+	/** Selected value (bindable); objects compare structurally */
 	value?: SelectValue | null;
-
-	/** Available options */
 	options?: SelectOptionInput[];
-
-	/** Placeholder text */
+	/** @default locale "Select…" */
 	placeholder?: string;
-
-	/** Name attribute */
+	/** Submits the value (objects as JSON) through a hidden input */
 	name?: string;
-
-	/** Accessible label when visual label is omitted */
-	'aria-label'?: string;
-
-	/** Label text */
+	/** Visible label above the field */
 	label?: string;
-
-	/** Size variant */
+	/** Accessible name when no visible label is present */
+	'aria-label'?: string;
+	/** @default 'md' */
 	size?: SelectSize;
-
-	/** Whether select is disabled */
+	/** Accent while focused @default 'primary' */
+	color?: LumiColor;
 	disabled?: boolean;
-
-	/** Whether select has autocomplete */
-	autocomplete?: boolean;
-
-	/** Where autocomplete filtering is resolved */
+	required?: boolean;
+	/** Type to filter the options */
+	searchable?: boolean;
+	/** `server` leaves filtering to `onsearch` (see RemoteSelect) */
 	searchMode?: SelectSearchMode;
-
 	/** Invalid state; a string is also shown as the message */
 	error?: FieldError;
-
 	/** Helper text below the field; an error message replaces it */
 	hint?: string;
-
-	/** Text to show when no data */
+	/** Shown when no option matches @default locale "No options available" */
 	noDataText?: string;
-
-	/** Select width */
+	/** CSS width of the field @default '100%' */
 	width?: string;
-
-	/** Key name used for option value in object options */
-	valueKey?: string;
-
-	/** Key name used for option label in object options */
-	labelKey?: string;
-
-	/** Key name used for option disabled state in object options */
-	disabledKey?: string;
-
-	/** Whether to show clear button */
+	/** Show a clear button while a value is selected @default true */
 	clearable?: boolean;
-
-	/** Loading state */
+	/** Shows a spinner and blocks selection */
 	loading?: boolean;
-
-	/** Dropdown placement */
-	placement?: FloatingPlacement;
-
-	/** Maximum height for dropdown */
-	maxHeight?: number;
-
-	/** Offset from trigger element */
-	offset?: number;
-
-	/** Minimum distance from viewport edges */
-	viewportPadding?: number;
-
-	/** Custom form serialization for object values */
-	serializeValue?: (value: SelectValue) => string;
-
-	/** Custom class */
 	class?: string;
-
-	/** Change event handler */
 	onchange?: (value: SelectValue | null) => void;
-
-	/** Open event handler */
 	onopen?: () => void;
-
-	/** Close event handler */
 	onclose?: () => void;
-
-	/** Search event handler */
+	/** Query typed in searchable mode */
 	onsearch?: (query: string) => void;
 }

@@ -6,46 +6,44 @@
 		icon,
 		color = 'primary',
 		size = 'md',
-		class: className = ''
+		class: className
 	}: IconBadgeProps = $props();
-
-	const classes = $derived(
-		[
-			'lumi-icon-badge',
-			`lumi-icon-badge--${size}`,
-			`lumi-icon-badge--${color}`,
-			className
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
 </script>
 
-<div class={classes} style:--icon-badge-color="var(--lumi-color-{color})">
+<span
+	class={[
+		'lumi-icon-badge',
+		`lumi-icon-badge--${size}`,
+		color === 'warning' && 'lumi-icon-badge--warning',
+		className
+	]}
+	style:--lumi-control-accent="var(--lumi-color-{color})"
+	aria-hidden="true"
+>
 	<Icon {icon} {size} />
-</div>
+</span>
 
 <style>
 	/* Shared icon-tile recipe (same fill/border/radius/rim as InfoItem icon);
 	   the standalone badge adds the quiet elevation, whose rim is the sheen. */
 	.lumi-icon-badge {
-		--icon-badge-color: var(--lumi-color-primary);
 		--icon-badge-bg-strength: 12%;
 		--icon-badge-border-strength: 20%;
-		display: flex;
+		display: inline-flex;
+		flex-shrink: 0;
 		align-items: center;
 		justify-content: center;
 		border-radius: var(--lumi-radius-tile);
-		color: var(--icon-badge-color);
+		color: var(--lumi-control-accent);
 		background: color-mix(
 			in srgb,
-			var(--icon-badge-color) var(--icon-badge-bg-strength),
+			var(--lumi-control-accent) var(--icon-badge-bg-strength),
 			transparent
 		);
 		border: var(--lumi-border-width-thin) solid
 			color-mix(
 				in srgb,
-				var(--icon-badge-color) var(--icon-badge-border-strength),
+				var(--lumi-control-accent) var(--icon-badge-border-strength),
 				transparent
 			);
 		box-shadow: var(--lumi-shadow-sm);
@@ -82,6 +80,8 @@
 		width: var(--lumi-space-4xl);
 		height: var(--lumi-space-4xl);
 	}
+
+	/* Amber needs a little more fill to read as a tile. */
 	.lumi-icon-badge--warning {
 		--icon-badge-bg-strength: 17%;
 		--icon-badge-border-strength: 24%;

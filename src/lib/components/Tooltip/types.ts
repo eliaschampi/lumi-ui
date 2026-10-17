@@ -1,26 +1,27 @@
+import type { Snippet } from 'svelte';
 import type { LumiColor } from '../config';
 
 export type TooltipColor = LumiColor;
 export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
-/** @deprecated Use `TooltipPlacement` instead. */
-export type TooltipPosition = TooltipPlacement;
 
 export interface TooltipProps {
-	/** Tooltip text */
+	/** Plain tooltip text */
 	text?: string;
 
-	/** Tooltip color */
+	/** @default "primary" */
 	color?: TooltipColor;
 
-	/** Tooltip placement relative to trigger */
+	/** Preferred side; flips when space runs out @default "top" */
 	placement?: TooltipPlacement;
 
-	/** @deprecated Use `placement` instead. */
-	position?: TooltipPosition;
-
-	/** Delay before showing (ms) */
+	/** Show delay in ms @default 0 */
 	delay?: number;
 
-	/** Custom class */
 	class?: string;
+
+	/** The described trigger */
+	children?: Snippet;
+
+	/** Rich tooltip content, replacing `text` */
+	content?: Snippet;
 }

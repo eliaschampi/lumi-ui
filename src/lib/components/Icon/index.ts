@@ -1,8 +1,14 @@
 /**
  * Lumi UI - Icon Component
- * Lucide icons with consistent styling
+ * Lucide icons with consistent sizing and semantic color
  */
 
-export { getAvailableIcons, getIcon, hasIcon } from '../../utils/icons';
+export {
+	getIcon,
+	hasIcon,
+	registerIcons,
+	type IconComponent,
+	type IconSource
+} from '../../utils/icons';
 export { default as Icon } from './Icon.svelte';
-export type { IconColor, IconProps, IconSource } from './types';
+export type { IconColor, IconProps } from './types';

@@ -1,54 +1,42 @@
-// Lumi UI - Image Component Types
-
 export interface ImageProps {
-	/** Image source URL */
 	src: string;
 
-	/** Image source set for responsive images */
-	srcSet?: string;
-
-	/** Image sizes for responsive images */
-	sizes?: string;
-
-	/** Alt text for accessibility */
+	/** Required for meaningful images; `""` marks a decorative image */
 	alt?: string;
 
-	/** Image width in pixels */
+	/** Intrinsic width in px; with `height` the frame keeps that ratio and shrinks to fit (no layout shift) */
 	width?: number;
 
-	/** Image height in pixels */
+	/** Intrinsic height in pixels */
 	height?: number;
 
-	/** Border radius variant */
+	srcset?: string;
+
+	sizes?: string;
+
+	/** CSS aspect ratio of the frame, e.g. `"16 / 9"` or `"1"`; the frame fills its container's width */
+	ratio?: string;
+
+	/** How the image fills its frame @default "cover" */
+	fit?: 'cover' | 'contain';
+
+	/** @default "lg" */
 	radius?: 'none' | 'sm' | 'md' | 'lg' | 'full';
 
-	/** Loading strategy */
+	/** Use `"eager"` with `fetchpriority="high"` for the LCP image @default "lazy" */
 	loading?: 'eager' | 'lazy';
 
-	/** Browser decoding strategy */
-	decoding?: 'async' | 'sync' | 'auto';
+	fetchpriority?: 'high' | 'low' | 'auto';
 
-	/** Browser fetch priority hint */
-	fetchPriority?: 'high' | 'low' | 'auto';
+	/** Subtle zoom on hover */
+	zoom?: boolean;
 
-	/** Whether to show zoomed effect on hover */
-	isZoomed?: boolean;
-
-	/** Whether to remove the wrapper div */
-	removeWrapper?: boolean;
-
-	/** Whether to disable loading skeleton */
-	disableSkeleton?: boolean;
-
-	/** Accessible message displayed when the image cannot be loaded */
+	/** Message shown when the image fails to load */
 	errorLabel?: string;
 
-	/** Custom class */
 	class?: string;
 
-	/** Load handler */
 	onload?: (event: Event) => void;
 
-	/** Error handler */
-	onerror?: () => void;
+	onerror?: (event: Event) => void;
 }

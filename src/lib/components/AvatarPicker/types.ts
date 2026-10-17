@@ -23,6 +23,9 @@ export interface AvatarPickerProps {
 	/** Input name attribute */
 	name?: string;
 
+	/** Name of the choice group, e.g. "Profile picture" */
+	'aria-label'?: string;
+
 	/** Additional CSS classes */
 	class?: string;
 }

@@ -1,13 +1,32 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+
+	const COPY = {
+		numberDecrease: en.numberDecrease,
+		numberIncrease: en.numberIncrease
+	};
+
+	function decimals(number: number): number {
+		const [coefficient, exponent = '0'] = String(number).split('e');
+		return Math.max(
+			0,
+			(coefficient.split('.')[1]?.length ?? 0) - Number(exponent)
+		);
+	}
+</script>
+
 <script lang="ts">
+	import Minus from '@lucide/svelte/icons/minus';
+	import Plus from '@lucide/svelte/icons/plus';
+	import { useLumiLocale } from '../../i18n';
 	import { FieldLabel, FieldMessage } from '../Field';
-	import { Icon } from '../Icon';
+	import Icon from '../Icon/Icon.svelte';
 	import type { NumberInputProps } from './types';
 
 	let {
 		value = $bindable(0),
-		name = '',
-		min = 0,
-		max = undefined,
+		min,
+		max,
 		step = 1,
 		label = '',
 		placeholder = '',
@@ -16,138 +35,119 @@
 		hint = '',
 		size = 'md',
 		disabled = false,
+		readonly = false,
 		required = false,
-		'aria-label': ariaLabel = '',
+		id: idProp,
+		'aria-label': ariaLabel,
 		class: className = '',
-		onchange
+		onchange,
+		...rest
 	}: NumberInputProps = $props();
 
-	const instanceId = $props.id();
-	const inputId = `lumi-number-${instanceId}`;
-	const messageId = `${inputId}-message`;
+	const i18n = useLumiLocale(COPY);
+	const uid = $props.id();
+	const id = $derived(idProp ?? `lumi-number-${uid}`);
+	const messageId = $derived(`${id}-message`);
 	const invalid = $derived(Boolean(error));
 	const errorText = $derived(typeof error === 'string' ? error : '');
-	const normalizedStep = $derived(Number.isFinite(step) && step > 0 ? step : 1);
-	const precision = $derived(
-		Math.max(decimalPlaces(normalizedStep), decimalPlaces(min))
+	const stride = $derived(Number.isFinite(step) && step > 0 ? step : 1);
+	const origin = $derived(min ?? 0);
+	// toFixed accepts at most 100 digits, including scientific steps.
+	const digits = $derived(
+		Math.min(Math.max(decimals(stride), decimals(origin)), 100)
 	);
-	const incrementDisabled = $derived(
-		disabled ||
-			(max !== undefined && value >= max) ||
-			clamp((value ?? 0) + normalizedStep) === value
-	);
+	const current = $derived(Number.isFinite(value) ? value : origin);
+	const canDecrease = $derived(clamp(current - stride) < current);
+	const canIncrease = $derived(clamp(current + stride) > current);
 
-	const classes = $derived(
-		[
-			'lumi-number-input',
-			`lumi-number-input--${size}`,
-			invalid && 'lumi-number-input--invalid',
-			disabled && 'lumi-number-input--disabled',
-			className
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
-
-	function decimalPlaces(number: number): number {
-		const [coefficient, exponent = '0'] = String(number).split('e');
-		return Math.max(
-			0,
-			(coefficient.split('.')[1]?.length ?? 0) - Number(exponent)
+	function clamp(next: number): number {
+		const bounded = Math.min(max ?? Infinity, Math.max(min ?? -Infinity, next));
+		const snapped = Number(
+			(origin + Math.round((bounded - origin) / stride) * stride).toFixed(
+				digits
+			)
 		);
+		return max !== undefined && snapped > max
+			? Number((snapped - stride).toFixed(digits))
+			: snapped;
 	}
 
-	function clamp(val: number): number {
-		const bounded = Math.min(max ?? Infinity, Math.max(min, val));
-		const snapped =
-			min + Math.round((bounded - min) / normalizedStep) * normalizedStep;
-		// toFixed accepts at most 100 decimal places, including scientific steps.
-		const digits = Math.min(precision, 100);
-		const rounded = Number(snapped.toFixed(digits));
-		return max !== undefined && rounded > max
-			? Number((rounded - normalizedStep).toFixed(digits))
-			: rounded;
+	function stepBy(direction: 1 | -1): void {
+		const next = clamp(current + direction * stride);
+		if (disabled || readonly || next === value) return;
+		value = next;
+		onchange?.(next);
 	}
 
-	function stepValue(direction: number): void {
-		if (
-			disabled ||
-			(direction > 0 && incrementDisabled) ||
-			(direction < 0 && value <= min)
-		)
-			return;
-		const newVal = clamp((value ?? 0) + direction * normalizedStep);
-		if (newVal !== value) {
-			value = newVal;
-			onchange?.(value);
-		}
-	}
-
-	function handleBlur(): void {
-		value = clamp(Number.isFinite(value) ? value : min);
+	// Native change fires once a typed edit is committed (blur or Enter).
+	function handleChange(): void {
+		value = clamp(current);
 		onchange?.(value);
 	}
 
-	function handleKeyDown(e: KeyboardEvent): void {
-		if (disabled) return;
-		if (e.key === 'ArrowUp') {
-			e.preventDefault();
-			stepValue(1);
-		} else if (e.key === 'ArrowDown') {
-			e.preventDefault();
-			stepValue(-1);
-		}
+	function handleKeydown(event: KeyboardEvent): void {
+		if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+		event.preventDefault();
+		stepBy(event.key === 'ArrowUp' ? 1 : -1);
 	}
 </script>
 
 <div
-	class={classes}
+	class={[
+		'lumi-field',
+		'lumi-number-input',
+		`lumi-field--${size}`,
+		invalid && 'lumi-field--invalid',
+		disabled && 'lumi-field--disabled',
+		className
+	]}
 	style:--lumi-control-accent="var(--lumi-color-{invalid ? 'danger' : color})"
 >
 	{#if label}
-		<FieldLabel for={inputId} {label} {required} />
+		<FieldLabel for={id} {label} required={!!required} />
 	{/if}
 
-	<div class="lumi-number-input__wrapper">
+	<div class="lumi-field__control">
 		<button
 			type="button"
-			class="lumi-number-input__btn lumi-number-input__btn--decrement"
-			onclick={() => stepValue(-1)}
-			disabled={disabled || (min !== undefined && value <= min)}
-			aria-label="Disminuir valor"
+			class="lumi-field__button"
 			tabindex="-1"
+			aria-label={i18n.t.numberDecrease}
+			disabled={disabled || readonly || !canDecrease}
+			onclick={() => stepBy(-1)}
 		>
-			<Icon icon="minus" {size} />
+			<Icon icon={Minus} size="sm" />
 		</button>
 
 		<input
-			id={inputId}
-			type="number"
-			{name}
+			{...rest}
 			bind:value
+			{id}
+			type="number"
 			{min}
 			{max}
-			step={normalizedStep}
+			step={stride}
 			{placeholder}
 			{disabled}
+			{readonly}
 			{required}
-			onblur={handleBlur}
-			onkeydown={handleKeyDown}
-			class="lumi-number-input__field lumi-autofill"
-			aria-label={ariaLabel || (label ? undefined : placeholder) || undefined}
+			class="lumi-field__input lumi-autofill"
+			aria-label={ariaLabel ?? (label ? undefined : placeholder || undefined)}
 			aria-invalid={invalid || undefined}
 			aria-describedby={errorText || hint ? messageId : undefined}
+			onchange={handleChange}
+			onkeydown={handleKeydown}
 		/>
 
 		<button
 			type="button"
-			class="lumi-number-input__btn lumi-number-input__btn--increment"
-			onclick={() => stepValue(1)}
-			disabled={incrementDisabled}
-			aria-label="Aumentar valor"
+			class="lumi-field__button"
 			tabindex="-1"
+			aria-label={i18n.t.numberIncrease}
+			disabled={disabled || readonly || !canIncrease}
+			onclick={() => stepBy(1)}
 		>
-			<Icon icon="plus" {size} />
+			<Icon icon={Plus} size="sm" />
 		</button>
 	</div>
 
@@ -155,149 +155,40 @@
 </div>
 
 <style>
-	.lumi-number-input {
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		--number-border: var(--lumi-color-control-border);
-		--number-bg: var(--lumi-color-control-fill);
-		--number-bg-focus: var(--lumi-color-control-focus-fill);
-		--number-btn-size: var(--lumi-control-height-md);
-		--lumi-control-autofill-bg: var(--number-bg);
-	}
-
-	.lumi-number-input:focus-within {
-		--lumi-control-autofill-bg: var(--number-bg-focus);
-	}
-
-	.lumi-number-input__wrapper {
-		position: relative;
-		display: flex;
-		align-items: stretch;
-		min-height: var(--lumi-control-height-md);
-		background: var(--number-bg);
-		border: var(--lumi-border-width-thin) solid var(--number-border);
-		border-radius: var(--lumi-radius-control);
-		box-shadow: var(--lumi-control-shadow);
-		overflow: hidden;
-		transition: var(--lumi-transition-control);
-	}
-
-	.lumi-number-input:not(.lumi-number-input--invalid)
-		.lumi-number-input__wrapper:hover:not(:focus-within) {
-		border-color: var(--lumi-color-border-strong);
-		background: var(--lumi-color-control-hover-fill);
-	}
-
-	.lumi-number-input__wrapper:focus-within {
-		border-color: var(--lumi-control-accent);
-		background: var(--number-bg-focus);
-		box-shadow: var(--lumi-control-focus-shadow);
-	}
-
-	.lumi-number-input__field {
-		flex: 1;
-		min-width: 0;
-		padding: 0 var(--lumi-space-sm);
-		background: transparent;
-		border: none;
-		font-family: inherit;
-		font-size: var(--lumi-font-size-base);
-		color: var(--lumi-color-text);
+	.lumi-number-input .lumi-field__input {
 		text-align: center;
-		outline: none;
-		line-height: var(--lumi-line-height-normal);
+		font-variant-numeric: tabular-nums;
 		appearance: textfield;
 	}
 
-	.lumi-number-input__field::placeholder {
-		color: var(--lumi-color-placeholder);
-	}
-
-	.lumi-number-input__btn {
-		flex: 0 0 var(--number-btn-size);
-		inline-size: var(--number-btn-size);
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		background: color-mix(
-			in srgb,
-			var(--number-bg) 88%,
-			var(--lumi-color-surface) 12%
-		);
-		border: none;
-		color: var(--lumi-color-text-muted);
-		cursor: pointer;
-		transition: var(--lumi-transition-control);
-		flex-shrink: 0;
-	}
-
-	.lumi-number-input__btn--decrement {
-		border-inline-end: var(--lumi-border-width-thin) solid
-			var(--lumi-color-border-glass);
-	}
-
-	.lumi-number-input__btn--increment {
-		border-inline-start: var(--lumi-border-width-thin) solid
-			var(--lumi-color-border-glass);
-	}
-
-	.lumi-number-input__btn:hover:not(:disabled) {
-		color: var(--lumi-control-accent);
-		background: color-mix(
-			in srgb,
-			var(--lumi-control-accent) 8%,
-			color-mix(in srgb, var(--number-bg) 90%, var(--lumi-color-surface) 10%)
-		);
-	}
-
-	.lumi-number-input__btn:active:not(:disabled) {
-		background: color-mix(in srgb, var(--lumi-control-accent) 14%, transparent);
-	}
-
-	.lumi-number-input__btn:focus-visible {
-		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-focus-outline-offset);
-	}
-
-	.lumi-number-input--invalid {
-		--number-border: var(--lumi-control-accent);
-	}
-
-	.lumi-number-input--sm .lumi-number-input__wrapper {
-		min-height: var(--lumi-control-height-sm);
-	}
-
-	.lumi-number-input--sm .lumi-number-input__field {
-		font-size: var(--lumi-font-size-sm);
-		padding: 0 var(--lumi-space-xs);
-	}
-
-	.lumi-number-input--sm {
-		--number-btn-size: var(--lumi-control-height-sm);
-	}
-
-	.lumi-number-input--lg .lumi-number-input__wrapper {
-		min-height: var(--lumi-control-height-lg);
-	}
-
-	.lumi-number-input--lg .lumi-number-input__field {
-		font-size: var(--lumi-font-size-lg);
-		padding: 0 var(--lumi-space-md);
-	}
-
-	.lumi-number-input--lg {
-		--number-btn-size: var(--lumi-control-height-lg);
-	}
-
-	.lumi-number-input--disabled {
-		opacity: var(--lumi-opacity-disabled);
-		pointer-events: none;
-	}
-
-	.lumi-number-input__field::-webkit-inner-spin-button,
-	.lumi-number-input__field::-webkit-outer-spin-button {
-		-webkit-appearance: none;
+	.lumi-number-input .lumi-field__input::-webkit-inner-spin-button,
+	.lumi-number-input .lumi-field__input::-webkit-outer-spin-button {
+		appearance: none;
 		margin: 0;
+	}
+
+	/* Square steppers set off by hairlines. */
+	.lumi-number-input .lumi-field__button {
+		inline-size: var(--lumi-field-height);
+		padding: 0;
+		border-inline: var(--lumi-border-width-thin) solid
+			var(--lumi-color-border-glass);
+	}
+
+	.lumi-number-input .lumi-field__button:first-child {
+		border-inline-start: 0;
+	}
+
+	.lumi-number-input .lumi-field__button:last-child {
+		border-inline-end: 0;
+	}
+
+	.lumi-number-input .lumi-field__button:hover {
+		background: color-mix(in srgb, var(--lumi-control-accent) 8%, transparent);
+	}
+
+	.lumi-number-input .lumi-field__button:disabled {
+		opacity: var(--lumi-opacity-disabled);
+		cursor: not-allowed;
 	}
 </style>

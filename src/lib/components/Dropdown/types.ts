@@ -1,78 +1,80 @@
+import type { Snippet } from 'svelte';
+import type { IconSource } from '../../utils/icons';
 import type { FloatingPlacement } from '../../utils/floating.svelte';
 import type { LumiColor, LumiCompactSize } from '../config';
 
 export type DropdownPlacement = FloatingPlacement;
-/** @deprecated Use `DropdownPlacement` instead. */
-export type DropdownPosition = DropdownPlacement;
 export type DropdownSize = LumiCompactSize;
-export type DropdownTrigger = 'click' | 'hover';
+
+/** Spread onto a custom trigger element: `<Button {...props}>`. */
+export interface DropdownTriggerProps {
+	id: string;
+	'aria-haspopup': 'menu';
+	'aria-expanded': boolean;
+	'aria-controls': string | undefined;
+	disabled: boolean;
+	onclick: (event: MouseEvent) => void;
+	onkeydown: (event: KeyboardEvent) => void;
+}
 
 export interface DropdownProps {
-	/** Whether dropdown is open (bindable) */
+	/** Visible state (bindable) */
 	open?: boolean;
 
-	/** Dropdown placement relative to trigger */
+	/** Preferred menu side; flips when space runs out @default "bottom-start" */
 	placement?: DropdownPlacement;
 
-	/** @deprecated Use `placement` instead. */
-	position?: DropdownPosition;
-
-	/** Size variant */
+	/** @default "md" */
 	size?: DropdownSize;
 
-	/** Whether dropdown is disabled */
 	disabled?: boolean;
 
-	/** Trigger type */
-	trigger?: DropdownTrigger;
-
-	/** Whether to close on outside click */
-	closeOnClickOutside?: boolean;
-
-	/** Maximum height for dropdown */
-	maxHeight?: number;
-
-	/** Offset from trigger element */
-	offset?: number;
-
-	/** Minimum distance from viewport edges */
-	viewportPadding?: number;
-
-	/** Custom class */
 	class?: string;
 
-	/** Accessible label for trigger when trigger content has no text */
+	/** Name of the built-in trigger when its content has no text */
 	'aria-label'?: string;
 
-	/** Open event handler */
 	onopen?: () => void;
 
-	/** Close event handler */
 	onclose?: () => void;
+
+	/**
+	 * Custom interactive trigger; spread the props on it (it must forward
+	 * `id`, which focus restore and `aria-labelledby` rely on):
+	 * `{#snippet trigger(props)}<Button {...props}>Menu</Button>{/snippet}`
+	 */
+	trigger?: Snippet<[DropdownTriggerProps]>;
+
+	/** Non-interactive content (Avatar, icon, text) for the built-in trigger button */
+	triggerContent?: Snippet;
+
+	/** Menu content (`DropdownItem`s) */
+	content?: Snippet;
+
+	/** Menu content when a trigger snippet is set; otherwise the trigger content */
+	children?: Snippet;
 }
 
 export interface DropdownItemProps {
-	/** Optional leading icon */
-	icon?: string;
+	icon?: IconSource;
 
-	/** Link destination; renders an anchor when provided */
+	/** Renders a link item */
 	href?: string;
 
-	/** Semantic accent color */
+	/** Semantic accent, e.g. `danger` for destructive items */
 	color?: LumiColor;
 
-	/** Whether the item is unavailable */
 	disabled?: boolean;
 
-	/** Whether a button item submits its containing form */
+	/** Submit the surrounding form; the menu closes after the event bubbles */
 	submit?: boolean;
 
-	/** Whether the item represents the current selection */
+	/** Checked choice in a set: renders `menuitemradio` with `aria-checked` */
 	selected?: boolean;
 
-	/** Custom class */
 	class?: string;
 
-	/** Activation handler */
+	children?: Snippet;
+
 	onclick?: (event: MouseEvent) => void;
 }

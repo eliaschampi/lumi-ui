@@ -15,27 +15,31 @@ import type { ButtonProps } from '@lumi-ui/svelte';
 | ------------------------------------------------------- | -------------------------------------------------------------------- |
 | Text, numeric, or multiline input                       | `Input`, `NumberInput`, or `Textarea`                                |
 | Few visible exclusive choices                           | `SegmentedControl`; `Radio` when each choice needs label/description |
+| Several independent toggles or filters                  | `ToggleGroup`; one standalone toggle → `Button pressed`              |
 | Longer or space-constrained choice                      | `Select`; `RemoteSelect` for server-backed search                    |
 | Submitted boolean vs immediate setting                  | `Checkbox` vs `Switch`                                               |
-| Persistent vs transient feedback                        | `Alert` vs `Notification`                                            |
+| Persistent vs transient feedback                        | `Alert` vs `Notification` (queued through `Toaster`)                 |
 | Generic vs titled dashboard surface                     | `Card` vs `DashboardSection`                                         |
 | Structured records vs short content rows                | `Table` vs `List` / `ListItem`                                       |
 | Anchored / pointer / interruptive / explanatory overlay | `Dropdown`, `Context`, `Dialog`, or `Tooltip`                        |
-| No data / failure / pending                             | `EmptyState`, `ErrorState`, or `Loading`                             |
+| No data / failure / pending                             | `EmptyState`, `ErrorState`, `Skeleton` (known layout) or `Loading`   |
+| Navigate vs act                                         | `Button href` (crawlable `<a>`) vs `Button onclick`                  |
+| Page through results                                    | `Pagination` (`href` for crawlable links); `Table` embeds it         |
+| Conversation                                            | `MessageList` of `Message` rows                                      |
 
 ## Identity and Foundations
 
-| Export            | Use                                        | Contract                                                                     |
-| ----------------- | ------------------------------------------ | ---------------------------------------------------------------------------- |
-| `Icon`            | Lucide registry or compatible direct icon  | [`Icon/types.ts`](../src/lib/components/Icon/types.ts)                       |
-| `Avatar`          | Image, initials, or icon identity          | [`Avatar/types.ts`](../src/lib/components/Avatar/types.ts)                   |
-| `AvatarGroup`     | Bounded overlapping identities             | [`AvatarGroup/types.ts`](../src/lib/components/AvatarGroup/types.ts)         |
-| `AvatarPicker`    | Choose one avatar option                   | [`AvatarPicker/types.ts`](../src/lib/components/AvatarPicker/types.ts)       |
-| `Image`           | Responsive image with loading/error states | [`Image/types.ts`](../src/lib/components/Image/types.ts)                     |
-| `IconBadge`       | Semantic icon badge                        | [`IconBadge/types.ts`](../src/lib/components/IconBadge/types.ts)             |
-| `StatusIndicator` | Status dot, pulse, optional tooltip        | [`StatusIndicator/types.ts`](../src/lib/components/StatusIndicator/types.ts) |
-| `Title`           | Semantic heading, subtitle, icon           | [`Title/types.ts`](../src/lib/components/Title/types.ts)                     |
-| `UserInfo`        | Compact avatar and identity text           | [`UserInfo/types.ts`](../src/lib/components/UserInfo/types.ts)               |
+| Export            | Use                                         | Contract                                                                     |
+| ----------------- | ------------------------------------------- | ---------------------------------------------------------------------------- |
+| `Icon`            | Lucide registry or compatible direct icon   | [`Icon/types.ts`](../src/lib/components/Icon/types.ts)                       |
+| `Avatar`          | Image, initials, or icon identity           | [`Avatar/types.ts`](../src/lib/components/Avatar/types.ts)                   |
+| `AvatarGroup`     | Bounded overlapping identities              | [`AvatarGroup/types.ts`](../src/lib/components/AvatarGroup/types.ts)         |
+| `AvatarPicker`    | Choose one avatar option                    | [`AvatarPicker/types.ts`](../src/lib/components/AvatarPicker/types.ts)       |
+| `Image`           | Responsive image with loading/error states  | [`Image/types.ts`](../src/lib/components/Image/types.ts)                     |
+| `IconBadge`       | Semantic icon badge                         | [`IconBadge/types.ts`](../src/lib/components/IconBadge/types.ts)             |
+| `StatusIndicator` | Status dot, pulse, optional tooltip         | [`StatusIndicator/types.ts`](../src/lib/components/StatusIndicator/types.ts) |
+| `Title`           | Semantic heading, subtitle, icon            | [`Title/types.ts`](../src/lib/components/Title/types.ts)                     |
+| `UserInfo`        | Person row: avatar, name, description, link | [`UserInfo/types.ts`](../src/lib/components/UserInfo/types.ts)               |
 
 ## Actions and Forms
 
@@ -52,33 +56,38 @@ import type { ButtonProps } from '@lumi-ui/svelte';
 | `Select`           | Single choice; optional client/server search mode   | [`Select/types.ts`](../src/lib/components/Select/types.ts)                                                |
 | `RemoteSelect`     | Debounced, cancellable endpoint search with mappers | [`RemoteSelect.svelte`](../src/lib/components/Select/RemoteSelect.svelte)                                 |
 | `SegmentedControl` | Short visible exclusive choice                      | [`SegmentedControl/types.ts`](../src/lib/components/SegmentedControl/types.ts)                            |
+| `ToggleGroup`      | Several independent pressed toggles                 | [`ToggleGroup/types.ts`](../src/lib/components/ToggleGroup/types.ts)                                      |
 | `FileUpload`       | Selection, validation, queue, removal               | [`FileUpload/types.ts`](../src/lib/components/FileUpload/types.ts)                                        |
-| `DateRangeFilter`  | From/to date range with preset shortcuts            | [`DateRangeFilter.svelte`](../src/lib/components/DateRangeFilter/DateRangeFilter.svelte)                  |
+| `DateRangeFilter`  | Native from/to date pair with apply action          | [`DateRangeFilter/types.ts`](../src/lib/components/DateRangeFilter/types.ts)                              |
 | `Fieldset`         | Semantic grouping for related controls              | [`Fieldset/types.ts`](../src/lib/components/Fieldset/types.ts)                                            |
 | `TagOption`        | Compact semantic tag choice                         | [`TagOption/types.ts`](../src/lib/components/TagOption/types.ts)                                          |
 
 ## Surfaces and Feedback
 
-| Export         | Use                                             | Contract                                                                                                                    |
-| -------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `Card`         | Generic surface with optional media slot        | [`types`](../src/lib/components/Card/types.ts), [`.svelte`](../src/lib/components/Card/Card.svelte)                         |
-| `Alert`        | Persistent inline semantic message              | [`Alert/types.ts`](../src/lib/components/Alert/types.ts)                                                                    |
-| `Chip`         | Compact label, status, or removable token       | [`Chip/types.ts`](../src/lib/components/Chip/types.ts)                                                                      |
-| `Collapse`     | Expandable disclosure                           | [`Collapse/types.ts`](../src/lib/components/Collapse/types.ts)                                                              |
-| `Divider`      | Visual or labeled separator                     | [`Divider/types.ts`](../src/lib/components/Divider/types.ts)                                                                |
-| `EmptyState`   | No-content guidance                             | [`EmptyState/types.ts`](../src/lib/components/EmptyState/types.ts)                                                          |
-| `ErrorState`   | Recovery surface for error statuses             | [`ErrorState/types.ts`](../src/lib/components/ErrorState/types.ts)                                                          |
-| `Loading`      | Local pending indicator                         | [`Loading/types.ts`](../src/lib/components/Loading/types.ts)                                                                |
-| `Notification` | Transient feedback where the consumer places it | [`types`](../src/lib/components/Notification/types.ts), [`.svelte`](../src/lib/components/Notification/Notification.svelte) |
-| `Progress`     | Determinate or indeterminate progress           | [`Progress/types.ts`](../src/lib/components/Progress/types.ts)                                                              |
-| `Tooltip`      | Portaled supplemental description               | [`types`](../src/lib/components/Tooltip/types.ts), [`.svelte`](../src/lib/components/Tooltip/Tooltip.svelte)                |
+| Export         | Use                                             | Contract                                                                                                                               |
+| -------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `Card`         | Generic surface with optional media slot        | [`types`](../src/lib/components/Card/types.ts), [`.svelte`](../src/lib/components/Card/Card.svelte)                                    |
+| `Alert`        | Persistent inline semantic message              | [`Alert/types.ts`](../src/lib/components/Alert/types.ts)                                                                               |
+| `Chip`         | Compact label, status, or removable token       | [`Chip/types.ts`](../src/lib/components/Chip/types.ts)                                                                                 |
+| `Collapse`     | Expandable disclosure                           | [`Collapse/types.ts`](../src/lib/components/Collapse/types.ts)                                                                         |
+| `Divider`      | Visual or labeled separator                     | [`Divider/types.ts`](../src/lib/components/Divider/types.ts)                                                                           |
+| `EmptyState`   | No-content guidance                             | [`EmptyState/types.ts`](../src/lib/components/EmptyState/types.ts)                                                                     |
+| `ErrorState`   | Recovery surface for error statuses             | [`ErrorState/types.ts`](../src/lib/components/ErrorState/types.ts)                                                                     |
+| `Loading`      | Local pending indicator                         | [`Loading/types.ts`](../src/lib/components/Loading/types.ts)                                                                           |
+| `Skeleton`     | Placeholder for content whose layout is known   | [`Skeleton/types.ts`](../src/lib/components/Skeleton/types.ts)                                                                         |
+| `Notification` | Transient feedback where the consumer places it | [`types`](../src/lib/components/Notification/types.ts), [`.svelte`](../src/lib/components/Notification/Notification.svelte)            |
+| `Toaster`      | Portaled toast stack fed by `createToaster()`   | [`Toaster/types.ts`](../src/lib/components/Toaster/types.ts), [`createToaster`](../src/lib/components/Toaster/createToaster.svelte.ts) |
+| `Progress`     | Determinate or indeterminate progress           | [`Progress/types.ts`](../src/lib/components/Progress/types.ts)                                                                         |
+| `Tooltip`      | Portaled supplemental description               | [`types`](../src/lib/components/Tooltip/types.ts), [`.svelte`](../src/lib/components/Tooltip/Tooltip.svelte)                           |
 
 ## Data and Dashboard Content
 
 | Export                           | Use                                                        | Contract                                                                                                                                |
 | -------------------------------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `Table`                          | Typed records, search, selection, pagination, row snippets | [`types`](../src/lib/components/Table/types.ts), [`.svelte`](../src/lib/components/Table/Table.svelte)                                  |
-| `List`, `ListHeader`, `ListItem` | Short collection; section/actions; selectable rows         | [`List/types.ts`](../src/lib/components/List/types.ts)                                                                                  |
+| `List`, `ListHeader`, `ListItem` | Short collection; section/actions; interactive rows        | [`List/types.ts`](../src/lib/components/List/types.ts)                                                                                  |
+| `Pagination`                     | Page navigation: buttons or crawlable links                | [`Pagination/types.ts`](../src/lib/components/Pagination/types.ts)                                                                      |
+| `Message`, `MessageList`         | Chat rows with bubbles; live transcript scroller           | [`Message/types.ts`](../src/lib/components/Message/types.ts)                                                                            |
 | `InfoItem`                       | Label/value metadata                                       | [`InfoItem/types.ts`](../src/lib/components/InfoItem/types.ts)                                                                          |
 | `DashboardChart`                 | One or multiple typed chart series                         | [`DashboardChart/types.ts`](../src/lib/components/DashboardChart/types.ts)                                                              |
 | `DashboardBarChart`              | Focused single-series bar chart                            | [`DashboardBarChart/types.ts`](../src/lib/components/DashboardBarChart/types.ts)                                                        |
@@ -121,42 +130,41 @@ These six are root exports. Pure helpers/types: `@lumi-ui/svelte/drive` — [Gui
 
 Non-component root exports from `@lumi-ui/svelte`. Use these to compose custom UI and keep product code type-safe against the same semantic scales components use.
 
-| Export                                                                                                  | Kind          | Use                                                                                          |
-| ------------------------------------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------------------------- |
-| `LUMI_CONFIG`                                                                                           | const         | Shared size, color, icon-size, transition, floating geometry, and default-prop configuration |
-| `getIconSize(size)`                                                                                     | function      | Map a `LumiSize` to an icon pixel size (falls back to `md`)                                  |
-| `portal`                                                                                                | Svelte action | `use:portal={'css-selector'}` or `use:portal={element}`; default target is `document.body`   |
-| `getIcon(name)`, `hasIcon(name)`, `getAvailableIcons()`                                                 | functions     | String-keyed Lucide icon registry lookup and listing                                         |
-| `LumiColor`                                                                                             | type          | `'primary' \| 'secondary' \| 'success' \| 'warning' \| 'danger' \| 'info'`                   |
-| `LumiSize`, `LumiCompactSize`, `LumiControlSize`, `LumiDisplaySize`, `LumiExtendedSize`, `LumiIconSize` | types         | Semantic size unions consumed by component `size` props                                      |
-| `LumiTransition`                                                                                        | type          | `keyof typeof LUMI_CONFIG.transitions` (`fast` \| `base` \| `slow` \| `slower`)              |
-| `ChartColor`, `ChartSeriesPoint`, `ChartValueFormat`                                                    | types         | Chart data contracts shared with `DashboardChart`                                            |
-| `FieldError`                                                                                            | type          | `error` prop of `Input`, `Textarea`, `Select`, `NumberInput`: `true` or a message            |
-| `IconComponent`, `IconName`                                                                             | types         | Lucide component type and registry key union                                                 |
+| Export                                                                                                  | Kind          | Use                                                                                                   |
+| ------------------------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------- |
+| `registerIcons(map)`, `getIcon(name)`, `hasIcon(name)`                                                  | functions     | Opt-in string icon registry (empty by default); curated map: `lumiIcons` from `@lumi-ui/svelte/icons` |
+| `setLumiLocale(options)`, `lumiEn`, `lumiEs`                                                            | i18n          | Built-in copy and `Intl` locale/currency/time zone through context (English default)                  |
+| `formatNumber`, `formatDate`, `getInitials`                                                             | functions     | Cached, pure formatters and initials helper used by components                                        |
+| `createToaster(options)`                                                                                | factory       | Explicit toast queue for `Toaster`                                                                    |
+| `portal`                                                                                                | Svelte action | `use:portal={'css-selector'}` or `use:portal={element}`; default target is `document.body`            |
+| `LumiColor`, `LumiChoiceOption`                                                                         | type          | `'primary' \| 'secondary' \| 'success' \| 'warning' \| 'danger' \| 'info'`                            |
+| `LumiSize`, `LumiCompactSize`, `LumiControlSize`, `LumiDisplaySize`, `LumiExtendedSize`, `LumiIconSize` | types         | Semantic size unions consumed by component `size` props                                               |
+| `ChartColor`, `ChartSeriesPoint`, `ChartValueFormat`                                                    | types         | Chart data contracts shared with `DashboardChart`                                                     |
+| `FieldError`                                                                                            | type          | `error` prop of `Input`, `Textarea`, `Select`, `NumberInput`: `true` or a message                     |
 
-Contracts: [`config.ts`](../src/lib/components/config.ts), [`portal.ts`](../src/lib/actions/portal.ts), [`icons.ts`](../src/lib/utils/icons.ts), [`charts.ts`](../src/lib/types/charts.ts).
+Contracts: [`config.ts`](../src/lib/components/config.ts), [`portal.ts`](../src/lib/actions/portal.ts), [`icons.ts`](../src/lib/utils/icons.ts), [`i18n`](../src/lib/i18n/index.ts), [`format.ts`](../src/lib/utils/format.ts), [`charts.ts`](../src/lib/types/charts.ts).
 
-The string icon registry imports every registered Lucide icon when `Icon` enters a bundle. Passing a direct Lucide component through `<Icon>` preserves the common sizing/color API, but the current wrapper still retains that registry. For the smallest custom icon path, render the deep-imported Lucide component directly; Lumi components with dynamic string-icon props retain the registry by contract.
+Icons cost only what a page renders: pass deep-imported Lucide components (`@lucide/svelte/icons/search`). String names resolve through a registry that is empty until `registerIcons()` runs — register `lumiIcons` only in layouts that render icon names from data, never on SEO-sensitive pages.
 
 ## Behavioral Checks
 
 - Read `.svelte` when snippets/callbacks matter; several are local, not in exported `*Props`.
-- `RemoteSelect` needs endpoint/query and mapping inputs from its source.
-- Prefer `Button.variant` for visual hierarchy and `Button.type` for native semantics. Legacy visual `type` plus native `button` remains supported; `variant` wins visually and `button` wins natively when both forms are present. `filled` and `gradient` consume `solid + foreground`; the gradient shades away from the foreground when `contrast-color()` is supported and safely degrades to the calibrated solid otherwise.
+- `Button.variant` sets the visual treatment and `Button.type` the native semantics. `href` renders an `<a>` with the same styles (disabled/loading links drop `href` and expose `aria-disabled`); `pressed` adds `aria-pressed` for a standalone toggle. `filled` and `gradient` consume `solid + foreground`.
 - `Card` derives its depth from the neutral surface ladder. A clickable card renders as a button and must not contain nested interactive controls.
-- Form and interactive peers share one control contract: fill/border (`--lumi-color-control-*`), height ladder (`--lumi-control-height-*`; expose only steps the component supports), radius (`--lumi-radius-control`), accent (`--lumi-control-accent`), field focus (`--lumi-control-focus-shadow`), affordance focus (`--lumi-focus-outline` re-declared on interactive roots), and micro-motion (`--lumi-transition-control`). `Input`, `NumberInput`, `Select`, and `Textarea` also share `.lumi-autofill` + `--lumi-control-autofill-bg`.
-- `Tabs` and `SegmentedControl` share one **switcher** recipe (glass shell + elevated active pill), not the field/control-fill well. See [GUIDE §6](./GUIDE.md#6-design-language) and [authoring recipes](./COMPONENT_AUTHORING.md#shared-visual-recipes-copy-peers--do-not-fork).
-- `Tab.content` enables managed panels: every panel stays mounted while inactive panels are hidden, preserving local state and successful form controls. The children snippet remains the lightweight navigation-only fallback.
-- Radios bound to the same `group` must also share a non-empty `name` for native arrow-key navigation and form semantics. `busy` temporarily disables interaction.
-- `SegmentedControl.iconOnly` applies compact tokenized padding. With `clearable`, activating the selected option emits the empty string (`''`).
-- `Chip` uses a native button for `onclick`; when it is also `closable`, the action and close control remain siblings rather than nested controls. Its close control keeps full opacity for functional contrast.
-- `Switch` pairs its checked track solid with that role's foreground thumb.
-- `Progress.animated` implies stripes. Its bar keeps the lively accent and its decorative stripe uses neutral white rather than the foreground paired to a different solid surface. When using `labelSnippet`, provide `aria-label` if the visible snippet is not a sufficient accessible name.
-- `Alert.color` and `Notification.color` supersede legacy `type`; exported `NotificationType` remains compatible and legacy `error` maps to semantic `danger`.
-- `Dropdown.placement` and `Tooltip.placement` supersede legacy `position`; exported `DropdownPosition` and `TooltipPosition` remain compatible.
-- Supply `Table.rowKey` when records lack stable `id` or `key`.
-- `Table` suppresses row click/double-click/context actions when the pointer originates from a nested interactive control.
-- `Notification` renders in place; wrap in `.lumi-toast-portal` for a fixed toast stack. Placement is owned by that wrapper — `Notification` has no `position` prop.
-- All `Dashboard*` charts consume the shared `.lumi-chart-*` plot primitives (`empty`, `svg`, `grid`, `label`, `crosshair`, `hit`) plus the `.lumi-chart-tooltip` family from `core.css`; components keep only series-specific rules.
+- Form peers share one field shell (`Field/field.css`, layer `lumi.components`): `Input`, `NumberInput`, `Select` and `Textarea` render `.lumi-field` with the same heights, fill/border, invalid state, autofill and focus. `error` (`true` or a message) and `hint` work the same on all four.
+- `Tabs`, `SegmentedControl` and `ToggleGroup` share the global `.lumi-switcher` recipe (glass shell + elevated active pill), not the field well. SegmentedControl is one exclusive choice (radio semantics); ToggleGroup is any number of pressed options (`aria-pressed`, roving tabindex, `value` is an array).
+- `Tab.content` enables managed panels: every panel stays mounted while inactive panels are hidden, preserving local state and successful form controls.
+- Radios bound to the same `group` must also share a non-empty `name`. `busy` temporarily disables interaction.
+- `List` renders `<ul>`/`<li>`. A `ListItem` with `href` or `onclick` is interactive through a stretched target, so `trailing` actions stay siblings, never nested controls. `selected` marks selection; `SidebarItem.current` marks navigation.
+- `Divider` renders `<hr>` when plain and a labeled `role="separator"` otherwise.
+- `UserInfo` is the person row (avatar, name, description, optional `href`, `trailing`) for tables and lists; it renders no heading.
+- `Image` is never hidden while loading, so server-rendered pixels paint before hydration; set `width`/`height` or `ratio` to avoid layout shift and `fetchpriority="high"` on the LCP image. `fit` chooses `cover` or `contain`.
+- `Skeleton` is decorative (`aria-hidden`); put `aria-busy="true"` on the region being loaded. `Table` loading renders skeleton rows under its header.
+- `Pagination` with `href` renders crawlable `<a rel="prev|next">` links (modified clicks open new tabs normally); without it, buttons call `onpagechange`.
+- `MessageList` needs a height (or a flex/grid track). It stays pinned to the newest message while the reader is at the end, offers a localized “jump to latest” button otherwise, calls `onloadmore` near the top and keeps the reader's place when history is prepended. Pass `busy` while a reply streams.
+- `createToaster()` is an explicit queue: create it in client code (or per request), call `show()` from event handlers, and render one `<Toaster toaster={…}>` in the layout.
+- `Alert.color` and `Notification.color` take semantic colors; `onclose()` fires after the exit transition.
+- Supply `Table.rowKey` when records lack stable `id` or `key`. `Table` suppresses row click/double-click/context actions when the pointer originates from a nested interactive control.
+- All `Dashboard*` charts consume the shared `.lumi-chart-*` primitives from `styles/charts.css`, which they import themselves.
 - Icon-only controls need an accessible name; decorative nested icons do not.
 - Preserve focus, dismissal, and roles when composing overlays.

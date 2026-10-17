@@ -1,50 +1,44 @@
-<script lang="ts">
-	import type { Snippet } from 'svelte';
-	import type { SidebarProps } from './types';
+<script module lang="ts">
+	import * as en from '../../i18n/en';
 
-	interface Props extends SidebarProps {
-		children?: Snippet;
-		header?: Snippet;
-	}
+	const COPY = { sidebar: en.sidebar };
+</script>
+
+<script lang="ts">
+	import { useLumiLocale } from '../../i18n';
+	import type { SidebarProps } from './types';
 
 	const {
 		collapsed = false,
 		mobileOpen = false,
-		ariaLabel = 'Barra lateral',
-		class: className = '',
+		'aria-label': ariaLabel,
+		class: className,
 		children,
 		header
-	}: Props = $props();
+	}: SidebarProps = $props();
 
-	const sidebarClasses = $derived(
-		[
-			'lumi-sidebar',
-			collapsed && 'lumi-sidebar--collapsed',
-			mobileOpen && 'lumi-sidebar--mobile-open',
-			className
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
+	const i18n = useLumiLocale(COPY);
 </script>
 
-<aside class={sidebarClasses} role="navigation" aria-label={ariaLabel}>
+<nav
+	class={[
+		'lumi-sidebar',
+		collapsed && 'lumi-sidebar--collapsed',
+		mobileOpen && 'lumi-sidebar--mobile-open',
+		className
+	]}
+	aria-label={ariaLabel ?? i18n.t.sidebar}
+>
 	{#if header}
 		<header class="lumi-sidebar__header">
-			<div class="lumi-sidebar__header-content">
-				{@render header()}
-			</div>
+			<div class="lumi-sidebar__header-content">{@render header()}</div>
 		</header>
 	{/if}
 
-	<nav class="lumi-sidebar__body">
-		<div class="lumi-sidebar__items">
-			{#if children}
-				{@render children()}
-			{/if}
-		</div>
-	</nav>
-</aside>
+	<div class="lumi-sidebar__body lumi-scrollbar">
+		<div class="lumi-sidebar__items">{@render children?.()}</div>
+	</div>
+</nav>
 
 <style>
 	.lumi-sidebar {
@@ -120,24 +114,6 @@
 		overflow-y: auto;
 		overflow-x: hidden;
 		padding: var(--lumi-space-md);
-	}
-
-	/* Custom scrollbar */
-	.lumi-sidebar__body::-webkit-scrollbar {
-		width: var(--lumi-space-2xs);
-	}
-
-	.lumi-sidebar__body::-webkit-scrollbar-track {
-		background: transparent;
-	}
-
-	.lumi-sidebar__body::-webkit-scrollbar-thumb {
-		background: transparent;
-		border-radius: var(--lumi-radius-full);
-	}
-
-	.lumi-sidebar:hover .lumi-sidebar__body::-webkit-scrollbar-thumb {
-		background: var(--lumi-color-border);
 	}
 
 	.lumi-sidebar__items {

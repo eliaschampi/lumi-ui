@@ -1,7 +1,4 @@
-/**
- * FileUpload Component Types
- * Professional file upload with drag-drop, validation, and progress tracking
- */
+/** Drop zone with validation, a removable queue and upload progress. */
 
 export type FileUploadStatus = 'selected' | 'uploading' | 'success' | 'error';
 
@@ -21,19 +18,18 @@ export interface FileUploadProps {
 
 	/**
 	 * Placeholder text when no files selected
-	 * @default "Sube tus archivos"
+	 * @default locale "Upload your files"
 	 */
 	placeholderText?: string;
 
 	/**
 	 * Helper text shown below the placeholder title
-	 * @default "Arrastra archivos aquí o haz clic para seleccionar"
+	 * @default locale "Drag files here or click to browse"
 	 */
 	hintText?: string;
 
 	/**
-	 * Accepted file types (e.g., 'image/*', '.pdf')
-	 * @default "*"
+	 * Accepted file types (e.g., 'image/*', '.pdf'); any type when omitted
 	 */
 	accept?: string;
 
@@ -57,7 +53,7 @@ export interface FileUploadProps {
 
 	/**
 	 * Label for the "add more files" action
-	 * @default "Agregar más archivos"
+	 * @default locale "Add more files"
 	 */
 	addMoreText?: string;
 

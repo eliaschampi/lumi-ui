@@ -53,11 +53,10 @@ export type FloatingController = {
 	hasPosition: boolean;
 	position: FloatingPosition;
 	resolvedPlacement: FloatingPlacement;
-	floatingStyles: Record<string, string>;
+	/** Inline style for the floating element (position, offsets, max height) */
 	styleString: string;
 	open: () => void;
 	close: () => void;
-	toggle: () => void;
 	updatePosition: () => void;
 };
 
@@ -93,36 +92,15 @@ export function createFloating(
 	let hasPosition = $state(false);
 	let updateToken = 0;
 
-	const floatingStyles = $derived.by(() => {
+	const styleString = $derived.by(() => {
 		const { strategy, zIndex, matchWidth } = resolvedOptions;
-		const styles: Record<string, string> = {
-			position: strategy,
-			top: `${position.top}px`,
-			left: `${position.left}px`,
-			zIndex,
-			visibility: hasPosition ? 'visible' : 'hidden'
-		};
-
-		if (position.width !== undefined && matchWidth) {
-			styles.width = `${position.width}px`;
-		}
-
-		if (position.maxHeight !== undefined) {
-			styles.maxHeight = `${position.maxHeight}px`;
-		}
-
-		return styles;
+		let style = `position: ${strategy}; top: ${position.top}px; left: ${position.left}px; z-index: ${zIndex}; visibility: ${hasPosition ? 'visible' : 'hidden'}`;
+		if (matchWidth && position.width !== undefined)
+			style += `; width: ${position.width}px`;
+		if (position.maxHeight !== undefined)
+			style += `; max-height: ${position.maxHeight}px`;
+		return style;
 	});
-
-	// Convert camelCase to kebab-case for valid CSS in a raw style attribute.
-	const styleString = $derived(
-		Object.entries(floatingStyles)
-			.map(
-				([key, value]) =>
-					`${key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)}: ${value}`
-			)
-			.join('; ')
-	);
 
 	async function calculatePosition(): Promise<void> {
 		const trigger = triggerElement();
@@ -205,14 +183,6 @@ export function createFloating(
 		updateToken += 1;
 	}
 
-	function toggle(): void {
-		if (isOpen) {
-			close();
-		} else {
-			open();
-		}
-	}
-
 	function updatePosition(): void {
 		if (isOpen) {
 			void calculatePosition();
@@ -242,15 +212,11 @@ export function createFloating(
 		get resolvedPlacement() {
 			return resolvedPlacement;
 		},
-		get floatingStyles() {
-			return floatingStyles;
-		},
 		get styleString() {
 			return styleString;
 		},
 		open,
 		close,
-		toggle,
 		updatePosition
 	};
 }

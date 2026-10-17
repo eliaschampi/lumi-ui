@@ -1,32 +1,31 @@
-# Refactor review — 2026-10-12
+# 1.0 review — 2026-10-17
 
-Reviewed the public Svelte surface, component contracts and implementations, styles, shared utilities, package contents, and browser behavior for **0.5.0**. The source diff removes 898 lines and adds 925, a net increase of 27 lines for shared chart and modal behavior; no dependencies were added. Package metadata and upgrade notes are ready for release. No publication was performed.
+Lumi 1.0 was built by separate builders for foundation, forms/data, display/overlays and new components, each followed by an independent adversarial review and a fix round, and closed by a verification pass. Consumer evidence came from a usage audit of Faztore, Coedula and Aeduca. Migration: [Upgrade 0.6 → 1.0](./UPGRADE.md#060--100).
 
-## Applied
+## What changed and why
 
-| Responsibility        | Change                                                                                                                                                                                                                                                                                                                    |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Tables                | Index selected row identities once, preserve number/string identity, avoid cloning data without an active local search, normalize pagination inputs, keep keyboard behavior out of editable cells, and shrink wide table content within dashboard grids.                                                                  |
-| Charts                | Share a finite, signed, overflow-safe axis scale; keep zero and negative values visible; fit charts to their actual container; share pointer/keyboard tooltip state; expose arrow/Home/End/Escape navigation and tooltip descriptions.                                                                                    |
-| Dialogs and drawers   | Use one per-document modal stack for scroll locking, top-modal Escape handling, focus trapping/restoration, and inert lower overlays. Resolve parent-child order even when nested dialogs mount in the same update. Portal mobile drawers out of clipped layouts and release their modal state at the desktop breakpoint. |
-| Layouts               | Bound grid tracks and children, let mobile cards fit containers below 320px, use dynamic viewport height and safe-area tokens, and keep closed mobile sidebar links out of the focus order.                                                                                                                               |
-| Shared component code | Remove duplicated handlers, styles, formatters, stale callbacks, listeners, allocations and state; use Svelte-generated stable IDs instead of browser-only randomness; clean and alphabetize the root export surface without changing its symbols.                                                                        |
-| Release readiness     | Bump package metadata to 0.5.0, document corrected runtime behavior and portal styling in the upgrade guide, and remeasure package and browser payloads.                                                                                                                                                                  |
+| Area           | Change                                                                                                                                                                                | Evidence                                                                                      |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Icons          | String registry empty by default; library internals deep-import Lucide; `registerIcons` + optional `@lumi-ui/svelte/icons`                                                            | Every component rendering `Icon` paid ~8.4 KB gzip for 103 icons; Faztore's storefront used 8 |
+| i18n           | `setLumiLocale` context, per-key English exports (tree-shaken), `lumiEs`, Drive dictionaries                                                                                          | Library mixed Spanish and English defaults; apps passed the same Spanish props ~100 times     |
+| CSS            | `core.css` → `base` + `layout` + `utilities`, cascade layers, `patterns.css` and `charts.css` opt-in, 133 unused classes removed, symmetric spacing ladders                           | 105/320 core and 29/97 pattern classes were unused by Lumi and all three apps                 |
+| Shared recipes | `.lumi-spinner`, `.lumi-skeleton`, `.lumi-switcher`, `.lumi-sr-only`, `.lumi-icon`, `Field/field.css`, internal `CloseButton`, `MenuSurface`, `StatusSurface`                         | Four spinner copies, four field shells, duplicated menu and status surfaces                   |
+| Semantics      | `Button href`/`pressed`, `<ul>`/`<li>` lists with stretched targets, `<hr>` dividers, menus/tooltips that keep focus and Escape inside dialogs, overlays portaled into the open modal | 110 buttons navigated through JavaScript; fake toggles had no `aria-pressed`                  |
+| New            | `ToggleGroup`, `Skeleton`, `Message`, `MessageList`, `Pagination` (crawlable links), `Toaster` + `createToaster`                                                                      | Hand-rolled pagination ×5, toast queues ×2, no skeletons, a chat thread in Aeduca             |
+| API            | One name per concept (`selected`, `current`, `placement`, `color`, `description`, lowercase callbacks), unused props removed                                                          | Codemod `scripts/migrate-1.0.mjs` rewrites or reports every rename                            |
+
+Deliberately not added: a custom date picker (the apps use 39 native date/time inputs and no calendars), a generic popover, and app-level patterns such as a confirm dialog (candidate for a future `src/lib/patterns/`).
 
 ## Verification evidence
 
-- Table SSR checks cover 63 valid combinations and 12 malformed numeric inputs. A 1,000-selected-row operation count falls from 1,504,500 `rowKey` calls to 3,000; this is an operation-count comparison, not a latency claim. Browser checks confirm Enter invokes a double-click-only row action and editable cells retain Enter.
-- Chart checks cover 36 zero, negative, sparse, narrow, missing, and extreme-value cases. At a 390px viewport the 280px card has no page-level horizontal overflow; long table content scrolls inside the table. Keyboard `End` reaches the last point, updates the tooltip description, and Escape clears it.
-- Browser checks confirm simultaneously mounted parent/child dialogs put the child on top and focused, closing it restores focus to the parent, Escape closes the active modal, and body styles/focus restore after the final close. The mobile drawer traps focus, supports keyboard selection and Escape, then releases modal state when resized to desktop. A 390×844 dialog respects all four safe-area values with no horizontal overflow.
-- Public export AST comparison preserves exported names, aliases, source origins, and type/value distinctions. File-size, MIME, extension, and component-identity checks cover the shared helper changes.
-- Under one Vite 8.1.3, OXC, Lightning CSS, external-Svelte, gzip-9 comparison against the immediately previous working-tree snapshot: controls plus CSS are 25,572 bytes (115 fewer), charts plus CSS 9,260 bytes (315 more for chart behavior), Checkbox 2,764 bytes (29 fewer), and global CSS 11,828 bytes (140 more). The current budgets remain 25,600 bytes for controls and 12,288 bytes for global CSS.
-- `npm pack --dry-run --ignore-scripts --json` reports a 162,383-byte tarball and 768,511 unpacked bytes. No dependencies were added.
-- Final checks: `pnpm install --ignore-scripts`, `pnpm run lint`, `pnpm run check`, example `pnpm run check`, `pnpm run package`, and `git diff --check`.
+- Library: `pnpm run lint`, `pnpm run check` (0 errors, 0 warnings), `pnpm run package` and `git diff --check` pass. SSR renders of every changed component in English and Spanish were inspected for roles, names, ids and nesting.
+- Sizes (fully minified Vite 8 bundles, gzip 9, Svelte external; 0.6.0 re-measured the same way): Button 10,880 → 2,646 B, Divider 9,650 → 977 B, form/table contract set 22,424 → 14,074 B, storefront set 17,249 → 8,910 B, global CSS 11,661 → 8,396 B. All exports 83,450 → 79,134 B while adding six components.
+- Consumers: the codemod (after `migrate-0.6.mjs` for apps on 0.4) migrated 334 (Faztore), 449 (Coedula) and 506 (Aeduca) tags. `svelte-check` went from 0 errors on 0.x to 2 / 2 / 3 errors on 1.0, all in app-owned code: a local Drive menu type, an app toast type using `'error'`, and `{#if}` narrowing that does not reach a snippet.
+- Faztore production build: public pages shrink by about 9 KB gzip (home 100.2 → 91.0 KB) and render-blocking CSS by 15–20% with lean style imports.
 
-## Remaining release considerations
+## Remaining considerations
 
-1. `AvatarPicker` still defaults to `name="avatar"`; multiple pickers in one form need distinct names. Changing the default would alter submitted field names.
-2. Historical Drive/dashboard compositions, Spanish copy, and PEN/es-PE formatting remain compatibility contracts. Replacing them with domain-neutral localization needs an explicit migration.
-3. Arbitrary string icon props retain the Lucide registry by contract. Consumers with fixed internal icons should use deep Lucide imports to avoid pulling in that registry.
-
-The measured controls payload has only 28 bytes of headroom under its current 25 KiB release budget, so remeasure it after any further component change. Passing these focused checks and budgets is not a claim of complete accessibility coverage.
+1. `Select` is ~13.5 KB, two thirds Floating UI. CSS anchor positioning + the popover API can replace it once baseline support covers the products' browsers.
+2. Tooltip descriptions attach to a consumer's own focusable child only after hydration; the server output carries the description as screen-reader text.
+3. Overlay positioning inside dialogs and the new `MessageList` scrolling were verified by review and SSR, not by an automated browser suite. Check them by hand in light/dark mode before publishing.
+4. Input sizes (`xs`–`xl`) differ from Select/Textarea/NumberInput (`sm`–`lg`), and `Select.clearable` defaults to `true`; both are documented, unchanged contracts.

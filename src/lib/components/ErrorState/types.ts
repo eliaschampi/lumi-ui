@@ -1,25 +1,14 @@
-import type { IconName } from '../../utils/icons';
-
 export type ErrorStateStatus = 400 | 404 | 500;
 
-export type ErrorStateVariant = 'bad-request' | 'not-found' | 'server-error';
-export type ErrorStateHomeHref = string;
-
-export interface ErrorStateContent {
-	status: ErrorStateStatus;
-	variant: ErrorStateVariant;
-	icon: IconName;
-	color: 'warning' | 'info' | 'danger';
-	kicker: string;
-	title: string;
-	description: string;
-	primaryAction: string;
-	secondaryAction: string;
-}
-
 export interface ErrorStateProps {
+	/** HTTP status; other 4xx map to 400 and everything else to 500 @default 500 */
 	status?: number;
+
+	/** Replaces the default description, e.g. the server's message */
 	message?: string;
-	homeHref?: ErrorStateHomeHref;
+
+	/** Target of the "home" action @default "/" */
+	homeHref?: string;
+
 	class?: string;
 }

@@ -1,3 +1,4 @@
+import type { Snippet } from 'svelte';
 import type { LumiColor, LumiControlSize } from '../config';
 
 export type LoadingColor = LumiColor;
@@ -15,4 +16,7 @@ export interface LoadingProps {
 
 	/** Additional CSS classes */
 	class?: string;
+
+	/** Rich status text, replacing `text` */
+	children?: Snippet;
 }

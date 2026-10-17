@@ -56,10 +56,13 @@ function focusable(node: HTMLElement): HTMLElement[] {
 
 function focus(entry: ModalEntry): void {
 	const candidates = focusable(entry.node);
+	// Returning focus wins; then an explicit `autofocus`; then the first control.
 	const target =
 		entry.lastFocus && candidates.includes(entry.lastFocus)
 			? entry.lastFocus
-			: (candidates[0] ?? entry.node);
+			: (candidates.find((element) => element.autofocus) ??
+				candidates[0] ??
+				entry.node);
 	target.focus({ preventScroll: true });
 }
 
@@ -172,6 +175,13 @@ export function registerModal(
 			item.node.inert = !active;
 			item.node.setAttribute('aria-modal', String(active));
 		}
+		// Toast regions follow the top modal: `aria-modal` hides everything
+		// outside it, and announcements must stay reachable.
+		const host = top?.node ?? document.body;
+		for (const region of document.querySelectorAll<HTMLElement>(
+			'.lumi-toaster'
+		))
+			if (region.parentNode !== host) host.appendChild(region);
 	}
 	entries.push(entry);
 	// Nested dialogs outrank registration order when mounted in the same update.
@@ -184,7 +194,7 @@ export function registerModal(
 				: a.order - b.order
 	);
 	synchronize();
-	// Raise the latest modal after portal placement, below separately portaled menus.
+	// Raise the latest modal after portal placement; its layers live inside it.
 	queueMicrotask(() => {
 		if (entries.at(-1) !== entry || !node.isConnected) return;
 		node.parentNode?.appendChild(node);

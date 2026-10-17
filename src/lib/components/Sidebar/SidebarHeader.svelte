@@ -11,26 +11,22 @@
 		userMeta = '',
 		avatarText = '',
 		avatarSrc = '',
-		class: className = ''
+		class: className
 	}: SidebarHeaderProps = $props();
-
-	const rootClasses = $derived(
-		[
-			'lumi-sidebar-header',
-			collapsed && 'lumi-sidebar-header--collapsed',
-			cover && 'lumi-sidebar-header--custom-cover',
-			className
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
 </script>
 
-<div class={rootClasses}>
+<div
+	class={[
+		'lumi-sidebar-header',
+		collapsed && 'lumi-sidebar-header--collapsed',
+		cover && 'lumi-sidebar-header--custom-cover',
+		className
+	]}
+>
 	{#if collapsed}
 		<div class="lumi-sidebar-header__avatar">
 			<Avatar
-				text={avatarText || userName}
+				name={avatarText || userName}
 				src={avatarSrc || undefined}
 				alt={userName}
 				size="md"
@@ -42,16 +38,16 @@
 			{#if cover}
 				{@render cover()}
 			{:else if coverSrc}
-				<img src={coverSrc} alt={coverAlt} />
+				<img src={coverSrc} alt={coverAlt} decoding="async" />
 			{/if}
 		</div>
 
 		<div class="lumi-sidebar-header__identity">
 			<div class="lumi-sidebar-header__avatar">
 				<Avatar
-					text={avatarText || userName}
+					name={avatarText || userName}
 					src={avatarSrc || undefined}
-					alt={userName}
+					alt=""
 					size="xl"
 					color="primary"
 				/>

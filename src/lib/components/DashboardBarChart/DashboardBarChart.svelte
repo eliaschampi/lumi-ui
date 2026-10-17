@@ -1,3 +1,12 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+
+	const COPY = {
+		chartBar: en.chartBar,
+		chartEmpty: en.chartEmpty
+	};
+</script>
+
 <script lang="ts">
 	import {
 		CHART_COLOR_VARS,
@@ -15,6 +24,8 @@
 		useChartInteraction,
 		useChartWidth
 	} from '../../utils/chartLayout.svelte';
+	import '../../styles/charts.css';
+	import { useLumiLocale } from '../../i18n';
 	import type { DashboardBarChartProps } from './types';
 
 	const {
@@ -23,10 +34,12 @@
 		height = 260,
 		valueFormat = 'number',
 		xLabelMaxLength,
-		emptyMessage = 'No hay datos suficientes para mostrar este gráfico.',
-		'aria-label': ariaLabel = 'Gráfico de barras del dashboard',
-		class: className = ''
+		emptyMessage,
+		'aria-label': ariaLabel,
+		class: className
 	}: DashboardBarChartProps = $props();
+
+	const i18n = useLumiLocale(COPY);
 
 	const instanceId = $props.id();
 	const gradientId = `lumi-bar-gradient-${instanceId}`;
@@ -38,9 +51,6 @@
 	const fillColor = $derived(CHART_COLOR_VARS[color]);
 	const scale = $derived(chartScale([{ data }], valueFormat));
 	const zeroY = $derived(scaleY(0));
-	const classes = $derived(
-		['lumi-bar-chart', className].filter(Boolean).join(' ')
-	);
 	const chartW = $derived(layout.chartW);
 	const chartH = $derived(height);
 	const plotW = $derived(
@@ -56,7 +66,7 @@
 	const yTicks = $derived(
 		scale.ticks.map((tick) => ({
 			y: CHART_PADDING.top + tick.ratio * plotH,
-			label: formatChartValue(tick.value, valueFormat, 'axis')
+			label: formatChartValue(tick.value, valueFormat, 'axis', i18n)
 		}))
 	);
 	const xLabels = $derived(
@@ -93,12 +103,14 @@
 	}
 </script>
 
-<div bind:this={layout.root} class={classes} style:height="{height}px">
+<div
+	bind:this={layout.root}
+	class={['lumi-bar-chart', className]}
+	style:height="{height}px"
+>
 	{#if !scale.hasValues}
 		<div class="lumi-chart-empty">
-			<p class="lumi-margin--none lumi-text--sm lumi-text--muted">
-				{emptyMessage}
-			</p>
+			<p class="lumi-chart-empty__text">{emptyMessage ?? i18n.t.chartEmpty}</p>
 		</div>
 	{:else}
 		<!-- svelte-ignore a11y_no_noninteractive_tabindex (Keyboard exploration keeps the chart image semantics.) -->
@@ -107,7 +119,7 @@
 			preserveAspectRatio="xMidYMid meet"
 			class="lumi-chart-svg"
 			role="img"
-			aria-label={ariaLabel}
+			aria-label={ariaLabel ?? i18n.t.chartBar}
 			aria-describedby={hoveredPoint ? `${instanceId}-tooltip` : undefined}
 			tabindex="0"
 			use:hover.keyboard={data.length}
@@ -215,7 +227,12 @@
 		<div class="lumi-chart-tooltip__row">
 			<span class="lumi-chart-tooltip__dot" style:background={fillColor}></span>
 			<span class="lumi-chart-tooltip__value"
-				>{formatChartValue(hoveredPoint.value, valueFormat, 'tooltip')}</span
+				>{formatChartValue(
+					hoveredPoint.value,
+					valueFormat,
+					'tooltip',
+					i18n
+				)}</span
 			>
 		</div>
 	</div>

@@ -32,7 +32,7 @@
 	const selectedFileSet = $derived(new Set(selectedFiles));
 </script>
 
-<div class="lumi-grid lumi-grid--gap-md lumi-drive-file-grid">
+<div class="lumi-drive-file-grid">
 	{#each files as file (file.code)}
 		<DriveFileCard
 			{file}
@@ -51,6 +51,9 @@
 
 <style>
 	.lumi-drive-file-grid {
+		display: grid;
+		gap: var(--lumi-space-md);
+		min-width: 0;
 		grid-template-columns: repeat(
 			auto-fill,
 			minmax(var(--lumi-drive-file-grid-min-desktop), 1fr)

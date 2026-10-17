@@ -1,5 +1,12 @@
+<script module lang="ts">
+	import { lumiDriveEn } from '../../i18n/drive';
+
+	const COPY = lumiDriveEn;
+</script>
+
 <script lang="ts">
 	import { Icon } from '../Icon';
+	import { useLumiLocale } from '../../i18n';
 	import { Image } from '../Image';
 	import {
 		driveTagColorCssVar,
@@ -39,27 +46,24 @@
 		serveUrl = getDriveServeUrl
 	}: Props = $props();
 
+	const i18n = useLumiLocale(COPY);
 	let isDragging = $state(false);
 	let isDropTarget = $state(false);
 	let dragCounter = $state(0);
 	let longPressTimer: ReturnType<typeof setTimeout> | undefined;
 	let longPressTriggered = false;
-	const tagOption = $derived(getDriveTagByHash(file.tag));
+	const tagOption = $derived(getDriveTagByHash(file.tag, i18n.t));
 	const previewUrl = $derived(
 		file.type === 'img' ? serveUrl(file.code, { variant: 'thumb' }) : ''
 	);
-	const typeLabel = $derived(getDriveTypeLabel(file.type));
+	const typeLabel = $derived(getDriveTypeLabel(file.type, i18n.t));
 
-	const cardClasses = $derived(
-		[
-			'lumi-drive-file-card',
-			selected && 'lumi-drive-file-card--selected',
-			isDragging && 'lumi-drive-file-card--dragging',
-			isDropTarget && file.type === 'dir' && 'lumi-drive-file-card--drop-target'
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
+	const cardClasses = $derived([
+		'lumi-drive-file-card',
+		selected && 'lumi-drive-file-card--selected',
+		isDragging && 'lumi-drive-file-card--dragging',
+		isDropTarget && file.type === 'dir' && 'lumi-drive-file-card--drop-target'
+	]);
 
 	function handleClick() {
 		if (longPressTriggered) {
@@ -200,7 +204,7 @@
 				src={previewUrl}
 				alt={file.name}
 				loading="lazy"
-				fetchPriority="low"
+				fetchpriority="low"
 				radius="none"
 				errorLabel={file.name}
 			/>
@@ -225,10 +229,7 @@
 	</div>
 
 	<div class="lumi-drive-file-card__content">
-		<div
-			class="lumi-drive-file-card__name lumi-text-break lumi-text-clamp--2"
-			title={file.name}
-		>
+		<div class="lumi-drive-file-card__name" title={file.name}>
 			{file.name}
 		</div>
 		<div class="lumi-drive-file-card__meta">
@@ -335,7 +336,7 @@
 
 	.lumi-drive-file-card:hover
 		.lumi-drive-file-card__preview
-		:global(.lumi-drive-file-card__image .lumi-image__img) {
+		:global(.lumi-drive-file-card__image img) {
 		transform: scale(var(--lumi-card-media-hover-scale));
 	}
 
@@ -410,6 +411,12 @@
 		line-height: var(--lumi-line-height-tight);
 		color: var(--lumi-color-text);
 		min-height: calc(var(--lumi-font-size-sm) * 2.4);
+		display: -webkit-box;
+		overflow: hidden;
+		overflow-wrap: anywhere;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
 	}
 
 	.lumi-drive-file-card__meta {

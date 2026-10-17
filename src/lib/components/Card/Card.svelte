@@ -1,16 +1,6 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
 	import Image from '../Image/Image.svelte';
 	import type { CardProps } from './types';
-
-	interface Props extends CardProps {
-		children?: Snippet;
-		media?: Snippet;
-		header?: Snippet;
-		footer?: Snippet;
-		onclick?: (event: MouseEvent) => void;
-		'aria-label'?: string;
-	}
 
 	const {
 		clickable = false,
@@ -18,7 +8,7 @@
 		target,
 		rel,
 		hoverable,
-		selected = false,
+		selected,
 		image,
 		imageHeight,
 		imageAlt,
@@ -27,48 +17,55 @@
 		spaced = false,
 		class: className,
 		style,
-		'aria-label': ariaLabel = '',
+		'aria-label': ariaLabel,
 		onclick,
 		children,
 		media,
 		header,
 		footer
-	}: Props = $props();
+	}: CardProps = $props();
 
-	const isInteractive = $derived(clickable || href !== undefined);
-	const hasMedia = $derived(Boolean(media || image));
-	const linkRel = $derived(
-		target === '_blank' ? (rel ?? 'noopener noreferrer') : rel
-	);
-
-	const cardClasses = $derived.by(() => {
-		const classes = ['lumi-card'];
-		const isHoverable = hoverable ?? Boolean(isInteractive || hasMedia);
-
-		if (clickable) classes.push('lumi-card--clickable');
-		if (isInteractive) classes.push('lumi-card--interactive');
-		if (isHoverable) classes.push('lumi-card--hoverable');
-		if (selected) classes.push('lumi-card--selected');
-		if (hasMedia) classes.push('lumi-card--with-image');
-		if (spaced) classes.push('lumi-card--spaced');
-		if (className) classes.push(className);
-		return classes.join(' ');
-	});
-
-	const cardStyles = $derived.by(() => {
-		const styles: string[] = [];
-		if (imageHeight !== undefined)
-			styles.push(`--card-image-height: ${imageHeight}px;`);
-		if (style) styles.push(style);
-		return styles.join(' ') || undefined;
-	});
+	const tag = $derived(href !== undefined ? 'a' : clickable ? 'button' : 'div');
+	// A button may only hold phrasing content, so its sections become spans.
+	const part = $derived(tag === 'button' ? 'span' : 'div');
+	const interactive = $derived(tag !== 'div');
 </script>
 
-{#snippet cardContent()}
-	{#if hasMedia}
-		<div class="lumi-card__media">
+<!-- svelte-ignore a11y_no_static_element_interactions (`onclick` only reaches the native <a> or <button> branches.) -->
+<svelte:element
+	this={tag}
+	{href}
+	target={href && target}
+	rel={href && (target === '_blank' ? (rel ?? 'noopener noreferrer') : rel)}
+	type={tag === 'button' ? 'button' : undefined}
+	class={[
+		'lumi-card',
+		interactive && 'lumi-card--interactive',
+		(hoverable ?? (interactive || media || image)) && 'lumi-card--hoverable',
+		selected && 'lumi-card--selected',
+		spaced && 'lumi-card--spaced',
+		className
+	]}
+	{style}
+	style:--lumi-card-image-height={imageHeight && `${imageHeight}px`}
+	aria-label={ariaLabel}
+	aria-current={href && selected ? 'true' : undefined}
+	aria-pressed={tag === 'button' ? selected : undefined}
+	onclick={interactive ? onclick : undefined}
+>
+	{#if media || image}
+		<svelte:element this={part} class="lumi-card__media">
 			{#if media}
 				{@render media()}
+			{:else if image && part === 'span'}
+				<!-- Phrasing content only inside a button card. -->
+				<img
+					class="lumi-card__image"
+					src={image}
+					alt={imageAlt ?? ''}
+					loading="lazy"
+					decoding="async"
+				/>
 			{:else if image}
 				<Image
 					src={image}
@@ -77,70 +74,45 @@
 					class="lumi-card__image"
 				/>
 			{/if}
-		</div>
+		</svelte:element>
 	{/if}
 
 	{#if header || title || subtitle}
-		<div class="lumi-card__header">
+		<svelte:element this={part} class="lumi-card__header">
 			{#if header}
 				{@render header()}
 			{:else}
 				{#if title}
-					<h4 class="lumi-card__title">{title}</h4>
+					<svelte:element
+						this={part === 'span' ? 'span' : 'h4'}
+						class="lumi-card__title">{title}</svelte:element
+					>
 				{/if}
 				{#if subtitle}
-					<p class="lumi-card__subtitle">{subtitle}</p>
+					<svelte:element
+						this={part === 'span' ? 'span' : 'p'}
+						class="lumi-card__subtitle">{subtitle}</svelte:element
+					>
 				{/if}
 			{/if}
-		</div>
+		</svelte:element>
 	{/if}
 
 	{#if children}
-		<div class="lumi-card__content">
+		<svelte:element this={part} class="lumi-card__content">
 			{@render children()}
-		</div>
+		</svelte:element>
 	{/if}
 
 	{#if footer}
-		<div class="lumi-card__footer">
+		<svelte:element this={part} class="lumi-card__footer">
 			{@render footer()}
-		</div>
+		</svelte:element>
 	{/if}
-{/snippet}
-
-{#if href !== undefined}
-	<a
-		{href}
-		{target}
-		rel={linkRel}
-		class={cardClasses}
-		style={cardStyles}
-		{onclick}
-		aria-label={ariaLabel || undefined}
-		aria-current={selected ? 'true' : undefined}
-	>
-		{@render cardContent()}
-	</a>
-{:else if clickable}
-	<button
-		type="button"
-		class={cardClasses}
-		style={cardStyles}
-		{onclick}
-		aria-label={ariaLabel || undefined}
-		aria-pressed={selected}
-	>
-		{@render cardContent()}
-	</button>
-{:else}
-	<div class={cardClasses} style={cardStyles}>
-		{@render cardContent()}
-	</div>
-{/if}
+</svelte:element>
 
 <style>
 	.lumi-card {
-		--card-hover-lift: var(--lumi-interactive-lift);
 		--lumi-surface-bg: var(--lumi-card-surface-bg, var(--lumi-gradient-card));
 		--lumi-surface-shadow: var(
 			--lumi-card-surface-shadow,
@@ -185,13 +157,14 @@
 	}
 
 	.lumi-card--interactive:focus-visible {
+		--lumi-surface-hover: 1;
 		outline-color: transparent;
 		border-color: var(--lumi-color-border-interactive);
 		box-shadow: var(--lumi-focus-ring), var(--lumi-shadow-md);
 	}
 
 	.lumi-card--hoverable:hover {
-		transform: translateY(var(--card-hover-lift));
+		transform: translateY(var(--lumi-interactive-lift));
 		border-color: var(--lumi-color-border-interactive);
 		background: var(--lumi-gradient-card-hover);
 		box-shadow: var(--lumi-shadow-md);
@@ -230,7 +203,7 @@
 	/* Image */
 	.lumi-card__media {
 		width: 100%;
-		height: var(--card-image-height, var(--lumi-card-media-height));
+		height: var(--lumi-card-image-height, var(--lumi-card-media-height));
 		overflow: hidden;
 		flex-shrink: 0;
 		position: relative;
@@ -243,13 +216,22 @@
 		width: 100%;
 		height: 100%;
 		display: block;
+		object-fit: cover;
 	}
 
-	.lumi-card--hoverable:hover .lumi-card__media :global(.lumi-image__img) {
+	.lumi-card--hoverable:hover .lumi-card__media :global(.lumi-image img) {
 		transform: scale(var(--lumi-card-media-hover-scale));
 	}
 
-	/* Sections */
+	/* Sections (spans inside a button card, so display is explicit) */
+	.lumi-card__media,
+	.lumi-card__content,
+	.lumi-card__footer,
+	.lumi-card__title,
+	.lumi-card__subtitle {
+		display: block;
+	}
+
 	.lumi-card__header,
 	.lumi-card__content,
 	.lumi-card__footer {
@@ -293,7 +275,6 @@
 
 	/* Typography */
 	.lumi-card__title {
-		margin: 0;
 		color: var(--lumi-color-text);
 		line-height: var(--lumi-line-height-tight);
 		font-size: var(--lumi-font-size-lg);
@@ -301,7 +282,6 @@
 	}
 
 	.lumi-card__subtitle {
-		margin: 0;
 		color: var(--lumi-color-text-muted);
 		font-size: var(--lumi-font-size-sm);
 		line-height: var(--lumi-line-height-normal);

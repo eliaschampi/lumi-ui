@@ -1,6 +1,104 @@
 # Upgrade
 
-Consumer migration for **0.1.5 → 0.2.x** and later. Use **pnpm** only. Source remains authoritative.
+Consumer migration for **0.1.5 → 1.0** and later. Use **pnpm** only. Source remains authoritative.
+
+## 0.6.0 → 1.0.0
+
+First public major release. **Lighter by default** (simple components no longer ship the icon registry; global CSS is split and pruned), **bilingual** (English default, Spanish opt-in), and **one name per concept** across components. No dependencies were added.
+
+From a Lumi checkout:
+
+```bash
+node scripts/migrate-1.0.mjs <app-dir>                  # report only
+node scripts/migrate-1.0.mjs <app-dir> --write          # rewrite props, snippets, patterns import
+node scripts/migrate-1.0.mjs <app-dir> --write --icons  # also turn icon="name" into Lucide imports
+npx prettier --write <app-dir> && npx svelte-check      # then resolve every `manual:` line
+```
+
+### 1. App root (every app)
+
+```svelte
+<script lang="ts">
+	import '@lumi-ui/svelte/styles';
+	import '@lumi-ui/svelte/styles/patterns.css'; // only if you use pattern classes
+	import { lumiEs, registerIcons, setLumiLocale } from '@lumi-ui/svelte';
+	import { lumiDriveEs } from '@lumi-ui/svelte/drive'; // only if you render Drive
+	import { lumiIcons } from '@lumi-ui/svelte/icons'; // only for string icon names
+
+	registerIcons(lumiIcons);
+	const messages = { ...lumiEs, ...lumiDriveEs };
+	setLumiLocale({
+		locale: 'es-PE',
+		currency: 'PEN',
+		timeZone: 'America/Lima',
+		messages
+	});
+</script>
+```
+
+| Change                                                                                                                                        | Why / migration                                                                                                                                                                         |
+| --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| String icon names (`icon="search"`) render nothing until registered                                                                           | The 103-icon registry cost ~9.7 KB gzip on every page with a Button. Pass components (`icon={SearchIcon}`, `--icons` does it) or `registerIcons(lumiIcons)` in the layout that needs it |
+| `getAvailableIcons()`, root `IconName`                                                                                                        | `Object.keys(lumiIcons)`, `LumiIconName` from `@lumi-ui/svelte/icons`                                                                                                                   |
+| Built-in copy and formatting default to English, `en-US`, `USD`, runtime time zone                                                            | `setLumiLocale(...)` as above; set `timeZone` so server and browser render identical date-times                                                                                         |
+| `validateDriveName`, Drive labels and tags return English outside components                                                                  | Pass `lumiDriveEs` (server code has no locale context)                                                                                                                                  |
+| `@lumi-ui/svelte/styles` = tokens + core; `patterns.css` is opt-in                                                                            | Import `@lumi-ui/svelte/styles/patterns.css` where you use filter summaries, toolbars, metric lists… (the codemod adds it)                                                              |
+| `core.css` = `base.css` + `layout.css` + `utilities.css`, all in cascade layers                                                               | Unlayered app CSS now wins without specificity hacks; lean public pages may load tokens + base (+ utilities)                                                                            |
+| 133 unused global classes removed (`lumi-hero*`, `lumi-container--*`, most margin/padding/max-width scales, `lumi-opacity--*`, `lumi-bg--*`…) | None were used by Lumi, Coedula, Aeduca or Faztore; the codemod reports any remaining use                                                                                               |
+| `LUMI_CONFIG`, `getIconSize`, `LumiTransition`, `LumiIconSize` removed                                                                        | Use the `--lumi-*` tokens; size/color types remain                                                                                                                                      |
+| Drive `TAG_OPTIONS`, `DRIVE_MENU_OPTIONS`, `DRIVE_SCOPE_OPTIONS`, `DRIVE_SCOPE_SEGMENT_OPTIONS`                                               | `getDriveTagOptions()`, `getDriveMenuOptions()`, `getDriveScopeOptions()`, `getDriveScopeSegmentOptions()`; `getFileIcon` returns components                                            |
+| `--lumi-dashboard-content-bg` defaults to `transparent`                                                                                       | Delete the override every app carried                                                                                                                                                   |
+| `.lumi-toast-portal` wrapper + `Notification` loop + app toast store                                                                          | `<Toaster toaster={toaster} />` with `const toaster = createToaster()`; the class is removed                                                                                            |
+| `.lumi-context*` classes                                                                                                                      | `.lumi-menu*` (shared by Dropdown and Context)                                                                                                                                          |
+
+### 2. Callback props lose their hyphen (Svelte 5 convention)
+
+`onrow-click` → `onrowclick`, `onrow-dblclick` → `onrowdblclick`, `onrow-contextmenu` → `onrowcontextmenu`, `onrow-select` → `onrowselect`, `onpage-change` → `onpagechange` (Table); `onaction-click` → `onactionclick` (Input); `ontoggle-sidebar` → `ontogglesidebar` (Navbar). Rewritten by the codemod.
+
+### 3. Component changes
+
+| Component             | 0.6                                                                                                                   | 1.0                                                                                                                                                                                 |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Button                | visual `type="filled…"`, `button="submit"`, `radius`                                                                  | `variant`, native `type`; `radius` removed. **New:** `href` renders `<a>`, `pressed` → `aria-pressed`                                                                               |
+| Input                 | `onicon-click`, `iconLabel`, `iconAfter`, `labelPlaceholder`, `validate()`/`blur()`/`select()`                        | removed (use `actionIcon` + `onactionclick`); `labelPlaceholder` → `placeholder`; only `focus()` remains. **New:** `clearable`                                                      |
+| Select / RemoteSelect | `autocomplete`; `valueKey`, `labelKey`, `disabledKey`, `serializeValue`, floating geometry props                      | `searchable`; others removed. RemoteSelect `minQueryLength`/`debounceMs`/`limit` are optional                                                                                       |
+| NumberInput           | `min` defaulted to `0`                                                                                                | no implicit bound (codemod adds `min={0}`); `onchange` fires on committed edits and steps                                                                                           |
+| Table                 | `showingLabel`, `ofLabel`, `loadingText`, `paginationSlot`, `TablePaginationData`                                     | removed: pagination is `Pagination` + locale `paginationRange`; loading shows skeleton rows                                                                                         |
+| DateRangeFilter       | `hideApply`, `resetLabel`, `onreset`                                                                                  | omit `onapply` to hide the button; reset removed. Layout no longer needs `patterns.css`                                                                                             |
+| TagOption, ListItem   | `active`                                                                                                              | `selected`                                                                                                                                                                          |
+| SidebarItem           | `active`                                                                                                              | `current`                                                                                                                                                                           |
+| Avatar                | `text`, `icon`, `onerror`; relative `src` got a `/` prefix                                                            | `name`; icon as children; `src` used as given; `alt=""` marks it decorative                                                                                                         |
+| AvatarGroup           | items `{ text, alt }`                                                                                                 | items `{ name, src }`; **new** `total` for server counts                                                                                                                            |
+| UserInfo              | `name` + `lastName`, `photoUrl`, `avatarSize`, `avatarColor`, `actions` snippet, `<h3>`                               | one `name`, `src`, `size`, `color`, `trailing` snippet, **new** `href`; no heading element                                                                                          |
+| Divider               | `text`, `position="left/right"`, `spaced`, `icon`, `onclick`, `DividerPosition`                                       | `label`, `align="start/end"`, `spacing`, **new** `orientation`, `variant`; `<hr>` when plain; `DividerAlign`                                                                        |
+| List / ListItem       | `subtitle`, `clickable`, `avatar`, `titleSlot`, `subtitleSlot`, children as actions; `div role=list`                  | `description`, interactive via `href`/`onclick`, `leading`, `title`, `description`, `trailing` snippets; `<ul>`/`<li>`                                                              |
+| ListHeader            | `color`, `children`                                                                                                   | inherits the List color; `actions`                                                                                                                                                  |
+| Image                 | `srcSet`, `fetchPriority`, `isZoomed`, `removeWrapper`, `disableSkeleton`, `decoding`                                 | `srcset`, `fetchpriority`, `zoom`; others removed. **New:** `fit`, `ratio`; never hidden while loading                                                                              |
+| Alert, Notification   | `type` (`error`), `NotificationType`; `onclose(event)`                                                                | `color` (`danger`); `onclose()` fires after the exit transition; Notification pauses on hover/focus                                                                                 |
+| Tooltip, Dropdown     | `position`, `TooltipPosition`, `DropdownPosition`; Dropdown `trigger="hover\|click"`, geometry, `closeOnClickOutside` | `placement`; the trigger mode, geometry and outside-click props are removed (menus open on click)                                                                                   |
+| Dropdown trigger      | `triggerContent` wrapped in `<div role="button">`, often holding a `Button`                                           | The trigger is a real `<button>` around `triggerContent`; for your own control use `{#snippet trigger(props)}<Button {...props}>…</Button>{/snippet}` (the codemod flags each case) |
+| PageHeader            | title rendered as `<h3>`                                                                                              | `<h1>` by default; pass `level` to change it                                                                                                                                        |
+| Card                  | `aria-pressed="false"` on every button card; `--card-image-height`                                                    | `aria-pressed` only with `selected`; `--lumi-card-image-height` (codemod rewrites)                                                                                                  |
+| Context               | `closeOnClick`, `closeOnScroll`, `itemSelector`, geometry props                                                       | removed (always closes on select/scroll; items are `[role="menuitem"]`)                                                                                                             |
+| Collapse              | `defaultOpen`, `onchange`, `radius`, `titleSnippet`                                                                   | `bind:open`, `ontoggle`; content stays in the DOM (`inert` when closed)                                                                                                             |
+| Sidebar, Navbar       | `ariaLabel`; Navbar default title "Dashboard"                                                                         | `aria-label`; no default title                                                                                                                                                      |
+| EmptyState, InfoItem  | `titleSlot`, `descriptionSlot`, `/assets/images/` prefix; `iconSlot`, `labelSlot`                                     | text props; image paths used as given                                                                                                                                               |
+| Progress              | bindable `value`; `--progress-*` custom properties                                                                    | plain `value`; `--lumi-progress-*` (codemod rewrites)                                                                                                                               |
+| Checkbox, Switch      | `aria-label` fell back to `label`                                                                                     | the visible label names the control                                                                                                                                                 |
+
+### 4. New
+
+`ToggleGroup` (multi-select toggles), `Skeleton`, `Message` + `MessageList` (chat rows and transcript), `Pagination` (buttons or crawlable `rel` links), `Toaster` + `createToaster()` (replaces app-local toast stores), `formatNumber`, `formatDate`, `getInitials`, `registerIcons`, `setLumiLocale`, `lumiEn`, `lumiEs`, CSS recipes `.lumi-skeleton`, `.lumi-spinner`, `.lumi-switcher`, `.lumi-sr-only`, `.lumi-text-clamp--3`.
+
+### 5. What the codemod cannot fix
+
+- Add `@lucide/svelte` to the app (`pnpm add @lucide/svelte`) when converting icons.
+- App types that mirror Lumi's (e.g. a local Drive menu option with `icon: string`): use `DriveMenuOption`.
+- App toast stores using `'error'`: map to `'danger'`, or replace the store with `createToaster()`.
+- Content moved into a `trailing`/`actions` snippet no longer sees `{#if x}` narrowing of a prop or `$bindable`; use `x?.field` or a `{@const}`.
+- Pages that render pattern classes outside the file that imports `@lumi-ui/svelte/styles` get the import added there; move it if your layouts split styles.
+
+Review forms, tables, lists and dialogs in light/dark mode and with the keyboard after migrating.
 
 ## 0.5.0 → 0.6.0
 

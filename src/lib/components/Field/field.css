@@ -1,0 +1,130 @@
+/* Shared text-field shell for Input, NumberInput, Select and Textarea.
+   Imported by those components, so only pages with a field ship it.
+   Root: .lumi-field (+ --{size}, --invalid, --disabled) with
+   --lumi-control-accent set inline; shell: .lumi-field__control; native
+   element: .lumi-field__input. */
+@layer lumi.tokens, lumi.base, lumi.components, lumi.layout, lumi.patterns, lumi.utilities;
+
+@layer lumi.components {
+	.lumi-field {
+		--lumi-field-height: var(--lumi-control-height-md);
+		--lumi-field-font: var(--lumi-font-size-base);
+		--lumi-field-pad-y: var(--lumi-space-xs);
+		--lumi-field-pad-x: var(--lumi-space-sm);
+		--lumi-field-border: var(--lumi-color-control-border);
+		--lumi-control-autofill-bg: var(--lumi-color-control-fill);
+		display: flex;
+		flex-direction: column;
+		inline-size: 100%;
+		min-inline-size: 0;
+	}
+
+	.lumi-field:focus-within {
+		--lumi-control-autofill-bg: var(--lumi-color-control-focus-fill);
+	}
+
+	.lumi-field--xs {
+		--lumi-field-height: var(--lumi-control-height-xs);
+		--lumi-field-font: var(--lumi-font-size-xs);
+		--lumi-field-pad-y: var(--lumi-space-2xs);
+		--lumi-field-pad-x: var(--lumi-space-xs);
+	}
+
+	.lumi-field--sm {
+		--lumi-field-height: var(--lumi-control-height-sm);
+		--lumi-field-font: var(--lumi-font-size-sm);
+		--lumi-field-pad-x: var(--lumi-space-xs);
+	}
+
+	.lumi-field--lg {
+		--lumi-field-height: var(--lumi-control-height-lg);
+		--lumi-field-font: var(--lumi-font-size-lg);
+		--lumi-field-pad-y: var(--lumi-space-sm);
+		--lumi-field-pad-x: var(--lumi-space-md);
+	}
+
+	.lumi-field--xl {
+		--lumi-field-height: var(--lumi-control-height-xl);
+		--lumi-field-font: var(--lumi-font-size-xl);
+		--lumi-field-pad-y: var(--lumi-space-md);
+		--lumi-field-pad-x: var(--lumi-space-lg);
+	}
+
+	.lumi-field--invalid {
+		--lumi-field-border: var(--lumi-control-accent);
+	}
+
+	.lumi-field--disabled {
+		opacity: var(--lumi-opacity-disabled);
+		pointer-events: none;
+	}
+
+	.lumi-field__control {
+		position: relative;
+		display: flex;
+		align-items: center;
+		min-block-size: var(--lumi-field-height);
+		color: var(--lumi-color-text-muted);
+		background: var(--lumi-color-control-fill);
+		border: var(--lumi-border-width-thin) solid var(--lumi-field-border);
+		border-radius: var(--lumi-radius-control);
+		box-shadow: var(--lumi-control-shadow);
+		overflow: hidden;
+		transition: var(--lumi-transition-control);
+	}
+
+	.lumi-field:not(.lumi-field--invalid)
+		.lumi-field__control:hover:not(:focus-within) {
+		border-color: var(--lumi-color-border-strong);
+		background: var(--lumi-color-control-hover-fill);
+	}
+
+	.lumi-field__control:focus-within {
+		color: var(--lumi-control-accent);
+		border-color: var(--lumi-control-accent);
+		background: var(--lumi-color-control-focus-fill);
+		box-shadow: var(--lumi-control-focus-shadow);
+	}
+
+	.lumi-field__input {
+		flex: 1;
+		inline-size: 100%;
+		min-inline-size: 0;
+		padding: var(--lumi-field-pad-y) var(--lumi-field-pad-x);
+		font: inherit;
+		font-size: var(--lumi-field-font);
+		line-height: var(--lumi-line-height-normal);
+		color: var(--lumi-color-text);
+		background: transparent;
+		border: 0;
+		outline: 0;
+	}
+
+	.lumi-field__input::placeholder {
+		color: var(--lumi-color-placeholder);
+	}
+
+	/* Icon buttons inside the shell (clear, action, stepper, trigger). */
+	.lumi-field__button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		align-self: stretch;
+		flex-shrink: 0;
+		padding: 0 var(--lumi-field-pad-x);
+		color: inherit;
+		background: transparent;
+		border: 0;
+		cursor: pointer;
+		transition: color var(--lumi-duration-fast) var(--lumi-easing-default);
+	}
+
+	.lumi-field__button:hover {
+		color: var(--lumi-control-accent);
+	}
+
+	.lumi-field__button:focus-visible {
+		outline: var(--lumi-focus-outline);
+		outline-offset: calc(var(--lumi-border-width-thick) * -1);
+	}
+}

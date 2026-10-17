@@ -1,19 +1,22 @@
 <script lang="ts">
 	import type { AvatarPickerProps } from './types';
 
+	const uid = $props.id();
+
 	let {
 		options,
 		value = $bindable(),
-		name = 'avatar',
-		class: className = ''
+		name = `lumi-avatar-${uid}`,
+		'aria-label': ariaLabel,
+		class: className
 	}: AvatarPickerProps = $props();
-
-	const classes = $derived(
-		['lumi-avatar-picker', className].filter(Boolean).join(' ')
-	);
 </script>
 
-<div class={classes}>
+<div
+	class={['lumi-avatar-picker', className]}
+	role="radiogroup"
+	aria-label={ariaLabel}
+>
 	{#each options as option (option.value)}
 		<label class="lumi-avatar-picker__option">
 			<input
@@ -22,14 +25,19 @@
 				value={option.value}
 				checked={value === option.value}
 				onchange={() => (value = option.value)}
-				class="lumi-avatar-picker__input"
+				class="lumi-sr-only"
 			/>
-			<div
+			<span
 				class="lumi-avatar-picker__image"
 				class:lumi-avatar-picker__image--selected={value === option.value}
 			>
-				<img src={option.src} alt={option.label} />
-			</div>
+				<img
+					src={option.src}
+					alt={option.label}
+					loading="lazy"
+					decoding="async"
+				/>
+			</span>
 		</label>
 	{/each}
 </div>
@@ -44,12 +52,6 @@
 
 	.lumi-avatar-picker__option {
 		cursor: pointer;
-	}
-
-	.lumi-avatar-picker__input {
-		position: absolute;
-		opacity: 0;
-		pointer-events: none;
 	}
 
 	.lumi-avatar-picker__image {
@@ -75,7 +77,7 @@
 		transform: scale(var(--lumi-interactive-zoom-scale));
 	}
 
-	.lumi-avatar-picker__input:focus-visible + .lumi-avatar-picker__image {
+	input:focus-visible + .lumi-avatar-picker__image {
 		box-shadow: var(--lumi-control-focus-shadow);
 	}
 

@@ -1,205 +1,150 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import type { ButtonProps, ButtonVariant } from './types';
 	import Icon from '../Icon/Icon.svelte';
-	import { getIconSize, type LumiDisplaySize } from '../config';
-
-	interface Props extends ButtonProps {
-		children?: Snippet;
-		onclick?: (event: MouseEvent) => void;
-		'aria-label'?: string;
-	}
+	import type { ButtonProps } from './types';
 
 	const {
-		variant,
+		variant = 'filled',
 		color = 'primary',
 		size = 'md',
 		icon,
 		iconAfter = false,
-		radius = false,
 		loading = false,
 		disabled = false,
+		pressed,
 		type = 'button',
-		button,
-		'aria-label': ariaLabel = '',
+		href,
+		target,
+		rel,
+		download,
 		class: className,
-		onclick,
-		children
-	}: Props = $props();
+		style,
+		children,
+		...rest
+	}: ButtonProps = $props();
 
-	const visualVariant = $derived<ButtonVariant>(
-		variant ??
-			(type === 'filled' ||
-			type === 'border' ||
-			type === 'flat' ||
-			type === 'ghost' ||
-			type === 'gradient'
-				? type
-				: 'filled')
+	const inert = $derived(disabled || loading);
+	// Primary is the CSS default; other roles override the three accent slots.
+	const tint = $derived(
+		[
+			color !== 'primary' &&
+				`--btn-color:var(--lumi-color-${color});--btn-solid:var(--lumi-color-${color}-solid);--btn-foreground:var(--lumi-color-${color}-foreground)`,
+			style
+		]
+			.filter(Boolean)
+			.join(';') || undefined
 	);
-	const nativeType = $derived<'button' | 'submit' | 'reset'>(
-		button ??
-			(type === 'button' || type === 'submit' || type === 'reset'
-				? type
-				: 'button')
-	);
-
-	const iconPixelSize = $derived.by(() => {
-		const sizeOffsets: Record<LumiDisplaySize, number> = {
-			sm: -2,
-			md: -4,
-			lg: -2,
-			xl: -4
-		};
-		return getIconSize(size) + sizeOffsets[size];
-	});
-
-	const buttonClasses = $derived.by(() => {
-		const classes = [
-			'lumi-button',
-			`lumi-button--${visualVariant}`,
-			`lumi-button--${size}`
-		];
-
-		if (radius) classes.push('lumi-button--radius');
-		if (icon && !children) classes.push('lumi-button--icon-only');
-		if (loading) classes.push('lumi-button--loading');
-		if (className) classes.push(className);
-
-		return classes.join(' ');
-	});
-
-	// Map colors to CSS variables dynamically
-	const styleVars = $derived.by(() => {
-		const colorVar = `var(--lumi-color-${color})`;
-		const solidVar = `var(--lumi-color-${color}-solid)`;
-		const colorForeground = `var(--lumi-color-${color}-foreground)`;
-		return `--btn-color: ${colorVar}; --btn-solid: ${solidVar}; --btn-foreground: ${colorForeground};`;
-	});
-
-	function handleClick(event: MouseEvent) {
-		if (!disabled && !loading && onclick) {
-			onclick(event);
-		}
-	}
+	const classes = $derived([
+		'lumi-button',
+		`lumi-button--${variant}`,
+		`lumi-button--${size}`,
+		icon && !children && 'lumi-button--icon-only',
+		loading && 'lumi-button--loading',
+		className
+	]);
 </script>
 
-<button
-	class={buttonClasses}
-	type={nativeType}
-	disabled={disabled || loading}
-	aria-busy={loading || undefined}
-	aria-label={ariaLabel || (icon && !children ? icon : undefined)}
-	onclick={handleClick}
-	style={styleVars}
->
+{#snippet content()}
 	{#if loading}
-		<span class="lumi-button__spinner" aria-hidden="true"></span>
+		<span class="lumi-spinner lumi-button__spinner" aria-hidden="true"></span>
 	{/if}
-
 	{#if icon && !iconAfter && !loading}
-		<span class="lumi-button__icon" aria-hidden="true">
-			<Icon {icon} size={`${iconPixelSize}px`} />
-		</span>
+		<Icon {icon} size="var(--btn-icon)" />
 	{/if}
-
 	{#if children}
-		<span class="lumi-button__text">
-			{@render children()}
-		</span>
+		<span class="lumi-button__text">{@render children()}</span>
 	{/if}
-
 	{#if icon && iconAfter && !loading}
-		<span class="lumi-button__icon" aria-hidden="true">
-			<Icon {icon} size={`${iconPixelSize}px`} />
-		</span>
+		<Icon {icon} size="var(--btn-icon)" />
 	{/if}
-</button>
+{/snippet}
+
+{#if href !== undefined}
+	<a
+		{...rest}
+		class={classes}
+		href={inert ? undefined : href}
+		target={inert ? undefined : target}
+		rel={inert ? undefined : rel}
+		download={inert ? undefined : download}
+		role={inert ? 'link' : undefined}
+		aria-disabled={inert || undefined}
+		aria-busy={loading || undefined}
+		style={tint}
+	>
+		{@render content()}
+	</a>
+{:else}
+	<button
+		{...rest}
+		class={classes}
+		{type}
+		disabled={inert}
+		aria-pressed={pressed}
+		aria-busy={loading || undefined}
+		style={tint}
+	>
+		{@render content()}
+	</button>
+{/if}
 
 <style>
-	/* ========================================================================== */
-	/* LUMI BUTTON - semantic actions with restrained tactile depth */
-	/* ========================================================================== */
-
+	/* Semantic actions with restrained tactile depth. Disabled and loading
+	   controls drop pointer events, so hover/active rules need no guards. */
 	.lumi-button {
-		/* Focus rings resolve the accent from here (core.css recipe). */
+		--btn-color: var(--lumi-color-primary);
+		--btn-solid: var(--lumi-color-primary-solid);
+		--btn-foreground: var(--lumi-color-primary-foreground);
 		--lumi-control-accent: var(--btn-color);
-		--button-hover-lift: 0;
-		--button-shadow-strength: 22%;
-		--button-shadow-hover-strength: 28%;
-		--btn-solid-shade: var(--lumi-color-black);
-		--button-color-shadow: 0 var(--lumi-space-xs) var(--lumi-space-lg)
+		--btn-icon: 1.2em;
+		--btn-lift: 0;
+		--btn-shade: var(--lumi-color-black);
+		--btn-sheen: inset 0 var(--lumi-border-width-thin) 0
+			color-mix(in srgb, var(--lumi-color-white) 26%, transparent);
+		--btn-glow: 0 var(--lumi-space-xs) var(--lumi-space-lg)
 			calc(var(--lumi-space-xs) * -1)
-			color-mix(
-				in srgb,
-				var(--btn-solid) var(--button-shadow-strength),
-				transparent
-			);
-		--button-color-shadow-hover: 0 var(--lumi-space-sm) var(--lumi-space-xl)
+			color-mix(in srgb, var(--btn-solid) 22%, transparent);
+		--btn-glow-hover: 0 var(--lumi-space-sm) var(--lumi-space-xl)
 			calc(var(--lumi-space-xs) * -1)
-			color-mix(
-				in srgb,
-				var(--btn-solid) var(--button-shadow-hover-strength),
-				transparent
-			);
-		/* Base Layout */
+			color-mix(in srgb, var(--btn-solid) 28%, transparent);
+		position: relative;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		gap: var(--lumi-space-xs);
-
-		/* Typography */
 		font-family: var(--lumi-font-family-sans);
 		font-weight: var(--lumi-font-weight-semibold);
 		line-height: var(--lumi-line-height-none);
+		letter-spacing: var(--lumi-letter-spacing-wide);
 		text-decoration: none;
 		white-space: nowrap;
-		letter-spacing: var(--lumi-letter-spacing-wide);
-
-		/* Visual */
 		border: var(--lumi-border-width-base) solid transparent;
 		border-radius: var(--lumi-radius-control);
+		outline: var(--lumi-border-width-thick) solid transparent;
 		cursor: pointer;
 		user-select: none;
-		position: relative;
-		overflow: hidden;
-		outline: var(--lumi-border-width-thick) solid transparent;
 		isolation: isolate;
-
 		transition: var(--lumi-transition-interactive);
 	}
 
-	/* Focus visible */
-	.lumi-button:focus-visible {
-		outline-color: transparent;
-		box-shadow: var(--lumi-focus-ring-offset);
-	}
-
-	/* Disabled - Elegant fade */
-	.lumi-button:disabled {
-		cursor: not-allowed;
+	.lumi-button:is(:disabled, [aria-disabled='true']) {
 		pointer-events: none;
-		transform: none;
 	}
 
-	.lumi-button:disabled:not(.lumi-button--loading) {
+	.lumi-button:is(:disabled, [aria-disabled='true']):not(
+			.lumi-button--loading
+		) {
 		opacity: var(--lumi-opacity-disabled);
 	}
 
-	/* Hover lift effect */
-	.lumi-button:hover:not(:disabled) {
-		transform: translateY(var(--button-hover-lift));
+	.lumi-button:hover {
+		transform: translateY(var(--btn-lift));
 	}
 
-	/* Active press effect */
-	.lumi-button:active:not(:disabled) {
-		transform: translateY(0) scale(var(--lumi-interactive-press-scale));
+	.lumi-button:active {
+		transform: scale(var(--lumi-interactive-press-scale));
 	}
 
-	/* ========================================================================== */
-	/* SIZE VARIANTS */
-	/* ========================================================================== */
-
+	/* Sizes */
 	.lumi-button--sm {
 		height: var(--lumi-control-height-sm);
 		padding: 0 var(--lumi-space-md);
@@ -213,81 +158,77 @@
 	}
 
 	.lumi-button--lg {
+		--btn-icon: 1.4em;
 		height: var(--lumi-control-height-lg);
 		padding: 0 var(--lumi-space-xl);
 		font-size: var(--lumi-font-size-base);
 	}
 
 	.lumi-button--xl {
+		--btn-icon: 1.4em;
 		height: var(--lumi-control-height-xl);
 		padding: 0 var(--lumi-space-xxl);
 		font-size: var(--lumi-font-size-lg);
 	}
 
-	/* ========================================================================== */
-	/* SHAPE VARIANTS */
-	/* ========================================================================== */
-
-	.lumi-button--radius {
-		border-radius: var(--lumi-radius-full);
-	}
-
-	/* Icon only - Square aspect ratio */
+	/* Square from the size height. */
 	.lumi-button--icon-only {
 		padding: 0;
 		aspect-ratio: 1;
 	}
-	.lumi-button--icon-only.lumi-button--sm {
-		width: var(--lumi-control-height-sm);
-	}
-	.lumi-button--icon-only.lumi-button--md {
-		width: var(--lumi-control-height-md);
-	}
-	.lumi-button--icon-only.lumi-button--lg {
-		width: var(--lumi-control-height-lg);
-	}
-	.lumi-button--icon-only.lumi-button--xl {
-		width: var(--lumi-control-height-xl);
-	}
 
-	/* ========================================================================== */
-	/* TYPE VARIANTS */
-	/* ========================================================================== */
-
-	/* FILLED - tactile primary action */
-	.lumi-button--filled {
-		--button-hover-lift: var(--lumi-interactive-lift);
-		background: var(--btn-solid);
+	/* Solid fills: filled + gradient pair solid with its foreground. */
+	.lumi-button--filled,
+	.lumi-button--gradient {
+		--btn-lift: var(--lumi-interactive-lift);
 		color: var(--btn-foreground);
+		background: var(--btn-solid);
 		border-color: color-mix(in srgb, var(--btn-solid) 48%, transparent);
-		box-shadow:
-			inset 0 var(--lumi-border-width-thin) 0
-				color-mix(in srgb, var(--lumi-color-white) 26%, transparent),
-			var(--button-color-shadow),
-			var(--lumi-shadow-sm);
+		box-shadow: var(--btn-sheen), var(--btn-glow), var(--lumi-shadow-sm);
 	}
 
-	.lumi-button--filled:hover:not(:disabled) {
-		background: color-mix(
-			in srgb,
-			var(--btn-solid) 90%,
-			var(--btn-solid-shade)
-		);
-		box-shadow:
-			inset 0 var(--lumi-border-width-thin) 0
-				color-mix(in srgb, var(--lumi-color-white) 32%, transparent),
-			var(--button-color-shadow-hover),
-			var(--lumi-shadow-md);
+	.lumi-button--filled:hover {
+		background: color-mix(in srgb, var(--btn-solid) 90%, var(--btn-shade));
 	}
 
-	.lumi-button--filled:active:not(:disabled) {
+	.lumi-button--filled:hover,
+	.lumi-button--gradient:hover {
+		box-shadow: var(--btn-sheen), var(--btn-glow-hover), var(--lumi-shadow-md);
+	}
+
+	.lumi-button--filled:active,
+	.lumi-button--gradient:active {
 		box-shadow: var(--lumi-shadow-sm);
 	}
 
-	/* BORDER - quiet outline action */
+	.lumi-button--gradient {
+		--btn-glow: 0 var(--lumi-space-xs) var(--lumi-space-lg)
+			calc(var(--lumi-space-xs) * -1)
+			color-mix(in srgb, var(--btn-solid) 30%, transparent);
+		--btn-glow-hover: 0 var(--lumi-space-sm) var(--lumi-space-xl)
+			calc(var(--lumi-space-xs) * -1)
+			color-mix(in srgb, var(--btn-solid) 36%, transparent);
+		--btn-sheen: inset 0 var(--lumi-border-width-thin) 0
+			color-mix(in srgb, var(--lumi-color-white) 18%, transparent);
+		background: linear-gradient(
+			135deg,
+			var(--btn-solid),
+			color-mix(in srgb, var(--btn-solid) 90%, var(--btn-shade)) 52%,
+			color-mix(in srgb, var(--btn-solid) 75%, var(--btn-shade))
+		);
+	}
+
+	/* Gradients shade away from the paired foreground when supported. */
+	@supports (color: contrast-color(red)) {
+		.lumi-button {
+			--btn-shade: contrast-color(var(--btn-foreground));
+		}
+	}
+
+	/* Quiet variants tint the accent. */
 	.lumi-button--border {
-		background: var(--lumi-color-surface-glass);
 		color: var(--btn-color);
+		background: var(--lumi-color-surface-glass);
 		border-color: color-mix(
 			in srgb,
 			var(--btn-color) 34%,
@@ -295,7 +236,7 @@
 		);
 	}
 
-	.lumi-button--border:hover:not(:disabled) {
+	.lumi-button--border:hover {
 		background: var(--lumi-color-surface-glass-strong);
 		border-color: color-mix(
 			in srgb,
@@ -304,116 +245,54 @@
 		);
 	}
 
-	.lumi-button--border:active:not(:disabled) {
-		background: color-mix(in srgb, var(--btn-color) 15%, transparent);
-	}
-
-	/* FLAT - tinted low-emphasis action */
 	.lumi-button--flat {
+		color: var(--btn-color);
 		background: color-mix(in srgb, var(--btn-color) 9%, transparent);
-		color: var(--btn-color);
 		border-color: color-mix(in srgb, var(--btn-color) 18%, transparent);
 	}
 
-	.lumi-button--flat:hover:not(:disabled) {
-		background: color-mix(in srgb, var(--btn-color) 15%, transparent);
-		border-color: color-mix(in srgb, var(--btn-color) 32%, transparent);
-	}
-
-	.lumi-button--flat:active:not(:disabled) {
-		background: color-mix(in srgb, var(--btn-color) 18%, transparent);
-	}
-
-	/* GHOST - transparent low-emphasis action */
 	.lumi-button--ghost {
-		background: transparent;
 		color: var(--btn-color);
-		border-color: transparent;
-		box-shadow: none;
+		background: transparent;
 	}
 
-	.lumi-button--ghost:hover:not(:disabled) {
-		background: color-mix(in srgb, var(--btn-color) 10%, transparent);
-		border-color: color-mix(in srgb, var(--btn-color) 18%, transparent);
+	.lumi-button--flat:hover,
+	.lumi-button--ghost:hover {
+		background: color-mix(in srgb, var(--btn-color) 14%, transparent);
+		border-color: color-mix(in srgb, var(--btn-color) 28%, transparent);
 	}
 
-	.lumi-button--ghost:active:not(:disabled) {
+	.lumi-button--border:active,
+	.lumi-button--flat:active,
+	.lumi-button--ghost:active {
+		background: color-mix(in srgb, var(--btn-color) 17%, transparent);
+	}
+
+	/* Toggle on: quiet variants settle into a tinted, pressed-in fill. */
+	.lumi-button[aria-pressed='true']:not(
+			.lumi-button--filled,
+			.lumi-button--gradient
+		) {
+		color: var(--btn-color);
 		background: color-mix(in srgb, var(--btn-color) 16%, transparent);
-		border-color: color-mix(in srgb, var(--btn-color) 22%, transparent);
+		border-color: color-mix(in srgb, var(--btn-color) 45%, transparent);
+		box-shadow: inset 0 var(--lumi-border-width-thin) var(--lumi-space-2xs)
+			color-mix(in srgb, var(--btn-color) 18%, transparent);
 	}
 
-	/* GRADIENT - expressive tactile action */
-	.lumi-button--gradient {
-		--button-hover-lift: var(--lumi-interactive-lift);
-		--button-shadow-strength: 30%;
-		--button-shadow-hover-strength: 36%;
-		background: var(--btn-solid);
-		background: linear-gradient(
-			135deg,
-			var(--btn-solid) 0%,
-			color-mix(in srgb, var(--btn-solid) 90%, var(--btn-solid-shade)) 52%,
-			color-mix(in srgb, var(--btn-solid) 75%, var(--btn-solid-shade)) 100%
-		);
-		color: var(--btn-foreground);
-		border-color: color-mix(in srgb, var(--btn-solid) 45%, transparent);
-		box-shadow:
-			inset 0 var(--lumi-border-width-thin) 0
-				color-mix(in srgb, var(--lumi-color-white) 18%, transparent),
-			var(--button-color-shadow),
-			var(--lumi-shadow-sm);
+	/* Focus wins over hover and pressed fills (doubled class for weight). */
+	.lumi-button.lumi-button:focus-visible {
+		box-shadow: var(--lumi-focus-ring-offset);
 	}
 
-	@supports (color: contrast-color(red)) {
-		.lumi-button {
-			--btn-solid-shade: contrast-color(var(--btn-foreground));
-		}
-	}
-
-	.lumi-button--gradient:hover:not(:disabled) {
-		border-color: color-mix(in srgb, var(--btn-solid) 60%, transparent);
-		box-shadow:
-			inset 0 var(--lumi-border-width-thin) 0
-				color-mix(in srgb, var(--lumi-color-white) 22%, transparent),
-			var(--button-color-shadow-hover),
-			var(--lumi-shadow-md);
-	}
-
-	.lumi-button--gradient:active:not(:disabled) {
-		box-shadow:
-			inset 0 var(--lumi-border-width-thin) 0
-				color-mix(in srgb, var(--lumi-color-white) 24%, transparent),
-			var(--lumi-shadow-sm);
-	}
-
-	/* ========================================================================== */
-	/* LOADING STATE */
-	/* ========================================================================== */
-
-	/* Shared spinner recipe: faint accent track + solid arc, 1s calm cadence. */
+	/* Spinner (shared recipe) centered over the hidden label. */
 	.lumi-button__spinner {
+		--lumi-spinner-size: var(--btn-icon);
 		position: absolute;
-		width: 1.2em;
-		height: 1.2em;
-		border: var(--lumi-border-width-thick) solid
-			color-mix(in srgb, currentColor 18%, transparent);
-		border-top-color: currentColor;
-		border-radius: var(--lumi-radius-full);
-		animation: lumi-spin var(--lumi-duration-spin) linear infinite;
 	}
 
 	.lumi-button--loading .lumi-button__text {
 		opacity: 0;
-	}
-
-	/* ========================================================================== */
-	/* INNER ELEMENTS */
-	/* ========================================================================== */
-
-	.lumi-button__icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		flex-shrink: 0;
 	}
 
 	.lumi-button__text {

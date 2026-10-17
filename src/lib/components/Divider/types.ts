@@ -1,26 +1,21 @@
-// Lumi UI - Divider Component Types
-
-export type DividerPosition = 'left' | 'center' | 'right';
+export type DividerAlign = 'start' | 'center' | 'end';
+export type DividerSpacing = 'none' | 'sm' | 'md' | 'lg';
 
 export interface DividerProps {
-	/** Content position */
-	position?: DividerPosition;
+	/** @default "horizontal" */
+	orientation?: 'horizontal' | 'vertical';
 
-	/** Icon name */
-	icon?: string;
+	/** Label position along the line (logical) @default "center" */
+	align?: DividerAlign;
 
-	/** Text content */
-	text?: string;
+	/** Text on a horizontal line; also the separator's accessible name */
+	label?: string;
 
-	/** Whether to add spacing */
-	spaced?: boolean;
+	/** @default "solid" */
+	variant?: 'solid' | 'dashed';
 
-	/** Custom class */
+	/** Outer margin along the separated axis @default "md" */
+	spacing?: DividerSpacing;
+
 	class?: string;
-
-	/** Click event handler */
-	onclick?: (event: MouseEvent) => void;
-
-	/** Accessible label when used as interactive separator */
-	'aria-label'?: string;
 }

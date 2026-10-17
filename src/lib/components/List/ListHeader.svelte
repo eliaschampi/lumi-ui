@@ -2,112 +2,45 @@
 	import { Icon } from '../Icon';
 	import type { ListHeaderProps } from './types';
 
-	const {
-		title,
-		color,
-		icon,
-		class: className = '',
-		children,
-		actions
-	}: ListHeaderProps = $props();
-
-	const classes = $derived(
-		['lumi-list-header', color && `lumi-list-header--${color}`, className]
-			.filter(Boolean)
-			.join(' ')
-	);
+	const { title, icon, actions, class: className }: ListHeaderProps = $props();
 </script>
 
-<div class={classes}>
-	{#if icon}
-		<div class="lumi-list-header__icon">
-			<Icon {icon} size="sm" />
-		</div>
+<li class={['lumi-list-header', className]}>
+	{#if icon}<Icon {icon} size="sm" />{/if}
+	<span class="lumi-list-header__title">{title}</span>
+	{#if actions}
+		<span class="lumi-list-header__actions">{@render actions()}</span>
 	{/if}
-
-	<div class="lumi-list-header__content">
-		{#if title}
-			<div class="lumi-list-header__title">
-				{title}
-			</div>
-		{/if}
-	</div>
-
-	{#if actions || children}
-		<div class="lumi-list-header__actions">
-			{@render (actions ?? children)?.()}
-		</div>
-	{/if}
-</div>
+</li>
 
 <style>
 	.lumi-list-header {
-		--list-header-color: var(--lumi-color-text-muted);
 		display: flex;
 		align-items: center;
 		gap: var(--lumi-space-sm);
+		margin-block-end: var(--lumi-space-2xs);
 		padding: var(--lumi-space-xs) var(--lumi-space-sm);
-		color: var(--list-header-color);
-		border-bottom: var(--lumi-border-width-thin) solid
+		border-block-end: var(--lumi-border-width-thin) solid
 			var(--lumi-color-border-light);
-		margin-bottom: var(--lumi-space-2xs);
-	}
-
-	.lumi-list-header__icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: inherit;
-		opacity: 0.85;
-		flex-shrink: 0;
-	}
-
-	.lumi-list-header__content {
-		flex: 1;
-		min-width: 0;
+		color: var(--lumi-control-accent, var(--lumi-color-text-muted));
 	}
 
 	.lumi-list-header__title {
+		flex: 1;
+		min-inline-size: 0;
+		overflow: hidden;
 		font-size: var(--lumi-font-size-xs);
 		font-weight: var(--lumi-font-weight-semibold);
-		color: inherit;
 		letter-spacing: var(--lumi-letter-spacing-wide);
 		line-height: var(--lumi-line-height-tight);
-		text-transform: uppercase;
-		overflow: hidden;
 		text-overflow: ellipsis;
+		text-transform: uppercase;
 		white-space: nowrap;
 	}
 
 	.lumi-list-header__actions {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		gap: var(--lumi-space-xs);
-		margin-left: auto;
-	}
-
-	/* Color variants */
-	.lumi-list-header--primary {
-		--list-header-color: var(--lumi-color-primary);
-	}
-
-	.lumi-list-header--secondary {
-		--list-header-color: var(--lumi-color-secondary);
-	}
-
-	.lumi-list-header--success {
-		--list-header-color: var(--lumi-color-success);
-	}
-
-	.lumi-list-header--warning {
-		--list-header-color: var(--lumi-color-warning);
-	}
-
-	.lumi-list-header--danger {
-		--list-header-color: var(--lumi-color-danger);
-	}
-
-	.lumi-list-header--info {
-		--list-header-color: var(--lumi-color-info);
 	}
 </style>

@@ -1,163 +1,83 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+
+	const COPY = { avatar: en.avatar };
+</script>
+
 <script lang="ts">
-	import { Icon } from '../Icon';
+	import { useLumiLocale } from '../../i18n';
+	import { getInitials } from '../../utils/initials';
+	import { AVATAR_SIZES } from './size';
 	import type { AvatarProps } from './types';
 
 	const {
-		text = '',
+		name = '',
 		src = '',
-		icon = '',
-		alt = '',
+		alt,
 		color = 'primary',
 		size = 'md',
-		class: className = '',
-		onerror
+		class: className,
+		children
 	}: AvatarProps = $props();
 
-	let imageError = $state(false);
+	const i18n = useLumiLocale(COPY);
 
-	const imageSrc = $derived.by(() => {
-		const rawSrc = typeof src === 'string' ? src.trim() : '';
-		if (!rawSrc) {
-			return '';
-		}
-
-		if (
-			rawSrc.startsWith('/') ||
-			rawSrc.startsWith('http://') ||
-			rawSrc.startsWith('https://') ||
-			rawSrc.startsWith('//') ||
-			rawSrc.startsWith('data:') ||
-			rawSrc.startsWith('blob:')
-		) {
-			return rawSrc;
-		}
-
-		return `/${rawSrc}`;
-	});
-
-	$effect(() => {
-		if (src !== undefined) {
-			imageError = false;
-		}
-	});
-
-	const displayText = $derived.by(() => {
-		if (!text) return '';
-
-		const textStr = String(text);
-		if (textStr.length <= 5) return textStr;
-
-		const words = textStr.split(/\s+/);
-		if (words.length > 1) {
-			return words
-				.map((word) => word[0]?.toUpperCase() || '')
-				.join('')
-				.slice(0, 5);
-		}
-
-		return textStr[0]?.toUpperCase() || '';
-	});
-
-	const classes = $derived(
-		['lumi-avatar', `lumi-avatar--${color}`, `lumi-avatar--${size}`, className]
-			.filter(Boolean)
-			.join(' ')
+	// Remembering the failed URL lets a new `src` retry without an effect.
+	let failedSrc = $state('');
+	const decorative = $derived(alt === '');
+	const initials = $derived(
+		name.length <= 2 && !/\s/.test(name)
+			? name.toLocaleUpperCase()
+			: getInitials(name)
 	);
-
-	const handleImageError = (event: Event) => {
-		imageError = true;
-		if (onerror) onerror(event);
-	};
 </script>
 
-<div
-	class={classes}
-	style={`--avatar-solid: var(--lumi-color-${color}-solid); --avatar-foreground: var(--lumi-color-${color}-foreground);`}
-	aria-label={alt || text || 'Avatar'}
+<span
+	class={['lumi-avatar', className]}
+	style:--lumi-avatar-size={AVATAR_SIZES[size]}
+	style:--lumi-avatar-solid="var(--lumi-color-{color}-solid)"
+	style:--lumi-avatar-foreground="var(--lumi-color-{color}-foreground)"
+	role={decorative ? undefined : 'img'}
+	aria-label={decorative ? undefined : alt || name || i18n.t.avatar}
+	aria-hidden={decorative || undefined}
 >
-	{#if imageSrc && !imageError}
+	{#if src && src !== failedSrc}
 		<img
-			src={imageSrc}
-			{alt}
-			class="lumi-avatar__image"
-			onerror={handleImageError}
+			{src}
+			alt=""
+			loading="lazy"
+			decoding="async"
+			onerror={() => (failedSrc = src)}
 		/>
-	{:else if icon}
-		<span class="lumi-avatar__icon">
-			<Icon {icon} />
-		</span>
-	{:else if text || (imageSrc && imageError)}
-		<span class="lumi-avatar__text">
-			{displayText}
-		</span>
+	{:else if children}
+		{@render children()}
+	{:else}
+		{initials}
 	{/if}
-</div>
+</span>
 
 <style>
-	/* ============================================================================
-	 * AVATAR COMPONENT - Clean and consistent design
-	 * ============================================================================ */
-
 	.lumi-avatar {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
+		display: inline-grid;
+		place-items: center;
+		flex-shrink: 0;
+		inline-size: var(--lumi-avatar-size);
+		block-size: var(--lumi-avatar-size);
+		overflow: hidden;
 		border-radius: var(--lumi-radius-full);
+		background: var(--lumi-avatar-solid);
+		color: var(--lumi-avatar-foreground);
+		/* Initials scale with the diameter, so every size keeps one proportion. */
+		font-size: calc(var(--lumi-avatar-size) * 0.375);
 		font-weight: var(--lumi-font-weight-semibold);
 		line-height: var(--lumi-line-height-none);
 		white-space: nowrap;
-		background: var(--avatar-solid);
-		color: var(--avatar-foreground);
 		user-select: none;
-		overflow: hidden;
-		flex-shrink: 0;
 	}
 
-	/* Size variants */
-	.lumi-avatar--sm {
-		width: var(--lumi-space-xl);
-		height: var(--lumi-space-xl);
-		font-size: var(--lumi-font-size-xs);
-	}
-
-	.lumi-avatar--md {
-		width: var(--lumi-space-xxl);
-		height: var(--lumi-space-xxl);
-		font-size: var(--lumi-font-size-sm);
-	}
-
-	.lumi-avatar--lg {
-		width: var(--lumi-space-3xl);
-		height: var(--lumi-space-3xl);
-		font-size: var(--lumi-font-size-base);
-	}
-
-	.lumi-avatar--xl {
-		width: var(--lumi-space-4xl);
-		height: var(--lumi-space-4xl);
-		font-size: var(--lumi-font-size-lg);
-	}
-
-	/* Text styling */
-	.lumi-avatar__text,
-	.lumi-avatar__icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 100%;
-		height: 100%;
-	}
-
-	.lumi-avatar__icon :global(svg) {
-		width: 60%;
-		height: 60%;
-	}
-
-	/* Image styling */
-	.lumi-avatar__image {
-		width: 100%;
-		height: 100%;
+	img {
+		inline-size: 100%;
+		block-size: 100%;
 		object-fit: cover;
-		display: block;
 	}
 </style>

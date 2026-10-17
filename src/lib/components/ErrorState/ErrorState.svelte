@@ -1,153 +1,124 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+
+	const COPY = {
+		errorBadRequestKicker: en.errorBadRequestKicker,
+		errorBadRequestTitle: en.errorBadRequestTitle,
+		errorBadRequestDescription: en.errorBadRequestDescription,
+		errorNotFoundKicker: en.errorNotFoundKicker,
+		errorNotFoundTitle: en.errorNotFoundTitle,
+		errorNotFoundDescription: en.errorNotFoundDescription,
+		errorServerKicker: en.errorServerKicker,
+		errorServerTitle: en.errorServerTitle,
+		errorServerDescription: en.errorServerDescription,
+		errorBack: en.errorBack,
+		errorHome: en.errorHome,
+		errorRetry: en.errorRetry
+	};
+</script>
+
 <script lang="ts">
+	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
+	import House from '@lucide/svelte/icons/house';
+	import RefreshCcw from '@lucide/svelte/icons/refresh-ccw';
+	import SearchX from '@lucide/svelte/icons/search-x';
+	import ServerCrash from '@lucide/svelte/icons/server-crash';
+	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
 	import { Button } from '../Button';
 	import { Card } from '../Card';
 	import { EmptyState } from '../EmptyState';
-	import type {
-		ErrorStateContent,
-		ErrorStateProps,
-		ErrorStateStatus
-	} from './types';
-
-	const ERROR_CONTENT = {
-		400: {
-			status: 400,
-			variant: 'bad-request',
-			icon: 'alertTriangle',
-			color: 'warning',
-			kicker: 'Solicitud inválida',
-			title: '400 · Algo no cuadra en esta solicitud',
-			description:
-				'Revisa los datos enviados o vuelve a la pantalla anterior para intentarlo con información válida.',
-			primaryAction: 'Volver atrás',
-			secondaryAction: 'Ir al inicio'
-		},
-		404: {
-			status: 404,
-			variant: 'not-found',
-			icon: 'search',
-			color: 'info',
-			kicker: 'Página no encontrada',
-			title: '404 · Esta ruta no existe o cambió de lugar',
-			description:
-				'Puedes regresar al panel principal y continuar desde una sección disponible para tu perfil.',
-			primaryAction: 'Ir al inicio',
-			secondaryAction: 'Volver atrás'
-		},
-		500: {
-			status: 500,
-			variant: 'server-error',
-			icon: 'shieldCheck',
-			color: 'danger',
-			kicker: 'Error del servidor',
-			title: '500 · No pudimos completar esta operación',
-			description:
-				'El sistema encontró un problema inesperado. Intenta recargar la vista o vuelve al inicio.',
-			primaryAction: 'Reintentar',
-			secondaryAction: 'Ir al inicio'
-		}
-	} satisfies Record<ErrorStateStatus, ErrorStateContent>;
+	import { useLumiLocale } from '../../i18n';
+	import type { ErrorStateProps, ErrorStateStatus } from './types';
 
 	const {
 		status = 500,
 		message = '',
 		homeHref = '/',
-		class: className = ''
+		class: className
 	}: ErrorStateProps = $props();
 
-	const normalizedStatus = $derived.by<ErrorStateStatus>(() => {
-		if (status === 400 || status === 404 || status === 500) return status;
-		if (status >= 400 && status < 500) return 400;
-		return 500;
+	const i18n = useLumiLocale(COPY);
+
+	const code = $derived<ErrorStateStatus>(
+		status === 404 ? 404 : status >= 400 && status < 500 ? 400 : 500
+	);
+	const content = $derived.by(() => {
+		const t = i18n.t;
+		if (code === 400)
+			return {
+				icon: TriangleAlert,
+				color: 'warning',
+				kicker: t.errorBadRequestKicker,
+				title: t.errorBadRequestTitle,
+				description: t.errorBadRequestDescription
+			} as const;
+		if (code === 404)
+			return {
+				icon: SearchX,
+				color: 'info',
+				kicker: t.errorNotFoundKicker,
+				title: t.errorNotFoundTitle,
+				description: t.errorNotFoundDescription
+			} as const;
+		return {
+			icon: ServerCrash,
+			color: 'danger',
+			kicker: t.errorServerKicker,
+			title: t.errorServerTitle,
+			description: t.errorServerDescription
+		} as const;
 	});
 
-	const content = $derived.by(() => ERROR_CONTENT[normalizedStatus]);
-	const classes = $derived(
-		[
-			'lumi-error-state',
-			'lumi-flex',
-			'lumi-flex--center',
-			'lumi-padding--xl',
-			className
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
-	const displayMessage = $derived(message.trim());
-
-	function navigateHome() {
-		if (typeof window !== 'undefined') {
-			window.location.href = homeHref;
-		}
-	}
-
-	function goBack() {
-		if (typeof window !== 'undefined' && window.history.length > 1) {
-			window.history.back();
-			return;
-		}
-
-		navigateHome();
-	}
-
-	function retry() {
-		if (typeof window !== 'undefined') {
-			window.location.reload();
-		}
-	}
-
-	function runPrimaryAction() {
-		if (content.status === 400) {
-			goBack();
-			return;
-		}
-
-		if (content.status === 500) {
-			retry();
-			return;
-		}
-
-		navigateHome();
-	}
-
-	function runSecondaryAction() {
-		if (content.status === 404) {
-			goBack();
-			return;
-		}
-
-		navigateHome();
+	function goBack(): void {
+		if (history.length > 1) history.back();
+		else location.assign(homeHref);
 	}
 </script>
 
-<section class={classes} aria-label={`${content.kicker}: ${content.title}`}>
+<section
+	class={['lumi-error-state', className]}
+	aria-label={`${content.kicker}: ${content.title}`}
+>
 	<Card class="lumi-error-state__card">
 		<EmptyState
 			icon={content.icon}
 			iconColor={content.color}
-			title={content.title}
-			description={displayMessage || content.description}
+			title={`${code} · ${content.title}`}
+			description={message.trim() || content.description}
 		>
 			{#snippet actions()}
-				<div
-					class="lumi-flex lumi-flex--center lumi-flex--wrap lumi-flex--gap-sm"
-				>
+				{#if code === 500}
 					<Button
 						variant="filled"
-						color={content.color}
-						icon={content.status === 500 ? 'refresh' : 'house'}
-						onclick={runPrimaryAction}
+						color="danger"
+						icon={RefreshCcw}
+						onclick={() => location.reload()}
 					>
-						{content.primaryAction}
+						{i18n.t.errorRetry}
 					</Button>
+				{:else if code === 400}
 					<Button
-						variant="border"
-						color="primary"
-						icon={content.status === 404 ? 'arrowLeft' : 'house'}
-						onclick={runSecondaryAction}
+						variant="filled"
+						color="warning"
+						icon={ArrowLeft}
+						onclick={goBack}
 					>
-						{content.secondaryAction}
+						{i18n.t.errorBack}
 					</Button>
-				</div>
+				{/if}
+				<Button
+					variant={code === 404 ? 'filled' : 'border'}
+					color={code === 404 ? 'info' : 'primary'}
+					icon={House}
+					href={homeHref}
+				>
+					{i18n.t.errorHome}
+				</Button>
+				{#if code === 404}
+					<Button variant="border" icon={ArrowLeft} onclick={goBack}>
+						{i18n.t.errorBack}
+					</Button>
+				{/if}
 			{/snippet}
 		</EmptyState>
 	</Card>
@@ -155,17 +126,21 @@
 
 <style>
 	.lumi-error-state {
-		width: 100%;
-		min-height: calc(100dvh - (var(--lumi-layout-content-padding) * 2));
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		inline-size: 100%;
+		min-block-size: calc(100dvh - (var(--lumi-layout-content-padding) * 2));
+		padding: var(--lumi-space-xl);
 	}
 
-	:global(.lumi-error-state__card) {
-		max-width: calc(var(--lumi-space-6xl) * 7);
+	.lumi-error-state :global(.lumi-error-state__card) {
+		max-inline-size: calc(var(--lumi-space-6xl) * 7);
 	}
 
 	@media (max-width: 48rem) {
 		.lumi-error-state {
-			min-height: calc(
+			min-block-size: calc(
 				100dvh - (var(--lumi-layout-content-padding-mobile) * 2)
 			);
 		}

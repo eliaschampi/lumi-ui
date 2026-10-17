@@ -1,55 +1,44 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+
+	const COPY = { sidebarToggle: en.sidebarToggle };
+</script>
+
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import Button from '../Button/Button.svelte';
+	import Menu from '@lucide/svelte/icons/menu';
+	import { Button } from '../Button';
+	import { useLumiLocale } from '../../i18n';
 	import type { NavbarProps } from './types';
 
-	interface Props extends NavbarProps {
-		title?: Snippet;
-		actions?: Snippet;
-		user?: Snippet;
-	}
-
 	const {
-		class: className = '',
-		'ontoggle-sidebar': onToggleSidebar,
+		class: className,
+		ontogglesidebar,
 		title,
 		actions,
 		user
-	}: Props = $props();
+	}: NavbarProps = $props();
+
+	const i18n = useLumiLocale(COPY);
 </script>
 
-<nav class="lumi-navbar {className}">
-	<!-- Left side - Menu toggle and title -->
+<nav class={['lumi-navbar', className]}>
 	<div class="lumi-navbar__left">
-		<div class="lumi-navbar__menu-btn">
-			<Button
-				variant="ghost"
-				size="md"
-				icon="menu"
-				aria-label="Alternar barra lateral"
-				onclick={onToggleSidebar}
-			/>
-		</div>
-
-		<div class="lumi-navbar__title">
-			{#if title}
-				{@render title()}
-			{:else}
-				<span class="lumi-text--lg lumi-font--bold">Dashboard</span>
-			{/if}
-		</div>
+		<Button
+			variant="ghost"
+			icon={Menu}
+			aria-label={i18n.t.sidebarToggle}
+			onclick={ontogglesidebar}
+		/>
+		{#if title}
+			<div class="lumi-navbar__title">{@render title()}</div>
+		{/if}
 	</div>
 
-	<!-- Right side - Actions -->
 	<div class="lumi-navbar__right">
 		{#if actions}
 			{@render actions()}
-		{:else}
-			<div class="lumi-navbar__actions">
-				{#if user}
-					{@render user()}
-				{/if}
-			</div>
+		{:else if user}
+			<div class="lumi-navbar__actions">{@render user()}</div>
 		{/if}
 	</div>
 </nav>
@@ -70,7 +59,6 @@
 		min-width: 0;
 		padding: 0 var(--lumi-space-lg);
 		z-index: var(--lumi-z-fixed);
-		margin: 0;
 		transition: var(--lumi-transition-colors);
 	}
 
@@ -82,6 +70,8 @@
 
 	.lumi-navbar__title {
 		color: var(--lumi-color-text);
+		font-size: var(--lumi-font-size-lg);
+		font-weight: var(--lumi-font-weight-bold);
 		white-space: nowrap;
 	}
 
@@ -100,7 +90,6 @@
 	/* Responsive adjustments */
 	@media (max-width: 64rem) {
 		.lumi-navbar {
-			top: 0;
 			--lumi-surface-radius-local: var(--lumi-layout-floating-radius-tablet);
 		}
 	}

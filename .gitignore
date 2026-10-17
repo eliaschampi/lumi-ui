@@ -10,3 +10,6 @@ dist
 # Example app build artifacts
 examples/dashboard/build
 examples/dashboard/.svelte-kit
+
+# Local pack output
+*.tgz

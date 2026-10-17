@@ -1,101 +1,95 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+
+	const COPY = { avatarGroup: en.avatarGroup };
+</script>
+
 <script lang="ts">
 	import { Avatar } from '../Avatar';
+	import { AVATAR_SIZES } from '../Avatar/size';
+	import { useLumiLocale } from '../../i18n';
 	import type { AvatarGroupProps } from './types';
 
 	const {
 		items = [],
 		max = 4,
+		total,
 		size = 'sm',
 		color = 'primary',
-		class: className = ''
+		class: className
 	}: AvatarGroupProps = $props();
 
+	const i18n = useLumiLocale(COPY);
+
 	const visible = $derived(items.slice(0, Math.max(0, max)));
-	const overflow = $derived(items.length - visible.length);
+	const count = $derived(Math.max(total ?? 0, items.length));
 	const names = $derived(
 		items
-			.map((item) => item.alt || item.text || '')
+			.map((item) => item.name)
 			.filter(Boolean)
 			.join(', ')
 	);
-	const classes = $derived(
-		['lumi-avatar-group', `lumi-avatar-group--${size}`, className]
-			.filter(Boolean)
-			.join(' ')
-	);
-	const ariaLabel = $derived(
-		`${items.length} avatar${items.length === 1 ? '' : 's'}${names ? `: ${names}` : ''}`
-	);
 </script>
 
-<div class={classes} role="img" aria-label={ariaLabel} title={names}>
-	{#each visible as item, i (i)}
-		<div class="lumi-avatar-group__item">
-			<Avatar text={item.text} src={item.src} alt={item.alt} {size} {color} />
-		</div>
+<!-- One summary for assistive tech; the avatars inside are decorative. -->
+<span
+	class={['lumi-avatar-group', className]}
+	style:--lumi-avatar-size={AVATAR_SIZES[size]}
+	role="img"
+	aria-label={names
+		? `${i18n.t.avatarGroup(count)}: ${names}`
+		: i18n.t.avatarGroup(count)}
+	title={names || undefined}
+>
+	{#each visible as item}
+		<Avatar name={item.name} src={item.src} {size} {color} alt="" />
 	{/each}
-	{#if overflow > 0}
-		<div
-			class="lumi-avatar-group__item lumi-avatar-group__overflow"
-			aria-hidden="true"
-		>
-			+{overflow}
-		</div>
+	{#if count > visible.length}
+		<span class="lumi-avatar-group__more">+{count - visible.length}</span>
 	{/if}
-</div>
+</span>
 
 <style>
 	.lumi-avatar-group {
-		--lumi-avatar-group-overlap: calc(var(--lumi-space-xs) * -1);
-		--lumi-avatar-group-size: var(--lumi-space-xl);
-		--lumi-avatar-group-font: var(--lumi-font-size-xs);
+		--lumi-avatar-group-overlap: calc(var(--lumi-avatar-size) * -0.25);
 		display: inline-flex;
 		align-items: center;
 	}
 
-	.lumi-avatar-group--md {
-		--lumi-avatar-group-overlap: calc(var(--lumi-space-sm) * -1);
-		--lumi-avatar-group-size: var(--lumi-space-xxl);
-		--lumi-avatar-group-font: var(--lumi-font-size-sm);
+	/* Spread slightly on hover so faces read individually. */
+	@media (hover: hover) {
+		.lumi-avatar-group:hover {
+			--lumi-avatar-group-overlap: calc(var(--lumi-avatar-size) * -0.1);
+		}
 	}
 
-	.lumi-avatar-group--lg {
-		--lumi-avatar-group-overlap: calc(var(--lumi-space-sm) * -1);
-		--lumi-avatar-group-size: var(--lumi-space-3xl);
-		--lumi-avatar-group-font: var(--lumi-font-size-base);
+	.lumi-avatar-group > :global(*) {
+		/* The ring matches the surface behind the stack; override per context. */
+		box-shadow: 0 0 0 var(--lumi-border-width-thick)
+			var(--lumi-avatar-group-ring, var(--lumi-color-surface));
+		transition: margin-inline-start var(--lumi-duration-base)
+			var(--lumi-easing-default);
 	}
 
-	.lumi-avatar-group--xl {
-		--lumi-avatar-group-overlap: calc(var(--lumi-space-md) * -1);
-		--lumi-avatar-group-size: var(--lumi-space-4xl);
-		--lumi-avatar-group-font: var(--lumi-font-size-lg);
-	}
-
-	.lumi-avatar-group__item {
-		display: inline-flex;
-		border-radius: var(--lumi-radius-full);
-		box-shadow: 0 0 0 var(--lumi-border-width-thick) var(--lumi-color-surface);
-	}
-
-	.lumi-avatar-group__item:not(:first-child) {
+	.lumi-avatar-group > :global(:not(:first-child)) {
 		margin-inline-start: var(--lumi-avatar-group-overlap);
 	}
 
-	/* Same diameter as Avatar; only the +N badge needs explicit size. */
-	.lumi-avatar-group__overflow {
-		inline-size: var(--lumi-avatar-group-size);
-		block-size: var(--lumi-avatar-group-size);
-		align-items: center;
-		justify-content: center;
-		font-size: var(--lumi-avatar-group-font);
-		font-weight: var(--lumi-font-weight-semibold);
-		line-height: 1;
-		color: var(--lumi-color-text-muted);
+	.lumi-avatar-group__more {
+		display: inline-grid;
+		place-items: center;
+		inline-size: var(--lumi-avatar-size);
+		block-size: var(--lumi-avatar-size);
+		border-radius: var(--lumi-radius-full);
 		background: color-mix(
-			in oklch,
+			in srgb,
 			var(--lumi-color-surface-inset) 88%,
 			var(--lumi-color-text) 12%
 		);
+		color: var(--lumi-color-text-muted);
+		font-size: calc(var(--lumi-avatar-size) * 0.34);
+		font-weight: var(--lumi-font-weight-semibold);
+		line-height: var(--lumi-line-height-none);
 		user-select: none;
 	}
 </style>

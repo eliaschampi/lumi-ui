@@ -1,107 +1,101 @@
-<script lang="ts">
-	import type { Snippet } from 'svelte';
-	import { setContext } from 'svelte';
-	import { Icon } from '../Icon';
-	import type { TabsProps } from './types';
+<script module lang="ts">
+	import * as en from '../../i18n/en';
 
-	interface Props extends TabsProps {
-		children?: Snippet;
-	}
+	const COPY = { tabs: en.tabs };
+</script>
+
+<script lang="ts">
+	import { useLumiLocale } from '../../i18n';
+	import Icon from '../Icon/Icon.svelte';
+	import type { TabsProps } from './types';
 
 	let {
 		value = $bindable(),
 		tabs = [],
 		color = 'primary',
 		orientation = 'horizontal',
-		'aria-label': ariaLabel = '',
+		'aria-label': ariaLabel,
 		class: className = '',
 		children,
 		onchange
-	}: Props = $props();
+	}: TabsProps = $props();
 
-	const instanceId = $props.id();
-	const tabsId = `lumi-tabs-${instanceId}`;
-	$effect(() => {
-		if (value === undefined && tabs.length > 0) {
-			const firstEnabledTab = tabs.find((tab) => !tab.disabled);
-			if (firstEnabledTab) {
-				value = firstEnabledTab.value;
-			}
-		}
-	});
+	const i18n = useLumiLocale(COPY);
+	const uid = $props.id();
+	const tabId = (index: number) => `lumi-tabs-${uid}-tab-${index}`;
+	const panelId = (index: number) => `lumi-tabs-${uid}-panel-${index}`;
 
-	setContext('tabs', {
-		get activeTab() {
-			return value;
-		}
-	});
-
-	const classes = $derived(
-		['lumi-tabs', `lumi-tabs--${orientation}`, `lumi-tabs--${color}`, className]
-			.filter(Boolean)
-			.join(' ')
-	);
+	// Falls back to the first enabled tab, so SSR renders a selected tab.
+	const active = $derived(value ?? tabs.find((tab) => !tab.disabled)?.value);
+	const activeIndex = $derived(tabs.findIndex((tab) => tab.value === active));
 	const managedPanels = $derived(tabs.some((tab) => tab.content));
-	const enabledTabs = $derived(tabs.filter((tab) => !tab.disabled));
 
-	const selectTab = (tabValue: string | number) => {
-		if (value === tabValue) return;
-		const previousValue = value;
-		value = tabValue;
-		onchange?.(tabValue, previousValue);
-	};
+	function selectTab(next: string | number): void {
+		if (active === next) return;
+		const previous = active;
+		value = next;
+		onchange?.(next, previous);
+	}
 
-	const handleKeyDown = (event: KeyboardEvent) => {
-		if (enabledTabs.length === 0) return;
-		const currentIndex = enabledTabs.findIndex((tab) => tab.value === value);
-		const previousKey = orientation === 'horizontal' ? 'ArrowLeft' : 'ArrowUp';
-		const nextKey = orientation === 'horizontal' ? 'ArrowRight' : 'ArrowDown';
-		let nextIndex: number;
-		if (event.key === previousKey) {
-			nextIndex = currentIndex > 0 ? currentIndex - 1 : enabledTabs.length - 1;
-		} else if (event.key === nextKey) {
-			nextIndex = currentIndex < enabledTabs.length - 1 ? currentIndex + 1 : 0;
-		} else if (event.key === 'Home') {
-			nextIndex = 0;
-		} else if (event.key === 'End') {
-			nextIndex = enabledTabs.length - 1;
-		} else {
-			return;
-		}
+	function handleKeydown(event: KeyboardEvent): void {
+		const enabled = tabs.flatMap((tab, index) => (tab.disabled ? [] : [index]));
+		if (!enabled.length) return;
+		const rtl =
+			getComputedStyle(event.currentTarget as Element).direction === 'rtl';
+		const horizontal = orientation === 'horizontal';
+		const back = horizontal ? (rtl ? 'ArrowRight' : 'ArrowLeft') : 'ArrowUp';
+		const forward = horizontal
+			? rtl
+				? 'ArrowLeft'
+				: 'ArrowRight'
+			: 'ArrowDown';
+		const at = enabled.indexOf(activeIndex);
+		let next: number | undefined;
+		if (event.key === back) next = enabled.at(at - 1);
+		else if (event.key === forward) next = enabled[(at + 1) % enabled.length];
+		else if (event.key === 'Home') next = enabled[0];
+		else if (event.key === 'End') next = enabled.at(-1);
+		if (next === undefined) return;
 
 		event.preventDefault();
-		selectTab(enabledTabs[nextIndex].value);
-		const tabList = (event.currentTarget as HTMLButtonElement).parentElement;
-		const tabButtons = tabList?.querySelectorAll<HTMLButtonElement>(
-			'[role="tab"]:not(:disabled)'
-		);
-		tabButtons?.[nextIndex]?.focus();
-	};
+		selectTab(tabs[next].value);
+		document.getElementById(tabId(next))?.focus();
+	}
 </script>
 
-<div class={classes}>
-	<!-- Tab Navigation -->
+<div
+	class={['lumi-tabs', `lumi-tabs--${orientation}`, className]}
+	style:--lumi-control-accent="var(--lumi-color-{color})"
+>
 	<div
-		class="lumi-tabs__nav"
+		class={[
+			'lumi-switcher',
+			'lumi-tabs__nav',
+			orientation === 'vertical' && 'lumi-switcher--vertical'
+		]}
 		role="tablist"
 		aria-orientation={orientation}
-		aria-label={ariaLabel || 'Tabs'}
+		aria-label={ariaLabel ?? i18n.t.tabs}
 	>
-		{#each tabs as tab (tab.value)}
+		{#each tabs as tab, index (tab.value)}
 			<button
-				id={`${tabsId}-tab-${tab.value}`}
+				id={tabId(index)}
 				type="button"
 				role="tab"
-				class="lumi-tabs__tab {value === tab.value
-					? 'lumi-tabs__tab--active'
-					: ''} {tab.disabled ? 'lumi-tabs__tab--disabled' : ''}"
-				aria-controls={`${tabsId}-panel-${tab.value}`}
+				class={[
+					'lumi-switcher__option',
+					'lumi-tabs__tab',
+					active === tab.value && 'lumi-switcher__option--active',
+					tab.disabled && 'lumi-switcher__option--disabled'
+				]}
+				aria-controls={managedPanels || index === activeIndex
+					? panelId(index)
+					: undefined}
 				disabled={tab.disabled}
-				aria-selected={value === tab.value}
-				aria-disabled={tab.disabled}
-				tabindex={value === tab.value ? 0 : -1}
+				aria-selected={active === tab.value}
+				tabindex={active === tab.value ? 0 : -1}
 				onclick={() => selectTab(tab.value)}
-				onkeydown={handleKeyDown}
+				onkeydown={handleKeydown}
 			>
 				{#if tab.icon}
 					<Icon icon={tab.icon} size="md" />
@@ -113,28 +107,23 @@
 		{/each}
 	</div>
 
-	<!-- Tab Content -->
 	<div
-		id={!managedPanels && value !== undefined
-			? `${tabsId}-panel-${value}`
-			: undefined}
+		id={!managedPanels && activeIndex >= 0 ? panelId(activeIndex) : undefined}
 		class="lumi-tabs__content"
 		role={!managedPanels ? 'tabpanel' : undefined}
-		aria-labelledby={!managedPanels && value !== undefined
-			? `${tabsId}-tab-${value}`
+		aria-labelledby={!managedPanels && activeIndex >= 0
+			? tabId(activeIndex)
 			: undefined}
 	>
 		{#if managedPanels}
-			{#each tabs as tab (tab.value)}
+			{#each tabs as tab, index (tab.value)}
 				<div
-					id={`${tabsId}-panel-${tab.value}`}
+					id={panelId(index)}
 					role="tabpanel"
-					aria-labelledby={`${tabsId}-tab-${tab.value}`}
-					hidden={value !== tab.value}
+					aria-labelledby={tabId(index)}
+					hidden={active !== tab.value}
 				>
-					{#if tab.content}
-						{@render tab.content()}
-					{/if}
+					{@render tab.content?.()}
 				</div>
 			{/each}
 		{:else if children}
@@ -144,41 +133,21 @@
 </div>
 
 <style>
-	/* Same segmented-shell recipe as SegmentedControl: one shell, one hover
-	   tint, one elevated active pill across both switchers. */
+	/* Nav shell, tabs and active pill come from the shared .lumi-switcher recipe. */
 	.lumi-tabs {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		--lumi-tabs-color: var(--lumi-color-primary);
-		--lumi-control-accent: var(--lumi-tabs-color);
-		--tabs-hover-bg: color-mix(in srgb, var(--lumi-tabs-color) 9%, transparent);
-		--tabs-shell-bg: color-mix(
-			in srgb,
-			var(--lumi-color-surface-glass-strong) 78%,
-			var(--lumi-color-background-hover) 22%
-		);
-		--tabs-nav-border: var(--lumi-border-width-thin) solid
-			color-mix(
-				in srgb,
-				var(--lumi-color-border-glass) 72%,
-				var(--lumi-color-border-strong) 28%
-			);
 	}
 
 	.lumi-tabs--horizontal .lumi-tabs__nav {
-		flex-direction: row;
+		display: flex;
 		width: 100%;
-		max-width: 100%;
 		min-width: 0;
-		overflow-x: auto;
-		overflow-y: hidden;
-		overscroll-behavior-inline: contain;
 	}
 
 	.lumi-tabs--horizontal .lumi-tabs__tab {
 		flex: 1 1 0;
-		min-width: max-content;
 	}
 
 	.lumi-tabs--vertical {
@@ -187,119 +156,18 @@
 	}
 
 	.lumi-tabs--vertical .lumi-tabs__nav {
-		flex-direction: column;
-		align-items: stretch;
 		min-width: calc(var(--lumi-space-5xl) * 2 + var(--lumi-space-md));
 	}
 
-	.lumi-tabs--vertical .lumi-tabs__tab {
-		justify-content: flex-start;
-		text-align: left;
-		width: 100%;
-	}
-
-	.lumi-tabs--vertical .lumi-tabs__content {
-		flex: 1;
-		padding-top: var(--lumi-space-2xs);
-	}
-
-	.lumi-tabs__nav {
-		display: flex;
-		align-items: stretch;
-		gap: var(--lumi-space-2xs);
-		margin-bottom: 0;
-		padding: var(--lumi-space-2xs);
-		border: var(--tabs-nav-border);
-		border-radius: var(--lumi-radius-panel);
-		background: var(--tabs-shell-bg);
-		box-shadow: var(--lumi-control-shadow);
-	}
-
-	.lumi-tabs__tab {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: var(--lumi-space-xs);
-		padding: var(--lumi-space-xs) var(--lumi-space-md);
-		font-family: var(--lumi-font-family-sans);
-		font-size: var(--lumi-font-size-sm);
-		font-weight: var(--lumi-font-weight-medium);
-		line-height: var(--lumi-line-height-tight);
-		color: var(--lumi-color-text-muted);
-		background: transparent;
-		border: var(--lumi-border-width-thin) solid transparent;
-		border-radius: var(--lumi-radius-control);
-		cursor: pointer;
-		transition: var(--lumi-transition-interactive);
-		user-select: none;
-		white-space: nowrap;
-		min-height: var(--lumi-control-height-sm);
-	}
-
-	.lumi-tabs__tab:hover:not(:disabled):not(.lumi-tabs__tab--active) {
-		color: var(--lumi-color-text);
-		background: var(--tabs-hover-bg);
-	}
-
-	.lumi-tabs__tab--active {
-		color: var(--lumi-tabs-color);
-		font-weight: var(--lumi-font-weight-semibold);
-		background: linear-gradient(
-			145deg,
-			color-mix(
-					in srgb,
-					var(--lumi-color-surface-card-hover) 88%,
-					var(--lumi-tabs-color) 12%
-				)
-				0%,
-			var(--lumi-color-surface-card) 100%
-		);
-		border-color: color-mix(
-			in srgb,
-			var(--lumi-tabs-color) 28%,
-			var(--lumi-color-border)
-		);
-		box-shadow: var(--lumi-shadow-sm);
-	}
-
-	.lumi-tabs__tab--disabled {
-		opacity: var(--lumi-opacity-disabled);
-		cursor: not-allowed;
-		pointer-events: none;
-	}
-
-	.lumi-tabs__tab:focus-visible {
-		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-focus-outline-offset);
-	}
-
-	/* Tab content */
 	.lumi-tabs__content {
 		flex: 1;
 		padding-top: var(--lumi-space-md);
 	}
 
-	/* Color variants preserve the existing custom-property cascade. */
-	.lumi-tabs--primary {
-		--lumi-tabs-color: var(--lumi-color-primary);
-	}
-	.lumi-tabs--secondary {
-		--lumi-tabs-color: var(--lumi-color-secondary);
-	}
-	.lumi-tabs--success {
-		--lumi-tabs-color: var(--lumi-color-success);
-	}
-	.lumi-tabs--warning {
-		--lumi-tabs-color: var(--lumi-color-warning);
-	}
-	.lumi-tabs--danger {
-		--lumi-tabs-color: var(--lumi-color-danger);
-	}
-	.lumi-tabs--info {
-		--lumi-tabs-color: var(--lumi-color-info);
+	.lumi-tabs--vertical .lumi-tabs__content {
+		padding-top: var(--lumi-space-2xs);
 	}
 
-	/* Responsive design */
 	@media (max-width: 48rem) {
 		.lumi-tabs--vertical {
 			flex-direction: column;
@@ -310,19 +178,12 @@
 			margin-bottom: var(--lumi-space-sm);
 		}
 
-		.lumi-tabs--vertical .lumi-tabs__tab {
-			margin-right: 0;
-		}
-
 		.lumi-tabs--vertical .lumi-tabs__content {
-			padding-left: 0;
 			padding-top: var(--lumi-space-sm);
 		}
 
 		.lumi-tabs__tab {
 			padding: var(--lumi-space-xs) var(--lumi-space-sm);
-			font-size: var(--lumi-font-size-sm);
-			min-height: var(--lumi-control-height-sm);
 		}
 	}
 </style>

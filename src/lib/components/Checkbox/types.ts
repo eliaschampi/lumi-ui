@@ -11,6 +11,8 @@ export interface CheckboxProps {
 	indeterminate?: boolean;
 	/** Form field name */
 	name?: string;
+	/** Submitted value when checked @default 'on' */
+	value?: string;
 	/** Label text */
 	label?: string;
 	/** Size variant */

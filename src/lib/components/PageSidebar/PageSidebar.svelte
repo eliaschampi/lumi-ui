@@ -1,37 +1,47 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+
+	const COPY = {
+		pageSidebarTitle: en.pageSidebarTitle,
+		pageSidebarClose: en.pageSidebarClose
+	};
+</script>
+
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { MediaQuery } from 'svelte/reactivity';
 	import { portal } from '../../actions/portal';
 	import { registerModal } from '../../utils/modal';
-	import { Button } from '../Button';
 	import { Card } from '../Card';
+	import { CloseButton } from '../CloseButton';
+	import { useLumiLocale } from '../../i18n';
 	import type { PageSidebarProps } from './types';
 
 	let {
 		mobileOpen = $bindable(false),
-		mobileTitle = 'Filtros',
-		mobileAriaLabel = 'Cerrar panel lateral',
+		mobileTitle,
+		mobileAriaLabel,
 		hideMobileHeader = false,
-		class: className = '',
-		variant = '',
+		class: className,
+		variant,
 		sidebar,
 		drawer,
 		onclose
 	}: PageSidebarProps = $props();
 
-	const cardClasses = $derived(
-		['lumi-page-sidebar__card', className].filter(Boolean).join(' ')
+	const i18n = useLumiLocale(COPY);
+	// Below the layout breakpoint the sidebar becomes a portaled modal drawer.
+	const mobile = new MediaQuery('max-width: 64rem', false);
+	const title = $derived(mobileTitle ?? i18n.t.pageSidebarTitle);
+	const closeLabel = $derived(mobileAriaLabel ?? i18n.t.pageSidebarClose);
+	const cardClass = $derived(
+		className
+			? `lumi-page-sidebar__card ${className}`
+			: 'lumi-page-sidebar__card'
 	);
-	let isMobile = $state(false);
 	let modalElement: HTMLDivElement | undefined = $state();
-	onMount(() => {
-		const query = window.matchMedia('(max-width: 64rem)');
-		const update = () => (isMobile = query.matches);
-		update();
-		query.addEventListener('change', update);
-		return () => query.removeEventListener('change', update);
-	});
+
 	$effect(() => {
-		if (mobileOpen && isMobile && modalElement)
+		if (mobileOpen && mobile.current && modalElement)
 			return registerModal(modalElement, closeMobileSidebar);
 	});
 
@@ -45,56 +55,49 @@
 	class="lumi-layout--sidebar-left lumi-page-sidebar__desktop"
 	data-variant={variant || undefined}
 >
-	<Card spaced class={cardClasses}>
-		<div class="lumi-page-sidebar__content">
-			{#if sidebar}
-				{@render sidebar()}
-			{/if}
-		</div>
+	<Card spaced class={cardClass}>
+		<div class="lumi-page-sidebar__content">{@render sidebar?.()}</div>
 	</Card>
 </aside>
 
-{#if mobileOpen && isMobile}
+{#if mobileOpen && mobile.current}
 	<div
-		use:portal
+		use:portal={'body'}
 		bind:this={modalElement}
 		class="lumi-page-sidebar__modal"
 		role="dialog"
-		aria-label={mobileTitle || mobileAriaLabel}
+		aria-modal="true"
+		aria-label={title || closeLabel}
 		tabindex="-1"
 	>
 		<button
 			type="button"
 			class="lumi-page-sidebar__backdrop"
 			onclick={closeMobileSidebar}
-			aria-label={mobileAriaLabel}
+			aria-label={closeLabel}
 			tabindex="-1"
 		></button>
 		<aside
 			class="lumi-page-sidebar__drawer"
 			data-variant={variant || undefined}
 		>
-			<Card spaced class={cardClasses}>
+			<Card spaced class={cardClass}>
 				{#if !hideMobileHeader}
 					<div class="lumi-page-sidebar__drawer-header">
-						<p class="lumi-margin--none lumi-font--semibold">{mobileTitle}</p>
-						<Button
-							variant="flat"
-							size="sm"
-							icon="x"
-							aria-label={mobileAriaLabel}
-							onclick={closeMobileSidebar}
-						/>
+						<p class="lumi-page-sidebar__drawer-title">{title}</p>
+						<CloseButton label={closeLabel} onclick={closeMobileSidebar} />
 					</div>
 				{/if}
 				<div class="lumi-page-sidebar__content">
-					{#if drawer}
-						{@render drawer()}
-					{:else if sidebar}
-						{@render sidebar()}
-					{/if}
+					{@render (drawer ?? sidebar)?.()}
 				</div>
 			</Card>
 		</aside>
 	</div>
 {/if}
+
+<style>
+	.lumi-page-sidebar__drawer-title {
+		font-weight: var(--lumi-font-weight-semibold);
+	}
+</style>

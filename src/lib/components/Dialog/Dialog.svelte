@@ -1,17 +1,18 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+
+	const COPY = { dialog: en.dialog, dialogClose: en.dialogClose };
+</script>
+
 <script lang="ts">
-	import { onDestroy, untrack, type Snippet } from 'svelte';
+	import { untrack } from 'svelte';
 	import { fade, scale } from 'svelte/transition';
 	import { portal } from '../../actions/portal';
 	import { registerModal } from '../../utils/modal';
-	import Icon from '../Icon/Icon.svelte';
-	import { LUMI_CONFIG } from '../config';
+	import { CloseButton } from '../CloseButton';
+	import { DURATION_BASE, motion } from '../config';
+	import { useLumiLocale } from '../../i18n';
 	import type { DialogProps } from './types';
-
-	interface Props extends DialogProps {
-		children?: Snippet;
-		header?: Snippet;
-		footer?: Snippet;
-	}
 
 	let {
 		open = $bindable(false),
@@ -21,9 +22,9 @@
 		scrollable = false,
 		fullScreen = false,
 		hideClose = false,
-		closeLabel = 'Cerrar diálogo',
+		closeLabel,
 		closeOnEscape = true,
-		class: className = '',
+		class: className,
 		onclose,
 		onopen,
 		onafteropen,
@@ -31,39 +32,14 @@
 		children,
 		header,
 		footer
-	}: Props = $props();
+	}: DialogProps = $props();
 
+	const i18n = useLumiLocale(COPY);
 	let dialogElement: HTMLDivElement | undefined = $state();
-	let afterCloseTimer: number | undefined;
-	let destroyed = false;
 	let pointerDownOnOverlay = false;
 
 	const uniqueId = $props.id();
 	const titleId = `lumi-dialog-title-${uniqueId}`;
-	const contentId = `lumi-dialog-content-${uniqueId}`;
-	const transitionDuration = LUMI_CONFIG.transitions.base;
-
-	const dialogClasses = $derived.by(() =>
-		[
-			'lumi-dialog',
-			!fullScreen && `lumi-dialog--${size}`,
-			scrollable && 'lumi-dialog--scrollable',
-			fullScreen && 'lumi-dialog--full-screen',
-			className
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
-
-	const overlayClasses = $derived.by(() =>
-		[
-			'lumi-dialog-overlay',
-			persistent && 'lumi-dialog-overlay--persistent',
-			fullScreen && 'lumi-dialog-overlay--full-screen'
-		]
-			.filter(Boolean)
-			.join(' ')
-	);
 
 	function handleClose(): void {
 		if (!open) return;
@@ -76,43 +52,18 @@
 	}
 
 	function handleOverlayClick(event: MouseEvent): void {
-		const wasPointerDownOnOverlay = pointerDownOnOverlay;
+		const pressedOverlay = pointerDownOnOverlay;
 		pointerDownOnOverlay = false;
-
-		if (persistent) return;
-		if (!wasPointerDownOnOverlay) return;
-		if (event.target !== event.currentTarget) return;
-
-		handleClose();
+		if (pressedOverlay && event.target === event.currentTarget) handleClose();
 	}
 
 	$effect(() => {
 		if (!open || !dialogElement) return;
-		window.clearTimeout(afterCloseTimer);
-		const release = registerModal(dialogElement, () => {
+		untrack(() => onopen?.());
+		return registerModal(dialogElement, () => {
 			if (!closeOnEscape) return false;
 			handleClose();
 		});
-		untrack(() => onopen?.());
-		const duration = untrack(() => transitionDuration);
-
-		const afterOpenTimer = window.setTimeout(() => {
-			onafteropen?.();
-		}, duration);
-
-		return () => {
-			window.clearTimeout(afterOpenTimer);
-			release();
-			window.clearTimeout(afterCloseTimer);
-			if (!destroyed) {
-				afterCloseTimer = window.setTimeout(() => onafterclose?.(), duration);
-			}
-		};
-	});
-
-	onDestroy(() => {
-		destroyed = true;
-		clearTimeout(afterCloseTimer);
 	});
 </script>
 
@@ -120,20 +71,32 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events (Backdrop dismissal is pointer-only; keyboard users close with Escape or the close button.) -->
 	<div
 		bind:this={dialogElement}
-		use:portal
-		class={overlayClasses}
-		transition:fade={{ duration: transitionDuration }}
+		use:portal={'body'}
+		class={[
+			'lumi-dialog-overlay',
+			persistent && 'lumi-dialog-overlay--persistent',
+			fullScreen && 'lumi-dialog-overlay--full-screen'
+		]}
+		transition:fade={{ duration: motion(DURATION_BASE) }}
+		onintroend={onafteropen}
+		onoutroend={onafterclose}
 		onpointerdown={handleOverlayPointerDown}
 		onclick={handleOverlayClick}
 		role="dialog"
+		aria-modal="true"
 		aria-labelledby={title && !header ? titleId : undefined}
-		aria-label={header || !title ? title || 'Dialog' : undefined}
-		aria-describedby={contentId}
+		aria-label={header || !title ? title || i18n.t.dialog : undefined}
 		tabindex="-1"
 	>
 		<div
-			class={dialogClasses}
-			transition:scale={{ duration: transitionDuration, start: 0.96 }}
+			class={[
+				'lumi-dialog',
+				!fullScreen && `lumi-dialog--${size}`,
+				scrollable && 'lumi-dialog--scrollable',
+				fullScreen && 'lumi-dialog--full-screen',
+				className
+			]}
+			transition:scale={{ duration: motion(DURATION_BASE), start: 0.96 }}
 		>
 			{#if header || title || !hideClose}
 				<header class="lumi-dialog__header">
@@ -141,35 +104,25 @@
 						{#if header}
 							{@render header()}
 						{:else if title}
-							<h2 id={titleId} class="lumi-dialog__title">
-								{title}
-							</h2>
+							<h2 id={titleId} class="lumi-dialog__title">{title}</h2>
 						{/if}
 					</div>
-
 					{#if !hideClose}
-						<button
+						<CloseButton
 							class="lumi-dialog__close"
-							type="button"
-							aria-label={closeLabel}
+							label={closeLabel ?? i18n.t.dialogClose}
 							onclick={handleClose}
-						>
-							<Icon icon="x" size="md" />
-						</button>
+						/>
 					{/if}
 				</header>
 			{/if}
 
-			<div id={contentId} class="lumi-dialog__content">
-				{#if children}
-					{@render children()}
-				{/if}
+			<div class="lumi-dialog__content lumi-scrollbar">
+				{@render children?.()}
 			</div>
 
 			{#if footer}
-				<footer class="lumi-dialog__footer">
-					{@render footer()}
-				</footer>
+				<footer class="lumi-dialog__footer">{@render footer()}</footer>
 			{/if}
 		</div>
 	</div>
@@ -227,7 +180,9 @@
 		padding: 0;
 	}
 
-	.lumi-dialog-overlay--persistent {
+	.lumi-dialog-overlay--persistent,
+	/* Layers portaled into the overlay (menus, tooltips, listboxes) are not backdrop. */
+	.lumi-dialog-overlay > :global(:not(.lumi-dialog)) {
 		cursor: default;
 	}
 
@@ -310,44 +265,8 @@
 		line-height: var(--lumi-line-height-tight);
 	}
 
-	.lumi-dialog__close {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: var(--lumi-space-xl);
-		height: var(--lumi-space-xl);
-		margin-left: var(--lumi-space-md);
-		background: transparent;
-		border: var(--lumi-border-width-thin) solid transparent;
-		border-radius: var(--lumi-radius-full);
-		color: var(--lumi-color-text-muted);
-		cursor: pointer;
-		transition: var(--lumi-transition-interactive);
-		flex-shrink: 0;
-	}
-
-	.lumi-dialog__close:hover {
-		background: color-mix(
-			in srgb,
-			var(--lumi-color-primary-bg) 45%,
-			transparent
-		);
-		color: var(--lumi-color-text);
-		border-color: color-mix(
-			in srgb,
-			var(--lumi-color-primary) 20%,
-			var(--lumi-color-border)
-		);
-		transform: scale(var(--lumi-interactive-hover-scale));
-	}
-
-	.lumi-dialog__close:active {
-		transform: scale(var(--lumi-interactive-press-scale));
-	}
-
-	.lumi-dialog__close:focus-visible {
-		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-focus-outline-offset);
+	.lumi-dialog__header :global(.lumi-dialog__close) {
+		margin-inline-start: var(--lumi-space-md);
 	}
 
 	.lumi-dialog__content {
@@ -361,19 +280,6 @@
 		min-width: 0;
 		min-height: 0;
 		overscroll-behavior: contain;
-	}
-
-	.lumi-dialog__content::-webkit-scrollbar {
-		width: var(--lumi-space-2xs);
-	}
-
-	.lumi-dialog__content::-webkit-scrollbar-track {
-		background: transparent;
-	}
-
-	.lumi-dialog__content::-webkit-scrollbar-thumb {
-		background: var(--lumi-color-border);
-		border-radius: var(--lumi-radius-full);
 	}
 
 	.lumi-dialog__footer {

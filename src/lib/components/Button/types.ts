@@ -1,44 +1,40 @@
-/**
- * Lumi UI - Button Component Types
- * Professional, type-safe button component for Svelte 5
- */
-
+import type { HTMLAttributes } from 'svelte/elements';
+import type { IconSource } from '../../utils/icons';
 import type { LumiColor, LumiDisplaySize } from '../config';
 
 export type ButtonVariant = 'filled' | 'border' | 'flat' | 'ghost' | 'gradient';
 
-export interface ButtonProps {
-	/** Visual style variant */
+/**
+ * Action or link. Any global HTML attribute (`title`, `id`, `data-*`,
+ * `aria-*`, event handlers) passes through to the rendered element.
+ */
+export interface ButtonProps extends Omit<
+	HTMLAttributes<HTMLElement>,
+	'color'
+> {
+	/** Visual style @default 'filled' */
 	variant?: ButtonVariant;
-	/** Native button type, or legacy visual variant when `variant` is omitted */
-	type?: 'button' | 'submit' | 'reset' | ButtonVariant;
-
-	/** Legacy native button type used with the visual `type` API */
-	button?: 'button' | 'submit' | 'reset';
-
-	/** Semantic accent color */
+	/** Semantic accent color @default 'primary' */
 	color?: LumiColor;
-
-	/** Size on the shared display scale */
+	/** Size on the shared display scale @default 'md' */
 	size?: LumiDisplaySize;
-
-	/** Icon name to display */
-	icon?: string;
-
-	/** Whether to show icon after text */
+	/** Icon component or registered icon name */
+	icon?: IconSource;
+	/** Place the icon after the label */
 	iconAfter?: boolean;
-
-	/** Whether to use rounded corners */
-	radius?: boolean;
-
-	/** Whether to show loading state */
+	/** Shows a spinner and blocks activation */
 	loading?: boolean;
-
-	/** Whether button is disabled */
 	disabled?: boolean;
-
-	/** Accessible label for icon-only buttons */
-	'aria-label'?: string;
-	/** Additional CSS classes */
-	class?: string;
+	/** Toggle-button state (`aria-pressed`); omit for plain actions */
+	pressed?: boolean;
+	/** Native button type @default 'button' */
+	type?: 'button' | 'submit' | 'reset';
+	/** Renders a crawlable link instead of a button */
+	href?: string;
+	/** Link target (only with `href`) */
+	target?: string;
+	/** Link relationship (only with `href`) */
+	rel?: string;
+	/** Download the linked resource (only with `href`) */
+	download?: string | boolean;
 }

@@ -1,97 +1,11 @@
 /**
- * Lumi UI - Shared Component Configuration
- * Central configuration for all component defaults
- * Ensures consistency across the entire design system
+ * Shared semantic scales and motion constants. Every value is a named export,
+ * so a component bundles only what it reads.
  */
 
-export const LUMI_CONFIG = {
-	/**
-	 * Standard size scale used across all components
-	 */
-	sizes: {
-		xs: 'xs',
-		sm: 'sm',
-		md: 'md',
-		lg: 'lg',
-		xl: 'xl',
-		'2xl': '2xl'
-	} as const,
-
-	/**
-	 * Semantic color palette
-	 */
-	colors: {
-		primary: 'primary',
-		secondary: 'secondary',
-		success: 'success',
-		warning: 'warning',
-		danger: 'danger',
-		info: 'info'
-	} as const,
-
-	/**
-	 * Icon size mapping (in pixels)
-	 * Maps size scale to actual pixel values
-	 */
-	iconSizes: {
-		xs: 12,
-		sm: 16,
-		md: 20,
-		lg: 24,
-		xl: 32,
-		'2xl': 40
-	} as const,
-
-	/**
-	 * Transition durations (in milliseconds)
-	 */
-	transitions: {
-		fast: 150,
-		base: 220,
-		slow: 300,
-		slower: 500
-	} as const,
-
-	/**
-	 * Semantic geometry for portaled floating components.
-	 * Values are consumed by Floating UI and therefore remain numeric.
-	 */
-	floating: {
-		menu: {
-			offset: 8,
-			maxHeight: 320,
-			viewportPadding: 12
-		},
-		select: {
-			offset: 4,
-			maxHeight: 250,
-			viewportPadding: 16
-		},
-		context: {
-			offset: 0,
-			maxHeight: 300,
-			viewportPadding: 12
-		},
-		tooltip: {
-			offset: 10,
-			maxHeight: 300,
-			viewportPadding: 8,
-			arrowPadding: 12
-		}
-	} as const,
-
-	/**
-	 * Default component props
-	 */
-	defaults: {
-		size: 'md',
-		color: 'primary'
-	} as const
-} as const;
-
-// Type exports for TypeScript
-export type LumiSize = keyof typeof LUMI_CONFIG.sizes;
-export type LumiColor = keyof typeof LUMI_CONFIG.colors;
+export type LumiSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+export type LumiColor =
+	'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info';
 export type LumiCompactSize = Extract<LumiSize, 'sm' | 'md'>;
 export type LumiControlSize = Extract<LumiSize, 'sm' | 'md' | 'lg'>;
 export type LumiDisplaySize = Extract<LumiSize, 'sm' | 'md' | 'lg' | 'xl'>;
@@ -99,12 +13,19 @@ export type LumiExtendedSize = Extract<
 	LumiSize,
 	'xs' | 'sm' | 'md' | 'lg' | 'xl'
 >;
-export type LumiIconSize = keyof typeof LUMI_CONFIG.iconSizes;
-export type LumiTransition = keyof typeof LUMI_CONFIG.transitions;
+
+/** JS transition durations (ms), mirroring the `--lumi-duration-*` tokens. */
+export const DURATION_FAST = 150;
+export const DURATION_BASE = 220;
 
 /**
- * Helper function to get icon size in pixels
+ * A JS transition duration that honors `prefers-reduced-motion`. Svelte
+ * transitions run through the Web Animations API, which the global
+ * reduced-motion CSS cannot reach; transition params are read when each
+ * transition starts, so `{ duration: motion(DURATION_BASE) }` stays current.
  */
-export function getIconSize(size: LumiSize): number {
-	return LUMI_CONFIG.iconSizes[size] ?? LUMI_CONFIG.iconSizes.md;
+export function motion(ms: number): number {
+	return globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+		? 0
+		: ms;
 }

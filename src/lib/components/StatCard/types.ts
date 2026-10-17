@@ -1,3 +1,4 @@
+import type { IconSource } from '../../utils/icons';
 import type { LumiColor } from '../config';
 
 export interface StatCardProps {
@@ -6,7 +7,7 @@ export interface StatCardProps {
 	/** Numeric or string value to display */
 	value: number | string;
 	/** Lucide icon name */
-	icon: string;
+	icon: IconSource;
 	/** Semantic color */
 	color?: LumiColor;
 	/** Whether card shows hover effects */

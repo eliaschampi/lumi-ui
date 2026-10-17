@@ -1,9 +1,23 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+	import { lumiDriveEn } from '../../i18n/drive';
+
+	const COPY = {
+		...lumiDriveEn,
+		cancel: en.cancel,
+		fileUploadHint: en.fileUploadHint,
+		fileUploadAddMore: en.fileUploadAddMore
+	};
+</script>
+
 <script lang="ts">
+	import CloudUpload from '@lucide/svelte/icons/cloud-upload';
 	import { Alert } from '../Alert';
 	import { Button } from '../Button';
 	import { Dialog } from '../Dialog';
 	import { FileUpload } from '../FileUpload';
 	import type { FileUploadFile } from '../FileUpload';
+	import { useLumiLocale } from '../../i18n';
 	import {
 		DRIVE_IMAGE_COMPRESSION_THRESHOLD_BYTES,
 		formatFileSize,
@@ -27,6 +41,7 @@
 		onclose
 	}: Props = $props();
 
+	const i18n = useLumiLocale(COPY);
 	let queue = $state<FileUploadFile[]>([]);
 	let uploading = $state(false);
 	let errorMessage = $state('');
@@ -37,18 +52,10 @@
 		).length
 	);
 
-	const uploaderHintText = $derived(
-		`Máximo ${formatFileSize(MAX_FILE_SIZE)} por archivo - Las imágenes mayores a ${formatFileSize(
-			DRIVE_IMAGE_COMPRESSION_THRESHOLD_BYTES
-		)} se optimizan automáticamente`
-	);
+	const maxSize = formatFileSize(MAX_FILE_SIZE);
 
 	function validateDriveFile(file: File): string | null {
-		if (file.size === 0) {
-			return `"${file.name}" está vacío`;
-		}
-
-		return null;
+		return file.size === 0 ? i18n.t.driveUploadEmptyFile(file.name) : null;
 	}
 
 	function resetDialogState(): void {
@@ -78,7 +85,7 @@
 		}
 
 		if (!onupload) {
-			errorMessage = 'No se configuró el servicio de subida de archivos';
+			errorMessage = i18n.t.driveUploadUnavailable;
 			return;
 		}
 
@@ -105,7 +112,7 @@
 			} catch (caught) {
 				failedCount += 1;
 				const message =
-					caught instanceof Error ? caught.message : 'Error al subir archivos';
+					caught instanceof Error ? caught.message : i18n.t.driveUploadFailed;
 
 				if (!errorMessage) {
 					errorMessage = message;
@@ -130,8 +137,13 @@
 	}
 </script>
 
-<Dialog bind:open title="Subir archivos" size="md" persistent={uploading}>
-	<div class="lumi-stack lumi-stack--md">
+<Dialog
+	bind:open
+	title={i18n.t.driveUploadTitle}
+	size="md"
+	persistent={uploading}
+>
+	<div class="lumi-drive-uploader">
 		{#if errorMessage}
 			<Alert color="warning" closable onclose={() => (errorMessage = '')}
 				>{errorMessage}</Alert
@@ -144,12 +156,15 @@
 				multiple
 				maxSize={MAX_FILE_SIZE}
 				disabled={uploading}
-				placeholderText="Arrastra archivos aquí o haz clic para seleccionar"
-				hintText={uploaderHintText}
-				addMoreText="Agregar más archivos"
+				placeholderText={i18n.t.fileUploadHint}
+				hintText={i18n.t.driveUploadHint(
+					maxSize,
+					formatFileSize(DRIVE_IMAGE_COMPRESSION_THRESHOLD_BYTES)
+				)}
+				addMoreText={i18n.t.fileUploadAddMore}
 				validateFile={validateDriveFile}
 				maxSizeErrorMessage={(file) =>
-					`"${file.name}" excede el tamaño máximo de ${formatFileSize(MAX_FILE_SIZE)}`}
+					i18n.t.driveUploadTooLarge(file.name, maxSize)}
 				oninvalid={(message) => {
 					errorMessage = message;
 				}}
@@ -159,22 +174,28 @@
 
 	{#snippet footer()}
 		<Button variant="border" onclick={closeDialog} disabled={uploading}
-			>Cancelar</Button
+			>{i18n.t.cancel}</Button
 		>
 		<Button
 			variant="filled"
 			color="primary"
-			icon="upload"
+			icon={CloudUpload}
 			loading={uploading}
 			disabled={pendingUploadsCount === 0}
 			onclick={() => void uploadQueuedFiles()}
 		>
-			Subir {pendingUploadsCount > 0 ? `(${pendingUploadsCount})` : ''}
+			{i18n.t.driveUpload(pendingUploadsCount)}
 		</Button>
 	{/snippet}
 </Dialog>
 
 <style>
+	.lumi-drive-uploader {
+		display: flex;
+		flex-direction: column;
+		gap: var(--lumi-space-md);
+	}
+
 	.lumi-drive-uploader__file-upload :global(.lumi-file-upload__file-list) {
 		max-height: var(--lumi-drive-uploader-queue-max-height);
 		overflow-y: auto;

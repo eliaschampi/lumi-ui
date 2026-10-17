@@ -1,7 +1,18 @@
+<script module lang="ts">
+	import * as en from '../../i18n/en';
+	import { lumiDriveEn } from '../../i18n/drive';
+
+	const COPY = { ...lumiDriveEn, close: en.close };
+</script>
+
 <script lang="ts">
+	import Download from '@lucide/svelte/icons/download';
+	import FileIcon from '@lucide/svelte/icons/file';
+	import Music from '@lucide/svelte/icons/music';
 	import { Button } from '../Button';
 	import { Dialog } from '../Dialog';
 	import { Icon } from '../Icon';
+	import { useLumiLocale } from '../../i18n';
 	import {
 		formatDriveDateTime,
 		formatFileSize,
@@ -26,9 +37,11 @@
 		open = $bindable(false),
 		file,
 		ondownload,
-		formatDate = formatDriveDateTime,
+		formatDate,
 		serveUrl = getDriveServeUrl
 	}: Props = $props();
+
+	const i18n = useLumiLocale(COPY);
 
 	const previewUrl = $derived.by(() => {
 		if (!file) {
@@ -50,12 +63,12 @@
 	);
 </script>
 
-<Dialog bind:open title={file?.name || 'Vista previa'} size="lg">
+<Dialog bind:open title={file?.name || i18n.t.drivePreview} size="lg">
 	<div class="lumi-drive-preview">
 		{#if !file}
 			<div class="lumi-drive-preview__empty">
-				<Icon icon="file" size="2xl" color="muted" />
-				<p>No hay archivo seleccionado</p>
+				<Icon icon={FileIcon} size="2xl" color="muted" />
+				<p>{i18n.t.driveNoSelection}</p>
 			</div>
 		{:else if isImage}
 			<div class="lumi-drive-preview__media-wrap">
@@ -63,21 +76,20 @@
 					src={previewUrl}
 					alt={file.name}
 					class="lumi-drive-preview__image"
+					decoding="async"
 				/>
 			</div>
 		{:else if isVideo}
 			<div class="lumi-drive-preview__media-wrap">
 				<!-- svelte-ignore a11y_media_has_caption -->
-				<video src={previewUrl} controls class="lumi-drive-preview__video">
-					Tu navegador no soporta la reproducción de video.
-				</video>
+				<video src={previewUrl} controls class="lumi-drive-preview__video"
+				></video>
 			</div>
 		{:else if isAudio}
 			<div class="lumi-drive-preview__audio-wrap">
-				<Icon icon="music" size="var(--lumi-space-4xl)" color="warning" />
-				<audio src={previewUrl} controls class="lumi-drive-preview__audio">
-					Tu navegador no soporta la reproducción de audio.
-				</audio>
+				<Icon icon={Music} size="var(--lumi-space-4xl)" color="warning" />
+				<audio src={previewUrl} controls class="lumi-drive-preview__audio"
+				></audio>
 			</div>
 		{:else if isPdf}
 			<div class="lumi-drive-preview__pdf-wrap">
@@ -89,8 +101,8 @@
 			</div>
 		{:else}
 			<div class="lumi-drive-preview__empty">
-				<Icon icon="file" size="2xl" color="muted" />
-				<p>Vista previa no disponible para este tipo de archivo</p>
+				<Icon icon={FileIcon} size="2xl" color="muted" />
+				<p>{i18n.t.drivePreviewUnavailable}</p>
 			</div>
 		{/if}
 	</div>
@@ -104,9 +116,9 @@
 					color={getFileColor(file.type)}
 				/>
 				<div class="lumi-drive-preview__details-text">
-					<span class="lumi-font--medium">{file.name}</span>
-					<span class="lumi-text--xs lumi-text--muted">
-						{getDriveTypeLabel(file.type)}
+					<span class="lumi-drive-preview__name">{file.name}</span>
+					<span class="lumi-drive-preview__meta">
+						{getDriveTypeLabel(file.type, i18n.t)}
 						{#if file.type !== 'dir'}
 							• {formatFileSize(file.size)}
 						{/if}
@@ -114,29 +126,42 @@
 				</div>
 			</div>
 			<div class="lumi-drive-preview__details-meta">
-				<span class="lumi-text--xs lumi-text--muted"
-					>Actualizado: {formatDate(file.updated_at)}</span
+				<span class="lumi-drive-preview__meta"
+					>{i18n.t.driveColumnModified}: {formatDate
+						? formatDate(file.updated_at)
+						: formatDriveDateTime(file.updated_at, i18n)}</span
 				>
 				{#if file.mime_type}
-					<span class="lumi-text--xs lumi-text--muted">{file.mime_type}</span>
+					<span class="lumi-drive-preview__meta">{file.mime_type}</span>
 				{/if}
 			</div>
 		</div>
 	{/if}
 
 	{#snippet footer()}
-		<Button variant="border" onclick={() => (open = false)}>Cerrar</Button>
+		<Button variant="border" onclick={() => (open = false)}
+			>{i18n.t.close}</Button
+		>
 		{#if file}
 			<Button
 				variant="filled"
-				icon="download"
-				onclick={() => ondownload?.(file)}>Descargar</Button
+				icon={Download}
+				onclick={() => ondownload?.(file)}>{i18n.t.driveDownload}</Button
 			>
 		{/if}
 	{/snippet}
 </Dialog>
 
 <style>
+	.lumi-drive-preview__name {
+		font-weight: var(--lumi-font-weight-medium);
+	}
+
+	.lumi-drive-preview__meta {
+		color: var(--lumi-color-text-muted);
+		font-size: var(--lumi-font-size-xs);
+	}
+
 	.lumi-drive-preview {
 		min-height: var(--lumi-drive-preview-min-height);
 		display: flex;
