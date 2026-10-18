@@ -1,4 +1,7 @@
 <script lang="ts">
+	// Imported by a component, not the barrel: bundlers drop CSS imported by a
+	// side-effect-free re-export module.
+	import './field.css';
 	import type { FieldMessageProps } from './types';
 
 	const { id, error = '', hint = '' }: FieldMessageProps = $props();

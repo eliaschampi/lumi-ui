@@ -1,4 +1,7 @@
 <script lang="ts">
+	// Imported by a component, not the barrel: bundlers drop CSS imported by a
+	// side-effect-free re-export module.
+	import './field.css';
 	import type { FieldLabelProps } from './types';
 
 	const { for: htmlFor, label, required = false }: FieldLabelProps = $props();
