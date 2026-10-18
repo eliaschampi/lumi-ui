@@ -24,7 +24,7 @@ Documentation explains intent; exports, TypeScript contracts, component source, 
 8. Reusable non-primitives → future `src/lib/patterns/`; not `src/lib/components/` or `src/lib/styles/patterns.css`.
 9. Weight is a feature: fixed icons deep-import `@lucide/svelte/icons/<name>` (never string names inside the library); re-measure budgets in README before merging.
 10. User-visible and `aria-*` defaults come from `src/lib/i18n` (`import * as en` + module `COPY`, `useLumiLocale`); keep `en.ts`, `es.ts` and `types.ts` in parity.
-11. A component's CSS lives in its scoped `<style>`, in `base.css` recipes, or in a stylesheet it imports (layer `lumi.components`); never depend on `utilities.css` or `patterns.css`.
+11. A component's CSS lives in its scoped `<style>`, in `base.css` recipes, or in a stylesheet the `.svelte` component imports itself (layer `lumi.components`) — never from an `index.ts` barrel, which bundlers drop with its CSS; never depend on `utilities.css` or `patterns.css`.
 
 ## Library Layers
 

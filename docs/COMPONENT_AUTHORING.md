@@ -260,7 +260,7 @@ transition:
 
 ### Where CSS lives
 
-A component's required CSS lives in its scoped `<style>`, in `base.css` (global recipes) or in a stylesheet the component imports itself (`Field/field.css`, `styles/charts.css`, layer `lumi.components`). Never depend on `utilities.css` or `patterns.css` — pages may not load them. Layout components may rely on `layout.css` shell classes.
+A component's required CSS lives in its scoped `<style>`, in `base.css` (global recipes) or in a stylesheet the `.svelte` component imports itself (`Field/field.css`, `styles/charts.css`, layer `lumi.components`). Never import CSS from an `index.ts` barrel: with `sideEffects: ["**/*.css"]`, bundlers skip re-export-only modules and their CSS. Never depend on `utilities.css` or `patterns.css` — pages may not load them. Layout components may rely on `layout.css` shell classes.
 
 ### Responsive
 

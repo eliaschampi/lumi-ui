@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { describe, expect, it } from 'vitest';
 import {
 	formatDate,
@@ -38,5 +39,20 @@ describe('format', () => {
 		expect(getInitials('Ada Lovelace')).toBe('AL');
 		expect(getInitials('(ada) love')).toBe('AL');
 		expect(getInitials(null)).toBe('');
+	});
+});
+
+describe('packaging', () => {
+	it('imports stylesheets only from .svelte components, never from .ts modules', () => {
+		const sources = import.meta.glob<string>('../src/lib/**/*.ts', {
+			query: '?raw',
+			import: 'default',
+			eager: true
+		});
+		const offenders = Object.keys(sources).filter((path) =>
+			/import\s+['"][^'"]+\.css['"]/.test(sources[path])
+		);
+		expect(Object.keys(sources).length).toBeGreaterThan(20);
+		expect(offenders).toEqual([]);
 	});
 });

@@ -19,11 +19,13 @@ Deliberately not added: a custom date picker (the apps use 39 native date/time i
 ## Verification evidence
 
 - Library: `pnpm run lint`, `pnpm run check` (0 errors, 0 warnings), `pnpm run test`, `pnpm run package` and `git diff --check` pass. SSR renders of every changed component in English and Spanish were inspected for roles, names, ids and nesting.
-- Sizes (fully minified Vite 8 bundles, gzip 9, Svelte external; 0.6.0 re-measured the same way): Button 10,880 → 2,646 B, Divider 9,650 → 977 B, form/table contract set 22,424 → 14,074 B, storefront set 17,249 → 8,910 B, global CSS 11,661 → 8,396 B. All exports 83,450 → 79,134 B while adding six components.
+- Sizes (fully minified Vite 8 bundles, gzip 9, Svelte external; 0.6.0 re-measured the same way): Button 10,880 → 2,646 B, Divider 9,650 → 977 B, form/table contract set 22,424 → 14,480 B, storefront set 17,249 → 9,342 B, global CSS 11,661 → 8,396 B. All exports 83,450 → 79,631 B while adding six components.
 - Consumers: the codemod (after `migrate-0.6.mjs` for apps on 0.4) migrated 334 (Faztore), 449 (Coedula) and 506 (Aeduca) tags. `svelte-check` went from 0 errors on 0.x to 2 / 2 / 3 errors on 1.0, all in app-owned code: a local Drive menu type, an app toast type using `'error'`, and `{#if}` narrowing that does not reach a snippet.
-- Faztore production build: public pages shrink by about 9 KB gzip (home 100.2 → 91.0 KB) and render-blocking CSS by 15–20% with lean style imports.
+- Faztore production build: public pages shrink by 8–9 KB gzip (home 100.2 → 91.6 KB) and render-blocking CSS by 12–16% with lean style imports.
 
 - An external pre-merge review found four defects, each now covered by a regression test in `tests/` that fails on the earlier code: toasts stranded when a Dialog unmounted while open (toast regions are now tracked by the modal stack instead of queried), Tabs without a tab stop for an unknown `value`, an emptied required `NumberInput` committing `min`, and `Select` `required` never blocking submission (hidden inputs cannot be validated; a visually hidden proxy now does).
+
+- A post-merge review caught that `Field/index.ts` imported `field.css`: under `sideEffects: ["**/*.css"]` bundlers skip a re-export-only module together with its CSS, so field controls shipped unstyled in production builds (earlier size figures also missed that CSS). Stylesheets are now imported by the `.svelte` components that need them, and a test forbids CSS imports from `.ts` modules.
 
 ## Remaining considerations
 

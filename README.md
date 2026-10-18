@@ -72,21 +72,21 @@ Brand seeds and color scheme: [Guide §3](./docs/GUIDE.md#3-theming-and-color-sc
 
 ## Lightweight Contract
 
-Budgets are release gates; **re-measure on every release**. Browser figures sum separately gzipped (level 9) JavaScript and component CSS from fully minified Vite 8 production ES bundles (Rolldown + Lightning CSS) with Svelte externalized. Measured **2026-10-17** for 1.0.0; 0.6.0 re-measured with the same method.
+Budgets are release gates; **re-measure on every release**. Browser figures sum separately gzipped (level 9) JavaScript and component CSS from fully minified Vite 8 production ES bundles (Rolldown + Lightning CSS) with Svelte externalized. Measured **2026-10-18** for 1.0.0; 0.6.0 re-measured with the same method.
 
 | Surface                                                                                  |   0.6.0 |   1.0.0 |    Budget |
 | ---------------------------------------------------------------------------------------- | ------: | ------: | --------: |
 | Global CSS `@lumi-ui/svelte/styles` (bundled, minified)                                  |  11,661 |   8,396 |   ≤ 8,500 |
 | `Button`                                                                                 |  10,880 |   2,646 |   ≤ 3,000 |
 | `Divider`                                                                                |   9,650 |     977 |   ≤ 1,000 |
-| `Switch` + `Radio` + `Textarea` + `Checkbox` + `SegmentedControl` + `Input` + `Table`    |  22,424 |  14,074 |  ≤ 15,500 |
-| Storefront set: `Button` + `Card` + `Image` + `Chip` + `Input` + `Icon` + `Divider`      |  17,249 |   8,910 |   ≤ 9,000 |
+| `Switch` + `Radio` + `Textarea` + `Checkbox` + `SegmentedControl` + `Input` + `Table`    |  22,424 |  14,480 |  ≤ 15,500 |
+| Storefront set: `Button` + `Card` + `Image` + `Chip` + `Input` + `Icon` + `Divider`      |  17,249 |   9,342 |   ≤ 9,500 |
 | Each new component (`ToggleGroup`, `Skeleton`, `Message`, `MessageList`, `Pagination`\*) |       — | ≤ 3,074 |   ≤ 3,500 |
 | npm tarball                                                                              | 161 KiB | 181 KiB | ≤ 200 KiB |
 
 \* `Pagination` alone adds 2.2 KB on top of the `Button` it renders. `Toaster` is 3.6 KB including `Notification`, its timers and modal-aware placement.
 
-In a real SvelteKit storefront (Faztore), migrating with the codemod and loading lean styles cut each public page by about 9 KB gzip (home 100.2 → 91.0 KB, product 96.3 → 87.3 KB) and its render-blocking CSS by 15–20% — the only app changes were the codemod output and three style imports.
+In a real SvelteKit storefront (Faztore), migrating with the codemod and loading lean styles cut each public page by 8–9 KB gzip (home 100.2 → 91.6 KB, product 96.3 → 87.8 KB) and its render-blocking CSS by 12–16% — the only app changes were the codemod output and three style imports.
 
 ```bash
 pnpm run package
