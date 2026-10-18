@@ -10,10 +10,10 @@
 <script lang="ts">
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
-	import { portal } from '../../actions/portal';
 	import { DURATION_BASE, motion } from '../config';
 	import StatusSurface from '../Notification/StatusSurface.svelte';
 	import { useLumiLocale } from '../../i18n';
+	import { liveRegion } from '../../utils/modal';
 	import type { ToasterProps } from './types';
 
 	const {
@@ -29,8 +29,7 @@
      it joins the top open modal so announcements stay reachable. Items
      animate here, so dismiss, clear and overflow all leave the same way. -->
 <section
-	use:portal={document.querySelector<HTMLElement>('[aria-modal="true"]') ??
-		'body'}
+	use:liveRegion
 	class={['lumi-toaster', `lumi-toaster--${placement}`, className]}
 	aria-label={i18n.t.notifications}
 	aria-live="polite"

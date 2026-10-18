@@ -458,10 +458,11 @@ Family-level map of composition CSS. Shells and utilities: [`core.css`](../src/l
 ### Import and scope
 
 ```ts
-import '@lumi-ui/svelte/styles'; // tokens.base.css → core.css → patterns.css
+import '@lumi-ui/svelte/styles'; // tokens.base.css → core.css (base, layout, utilities)
+import '@lumi-ui/svelte/styles/patterns.css'; // opt-in compositions
 ```
 
-Direct subpaths exist when a build needs control; tokens must precede core. The default styles entry also includes patterns. Importing core also applies global box-sizing, `html`/`body`/`#app`, selection, reduced-motion, and responsive heading rules.
+Direct subpaths exist when a build needs control; load tokens first. `patterns.css` is not part of the default entry. Importing `base.css` (or core) also applies global box-sizing, `html`/`body`/`#app`, selection, reduced-motion, and responsive heading rules.
 
 Classes below are supported composition hooks. Other selectors style component internals—use component props, not those selectors. Braces `{…}` mean alternatives, not literal class names.
 
@@ -774,11 +775,12 @@ Avoid import-time DOM mutation. Scope and clean up listeners, observers, timers,
 pnpm install --ignore-scripts
 pnpm run lint
 pnpm run check
+pnpm run test
 pnpm run package
 git diff --check
 ```
 
-`pnpm run lint` runs **oxlint** on `src` (including `<script>` blocks inside `.svelte`) then **Prettier** check. Use `pnpm run format` to write Prettier; `pnpm run lint:fix` applies safe oxlint fixes. Type and Svelte diagnostics remain on `pnpm run check`.
+`pnpm run lint` runs **oxlint** on `src` (including `<script>` blocks inside `.svelte`) then **Prettier** check. Use `pnpm run format` to write Prettier; `pnpm run lint:fix` applies safe oxlint fixes. Type and Svelte diagnostics remain on `pnpm run check`. `pnpm run test` runs the Vitest + jsdom suite in `tests/` (behavior and regression contracts; add a test with every bug fix).
 
 Before a release, also:
 

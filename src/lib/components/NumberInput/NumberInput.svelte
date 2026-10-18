@@ -79,8 +79,10 @@
 		onchange?.(next);
 	}
 
-	// Native change fires once a typed edit is committed (blur or Enter).
-	function handleChange(): void {
+	// Native change fires once a typed edit is committed (blur or Enter). An
+	// emptied field stays empty so `required` and the form can see it.
+	function handleChange(event: Event): void {
+		if ((event.currentTarget as HTMLInputElement).value === '') return;
 		value = clamp(current);
 		onchange?.(value);
 	}

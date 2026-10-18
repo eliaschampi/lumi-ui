@@ -84,7 +84,7 @@ Budgets are release gates; **re-measure on every release**. Browser figures sum 
 | Each new component (`ToggleGroup`, `Skeleton`, `Message`, `MessageList`, `Pagination`\*) |       — | ≤ 3,074 |   ≤ 3,500 |
 | npm tarball                                                                              | 161 KiB | 181 KiB | ≤ 200 KiB |
 
-\* `Pagination` alone adds 2.2 KB on top of the `Button` it renders. `Toaster` is 3.9 KB including `Notification`, its timers and modal-aware placement.
+\* `Pagination` alone adds 2.2 KB on top of the `Button` it renders. `Toaster` is 3.6 KB including `Notification`, its timers and modal-aware placement.
 
 In a real SvelteKit storefront (Faztore), migrating with the codemod and loading lean styles cut each public page by about 9 KB gzip (home 100.2 → 91.0 KB, product 96.3 → 87.3 KB) and its render-blocking CSS by 15–20% — the only app changes were the codemod output and three style imports.
 
@@ -97,7 +97,7 @@ npm pack --dry-run --ignore-scripts --json   # tarball + unpacked size
 
 ```bash
 pnpm install --ignore-scripts
-pnpm run lint && pnpm run check && pnpm run package
+pnpm run lint && pnpm run check && pnpm run test && pnpm run package
 ```
 
 Runnable showcase: [`eliaschampi/lumi-web`](https://github.com/eliaschampi/lumi-web). Release checklist: [Guide §8](./docs/GUIDE.md#8-release-verification).

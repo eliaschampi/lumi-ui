@@ -37,6 +37,7 @@ rg '\$props|Snippet|aria-|role=' src/lib/components/Button
 | --------------------------- | -------------------------------------------------------- |
 | Markdown only               | Links, focused Prettier, `git diff --check`              |
 | Types or Svelte             | `pnpm run check`                                         |
+| Component behavior          | `pnpm run test` (add a regression test in `tests/`)      |
 | Script quality (TS/Svelte)  | `pnpm run lint` (oxlint on `src` + Prettier check)       |
 | Public exports or packaging | `pnpm run check && pnpm run package`                     |
 | CSS, tokens, or layout      | `pnpm run check`; visual check only if behavior changed  |

@@ -334,8 +334,19 @@
 	{/if}
 
 	<div class="lumi-field__control">
-		{#if name}
-			<input type="hidden" {name} value={formValue} />
+		{#if name || required}
+			<!-- Form proxy: a hidden input cannot be validated, so `required`
+			     uses a visually hidden one that sends focus to the combobox. -->
+			<input
+				class="lumi-sr-only"
+				tabindex="-1"
+				aria-hidden="true"
+				{name}
+				value={formValue}
+				{required}
+				{disabled}
+				oninvalid={() => input?.focus()}
+			/>
 		{/if}
 
 		<input

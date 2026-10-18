@@ -49,6 +49,7 @@ Before release:
 pnpm install --ignore-scripts
 pnpm run lint
 pnpm run check
+pnpm run test
 pnpm run package
 git diff --check
 ```

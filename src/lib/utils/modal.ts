@@ -16,6 +16,31 @@ interface ModalScope {
 
 // Browser resources belong to their document; SSR never creates a scope.
 const scopes = new WeakMap<Document, ModalScope>();
+// Live regions (toasts) follow the top open modal: `aria-modal` hides
+// everything outside it, and announcements must stay reachable. They are
+// tracked here, not queried, so a modal removed while open cannot strand one.
+const liveRegions = new Set<HTMLElement>();
+
+function placeLiveRegions(document: Document): void {
+	const host = scopes.get(document)?.entries.at(-1)?.node ?? document.body;
+	for (const region of liveRegions) {
+		if (region.ownerDocument === document && region.parentNode !== host)
+			host.appendChild(region);
+	}
+}
+
+/** Svelte action: keep a live region inside the top open modal, else body. */
+export function liveRegion(node: HTMLElement): { destroy(): void } {
+	liveRegions.add(node);
+	placeLiveRegions(node.ownerDocument);
+	return {
+		destroy() {
+			liveRegions.delete(node);
+			node.remove();
+		}
+	};
+}
+
 const focusableSelector =
 	'a[href], area[href], button, input, select, textarea, [tabindex], [contenteditable="true"], summary, audio[controls], video[controls]';
 
@@ -175,13 +200,7 @@ export function registerModal(
 			item.node.inert = !active;
 			item.node.setAttribute('aria-modal', String(active));
 		}
-		// Toast regions follow the top modal: `aria-modal` hides everything
-		// outside it, and announcements must stay reachable.
-		const host = top?.node ?? document.body;
-		for (const region of document.querySelectorAll<HTMLElement>(
-			'.lumi-toaster'
-		))
-			if (region.parentNode !== host) host.appendChild(region);
+		placeLiveRegions(document);
 	}
 	entries.push(entry);
 	// Nested dialogs outrank registration order when mounted in the same update.

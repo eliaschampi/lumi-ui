@@ -26,7 +26,13 @@
 	const panelId = (index: number) => `lumi-tabs-${uid}-panel-${index}`;
 
 	// Falls back to the first enabled tab, so SSR renders a selected tab.
-	const active = $derived(value ?? tabs.find((tab) => !tab.disabled)?.value);
+	// An unknown or disabled `value` falls back to the first enabled tab, so the
+	// tablist always keeps one tab stop.
+	const active = $derived(
+		tabs.some((tab) => tab.value === value && !tab.disabled)
+			? value
+			: tabs.find((tab) => !tab.disabled)?.value
+	);
 	const activeIndex = $derived(tabs.findIndex((tab) => tab.value === active));
 	const managedPanels = $derived(tabs.some((tab) => tab.content));
 
