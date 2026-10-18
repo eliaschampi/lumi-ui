@@ -130,7 +130,7 @@ pnpm add @lumi-ui/svelte@link:../lumi-ui
 cd ../lumi-ui && pnpm run package
 ```
 
-Repackage after public export changes. Runnable showcase: [`lumi-web`](https://github.com/eliaschampi/lumi-web).
+Repackage after public export changes. Runnable showcase: [`lumi-web`](https://github.com/eliaschampi/lumi).
 
 ---
 
@@ -362,7 +362,7 @@ Grid areas: `sidebar`, `navbar`, `content`. Keep shell classes and component pro
 </div>
 ```
 
-At `64rem` and below, core switches the shell to navbar/content and `Sidebar` uses fixed mobile presentation. Keep viewport state aligned with that breakpoint. Closed mobile navigation is excluded from keyboard navigation. Full shell: the [`lumi-web`](https://github.com/eliaschampi/lumi-web) showcase. Breakpoints: [§5 Responsive effects](#responsive-effects).
+At `64rem` and below, core switches the shell to navbar/content and `Sidebar` uses fixed mobile presentation. Keep viewport state aligned with that breakpoint. Closed mobile navigation is excluded from keyboard navigation. Full shell: the [`lumi-web`](https://github.com/eliaschampi/lumi) showcase. Breakpoints: [§5 Responsive effects](#responsive-effects).
 
 ### Standard page
 
@@ -788,4 +788,4 @@ Before a release, also:
 2. Dry-run the current codemod on each consumer (`node scripts/migrate-1.0.mjs <app>`), then `svelte-check` the migrated app against the packaged build.
 3. Check overlays inside a Dialog, keyboard flows and light/dark mode in a browser; SSR output alone does not cover positioning.
 
-For a locally linked consumer, package Lumi before checking that app. The [`lumi-web`](https://github.com/eliaschampi/lumi-web) showcase consumes the published package and needs no local link. Do not start a duplicate dev server for docs or type-only changes.
+For a locally linked consumer, package Lumi before checking that app. The [`lumi-web`](https://github.com/eliaschampi/lumi) showcase consumes the published package and needs no local link. Do not start a duplicate dev server for docs or type-only changes.

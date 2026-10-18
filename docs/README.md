@@ -11,7 +11,7 @@ Six documents cover the library. Source remains authoritative for exact APIs.
 | **[Upgrade](./UPGRADE.md)**                         | Consumer migration notes and codemods through 1.0.0                                               |
 | **[1.0 review](./REFACTOR_REVIEW.md)**              | What changed in 1.0, measured evidence, remaining considerations                                  |
 
-Coding agents: [AGENTS.md](../AGENTS.md) → [Agent Guide](./AGENT_GUIDE.md). Working pages: the [`lumi-web`](https://github.com/eliaschampi/lumi-web) showcase.
+Coding agents: [AGENTS.md](../AGENTS.md) → [Agent Guide](./AGENT_GUIDE.md). Working pages: the [`lumi-web`](https://github.com/eliaschampi/lumi) showcase.
 
 ## Authority
 

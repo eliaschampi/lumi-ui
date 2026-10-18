@@ -100,6 +100,6 @@ pnpm install --ignore-scripts
 pnpm run lint && pnpm run check && pnpm run test && pnpm run package
 ```
 
-Runnable showcase: [`eliaschampi/lumi-web`](https://github.com/eliaschampi/lumi-web). Release checklist: [Guide §8](./docs/GUIDE.md#8-release-verification).
+Runnable showcase: [`eliaschampi/lumi`](https://github.com/eliaschampi/lumi) ([live site](https://eliaschampi.github.io/lumi/)). Release checklist: [Guide §8](./docs/GUIDE.md#8-release-verification).
 
 MIT licensed.
