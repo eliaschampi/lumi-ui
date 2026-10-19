@@ -455,7 +455,8 @@
 		flex: 1 1 var(--lumi-min-width-xl);
 	}
 
-	button.lumi-person-cell--link {
+	/* A person row that opens its profile: a link (<a href>) or an action (<button>). */
+	.lumi-person-cell--link {
 		cursor: pointer;
 		border: none;
 		padding: 0;
@@ -464,16 +465,17 @@
 		font: inherit;
 		color: inherit;
 		text-align: start;
+		text-decoration: none;
 		background: transparent;
 		border-radius: var(--lumi-radius-control);
 		transition: var(--lumi-transition-colors);
 	}
 
-	button.lumi-person-cell--link:hover {
+	.lumi-person-cell--link:hover {
 		background: color-mix(in srgb, var(--lumi-color-primary) 8%, transparent);
 	}
 
-	button.lumi-person-cell--link:focus-visible {
+	.lumi-person-cell--link:focus-visible {
 		outline: var(--lumi-border-width-thick) solid var(--lumi-color-primary);
 		outline-offset: var(--lumi-space-2xs);
 	}

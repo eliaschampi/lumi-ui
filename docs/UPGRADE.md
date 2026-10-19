@@ -2,6 +2,10 @@
 
 Consumer migration for **0.1.5 → 1.0** and later. Use **pnpm** only. Source remains authoritative.
 
+## 1.1.0 → 1.1.1
+
+`.lumi-person-cell--link` also styles `<a href>`, so a person row that opens a profile can be a real link instead of a scripted `<button>`.
+
 ## 1.0.0 → 1.1.0
 
 No code changes are required.
