@@ -93,9 +93,10 @@
 			var(--lumi-color-text) 70%,
 			var(--lumi-color-surface)
 		);
+		/* Tertiary ink (range labels, neutral status dots): ≥ 3:1 on surfaces. */
 		--lumi-color-text-light: color-mix(
 			in srgb,
-			var(--lumi-color-text) 48%,
+			var(--lumi-color-text) 54%,
 			var(--lumi-color-surface)
 		);
 		--lumi-color-primary-foreground: var(--lumi-color-white);
@@ -251,9 +252,6 @@
 			var(--lumi-color-primary) 4.5%,
 			transparent
 		);
-		--lumi-app-pattern-dot-color: transparent;
-		--lumi-app-pattern-dot-size: var(--lumi-border-width-thin);
-		--lumi-app-pattern-dot-edge: var(--lumi-border-width-base);
 
 		/* Cards float directly over the app canvas; tint the content well only
 		   when a theme wants a visible panel. */

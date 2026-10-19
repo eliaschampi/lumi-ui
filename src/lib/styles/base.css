@@ -71,12 +71,6 @@
 		color: var(--lumi-color-text);
 		background:
 			var(--lumi-app-background-accent) center / auto no-repeat,
-			radial-gradient(
-					circle at center,
-					var(--lumi-app-pattern-dot-color) 0 var(--lumi-app-pattern-dot-size),
-					transparent var(--lumi-app-pattern-dot-edge)
-				)
-				0 0 / var(--lumi-app-pattern-size) var(--lumi-app-pattern-size) repeat,
 			linear-gradient(
 					var(--lumi-app-pattern-line-color) var(--lumi-border-width-thin),
 					transparent var(--lumi-border-width-thin)
