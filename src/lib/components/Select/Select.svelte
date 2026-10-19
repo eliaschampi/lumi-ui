@@ -62,9 +62,11 @@
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 	import X from '@lucide/svelte/icons/x';
 	import { tick } from 'svelte';
+	import { scale } from 'svelte/transition';
 	import { portal } from '../../actions/portal';
 	import { useLumiLocale } from '../../i18n';
 	import { createFloating } from '../../utils/floating.svelte';
+	import { DURATION_FAST, motion } from '../config';
 	import { FieldLabel, FieldMessage } from '../Field';
 	import Icon from '../Icon/Icon.svelte';
 	import type { SelectProps } from './types';
@@ -408,6 +410,7 @@
 			id={listboxId}
 			class="lumi-select__listbox lumi-select__listbox--{size} lumi-scrollbar"
 			style={floating.styleString}
+			transition:scale={{ duration: motion(DURATION_FAST), start: 0.96 }}
 			style:--lumi-control-accent={accent}
 			role={loading || visible.length === 0 ? 'status' : 'listbox'}
 			aria-label={label || placeholderText}
@@ -498,9 +501,6 @@
 			var(--lumi-floating-surface-border);
 		border-radius: var(--lumi-surface-radius);
 		box-shadow: var(--lumi-floating-surface-shadow);
-		transform-origin: top center;
-		animation: lumi-select-in var(--lumi-duration-fast)
-			var(--lumi-easing-default);
 	}
 
 	.lumi-select__listbox--sm {
@@ -511,13 +511,6 @@
 	.lumi-select__listbox--lg {
 		--lumi-select-font: var(--lumi-font-size-lg);
 		--lumi-select-pad: var(--lumi-space-sm) var(--lumi-space-md);
-	}
-
-	@keyframes lumi-select-in {
-		from {
-			opacity: 0;
-			transform: scaleY(0.96) translateY(calc(var(--lumi-space-2xs) * -1));
-		}
 	}
 
 	.lumi-select__option {

@@ -65,6 +65,30 @@ export type FloatingOptionsInput =
 
 export type FloatingReference = ReferenceElement;
 
+const FACING: Record<string, string> = {
+	top: 'bottom',
+	bottom: 'top',
+	left: 'right',
+	right: 'left'
+};
+
+/** Surfaces grow out of their trigger: the facing edge, at the aligned end. */
+function transformOrigin(placement: FloatingPlacement): string {
+	const [side, align] = placement.split('-');
+	const vertical = side === 'top' || side === 'bottom';
+	const along =
+		align === 'start'
+			? vertical
+				? 'left'
+				: 'top'
+			: align === 'end'
+				? vertical
+					? 'right'
+					: 'bottom'
+				: 'center';
+	return vertical ? `${along} ${FACING[side]}` : `${FACING[side]} ${along}`;
+}
+
 export function createFloating(
 	triggerElement: () => ReferenceElement | undefined,
 	floatingElement: () => HTMLElement | undefined,
@@ -94,7 +118,7 @@ export function createFloating(
 
 	const styleString = $derived.by(() => {
 		const { strategy, zIndex, matchWidth } = resolvedOptions;
-		let style = `position: ${strategy}; top: ${position.top}px; left: ${position.left}px; z-index: ${zIndex}; visibility: ${hasPosition ? 'visible' : 'hidden'}`;
+		let style = `position: ${strategy}; top: ${position.top}px; left: ${position.left}px; z-index: ${zIndex}; visibility: ${hasPosition ? 'visible' : 'hidden'}; transform-origin: ${transformOrigin(resolvedPlacement)}`;
 		if (matchWidth && position.width !== undefined)
 			style += `; width: ${position.width}px`;
 		if (position.maxHeight !== undefined)

@@ -88,7 +88,7 @@
 		text-decoration: none;
 		cursor: pointer;
 		user-select: none;
-		transition: var(--lumi-transition-control);
+		transition: var(--lumi-transition-interactive);
 	}
 
 	.lumi-dropdown-item:hover:not(.lumi-dropdown-item--disabled),
@@ -98,6 +98,15 @@
 			var(--lumi-dropdown-item-accent) 8%,
 			transparent
 		);
+	}
+
+	/* Same lift and press as list rows and buttons. */
+	.lumi-dropdown-item:hover:not(.lumi-dropdown-item--disabled) {
+		transform: translateY(var(--lumi-interactive-lift));
+	}
+
+	.lumi-dropdown-item:active:not(.lumi-dropdown-item--disabled) {
+		transform: none;
 	}
 
 	.lumi-dropdown-item:focus-visible {

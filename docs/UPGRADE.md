@@ -4,7 +4,15 @@ Consumer migration for **0.1.5 → 1.0** and later. Use **pnpm** only. Source re
 
 ## 1.1.0 → 1.1.1
 
-`.lumi-person-cell--link` also styles `<a href>`, so a person row that opens a profile can be a real link instead of a scripted `<button>`.
+No code changes are required.
+
+| Change                                                | Note                                                                                                            |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Menu items lift on hover and settle on press          | `DropdownItem` and `ContextItem` share the motion of `ListItem` and `Button` again (0.6 had it; 1.0 dropped it) |
+| Floating surfaces grow out of their trigger           | `Dropdown`, `Context` and `Select` set `transform-origin` from the resolved placement, flips included           |
+| `Select` closes with the same animation it opens with | Its listbox uses the menus' scale transition instead of an enter-only keyframe                                  |
+| `Slider` range labels use `text-muted`                | Visible text now reaches 4.5:1                                                                                  |
+| `.lumi-person-cell--link` also styles `<a href>`      | A person row that opens a profile can be a real link instead of a scripted `<button>`                           |
 
 ## 1.0.0 → 1.1.0
 
