@@ -1,6 +1,6 @@
 {
 	"name": "@lumi-ui/svelte",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "Lightweight Svelte 5 component library: calm glass design, semantic tokens, English and Spanish built in, SSR-first and SEO-friendly.",
 	"type": "module",
 	"packageManager": "pnpm@10.33.2",

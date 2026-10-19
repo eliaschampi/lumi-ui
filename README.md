@@ -84,6 +84,8 @@ Budgets are release gates; **re-measure on every release**. Browser figures sum 
 | Each new component (`ToggleGroup`, `Skeleton`, `Message`, `MessageList`, `Pagination`\*) |       — | ≤ 3,074 |   ≤ 3,500 |
 | npm tarball                                                                              | 161 KiB | 181 KiB | ≤ 200 KiB |
 
+1.1.0, measured against 1.0.0 with one harness: `Button` +70 B (its `summary` mode), global CSS −46 B; both stay within budget.
+
 \* `Pagination` alone adds 2.2 KB on top of the `Button` it renders. `Toaster` is 3.6 KB including `Notification`, its timers and modal-aware placement.
 
 In a real SvelteKit storefront (Faztore), migrating with the codemod and loading lean styles cut each public page by 8–9 KB gzip (home 100.2 → 91.6 KB, product 96.3 → 87.8 KB) and its render-blocking CSS by 12–16% — the only app changes were the codemod output and three style imports.
