@@ -403,24 +403,24 @@ import type { ButtonProps, LumiColor, LumiSize } from '@lumi-ui/svelte';
 
 ### Actions & Forms
 
-| Component          | Key props                                                                                           | Notes                                |
-| ------------------ | --------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| `Button`           | `variant`, native `type`, `color`, `size`, `icon`, `href`, `pressed`, `disabled`, `loading`         | `href` → `<a>`; icon-only needs name |
-| `Input`            | `bind:value`, `label`, `type`, `icon`, `actionIcon` + `onactionclick`, `clearable`, `error`, `hint` | Native input types incl. dates       |
-| `NumberInput`      | `bind:value`, `min`, `max`, `step`, `label`, `error`, `hint`                                        | No implicit bounds                   |
-| `Textarea`         | `bind:value`, `label`, `rows`, `maxlength`, `showCount`, `error`, `hint`                            | Grows with content where supported   |
-| `Checkbox`         | `bind:checked`, `label`, `name`, `value`, `indeterminate`                                           | Form boolean                         |
-| `Radio`            | `bind:group`, `value`, `name`, `label`, `description`, `busy`                                       | One in a named native group          |
-| `Switch`           | `bind:checked`, `label`, `name`                                                                     | Immediate toggle                     |
-| `Slider`           | `bind:value`, `min`, `max`, `step`, `showValue`, `showTooltip`                                      | Range selection                      |
-| `Select`           | `bind:value`, `options`, `searchable`, `searchMode`, `clearable`, `loading`, `error`, `size`        | Client or server search              |
-| `RemoteSelect`     | `bind:value`, `bind:selected`, `endpoint`, mappers; optional `minQueryLength`/`debounceMs`/`limit`  | Debounced, cancellable search        |
-| `SegmentedControl` | `bind:value`, `options`, `fullWidth`, `orientation`, `iconOnly`, `clearable`                        | One exclusive choice                 |
-| `ToggleGroup`      | `bind:value` (array), `options`, `size`, `orientation`, `fullWidth`                                 | Any number pressed                   |
-| `FileUpload`       | `bind:files`, `accept`, `multiple`, `maxSize`, `validateFile`                                       | Queue + validation + removal         |
-| `DateRangeFilter`  | `bind:fromValue`, `bind:toValue`, `compact`, `onapply`                                              | Apply button only with `onapply`     |
-| `Fieldset`         | `legend`                                                                                            | Semantic grouping                    |
-| `TagOption`        | `label`, `color`, `selected`, `onclick`                                                             | Compact tag choice                   |
+| Component          | Key props                                                                                              | Notes                                                                          |
+| ------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `Button`           | `variant`, native `type`, `color`, `size`, `icon`, `href`, `summary`, `pressed`, `disabled`, `loading` | `href` → `<a>`; `summary` → `<summary>` of a `<details>`; icon-only needs name |
+| `Input`            | `bind:value`, `label`, `type`, `icon`, `actionIcon` + `onactionclick`, `clearable`, `error`, `hint`    | Native input types incl. dates                                                 |
+| `NumberInput`      | `bind:value`, `min`, `max`, `step`, `label`, `error`, `hint`                                           | No implicit bounds                                                             |
+| `Textarea`         | `bind:value`, `label`, `rows`, `maxlength`, `showCount`, `error`, `hint`                               | Grows with content where supported                                             |
+| `Checkbox`         | `bind:checked`, `label`, `name`, `value`, `indeterminate`                                              | Form boolean                                                                   |
+| `Radio`            | `bind:group`, `value`, `name`, `label`, `description`, `busy`                                          | One in a named native group                                                    |
+| `Switch`           | `bind:checked`, `label`, `name`                                                                        | Immediate toggle                                                               |
+| `Slider`           | `bind:value`, `min`, `max`, `step`, `showValue`, `showTooltip`                                         | Range selection                                                                |
+| `Select`           | `bind:value`, `options`, `searchable`, `searchMode`, `clearable`, `loading`, `error`, `size`           | Client or server search                                                        |
+| `RemoteSelect`     | `bind:value`, `bind:selected`, `endpoint`, mappers; optional `minQueryLength`/`debounceMs`/`limit`     | Debounced, cancellable search                                                  |
+| `SegmentedControl` | `bind:value`, `options`, `fullWidth`, `orientation`, `iconOnly`, `clearable`                           | One exclusive choice                                                           |
+| `ToggleGroup`      | `bind:value` (array), `options`, `size`, `orientation`, `fullWidth`                                    | Any number pressed                                                             |
+| `FileUpload`       | `bind:files`, `accept`, `multiple`, `maxSize`, `validateFile`                                          | Queue + validation + removal                                                   |
+| `DateRangeFilter`  | `bind:fromValue`, `bind:toValue`, `compact`, `onapply`                                                 | Apply button only with `onapply`                                               |
+| `Fieldset`         | `legend`                                                                                               | Semantic grouping                                                              |
+| `TagOption`        | `label`, `color`, `selected`, `onclick`                                                                | Compact tag choice                                                             |
 
 ### Surfaces & Feedback
 

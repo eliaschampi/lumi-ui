@@ -16,6 +16,7 @@
 		target,
 		rel,
 		download,
+		summary = false,
 		class: className,
 		style,
 		children,
@@ -73,6 +74,15 @@
 	>
 		{@render content()}
 	</a>
+{:else if summary}
+	<summary
+		{...rest}
+		class={classes}
+		aria-busy={loading || undefined}
+		style={tint}
+	>
+		{@render content()}
+	</summary>
 {:else}
 	<button
 		{...rest}
@@ -268,16 +278,28 @@
 		background: color-mix(in srgb, var(--btn-color) 17%, transparent);
 	}
 
-	/* Toggle on: quiet variants settle into a tinted, pressed-in fill. */
+	/* Toggle on (or an open disclosure): quiet variants settle into a tinted,
+	   pressed-in fill. */
 	.lumi-button[aria-pressed='true']:not(
 			.lumi-button--filled,
 			.lumi-button--gradient
-		) {
+		),
+	:global(details[open])
+		> .lumi-button:not(.lumi-button--filled, .lumi-button--gradient) {
 		color: var(--btn-color);
 		background: color-mix(in srgb, var(--btn-color) 16%, transparent);
 		border-color: color-mix(in srgb, var(--btn-color) 45%, transparent);
 		box-shadow: inset 0 var(--lumi-border-width-thin) var(--lumi-space-2xs)
 			color-mix(in srgb, var(--btn-color) 18%, transparent);
+	}
+
+	/* A disclosure toggle drops the native marker; the label carries the state. */
+	summary.lumi-button {
+		list-style: none;
+	}
+
+	summary.lumi-button::-webkit-details-marker {
+		display: none;
 	}
 
 	/* Focus wins over hover and pressed fills (doubled class for weight). */

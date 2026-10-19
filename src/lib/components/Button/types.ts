@@ -37,4 +37,10 @@ export interface ButtonProps extends Omit<
 	rel?: string;
 	/** Download the linked resource (only with `href`) */
 	download?: string | boolean;
+	/**
+	 * Renders the `<summary>` of the parent native `<details>`: a disclosure
+	 * toggle that works without JavaScript and reads as pressed while open.
+	 * Not with `href`.
+	 */
+	summary?: boolean;
 }

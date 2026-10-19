@@ -149,7 +149,7 @@ Icons cost only what a page renders: pass deep-imported Lucide components (`@luc
 ## Behavioral Checks
 
 - Read `.svelte` when snippets/callbacks matter; several are local, not in exported `*Props`.
-- `Button.variant` sets the visual treatment and `Button.type` the native semantics. `href` renders an `<a>` with the same styles (disabled/loading links drop `href` and expose `aria-disabled`); `pressed` adds `aria-pressed` for a standalone toggle. `filled` and `gradient` consume `solid + foreground`.
+- `Button.variant` sets the visual treatment and `Button.type` the native semantics. `href` renders an `<a>` with the same styles (disabled/loading links drop `href` and expose `aria-disabled`); `pressed` adds `aria-pressed` for a standalone toggle. `summary` renders the `<summary>` of a native `<details>` — a disclosure toggle that works without JavaScript (storefront menus, filter panels) and reads as pressed while open. `filled` and `gradient` consume `solid + foreground`.
 - `Card` derives its depth from the neutral surface ladder. A clickable card renders as a button and must not contain nested interactive controls.
 - Form peers share one field shell (`Field/field.css`, layer `lumi.components`): `Input`, `NumberInput`, `Select` and `Textarea` render `.lumi-field` with the same heights, fill/border, invalid state, autofill and focus. `error` (`true` or a message) and `hint` work the same on all four.
 - `Tabs`, `SegmentedControl` and `ToggleGroup` share the global `.lumi-switcher` recipe (glass shell + elevated active pill), not the field well. SegmentedControl is one exclusive choice (radio semantics); ToggleGroup is any number of pressed options (`aria-pressed`, roving tabindex, `value` is an array).

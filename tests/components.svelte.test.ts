@@ -58,6 +58,12 @@ describe('Button', () => {
 		expect(link?.getAttribute('href')).toBe('/docs');
 		expect(target.querySelector('button')).toBeNull();
 	});
+
+	it('renders a disclosure summary that needs no script', () => {
+		const target = render(Button, { summary: true, children: undefined });
+		expect(target.querySelector('summary.lumi-button')).not.toBeNull();
+		expect(target.querySelector('button, a')).toBeNull();
+	});
 });
 
 describe('Tabs', () => {
