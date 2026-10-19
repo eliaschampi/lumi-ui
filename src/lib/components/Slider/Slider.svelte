@@ -265,7 +265,7 @@
 		justify-content: space-between;
 		margin-top: var(--lumi-space-sm);
 		font-size: var(--lumi-font-size-xs);
-		color: var(--lumi-color-text-light);
+		color: var(--lumi-color-text-muted);
 	}
 
 	.lumi-slider__value {
