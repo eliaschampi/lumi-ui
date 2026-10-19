@@ -80,6 +80,12 @@
 		touch-action: pan-y;
 	}
 
+	/* A click (to read the tooltip) also focuses the chart: suppress the browser's
+	   default ring there, so only keyboard focus draws Lumi's outline. */
+	.lumi-chart-svg:focus {
+		outline: none;
+	}
+
 	.lumi-chart-svg:focus-visible {
 		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-focus-outline-offset);

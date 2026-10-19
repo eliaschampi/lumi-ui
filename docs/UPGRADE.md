@@ -6,11 +6,12 @@ Consumer migration for **0.1.5 → 1.0** and later. Use **pnpm** only. Source re
 
 No code changes are required.
 
-| Change                                                  | Note                                                                                                                                                                     |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **New:** `Button summary`                               | Renders the `<summary>` of a native `<details>`: a disclosure toggle without JavaScript that reads as pressed while open. Replace app-styled `<summary>` toggles with it |
-| `--lumi-color-text-light` mixes 54% ink (was 48%)       | Tertiary ink (neutral status dots, slider range labels) reaches 3:1 on surfaces; it reads slightly darker                                                                |
-| Body dot pattern and `--lumi-app-pattern-dot-*` removed | The layer was transparent by default and painted a full-viewport repeat for nothing; add your own background layer if you set those tokens                               |
+| Change                                                       | Note                                                                                                                                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **New:** `Button summary`                                    | Renders the `<summary>` of a native `<details>`: a disclosure toggle without JavaScript that reads as pressed while open. Replace app-styled `<summary>` toggles with it |
+| `--lumi-color-text-light` mixes 54% ink (was 48%)            | Tertiary ink (neutral status dots, slider range labels) reaches 3:1 on surfaces; it reads slightly darker                                                                |
+| Charts no longer show the browser's focus ring after a click | Only keyboard focus draws Lumi's outline on the plot                                                                                                                     |
+| Body dot pattern and `--lumi-app-pattern-dot-*` removed      | The layer was transparent by default and painted a full-viewport repeat for nothing; add your own background layer if you set those tokens                               |
 
 ## 0.6.0 → 1.0.0
 
