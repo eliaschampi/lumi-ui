@@ -8,10 +8,12 @@
 		description = '',
 		option = false,
 		busy = false,
-		name = '',
+		id,
+		name,
 		size = 'md',
 		color = 'primary',
 		disabled = false,
+		required = false,
 		class: className = '',
 		children,
 		onchange,
@@ -40,16 +42,18 @@
 		disabled && 'lumi-radio--disabled',
 		className
 	]}
-	style:--radio-color="var(--lumi-color-{color})"
+	style:--lumi-control-accent="var(--lumi-color-{color})"
 	aria-busy={busy || undefined}
 >
 	<input
 		type="radio"
 		class="lumi-sr-only"
+		{id}
 		{name}
 		{value}
 		{checked}
 		disabled={disabled || busy}
+		{required}
 		aria-label={ariaLabel}
 		aria-labelledby={description && !ariaLabel ? labelId : undefined}
 		aria-describedby={description ? descriptionId : undefined}
@@ -79,7 +83,6 @@
 		--radio-size: var(--lumi-icon-md);
 		--radio-dot-size: var(--lumi-space-sm);
 		--radio-label-size: var(--lumi-font-size-base);
-		--lumi-control-accent: var(--radio-color);
 
 		position: relative;
 		display: inline-flex;
@@ -102,7 +105,7 @@
 		background: var(--lumi-color-control-fill);
 		box-shadow: var(--lumi-control-shadow);
 		flex-shrink: 0;
-		transition: var(--lumi-transition-control);
+		transition: var(--lumi-transition-interactive);
 	}
 
 	.lumi-radio__circle {
@@ -149,9 +152,7 @@
 	}
 
 	@media (hover: hover) {
-		.lumi-radio.lumi-radio-option:not(.lumi-radio--disabled):not(
-				.lumi-radio--checked
-			):hover {
+		.lumi-radio.lumi-radio-option:not(.lumi-radio--checked):hover {
 			border-color: var(--lumi-control-active-border);
 			background: var(--lumi-control-active-fill);
 		}
@@ -184,19 +185,23 @@
 	}
 
 	/* ── States ───────────────────────────────────────────────── */
-	.lumi-radio:not(.lumi-radio--disabled):hover .lumi-radio__visual {
+	.lumi-radio:not(.lumi-radio--checked):hover .lumi-radio__visual {
 		border-color: var(--lumi-control-active-border);
 		background: var(--lumi-control-active-fill);
 	}
 
+	.lumi-radio:active .lumi-radio__visual {
+		transform: scale(var(--lumi-interactive-press-scale));
+	}
+
 	.lumi-radio--checked .lumi-radio__visual {
-		border-color: var(--lumi-control-active-border);
+		border-color: var(--lumi-control-accent);
 		background: var(--lumi-control-active-fill);
 		box-shadow: var(--lumi-control-active-shadow);
 	}
 
 	.lumi-radio--checked .lumi-radio__circle {
-		background: var(--radio-color);
+		background: var(--lumi-control-accent);
 		transform: scale(1);
 	}
 
@@ -205,8 +210,8 @@
 	}
 
 	.lumi-radio--disabled {
-		cursor: not-allowed;
 		opacity: var(--lumi-opacity-disabled);
+		pointer-events: none;
 	}
 
 	.lumi-radio--disabled .lumi-radio__visual {

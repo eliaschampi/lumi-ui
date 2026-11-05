@@ -1,10 +1,10 @@
 import type { Snippet } from 'svelte';
 import type { IconSource } from '../../utils/icons';
 import type { FloatingPlacement } from '../../utils/floating.svelte';
-import type { LumiColor, LumiCompactSize } from '../config';
+import type { LumiColor, LumiControlSize } from '../config';
 
 export type DropdownPlacement = FloatingPlacement;
-export type DropdownSize = LumiCompactSize;
+export type DropdownSize = LumiControlSize;
 
 /** Spread onto a custom trigger element: `<Button {...props}>`. */
 export interface DropdownTriggerProps {

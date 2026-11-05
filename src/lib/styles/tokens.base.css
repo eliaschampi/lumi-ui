@@ -200,8 +200,10 @@
 			var(--lumi-color-surface) 20%
 		);
 		/* --- DERIVED STATE BACKGROUNDS ------------------------------------------- */
-		/* One hue-preserving tint strength; OKLCH keeps equal visual weight across hues. */
+		/* One hue-preserving tint strength; OKLCH keeps equal visual weight across hues.
+		   Rows, options and steppers read the same two steps: hover, then selected. */
 		--lumi-state-bg-strength: 12%;
+		--lumi-state-hover-strength: 8%;
 		--lumi-color-success-bg: color-mix(
 			in oklch,
 			var(--lumi-color-success) var(--lumi-state-bg-strength),
@@ -393,11 +395,13 @@
 		--lumi-radius-panel: var(--lumi-radius-xl); /* blocks nested in a surface */
 		--lumi-radius-tooltip: var(--lumi-radius-lg); /* every floating bubble */
 		--lumi-control-radius: var(--lumi-radius-control); /* deprecated alias */
+		/* Soft halo around a field, whose solid border carries the contrast. */
 		--lumi-control-focus-ring-strength: 26%;
 		/* Outline: :root is a primary fallback only (explicit primary — never
 		   var(--lumi-control-accent) here, or it bakes primary for everyone).
-		   Interactive roots re-declare the full value in core.css with local accent. */
-		--lumi-focus-outline-strength: 35%;
+		   base.css re-declares the recipes on the focused element with its accent.
+		   A standalone focus indicator must reach 3:1 in every role and theme. */
+		--lumi-focus-outline-strength: 80%;
 		--lumi-focus-outline-offset: calc(var(--lumi-space-2xs) * -1);
 		--lumi-focus-outline: var(--lumi-border-width-thick) solid
 			color-mix(
@@ -409,7 +413,7 @@
 		--lumi-focus-ring: 0 0 0 var(--lumi-border-width-thick)
 			color-mix(
 				in srgb,
-				var(--lumi-color-primary) var(--lumi-control-focus-ring-strength),
+				var(--lumi-color-primary) var(--lumi-focus-outline-strength),
 				transparent
 			);
 		/* Gap ring for solid fills, where a translucent halo would be invisible. */
@@ -857,6 +861,7 @@
 
 		/* --- DERIVED STATE BACKGROUNDS / OVERLAY --------------------------------- */
 		--lumi-state-bg-strength: 16%;
+		--lumi-state-hover-strength: 11%;
 		--lumi-color-overlay: color-mix(
 			in oklch,
 			var(--lumi-color-background) 82%,

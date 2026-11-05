@@ -1,8 +1,9 @@
 /* ========================================================================== */
 /* Lumi UI Base                                                               */
-/* Reset, accent-aware control contracts, surfaces, shared component          */
-/* recipes (icon, spinner, skeleton, switcher, sr-only), scrollbars and       */
-/* keyframes. Required by every component.                                    */
+/* Reset, focus and control contracts, surfaces, the recipes every page needs */
+/* (icon, spinner, sr-only) and scrollbars. Required by every component.      */
+/* Recipes a few components share ship with them: styles/switcher*.css,       */
+/* styles/skeleton.css, styles/floating.css, Field/field.css.                 */
 /* ========================================================================== */
 /* Cascade layers, weakest first; every Lumi stylesheet repeats this order so */
 /* import order never changes it. lumi.components holds shared stylesheets    */
@@ -98,29 +99,11 @@
 	/* ========================================================================== */
 	/* SHARED COMPONENT PRIMITIVES */
 	/* ========================================================================== */
-	/* Tokens that embed var(--lumi-control-accent) must be re-declared on each
-	   interactive root. A :root-only value resolves accent to primary at
-	   declaration time and inherits that baked color, ignoring local accents. */
-	:where(
-		.lumi-field,
-		.lumi-switcher,
-		.lumi-tabs,
-		.lumi-chip,
-		.lumi-tag-option,
-		.lumi-list-item,
-		.lumi-dropdown,
-		.lumi-dropdown-item,
-		.lumi-context-item,
-		.lumi-sidebar-item,
-		.lumi-dialog,
-		.lumi-alert,
-		.lumi-notification,
-		.lumi-collapse,
-		.lumi-file-upload,
-		.lumi-table,
-		.lumi-line-chart,
-		.lumi-drive-sidebar__close
-	) {
+	/* Focus recipes embed the local accent, which a :root token can only bake to
+	   primary. They resolve here instead, on the focused element or the sibling
+	   that draws for a hidden input: one selector, no list of components to keep
+	   in sync, and only the focused element pays for it. */
+	:where(:focus-visible, :focus-visible + *) {
 		--lumi-focus-outline: var(--lumi-border-width-thick) solid
 			color-mix(
 				in srgb,
@@ -128,34 +111,11 @@
 					var(--lumi-focus-outline-strength),
 				transparent
 			);
-	}
-
-	/* Accent-aware focus rings. Same re-declaration rule as the outline above: the
-	   :root definition in tokens.base.css can only ever resolve to primary. */
-	:where(
-		.lumi-button,
-		.lumi-card,
-		.lumi-field,
-		.lumi-checkbox,
-		.lumi-radio,
-		.lumi-switch,
-		.lumi-switcher,
-		.lumi-slider,
-		.lumi-chip,
-		.lumi-tag-option,
-		.lumi-tabs,
-		.lumi-table,
-		.lumi-dialog,
-		.lumi-dropdown,
-		.lumi-file-upload,
-		.lumi-item-row,
-		.lumi-drive-file-card
-	) {
 		--lumi-focus-ring: 0 0 0 var(--lumi-border-width-thick)
 			color-mix(
 				in srgb,
 				var(--lumi-control-accent, var(--lumi-color-primary))
-					var(--lumi-control-focus-ring-strength),
+					var(--lumi-focus-outline-strength),
 				transparent
 			);
 		--lumi-focus-ring-offset:
@@ -163,22 +123,16 @@
 				color-mix(in srgb, var(--lumi-color-background) 88%, transparent),
 			0 0 0 calc(var(--lumi-border-width-thick) * 2)
 				var(--lumi-control-accent, var(--lumi-color-primary));
-	}
-
-	:where(.lumi-field, .lumi-checkbox, .lumi-radio, .lumi-switch, ) {
-		--lumi-color-control-focus-fill: color-mix(
-			in srgb,
-			var(--lumi-color-control-fill) 84%,
-			var(--lumi-control-accent, var(--lumi-color-primary)) 16%
-		);
 		--lumi-control-focus-shadow:
 			var(--lumi-focus-ring), var(--lumi-control-shadow);
 	}
 
+	/* Binary peers: a tinted fill and an accent border while hovered or active. */
 	:where(.lumi-checkbox, .lumi-radio, .lumi-switch) {
 		--lumi-control-active-fill: color-mix(
 			in srgb,
-			var(--lumi-control-accent, var(--lumi-color-primary)) 10%,
+			var(--lumi-control-accent, var(--lumi-color-primary))
+				var(--lumi-state-hover-strength),
 			var(--lumi-color-control-fill)
 		);
 		--lumi-control-active-border: color-mix(
@@ -187,6 +141,11 @@
 			transparent
 		);
 		--lumi-control-active-shadow: var(--lumi-shadow-sm);
+	}
+
+	/* A link in the label stays usable while the control is disabled. */
+	:where(.lumi-checkbox, .lumi-radio, .lumi-switch) a {
+		pointer-events: auto;
 	}
 
 	/* Shared autofill override — UA yellow only yields to a large inset shadow. */
@@ -244,63 +203,16 @@
 	}
 
 	/* ========================================================================== */
-	/* SCROLLBAR SYSTEM */
+	/* SCROLLBARS */
 	/* ========================================================================== */
 	:where(
 		.lumi-scrollbar,
 		.lumi-dashboard-layout__content,
 		.lumi-table__wrapper,
-		.lumi-switcher,
 		.lumi-list
 	) {
 		scrollbar-width: thin;
 		scrollbar-color: var(--lumi-color-border-strong) transparent;
-	}
-
-	:where(
-		.lumi-scrollbar,
-		.lumi-dashboard-layout__content,
-		.lumi-table__wrapper,
-		.lumi-switcher,
-		.lumi-list
-	)::-webkit-scrollbar {
-		width: var(--lumi-space-2xs);
-		height: var(--lumi-space-2xs);
-	}
-
-	:where(
-		.lumi-scrollbar,
-		.lumi-dashboard-layout__content,
-		.lumi-table__wrapper,
-		.lumi-switcher,
-		.lumi-list
-	)::-webkit-scrollbar-track {
-		background: transparent;
-	}
-
-	:where(
-		.lumi-scrollbar,
-		.lumi-dashboard-layout__content,
-		.lumi-table__wrapper,
-		.lumi-switcher,
-		.lumi-list
-	)::-webkit-scrollbar-thumb {
-		border-radius: var(--lumi-radius-full);
-		background: color-mix(
-			in srgb,
-			var(--lumi-color-border-strong) 78%,
-			transparent
-		);
-	}
-
-	:where(
-			.lumi-scrollbar,
-			.lumi-dashboard-layout__content,
-			.lumi-table__wrapper,
-			.lumi-switcher,
-			.lumi-list
-		)::-webkit-scrollbar-thumb:hover {
-		background: var(--lumi-color-border-strong);
 	}
 
 	/* ========================================================================== */
@@ -346,162 +258,6 @@
 		animation: lumi-spin var(--lumi-duration-spin) linear infinite;
 	}
 
-	/* Skeleton placeholder (Skeleton, Image, Table): one soft shimmer pass per
-	   cycle in reading direction; static under reduced motion. Size it from
-	   outside. */
-	.lumi-skeleton {
-		display: block;
-		border-radius: var(--lumi-radius-control);
-		background: linear-gradient(
-				90deg,
-				var(--lumi-skeleton-base, var(--lumi-color-background-secondary)) 25%,
-				var(--lumi-skeleton-highlight, var(--lumi-color-background-hover)) 50%,
-				var(--lumi-skeleton-base, var(--lumi-color-background-secondary)) 75%
-			)
-			0 0 / 200% 100%;
-		animation: lumi-shimmer var(--lumi-duration-shimmer) linear infinite;
-	}
-
-	.lumi-skeleton:dir(rtl) {
-		animation-direction: reverse;
-	}
-
-	.lumi-skeleton--text {
-		block-size: 1em;
-		border-radius: var(--lumi-radius-sm);
-	}
-
-	.lumi-skeleton--rect {
-		block-size: var(--lumi-control-height-md);
-	}
-
-	.lumi-skeleton--circle {
-		inline-size: var(--lumi-space-xxl);
-		aspect-ratio: 1;
-		border-radius: var(--lumi-radius-full);
-	}
-
-	/* Switcher (Tabs, SegmentedControl, ToggleGroup): glass shell + elevated
-	   active pill. Set --lumi-control-accent on the root; options are buttons or
-	   labels wrapping a visually hidden input. */
-	.lumi-switcher {
-		/* Alias read by the shell and its options; the accent may come from an
-		   ancestor (Tabs) or this element (SegmentedControl, ToggleGroup). */
-		--lumi-switcher-accent: var(
-			--lumi-control-accent,
-			var(--lumi-color-primary)
-		);
-		display: inline-flex;
-		align-items: stretch;
-		gap: var(--lumi-space-2xs);
-		max-width: 100%;
-		padding: var(--lumi-space-2xs);
-		background: color-mix(
-			in srgb,
-			var(--lumi-color-surface-glass-strong) 78%,
-			var(--lumi-color-background-hover) 22%
-		);
-		border: var(--lumi-border-width-thin) solid
-			color-mix(
-				in srgb,
-				var(--lumi-color-border-glass) 72%,
-				var(--lumi-color-border-strong) 28%
-			);
-		border-radius: var(--lumi-radius-panel);
-		box-shadow: var(--lumi-control-shadow);
-		overflow-x: auto;
-		overflow-y: hidden;
-		overscroll-behavior-inline: contain;
-		user-select: none;
-		transition: var(--lumi-transition-control);
-	}
-
-	.lumi-switcher:hover {
-		border-color: var(--lumi-color-border-strong);
-	}
-
-	.lumi-switcher:focus-within {
-		border-color: color-mix(
-			in srgb,
-			var(--lumi-switcher-accent) 30%,
-			var(--lumi-color-border-strong)
-		);
-	}
-
-	.lumi-switcher--vertical {
-		flex-direction: column;
-		overflow-x: hidden;
-		overflow-y: auto;
-	}
-
-	.lumi-switcher--vertical > .lumi-switcher__option {
-		justify-content: flex-start;
-		width: 100%;
-		min-width: 0;
-		text-align: start;
-	}
-
-	.lumi-switcher__option {
-		position: relative;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: var(--lumi-space-xs);
-		min-width: max-content;
-		min-height: var(--lumi-control-height-sm);
-		padding: var(--lumi-space-xs) var(--lumi-space-md);
-		font: inherit;
-		font-size: var(--lumi-font-size-sm);
-		font-weight: var(--lumi-font-weight-medium);
-		line-height: var(--lumi-line-height-tight);
-		color: var(--lumi-color-text-muted);
-		white-space: nowrap;
-		background: transparent;
-		border: var(--lumi-border-width-thin) solid transparent;
-		border-radius: var(--lumi-radius-control);
-		cursor: pointer;
-		transition: var(--lumi-transition-interactive);
-	}
-
-	.lumi-switcher__option:hover:not(
-			.lumi-switcher__option--active,
-			.lumi-switcher__option--disabled
-		) {
-		color: var(--lumi-color-text);
-		background: color-mix(in srgb, var(--lumi-switcher-accent) 9%, transparent);
-	}
-
-	.lumi-switcher__option--active {
-		color: var(--lumi-switcher-accent);
-		font-weight: var(--lumi-font-weight-semibold);
-		background: linear-gradient(
-			145deg,
-			color-mix(
-				in srgb,
-				var(--lumi-color-surface-card-hover) 88%,
-				var(--lumi-switcher-accent) 12%
-			),
-			var(--lumi-color-surface-card)
-		);
-		border-color: color-mix(
-			in srgb,
-			var(--lumi-switcher-accent) 28%,
-			var(--lumi-color-border)
-		);
-		box-shadow: var(--lumi-shadow-sm);
-	}
-
-	.lumi-switcher__option:focus-visible,
-	.lumi-switcher__option:has(> input:focus-visible) {
-		outline: var(--lumi-focus-outline);
-		outline-offset: var(--lumi-focus-outline-offset);
-	}
-
-	.lumi-switcher__option--disabled {
-		opacity: var(--lumi-opacity-disabled);
-		cursor: not-allowed;
-	}
-
 	/* ========================================================================== */
 	/* ANIMATIONS (shared keyframes) */
 	/* ========================================================================== */
@@ -512,37 +268,6 @@
 
 		to {
 			transform: rotate(360deg);
-		}
-	}
-
-	@keyframes lumi-pulse {
-		0%,
-		100% {
-			opacity: 1;
-		}
-
-		50% {
-			opacity: 0.5;
-		}
-	}
-
-	@keyframes lumi-fade-in {
-		from {
-			opacity: 0;
-		}
-
-		to {
-			opacity: 1;
-		}
-	}
-
-	@keyframes lumi-shimmer {
-		from {
-			background-position: 100% 0;
-		}
-
-		to {
-			background-position: -100% 0;
 		}
 	}
 

@@ -137,10 +137,10 @@
 	}
 
 	.lumi-collapse__trigger:disabled {
-		cursor: not-allowed;
+		pointer-events: none;
 	}
 
-	.lumi-collapse__trigger:hover:enabled,
+	.lumi-collapse__trigger:hover,
 	.lumi-collapse__trigger:focus-visible {
 		background: color-mix(
 			in srgb,

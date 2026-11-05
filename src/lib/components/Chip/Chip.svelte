@@ -90,7 +90,7 @@
 		font-size: var(--lumi-chip-font-size);
 		font-weight: var(--lumi-font-weight-medium);
 		line-height: var(--lumi-line-height-tight);
-		transition: var(--lumi-transition-control);
+		transition: var(--lumi-transition-interactive);
 		white-space: nowrap;
 		cursor: default;
 		user-select: none;
@@ -161,6 +161,10 @@
 		outline: var(--lumi-focus-outline);
 		outline-offset: var(--lumi-focus-outline-offset);
 		border-radius: var(--lumi-radius-full);
+	}
+
+	.lumi-chip--interactive:active {
+		transform: scale(var(--lumi-interactive-press-scale));
 	}
 
 	.lumi-chip--interactive:hover {

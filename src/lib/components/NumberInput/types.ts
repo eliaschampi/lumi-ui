@@ -1,9 +1,9 @@
 import type { HTMLInputAttributes } from 'svelte/elements';
-import type { LumiColor, LumiControlSize } from '../config';
+import type { LumiColor, LumiExtendedSize } from '../config';
 import type { FieldError } from '../Field';
 
 export type NumberInputColor = LumiColor;
-export type NumberInputSize = LumiControlSize;
+export type NumberInputSize = LumiExtendedSize;
 
 /**
  * Stepper field for bounded numbers; Arrow Up/Down step from the keyboard.

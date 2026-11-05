@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { solidAccent } from '../config';
 	import Icon from '../Icon/Icon.svelte';
 	import type { ButtonProps } from './types';
 
@@ -24,15 +25,8 @@
 	}: ButtonProps = $props();
 
 	const inert = $derived(disabled || loading);
-	// Primary is the CSS default; other roles override the three accent slots.
 	const tint = $derived(
-		[
-			color !== 'primary' &&
-				`--btn-color:var(--lumi-color-${color});--btn-solid:var(--lumi-color-${color}-solid);--btn-foreground:var(--lumi-color-${color}-foreground)`,
-			style
-		]
-			.filter(Boolean)
-			.join(';') || undefined
+		[solidAccent(color), style].filter(Boolean).join(';') || undefined
 	);
 	const classes = $derived([
 		'lumi-button',
@@ -101,10 +95,9 @@
 	/* Semantic actions with restrained tactile depth. Disabled and loading
 	   controls drop pointer events, so hover/active rules need no guards. */
 	.lumi-button {
-		--btn-color: var(--lumi-color-primary);
-		--btn-solid: var(--lumi-color-primary-solid);
-		--btn-foreground: var(--lumi-color-primary-foreground);
-		--lumi-control-accent: var(--btn-color);
+		--lumi-control-accent: var(--lumi-color-primary);
+		--lumi-control-solid: var(--lumi-color-primary-solid);
+		--lumi-control-foreground: var(--lumi-color-primary-foreground);
 		--btn-icon: 1.2em;
 		--btn-lift: 0;
 		--btn-shade: var(--lumi-color-black);
@@ -112,10 +105,10 @@
 			color-mix(in srgb, var(--lumi-color-white) 26%, transparent);
 		--btn-glow: 0 var(--lumi-space-xs) var(--lumi-space-lg)
 			calc(var(--lumi-space-xs) * -1)
-			color-mix(in srgb, var(--btn-solid) 22%, transparent);
+			color-mix(in srgb, var(--lumi-control-solid) 22%, transparent);
 		--btn-glow-hover: 0 var(--lumi-space-sm) var(--lumi-space-xl)
 			calc(var(--lumi-space-xs) * -1)
-			color-mix(in srgb, var(--btn-solid) 28%, transparent);
+			color-mix(in srgb, var(--lumi-control-solid) 28%, transparent);
 		position: relative;
 		display: inline-flex;
 		align-items: center;
@@ -191,14 +184,22 @@
 	.lumi-button--filled,
 	.lumi-button--gradient {
 		--btn-lift: var(--lumi-interactive-lift);
-		color: var(--btn-foreground);
-		background: var(--btn-solid);
-		border-color: color-mix(in srgb, var(--btn-solid) 48%, transparent);
+		color: var(--lumi-control-foreground);
+		background: var(--lumi-control-solid);
+		border-color: color-mix(
+			in srgb,
+			var(--lumi-control-solid) 48%,
+			transparent
+		);
 		box-shadow: var(--btn-sheen), var(--btn-glow), var(--lumi-shadow-sm);
 	}
 
 	.lumi-button--filled:hover {
-		background: color-mix(in srgb, var(--btn-solid) 90%, var(--btn-shade));
+		background: color-mix(
+			in srgb,
+			var(--lumi-control-solid) 90%,
+			var(--btn-shade)
+		);
 	}
 
 	.lumi-button--filled:hover,
@@ -214,34 +215,34 @@
 	.lumi-button--gradient {
 		--btn-glow: 0 var(--lumi-space-xs) var(--lumi-space-lg)
 			calc(var(--lumi-space-xs) * -1)
-			color-mix(in srgb, var(--btn-solid) 30%, transparent);
+			color-mix(in srgb, var(--lumi-control-solid) 30%, transparent);
 		--btn-glow-hover: 0 var(--lumi-space-sm) var(--lumi-space-xl)
 			calc(var(--lumi-space-xs) * -1)
-			color-mix(in srgb, var(--btn-solid) 36%, transparent);
+			color-mix(in srgb, var(--lumi-control-solid) 36%, transparent);
 		--btn-sheen: inset 0 var(--lumi-border-width-thin) 0
 			color-mix(in srgb, var(--lumi-color-white) 18%, transparent);
 		background: linear-gradient(
 			135deg,
-			var(--btn-solid),
-			color-mix(in srgb, var(--btn-solid) 90%, var(--btn-shade)) 52%,
-			color-mix(in srgb, var(--btn-solid) 75%, var(--btn-shade))
+			var(--lumi-control-solid),
+			color-mix(in srgb, var(--lumi-control-solid) 90%, var(--btn-shade)) 52%,
+			color-mix(in srgb, var(--lumi-control-solid) 75%, var(--btn-shade))
 		);
 	}
 
 	/* Gradients shade away from the paired foreground when supported. */
 	@supports (color: contrast-color(red)) {
 		.lumi-button {
-			--btn-shade: contrast-color(var(--btn-foreground));
+			--btn-shade: contrast-color(var(--lumi-control-foreground));
 		}
 	}
 
 	/* Quiet variants tint the accent. */
 	.lumi-button--border {
-		color: var(--btn-color);
+		color: var(--lumi-control-accent);
 		background: var(--lumi-color-surface-glass);
 		border-color: color-mix(
 			in srgb,
-			var(--btn-color) 34%,
+			var(--lumi-control-accent) 34%,
 			var(--lumi-color-border)
 		);
 	}
@@ -250,32 +251,40 @@
 		background: var(--lumi-color-surface-glass-strong);
 		border-color: color-mix(
 			in srgb,
-			var(--btn-color) 48%,
+			var(--lumi-control-accent) 48%,
 			var(--lumi-color-border)
 		);
 	}
 
 	.lumi-button--flat {
-		color: var(--btn-color);
-		background: color-mix(in srgb, var(--btn-color) 9%, transparent);
-		border-color: color-mix(in srgb, var(--btn-color) 18%, transparent);
+		color: var(--lumi-control-accent);
+		background: color-mix(in srgb, var(--lumi-control-accent) 9%, transparent);
+		border-color: color-mix(
+			in srgb,
+			var(--lumi-control-accent) 18%,
+			transparent
+		);
 	}
 
 	.lumi-button--ghost {
-		color: var(--btn-color);
+		color: var(--lumi-control-accent);
 		background: transparent;
 	}
 
 	.lumi-button--flat:hover,
 	.lumi-button--ghost:hover {
-		background: color-mix(in srgb, var(--btn-color) 14%, transparent);
-		border-color: color-mix(in srgb, var(--btn-color) 28%, transparent);
+		background: color-mix(in srgb, var(--lumi-control-accent) 14%, transparent);
+		border-color: color-mix(
+			in srgb,
+			var(--lumi-control-accent) 28%,
+			transparent
+		);
 	}
 
 	.lumi-button--border:active,
 	.lumi-button--flat:active,
 	.lumi-button--ghost:active {
-		background: color-mix(in srgb, var(--btn-color) 17%, transparent);
+		background: color-mix(in srgb, var(--lumi-control-accent) 17%, transparent);
 	}
 
 	/* Toggle on (or an open disclosure): quiet variants settle into a tinted,
@@ -286,11 +295,15 @@
 		),
 	:global(details[open])
 		> .lumi-button:not(.lumi-button--filled, .lumi-button--gradient) {
-		color: var(--btn-color);
-		background: color-mix(in srgb, var(--btn-color) 16%, transparent);
-		border-color: color-mix(in srgb, var(--btn-color) 45%, transparent);
+		color: var(--lumi-control-accent);
+		background: color-mix(in srgb, var(--lumi-control-accent) 16%, transparent);
+		border-color: color-mix(
+			in srgb,
+			var(--lumi-control-accent) 45%,
+			transparent
+		);
 		box-shadow: inset 0 var(--lumi-border-width-thin) var(--lumi-space-2xs)
-			color-mix(in srgb, var(--btn-color) 18%, transparent);
+			color-mix(in srgb, var(--lumi-control-accent) 18%, transparent);
 	}
 
 	/* A disclosure toggle drops the native marker; the label carries the state. */

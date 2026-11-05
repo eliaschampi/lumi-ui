@@ -9,6 +9,8 @@ export interface CheckboxProps {
 	checked?: boolean;
 	/** Indeterminate state (for partial selection) */
 	indeterminate?: boolean;
+	/** Id of the input, to point a `<label for>` at it */
+	id?: string;
 	/** Form field name */
 	name?: string;
 	/** Submitted value when checked @default 'on' */

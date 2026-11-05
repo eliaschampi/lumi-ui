@@ -202,22 +202,18 @@
 
 	.lumi-dialog--sm {
 		max-width: var(--lumi-dialog-width-sm);
-		width: 100%;
 	}
 
 	.lumi-dialog--md {
 		max-width: var(--lumi-dialog-width-md);
-		width: 100%;
 	}
 
 	.lumi-dialog--lg {
 		max-width: var(--lumi-dialog-width-lg);
-		width: 100%;
 	}
 
 	.lumi-dialog--xl {
 		max-width: var(--lumi-dialog-width-xl);
-		width: 100%;
 	}
 
 	.lumi-dialog--scrollable .lumi-dialog__content {

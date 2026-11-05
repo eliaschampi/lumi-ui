@@ -5,6 +5,7 @@
 </script>
 
 <script lang="ts">
+	import { tick } from 'svelte';
 	import {
 		createFloating,
 		type FloatingReference
@@ -34,7 +35,13 @@
 	const floating = createFloating(
 		() => reference,
 		() => menuElement,
-		() => ({ offset: 0, maxHeight: 300, viewportPadding: 12 })
+		() => ({
+			offset: 0,
+			maxHeight: 300,
+			viewportPadding: 12,
+			closeOnScroll: true,
+			onoutside: () => hide(false)
+		})
 	);
 
 	/** Open at the pointer of `event`; `data` reaches the children snippet. */
@@ -50,20 +57,7 @@
 					? active
 					: null;
 		reference = {
-			contextElement:
-				event.currentTarget instanceof Element
-					? event.currentTarget
-					: undefined,
-			getBoundingClientRect: () => ({
-				x,
-				y,
-				top: y,
-				right: x,
-				bottom: y,
-				left: x,
-				width: 0,
-				height: 0
-			})
+			getBoundingClientRect: () => ({ x, y, width: 0, height: 0 })
 		};
 		contextData = data;
 		pendingOpen = { event, data };
@@ -87,36 +81,16 @@
 			});
 	}
 
-	// Focus the first item once positioned, then report the resolved spot.
+	// Focus the first item once visible, then report the resolved spot.
 	$effect(() => {
 		if (!floating.hasPosition || !pendingOpen) return;
 		const { event, data } = pendingOpen;
 		pendingOpen = null;
-		surface?.focusItem('first');
-		onopen?.(event, data, floating.position.top, floating.position.left);
-	});
-
-	// Any press, other context menu or scroll outside the menu closes it.
-	$effect(() => {
-		if (!floating.isOpen) return;
-		const outside = (event: Event) => {
-			if (!menuElement?.contains(event.target as Node)) hide(false);
-		};
-		const onscroll = () => hide(false);
-		document.addEventListener('pointerdown', outside, true);
-		document.addEventListener('contextmenu', outside, true);
-		window.addEventListener('scroll', onscroll, {
-			capture: true,
-			passive: true
+		void tick().then(() => {
+			surface?.focusItem('first');
+			onopen?.(event, data, floating.position.top, floating.position.left);
 		});
-		return () => {
-			document.removeEventListener('pointerdown', outside, true);
-			document.removeEventListener('contextmenu', outside, true);
-			window.removeEventListener('scroll', onscroll, true);
-		};
 	});
-
-	$effect(() => () => floating.close());
 </script>
 
 {#if floating.isOpen}

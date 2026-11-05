@@ -152,7 +152,7 @@ Icons cost only what a page renders: pass deep-imported Lucide components (`@luc
 - `Button.variant` sets the visual treatment and `Button.type` the native semantics. `href` renders an `<a>` with the same styles (disabled/loading links drop `href` and expose `aria-disabled`); `pressed` adds `aria-pressed` for a standalone toggle. `summary` renders the `<summary>` of a native `<details>` — a disclosure toggle that works without JavaScript (storefront menus, filter panels) and reads as pressed while open. `filled` and `gradient` consume `solid + foreground`.
 - `Card` derives its depth from the neutral surface ladder. A clickable card renders as a button and must not contain nested interactive controls.
 - Form peers share one field shell (`Field/field.css`, layer `lumi.components`): `Input`, `NumberInput`, `Select` and `Textarea` render `.lumi-field` with the same heights, fill/border, invalid state, autofill and focus. `error` (`true` or a message) and `hint` work the same on all four.
-- `Tabs`, `SegmentedControl` and `ToggleGroup` share the global `.lumi-switcher` recipe (glass shell + elevated active pill), not the field well. SegmentedControl is one exclusive choice (radio semantics); ToggleGroup is any number of pressed options (`aria-pressed`, roving tabindex, `value` is an array).
+- `Tabs`, `SegmentedControl` and `ToggleGroup` share the `.lumi-switcher` recipe (glass shell + elevated active pill, `styles/switcher.css`, imported by those components), not the field well. SegmentedControl is one exclusive choice (radio semantics); ToggleGroup is any number of pressed options (`aria-pressed`, roving tabindex, `value` is an array).
 - `Tab.content` enables managed panels: every panel stays mounted while inactive panels are hidden, preserving local state and successful form controls.
 - Radios bound to the same `group` must also share a non-empty `name`. `busy` temporarily disables interaction.
 - `List` renders `<ul>`/`<li>`. A `ListItem` with `href` or `onclick` is interactive through a stretched target, so `trailing` actions stay siblings, never nested controls. `selected` marks selection; `SidebarItem.current` marks navigation.
@@ -163,8 +163,10 @@ Icons cost only what a page renders: pass deep-imported Lucide components (`@luc
 - `Pagination` with `href` renders crawlable `<a rel="prev|next">` links (modified clicks open new tabs normally); without it, buttons call `onpagechange`.
 - `MessageList` needs a height (or a flex/grid track). It stays pinned to the newest message while the reader is at the end, offers a localized “jump to latest” button otherwise, calls `onloadmore` near the top and keeps the reader's place when history is prepended. Pass `busy` while a reply streams.
 - `createToaster()` is an explicit queue: create it in client code (or per request), call `show()` from event handlers, and render one `<Toaster toaster={…}>` in the layout.
-- `Alert.color` and `Notification.color` take semantic colors; `onclose()` fires after the exit transition.
+- `Alert.color` and `Notification.color` take semantic colors; `onclose()` fires after the exit transition. `closeLabel` overrides the localized dismiss name.
+- `Checkbox`, `Radio` and `Switch` take the same form props: `id`, `name`, `value`, `required`, `disabled`, `aria-label`.
 - Supply `Table.rowKey` when records lack stable `id` or `key`. `Table` suppresses row click/double-click/context actions when the pointer originates from a nested interactive control.
 - All `Dashboard*` charts consume the shared `.lumi-chart-*` primitives from `styles/charts.css`, which they import themselves.
 - Icon-only controls need an accessible name; decorative nested icons do not.
+- `Tooltip` anchors to its child when it wraps a single element, and to its wrapper otherwise.
 - Preserve focus, dismissal, and roles when composing overlays.

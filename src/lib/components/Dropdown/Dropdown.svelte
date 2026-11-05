@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { setContext } from 'svelte';
+	import { setContext, tick } from 'svelte';
 	import { createFloating } from '../../utils/floating.svelte';
 	import MenuSurface from './MenuSurface.svelte';
 	import type { DropdownProps, DropdownTriggerProps } from './types';
@@ -31,7 +31,13 @@
 	const floating = createFloating(
 		() => root,
 		() => menuElement,
-		() => ({ placement, offset: 8, maxHeight: 320, viewportPadding: 12 })
+		() => ({
+			placement,
+			offset: 8,
+			maxHeight: 320,
+			viewportPadding: 12,
+			onoutside: () => hide()
+		})
 	);
 
 	// Content rule (no double render): a trigger snippet frees `children` for the menu.
@@ -49,7 +55,8 @@
 
 	setContext('dropdownClose', () => hide(true));
 
-	// Hidden menus refuse focus, so keyboard focus waits for the first position.
+	// Hidden menus refuse focus, so keyboard focus waits for the first position
+	// to reach the DOM.
 	let pendingFocus = $state<'first' | 'last' | null>(null);
 
 	function show(focus?: 'first' | 'last'): void {
@@ -63,9 +70,10 @@
 	}
 
 	$effect(() => {
-		if (!floating.hasPosition || !pendingFocus || !surface) return;
-		surface.focusItem(pendingFocus);
+		if (!floating.hasPosition || !pendingFocus) return;
+		const target = pendingFocus;
 		pendingFocus = null;
+		void tick().then(() => surface?.focusItem(target));
 	});
 
 	function hide(restoreFocus = false): void {
@@ -97,20 +105,6 @@
 			}
 		}
 	});
-
-	// Outside presses close; listeners exist only while open.
-	$effect(() => {
-		if (!floating.isOpen) return;
-		const onpointerdown = (event: PointerEvent) => {
-			const target = event.target as Node;
-			if (!root?.contains(target) && !menuElement?.contains(target)) hide();
-		};
-		document.addEventListener('pointerdown', onpointerdown, true);
-		return () =>
-			document.removeEventListener('pointerdown', onpointerdown, true);
-	});
-
-	$effect(() => () => floating.close());
 </script>
 
 <div bind:this={root} class={['lumi-dropdown', className]}>
@@ -161,8 +155,8 @@
 	}
 
 	.lumi-dropdown__trigger:disabled {
-		cursor: not-allowed;
 		opacity: var(--lumi-opacity-disabled);
+		pointer-events: none;
 	}
 
 	.lumi-dropdown__trigger:focus-visible {

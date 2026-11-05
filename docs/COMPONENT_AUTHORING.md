@@ -260,7 +260,7 @@ transition:
 
 ### Where CSS lives
 
-A component's required CSS lives in its scoped `<style>`, in `base.css` (global recipes) or in a stylesheet the `.svelte` component imports itself (`Field/field.css`, `styles/charts.css`, layer `lumi.components`). Never import CSS from an `index.ts` barrel: with `sideEffects: ["**/*.css"]`, bundlers skip re-export-only modules and their CSS. Never depend on `utilities.css` or `patterns.css` — pages may not load them. Layout components may rely on `layout.css` shell classes.
+A component's required CSS lives in its scoped `<style>`, in `base.css` (recipes every page needs) or in a stylesheet the `.svelte` component imports itself (`Field/field.css`, `styles/charts.css`, `styles/switcher.css`, `styles/switcher-group.css`, `styles/skeleton.css`, `styles/floating.css`, layer `lumi.components`). Never import CSS from an `index.ts` barrel: with `sideEffects: ["**/*.css"]`, bundlers skip re-export-only modules and their CSS. Never depend on `utilities.css` or `patterns.css` — pages may not load them. Layout components may rely on `layout.css` shell classes.
 
 ### Responsive
 
@@ -289,12 +289,12 @@ Interactive components must cover what applies:
 If the surface can be clipped by `overflow: hidden` parents:
 
 1. Apply `use:portal` (default `body`).
-2. Position with `createFloating` from `utils/floating.svelte.ts`.
-3. Use z-index tokens (`--lumi-z-dropdown`, `--lumi-z-modal`, etc.).
+2. Position with `createFloating` from `utils/floating.svelte.ts`; it follows the anchor by itself, and `onoutside` handles dismissal, so add no scroll, resize or document listeners. Geometry lives in the pure `utils/position.ts`.
+3. Use z-index tokens (`--lumi-z-dropdown`, `--lumi-z-modal`, etc.) and `.lumi-floating` for the surface.
 4. On open: cancel pending close timers/transitions before rebinding target.
 5. On close: restore focus to the trigger when the user opened via keyboard/pointer interaction that expects it.
 
-Release listeners and scroll locks in the effect that acquired them; destroying a closed overlay must not change another overlay's state.
+Release listeners and scroll locks in the effect that acquired them; destroying a closed overlay must not change another overlay's state. A surface stays `visibility: hidden` until placed and hidden elements refuse focus, so move focus after `tick()` once `hasPosition` is true. Lists navigate with `rovingIndex` from `utils/roving.ts`.
 
 Reference implementations: `Dialog`, `Dropdown`, `Context`, `Select`, `Tooltip`.
 
@@ -310,28 +310,32 @@ Forms and interactive peers should feel like one system:
 | Radius             | `--lumi-radius-control`                                                                               |
 | Fill / border      | `--lumi-color-control-*`                                                                              |
 | Accent             | `--lumi-control-accent` on the control root (drives focus fill, ring, and outline)                    |
-| Focus (field)      | `--lumi-control-focus-shadow` on the shell / peer visual (re-declared on form roots in `core.css`)    |
-| Focus (affordance) | `--lumi-focus-outline` + offset; outline is re-declared on interactive roots so local accent wins     |
+| Filled accent      | `solidAccent(color)` plus `--lumi-control-solid` / `-foreground` defaults on the control root         |
+| Focus (field)      | `--lumi-control-focus-shadow` on the shell / peer visual                                              |
+| Focus (affordance) | `--lumi-focus-outline` + offset                                                                       |
+| Disabled           | `opacity: var(--lumi-opacity-disabled)` + `pointer-events: none`, so hover rules need no guard        |
 | Motion             | `--lumi-transition-control` (+ `transform` only when lift/press is used)                              |
 | Autofill           | Class `lumi-autofill` + `--lumi-control-autofill-bg` (default + `:focus-within` focus fill)           |
 | Labels             | `FieldLabel` (accent on `:focus-within`, decorative `*` for `required`) above the shell               |
 | Validation         | `error?: FieldError` (`true` or a message) plus `hint`; render internal `FieldLabel` / `FieldMessage` |
 
-When adding a new control, **side-by-side with Input** at the sizes that control actually supports and match padding/typography. If you introduce a new interactive root that uses `--lumi-focus-outline` or `--lumi-control-focus-shadow`, add its class to the re-declaration list in `core.css` (never bake those recipes only on `:root`). Do not invent private focus-ring or transition variables.
+When adding a new control, **side-by-side with Input** at the sizes that control actually supports and match padding/typography. Focus recipes resolve on the focused element by themselves, so read `--lumi-focus-outline` or `--lumi-control-focus-shadow` on `:focus-visible` or on the sibling right after a hidden input; nothing needs registering. Do not invent private focus-ring or transition variables.
 
 ### Shared visual recipes (copy peers — do not fork)
 
 One role → one CSS recipe. Match the nearest peer; do not invent a second shell, spinner, or tile.
 
-| Role                  | Peers                                    | Recipe (tokens only)                                                                                                                                                                                                   |
-| --------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Field / binary active | Input, Checkbox, Radio, Switch           | Control fill/border; active via `--lumi-control-active-*`; field focus via `--lumi-control-focus-shadow`                                                                                                               |
-| Switcher              | Tabs, SegmentedControl, ToggleGroup      | Glass shell (`surface-glass-strong` + `background-hover`, glass/strong border, `--lumi-control-shadow`); 9% accent hover (no lift); elevated **active pill** (surface-card gradient + quiet shadow). Not control-fill. |
-| Spinner               | Button, Select, Table, Loading           | Global `.lumi-spinner` (base.css): `currentColor` 18% track + solid arc, `--lumi-duration-spin`; reduced motion handled globally                                                                                       |
-| Skeleton              | Skeleton, Image, Table loading           | Global `.lumi-skeleton` (+ `--text`, `--rect`, `--circle`); decorative, the loading region carries `aria-busy`                                                                                                         |
-| Field shell           | Input, NumberInput, Select, Textarea     | `Field/field.css` (`.lumi-field*`, layer `lumi.components`) with `FieldLabel` / `FieldMessage`                                                                                                                         |
-| Icon tile             | IconBadge, InfoItem icon                 | 12% accent fill, 20% accent border, `--lumi-radius-lg`, 30% top sheen; IconBadge may keep `--lumi-shadow-sm` as a free-standing tile                                                                                   |
-| Affordance focus      | Chip close/action, list/menu items, tabs | `--lumi-focus-outline` + offset; set `--lumi-control-accent` on the root                                                                                                                                               |
+| Role                  | Peers                                    | Recipe (tokens only)                                                                                                                                                                                                                                                                                   |
+| --------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Field / binary active | Input, Checkbox, Radio, Switch           | Control fill/border; active via `--lumi-control-active-*`; field focus via `--lumi-control-focus-shadow`                                                                                                                                                                                               |
+| Switcher              | Tabs, SegmentedControl, ToggleGroup      | `styles/switcher.css` (+ `switcher-group.css` for SegmentedControl and ToggleGroup): glass shell (`surface-glass-strong` + `background-hover`, glass/strong border, `--lumi-control-shadow`); hover tint (no lift); elevated **active pill** (surface-card gradient + quiet shadow). Not control-fill. |
+| Spinner               | Button, Select, Table, Loading           | Global `.lumi-spinner` (base.css): `currentColor` 18% track + solid arc, `--lumi-duration-spin`; reduced motion handled globally                                                                                                                                                                       |
+| Skeleton              | Skeleton, Image, Table loading           | `styles/skeleton.css`: `.lumi-skeleton` (+ `--text`, `--rect`, `--circle`); decorative, the loading region carries `aria-busy`                                                                                                                                                                         |
+| Floating surface      | Dropdown, Context, Select                | `styles/floating.css`: `.lumi-floating` frosted glass                                                                                                                                                                                                                                                  |
+| Row tint              | Menu items, options, list and table rows | `--lumi-state-hover-strength` on hover, `--lumi-state-bg-strength` when selected                                                                                                                                                                                                                       |
+| Field shell           | Input, NumberInput, Select, Textarea     | `Field/field.css` (`.lumi-field*`, layer `lumi.components`) with `FieldLabel` / `FieldMessage`                                                                                                                                                                                                         |
+| Icon tile             | IconBadge, InfoItem icon                 | 12% accent fill, 20% accent border, `--lumi-radius-lg`, 30% top sheen; IconBadge may keep `--lumi-shadow-sm` as a free-standing tile                                                                                                                                                                   |
+| Affordance focus      | Chip close/action, list/menu items, tabs | `--lumi-focus-outline` + offset; set `--lumi-control-accent` on the root                                                                                                                                                                                                                               |
 
 Surface roles: [GUIDE §6](./GUIDE.md#6-design-language).
 
@@ -361,7 +365,7 @@ For every touched component:
 - [ ] Overlay → portal + focus trap/restore + dismissal
 - [ ] Visual: light theme, and dark seeds if colors touched
 - [ ] `pnpm run check` clean
-- [ ] `pnpm run package` clean
+- [ ] `pnpm run package` clean, and `pnpm run size` within budget
 
 Release command sequence: [GUIDE §8](./GUIDE.md#8-release-verification).
 

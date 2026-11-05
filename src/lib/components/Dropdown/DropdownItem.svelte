@@ -91,21 +91,21 @@
 		transition: var(--lumi-transition-interactive);
 	}
 
-	.lumi-dropdown-item:hover:not(.lumi-dropdown-item--disabled),
+	.lumi-dropdown-item:hover,
 	.lumi-dropdown-item:focus-visible {
 		background: color-mix(
 			in srgb,
-			var(--lumi-dropdown-item-accent) 8%,
+			var(--lumi-dropdown-item-accent) var(--lumi-state-hover-strength),
 			transparent
 		);
 	}
 
 	/* Same lift and press as list rows and buttons. */
-	.lumi-dropdown-item:hover:not(.lumi-dropdown-item--disabled) {
+	.lumi-dropdown-item:hover {
 		transform: translateY(var(--lumi-interactive-lift));
 	}
 
-	.lumi-dropdown-item:active:not(.lumi-dropdown-item--disabled) {
+	.lumi-dropdown-item:active {
 		transform: none;
 	}
 
@@ -141,6 +141,6 @@
 
 	.lumi-dropdown-item--disabled {
 		opacity: var(--lumi-opacity-disabled);
-		cursor: not-allowed;
+		pointer-events: none;
 	}
 </style>

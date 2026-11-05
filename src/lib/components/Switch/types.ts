@@ -7,8 +7,12 @@ export type SwitchColor = LumiColor;
 export interface SwitchProps {
 	/** Checked state (bindable) */
 	checked?: boolean;
+	/** Id of the input, to point a `<label for>` at it */
+	id?: string;
 	/** Form field name */
 	name?: string;
+	/** Submitted value when checked @default 'on' */
+	value?: string;
 	/** Label text */
 	label?: string;
 	/** Size variant */
@@ -17,6 +21,8 @@ export interface SwitchProps {
 	color?: SwitchColor;
 	/** Disabled state */
 	disabled?: boolean;
+	/** Must be on before the form submits */
+	required?: boolean;
 	/** Custom CSS class */
 	class?: string;
 	/** Children snippet for custom label */

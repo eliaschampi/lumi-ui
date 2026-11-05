@@ -5,6 +5,8 @@
 </script>
 
 <script lang="ts">
+	import '../../styles/switcher.css';
+	import '../../styles/switcher-group.css';
 	import { useLumiLocale } from '../../i18n';
 	import Icon from '../Icon/Icon.svelte';
 	import type { SegmentedControlProps } from './types';
@@ -13,6 +15,7 @@
 		value = $bindable(),
 		options,
 		color = 'primary',
+		size = 'md',
 		disabled = false,
 		fullWidth = false,
 		orientation = 'horizontal',
@@ -62,9 +65,10 @@
 	class={[
 		'lumi-switcher',
 		'lumi-segmented-control',
+		size === 'sm' && 'lumi-switcher--sm',
 		orientation === 'vertical' && 'lumi-switcher--vertical',
-		disabled && 'lumi-segmented-control--disabled',
-		fullWidth && 'lumi-segmented-control--full',
+		disabled && 'lumi-switcher--disabled',
+		fullWidth && 'lumi-switcher--full',
 		iconOnly && 'lumi-segmented-control--icon-only',
 		className
 	]}
@@ -97,7 +101,7 @@
 				<Icon icon={option.icon} size="sm" />
 			{/if}
 			{#if option.label}
-				<span class="lumi-segmented-control__label">{option.label}</span>
+				<span class="lumi-switcher__label">{option.label}</span>
 			{/if}
 		</label>
 	{/each}
@@ -105,33 +109,12 @@
 
 <style>
 	/* Shell, options and active pill come from the shared .lumi-switcher recipe. */
-	.lumi-segmented-control--full {
-		display: flex;
-		width: 100%;
-	}
-
-	.lumi-segmented-control--full > .lumi-switcher__option {
-		flex: 1 1 0;
-		min-width: 0;
-	}
-
 	.lumi-segmented-control--icon-only > .lumi-switcher__option {
 		padding: var(--lumi-segmented-control-icon-only-padding);
 	}
 
-	.lumi-segmented-control__label {
-		max-width: 100%;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.lumi-segmented-control--disabled {
-		opacity: var(--lumi-opacity-disabled);
-		pointer-events: none;
-	}
-
 	@media (max-width: 48rem) {
-		.lumi-segmented-control--full:not(.lumi-switcher--vertical)
+		.lumi-segmented-control.lumi-switcher--full:not(.lumi-switcher--vertical)
 			> .lumi-switcher__option {
 			flex: 1 0 max-content;
 			min-width: max-content;

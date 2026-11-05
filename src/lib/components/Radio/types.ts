@@ -17,6 +17,8 @@ export interface RadioProps {
 	option?: boolean;
 	/** Disables interaction on option cards (e.g. while saving) */
 	busy?: boolean;
+	/** Id of the input, to point a `<label for>` at it */
+	id?: string;
 	/** Radio name (for grouping) */
 	name?: string;
 	/** Size variant */
@@ -25,6 +27,8 @@ export interface RadioProps {
 	color?: RadioColor;
 	/** Disabled state */
 	disabled?: boolean;
+	/** One radio of the group must be chosen before the form submits */
+	required?: boolean;
 	/** Custom CSS class */
 	class?: string;
 	/** Children snippet for custom label */

@@ -1,0 +1,125 @@
+/* Switcher shared by Tabs, SegmentedControl and ToggleGroup; imported by those
+   components, so only pages that render one ship it. Glass shell + elevated
+   active pill. Set --lumi-control-accent on the root; options are buttons or
+   labels wrapping a visually hidden input. */
+@layer lumi.tokens, lumi.base, lumi.components, lumi.layout, lumi.patterns, lumi.utilities;
+
+@layer lumi.components {
+	.lumi-switcher {
+		display: inline-flex;
+		align-items: stretch;
+		gap: var(--lumi-space-2xs);
+		max-width: 100%;
+		padding: var(--lumi-space-2xs);
+		background: color-mix(
+			in srgb,
+			var(--lumi-color-surface-glass-strong) 78%,
+			var(--lumi-color-background-hover) 22%
+		);
+		border: var(--lumi-border-width-thin) solid
+			color-mix(
+				in srgb,
+				var(--lumi-color-border-glass) 72%,
+				var(--lumi-color-border-strong) 28%
+			);
+		border-radius: var(--lumi-radius-panel);
+		box-shadow: var(--lumi-control-shadow);
+		overflow-x: auto;
+		overflow-y: hidden;
+		overscroll-behavior-inline: contain;
+		scrollbar-width: thin;
+		scrollbar-color: var(--lumi-color-border-strong) transparent;
+		user-select: none;
+		transition: var(--lumi-transition-control);
+	}
+
+	.lumi-switcher:hover {
+		border-color: var(--lumi-color-border-strong);
+	}
+
+	.lumi-switcher:focus-within {
+		border-color: color-mix(
+			in srgb,
+			var(--lumi-control-accent) 30%,
+			var(--lumi-color-border-strong)
+		);
+	}
+
+	.lumi-switcher--vertical {
+		flex-direction: column;
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+
+	.lumi-switcher--vertical > .lumi-switcher__option {
+		justify-content: flex-start;
+		width: 100%;
+		min-width: 0;
+		text-align: start;
+	}
+
+	.lumi-switcher__option {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--lumi-space-xs);
+		min-width: max-content;
+		min-height: var(--lumi-control-height-sm);
+		padding: var(--lumi-space-xs) var(--lumi-space-md);
+		font: inherit;
+		font-size: var(--lumi-font-size-sm);
+		font-weight: var(--lumi-font-weight-medium);
+		line-height: var(--lumi-line-height-tight);
+		color: var(--lumi-color-text-muted);
+		white-space: nowrap;
+		background: transparent;
+		border: var(--lumi-border-width-thin) solid transparent;
+		border-radius: var(--lumi-radius-control);
+		cursor: pointer;
+		transition: var(--lumi-transition-interactive);
+	}
+
+	.lumi-switcher__option:hover:not(.lumi-switcher__option--active) {
+		color: var(--lumi-color-text);
+		background: color-mix(
+			in srgb,
+			var(--lumi-control-accent) var(--lumi-state-hover-strength),
+			transparent
+		);
+	}
+
+	.lumi-switcher__option:active:not(.lumi-switcher__option--active) {
+		transform: scale(var(--lumi-interactive-press-scale));
+	}
+
+	.lumi-switcher__option--active {
+		color: var(--lumi-control-accent);
+		font-weight: var(--lumi-font-weight-semibold);
+		background: linear-gradient(
+			145deg,
+			color-mix(
+				in srgb,
+				var(--lumi-color-surface-card-hover) 88%,
+				var(--lumi-control-accent) 12%
+			),
+			var(--lumi-color-surface-card)
+		);
+		border-color: color-mix(
+			in srgb,
+			var(--lumi-control-accent) 28%,
+			var(--lumi-color-border)
+		);
+		box-shadow: var(--lumi-shadow-sm);
+	}
+
+	.lumi-switcher__option:focus-visible {
+		outline: var(--lumi-focus-outline);
+		outline-offset: var(--lumi-focus-outline-offset);
+	}
+
+	.lumi-switcher__option--disabled {
+		opacity: var(--lumi-opacity-disabled);
+		pointer-events: none;
+	}
+}

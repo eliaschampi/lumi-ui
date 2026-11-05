@@ -13,6 +13,11 @@
 		--lumi-field-pad-x: var(--lumi-space-sm);
 		--lumi-field-border: var(--lumi-color-control-border);
 		--lumi-control-autofill-bg: var(--lumi-color-control-fill);
+		--lumi-color-control-focus-fill: color-mix(
+			in srgb,
+			var(--lumi-color-control-fill) 84%,
+			var(--lumi-control-accent) 16%
+		);
 		display: flex;
 		flex-direction: column;
 		inline-size: 100%;
@@ -83,7 +88,14 @@
 		color: var(--lumi-control-accent);
 		border-color: var(--lumi-control-accent);
 		background: var(--lumi-color-control-focus-fill);
-		box-shadow: var(--lumi-control-focus-shadow);
+		box-shadow:
+			0 0 0 var(--lumi-border-width-thick)
+				color-mix(
+					in srgb,
+					var(--lumi-control-accent) var(--lumi-control-focus-ring-strength),
+					transparent
+				),
+			var(--lumi-control-shadow);
 	}
 
 	.lumi-field__input {

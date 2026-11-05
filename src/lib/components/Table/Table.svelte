@@ -32,6 +32,7 @@
 <script lang="ts" generics="TRow extends object">
 	import Inbox from '@lucide/svelte/icons/inbox';
 	import Search from '@lucide/svelte/icons/search';
+	import '../../styles/skeleton.css';
 	import { useLumiLocale } from '../../i18n';
 	import Checkbox from '../Checkbox/Checkbox.svelte';
 	import Icon from '../Icon/Icon.svelte';
@@ -360,12 +361,12 @@
 		--lumi-table-cell-font: var(--lumi-font-size-sm);
 		--lumi-table-row-hover: color-mix(
 			in srgb,
-			var(--lumi-color-primary) 6%,
+			var(--lumi-color-primary) var(--lumi-state-hover-strength),
 			var(--lumi-color-surface-card)
 		);
 		--lumi-table-row-selected: color-mix(
 			in srgb,
-			var(--lumi-color-primary) 11%,
+			var(--lumi-color-primary) var(--lumi-state-bg-strength),
 			var(--lumi-color-surface-card)
 		);
 		display: flex;

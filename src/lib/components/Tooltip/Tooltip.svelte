@@ -27,8 +27,19 @@
 	let bubbleRef: HTMLDivElement | undefined = $state();
 	let arrowRef: HTMLSpanElement | undefined = $state();
 
+	// The wrapper stretches in a grid or flex column while its child stays at the
+	// start, so a lone child is the anchor: the tooltip belongs to what is visible.
+	function anchor(): Element | undefined {
+		const child = triggerRef?.firstElementChild;
+		return child &&
+			triggerRef?.childElementCount === 2 &&
+			child.getClientRects().length
+			? child
+			: triggerRef;
+	}
+
 	const floating = createFloating(
-		() => triggerRef,
+		anchor,
 		() => bubbleRef,
 		() => ({
 			placement,
@@ -124,7 +135,6 @@
 	$effect(() => () => {
 		clearTimeout(showTimer);
 		clearTimeout(hideTimer);
-		floating.close();
 	});
 </script>
 

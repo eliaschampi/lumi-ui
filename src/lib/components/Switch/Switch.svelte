@@ -1,13 +1,17 @@
 <script lang="ts">
+	import { solidAccent } from '../config';
 	import type { SwitchProps } from './types';
 
 	let {
 		checked = $bindable(false),
-		name = '',
+		id,
+		name,
+		value,
 		label = '',
 		size = 'md',
 		color = 'primary',
 		disabled = false,
+		required = false,
 		class: className = '',
 		children,
 		onchange,
@@ -28,17 +32,18 @@
 		disabled && 'lumi-switch--disabled',
 		className
 	]}
-	style:--switch-color="var(--lumi-color-{color})"
-	style:--switch-solid="var(--lumi-color-{color}-solid)"
-	style:--switch-foreground="var(--lumi-color-{color}-foreground)"
+	style={solidAccent(color)}
 >
 	<input
 		type="checkbox"
 		role="switch"
 		class="lumi-sr-only"
+		{id}
 		{name}
+		{value}
 		{checked}
 		{disabled}
+		{required}
 		aria-label={ariaLabel}
 		onchange={handleChange}
 	/>
@@ -67,7 +72,9 @@
 		--switch-travel: calc(var(--switch-track-w) - var(--switch-track-h));
 		--switch-stretch: var(--lumi-space-2xs);
 		--switch-label-size: var(--lumi-font-size-base);
-		--lumi-control-accent: var(--switch-color);
+		--lumi-control-accent: var(--lumi-color-primary);
+		--lumi-control-solid: var(--lumi-color-primary-solid);
+		--lumi-control-foreground: var(--lumi-color-primary-foreground);
 
 		position: relative;
 		display: inline-flex;
@@ -118,18 +125,17 @@
 
 	/* Checked pairs the role's solid with its foreground thumb (≥ 3:1). */
 	.lumi-switch--checked .lumi-switch__track {
-		background: var(--switch-solid);
+		background: var(--lumi-control-solid);
 		box-shadow: var(--lumi-control-active-shadow);
 	}
 
 	.lumi-switch--checked .lumi-switch__thumb {
-		background: var(--switch-foreground);
+		background: var(--lumi-control-foreground);
 		border-color: transparent;
 		transform: translateX(var(--switch-travel));
 	}
 
-	.lumi-switch:not(.lumi-switch--checked):not(.lumi-switch--disabled):hover
-		.lumi-switch__track {
+	.lumi-switch:not(.lumi-switch--checked):hover .lumi-switch__track {
 		box-shadow:
 			inset 0 0 0 var(--lumi-border-width-base)
 				var(--lumi-control-active-border),
@@ -137,15 +143,15 @@
 		background: var(--lumi-control-active-fill);
 	}
 
-	.lumi-switch:not(.lumi-switch--disabled):hover .lumi-switch__thumb {
+	.lumi-switch:hover .lumi-switch__thumb {
 		box-shadow: var(--lumi-shadow-md);
 	}
 
-	.lumi-switch:not(.lumi-switch--disabled):active .lumi-switch__thumb {
+	.lumi-switch:active .lumi-switch__thumb {
 		width: calc(var(--switch-thumb) + var(--switch-stretch));
 	}
 
-	.lumi-switch--checked:not(.lumi-switch--disabled):active .lumi-switch__thumb {
+	.lumi-switch--checked:active .lumi-switch__thumb {
 		transform: translateX(calc(var(--switch-travel) - var(--switch-stretch)));
 	}
 
@@ -168,12 +174,8 @@
 	}
 
 	.lumi-switch--disabled {
-		cursor: not-allowed;
 		opacity: var(--lumi-opacity-disabled);
-	}
-
-	.lumi-switch--disabled .lumi-switch__label {
-		cursor: not-allowed;
+		pointer-events: none;
 	}
 
 	.lumi-switch--disabled:not(.lumi-switch--checked) .lumi-switch__track {

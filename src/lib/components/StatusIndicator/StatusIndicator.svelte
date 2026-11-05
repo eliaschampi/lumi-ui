@@ -58,7 +58,13 @@
 	}
 
 	.lumi-status-indicator--pulse {
-		animation: lumi-pulse var(--lumi-duration-pulse) var(--lumi-easing-in-out)
-			infinite;
+		animation: lumi-status-pulse var(--lumi-duration-pulse)
+			var(--lumi-easing-in-out) infinite;
+	}
+
+	@keyframes lumi-status-pulse {
+		50% {
+			opacity: 0.5;
+		}
 	}
 </style>

@@ -186,11 +186,15 @@
 	}
 
 	.lumi-number-input .lumi-field__button:hover {
-		background: color-mix(in srgb, var(--lumi-control-accent) 8%, transparent);
+		background: color-mix(
+			in srgb,
+			var(--lumi-control-accent) var(--lumi-state-hover-strength),
+			transparent
+		);
 	}
 
 	.lumi-number-input .lumi-field__button:disabled {
 		opacity: var(--lumi-opacity-disabled);
-		cursor: not-allowed;
+		pointer-events: none;
 	}
 </style>

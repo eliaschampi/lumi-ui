@@ -42,7 +42,7 @@
 		font-size: var(--lumi-font-size-sm);
 		cursor: pointer;
 		text-align: start;
-		transition: var(--lumi-transition-control);
+		transition: var(--lumi-transition-interactive);
 	}
 
 	.lumi-tag-option:hover {
@@ -53,9 +53,13 @@
 		);
 		background: color-mix(
 			in srgb,
-			var(--lumi-control-accent) 4%,
+			var(--lumi-control-accent) var(--lumi-state-hover-strength),
 			var(--lumi-color-surface)
 		);
+	}
+
+	.lumi-tag-option:active {
+		transform: scale(var(--lumi-interactive-press-scale));
 	}
 
 	.lumi-tag-option:focus-visible {
@@ -71,7 +75,7 @@
 		);
 		background: color-mix(
 			in srgb,
-			var(--lumi-control-accent) 8%,
+			var(--lumi-control-accent) var(--lumi-state-bg-strength),
 			var(--lumi-color-surface)
 		);
 	}

@@ -1,0 +1,48 @@
+/* Skeleton placeholder shared by Skeleton, Image and Table; imported by those
+   components, so only pages that render one ship it. One soft shimmer pass per
+   cycle in reading direction; static under reduced motion. Size it from outside. */
+@layer lumi.tokens, lumi.base, lumi.components, lumi.layout, lumi.patterns, lumi.utilities;
+
+@layer lumi.components {
+	.lumi-skeleton {
+		display: block;
+		border-radius: var(--lumi-radius-control);
+		background: linear-gradient(
+				90deg,
+				var(--lumi-skeleton-base, var(--lumi-color-background-secondary)) 25%,
+				var(--lumi-skeleton-highlight, var(--lumi-color-background-hover)) 50%,
+				var(--lumi-skeleton-base, var(--lumi-color-background-secondary)) 75%
+			)
+			0 0 / 200% 100%;
+		animation: lumi-shimmer var(--lumi-duration-shimmer) linear infinite;
+	}
+
+	.lumi-skeleton:dir(rtl) {
+		animation-direction: reverse;
+	}
+
+	.lumi-skeleton--text {
+		block-size: 1em;
+		border-radius: var(--lumi-radius-sm);
+	}
+
+	.lumi-skeleton--rect {
+		block-size: var(--lumi-control-height-md);
+	}
+
+	.lumi-skeleton--circle {
+		inline-size: var(--lumi-space-xxl);
+		aspect-ratio: 1;
+		border-radius: var(--lumi-radius-full);
+	}
+
+	@keyframes lumi-shimmer {
+		from {
+			background-position: 100% 0;
+		}
+
+		to {
+			background-position: -100% 0;
+		}
+	}
+}

@@ -1,7 +1,9 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { scale } from 'svelte/transition';
+	import '../../styles/floating.css';
 	import { portal } from '../../actions/portal';
+	import { rovingIndex } from '../../utils/roving';
 	import { DURATION_FAST, motion } from '../config';
 
 	interface Props {
@@ -30,34 +32,28 @@
 
 	const ITEM = '[role^="menuitem"]:not([aria-disabled="true"])';
 
-	function move(target: 'first' | 'last' | 1 | -1): void {
-		const items = [...(element?.querySelectorAll<HTMLElement>(ITEM) ?? [])];
-		if (!items.length) return element?.focus();
-		const index = items.indexOf(document.activeElement as HTMLElement);
-		const next =
-			target === 'first'
-				? 0
-				: target === 'last'
-					? items.length - 1
-					: (index + target + items.length) % items.length;
-		items[next].focus();
-	}
+	const enabledItems = () => [
+		...(element?.querySelectorAll<HTMLElement>(ITEM) ?? [])
+	];
 
 	/** Focus the first or last enabled item (used right after opening). */
 	export function focusItem(target: 'first' | 'last'): void {
-		move(target);
+		const items = enabledItems();
+		((target === 'first' ? items[0] : items.at(-1)) ?? element)?.focus();
 	}
 
 	// One keyboard model for every menu: roving focus, Home/End, Escape/Tab close.
 	function handleKeydown(event: KeyboardEvent): void {
 		const { key } = event;
-		if (key === 'ArrowDown' || key === 'ArrowUp')
-			move(key === 'ArrowDown' ? 1 : -1);
-		else if (key === 'Home' || key === 'End')
-			move(key === 'Home' ? 'first' : 'last');
-		else if (key === 'Escape') onclose(true);
-		else if (key === 'Tab') return onclose(true);
-		else return;
+		if (key === 'Tab') return onclose(true);
+		if (key === 'Escape') onclose(true);
+		else {
+			const items = enabledItems();
+			const active = items.indexOf(document.activeElement as HTMLElement);
+			const at = rovingIndex(event, active, items.length, true);
+			if (at === undefined) return;
+			items[at].focus();
+		}
 		// Handled here, so an enclosing dialog must not also react.
 		event.preventDefault();
 		event.stopPropagation();
@@ -69,7 +65,7 @@
 	bind:this={element}
 	use:portal
 	{...aria}
-	class={['lumi-menu', `lumi-menu--${size}`, className]}
+	class={['lumi-floating', 'lumi-menu', `lumi-menu--${size}`, className]}
 	{style}
 	role="menu"
 	tabindex="-1"
@@ -89,11 +85,6 @@
 		max-inline-size: calc(var(--lumi-space-5xl) * 3 + var(--lumi-space-xl));
 		padding: var(--lumi-space-xs);
 		overflow: hidden;
-		background: var(--lumi-floating-surface-bg);
-		border: var(--lumi-border-width-thin) solid
-			var(--lumi-floating-surface-border);
-		border-radius: var(--lumi-surface-radius);
-		box-shadow: var(--lumi-floating-surface-shadow);
 		outline: none;
 	}
 

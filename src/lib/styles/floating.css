@@ -1,0 +1,17 @@
+/* Floating surface shared by menus and listboxes; imported by those components.
+   Frosted glass: the page behind must never compete with the options on top. */
+@layer lumi.tokens, lumi.base, lumi.components, lumi.layout, lumi.patterns, lumi.utilities;
+
+@layer lumi.components {
+	.lumi-floating {
+		background: var(--lumi-floating-surface-bg);
+		border: var(--lumi-border-width-thin) solid
+			var(--lumi-floating-surface-border);
+		border-radius: var(--lumi-surface-radius);
+		box-shadow: var(--lumi-floating-surface-shadow);
+		backdrop-filter: blur(var(--lumi-blur-sm))
+			saturate(var(--lumi-surface-saturation));
+		-webkit-backdrop-filter: blur(var(--lumi-blur-sm))
+			saturate(var(--lumi-surface-saturation));
+	}
+}

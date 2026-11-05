@@ -40,6 +40,7 @@ rg '\$props|Snippet|aria-|role=' src/lib/components/Button
 | Component behavior          | `pnpm run test` (add a regression test in `tests/`)      |
 | Script quality (TS/Svelte)  | `pnpm run lint` (oxlint on `src` + Prettier check)       |
 | Public exports or packaging | `pnpm run check && pnpm run package`                     |
+| Anything that ships bytes   | `pnpm run package && pnpm run size`                      |
 | CSS, tokens, or layout      | `pnpm run check`; visual check only if behavior changed  |
 | Overlay interaction         | Checks + keyboard, focus, dismissal, clipping, collision |
 

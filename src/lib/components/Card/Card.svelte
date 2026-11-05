@@ -170,10 +170,6 @@
 		box-shadow: var(--lumi-shadow-md);
 	}
 
-	.lumi-card--interactive:focus-visible {
-		--lumi-surface-hover: 1;
-	}
-
 	@media (hover: hover) {
 		.lumi-card--hoverable:hover {
 			--lumi-surface-hover: 1;

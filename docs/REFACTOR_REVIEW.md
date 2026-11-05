@@ -1,8 +1,39 @@
-# 1.0 review — 2026-10-17
+# Reviews
+
+## 1.2 review — 2026-11-04
+
+A refactor for uniform behavior and load, with no breaking change. Migration: [Upgrade 1.1.1 → 1.2.0](./UPGRADE.md#111--120).
+
+| Area      | Change                                                                                                                                                                                                  | Evidence                                                                                                                                                            |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Load      | `@floating-ui/dom` replaced by a pure `place()` (`utils/position.ts`) under the same `createFloating`; while open it compares the anchor's geometry each frame, so nothing that moves it goes unnoticed | About 6 KB gzip of every overlay was the engine: `Tooltip` 9,748 → 4,121 B, `Dropdown` 11,091 → 5,560 B, `Select` 14,256 → 8,751 B. Three packages left the install |
+| Load      | Switcher and skeleton recipes moved to `styles/switcher.css` and `styles/skeleton.css`; dead `::-webkit-scrollbar` rules dropped; one-owner keyframes moved to their owner                              | Global CSS 8,486 → 7,691 B, lean CSS 5,901 → 4,984 B. Tabs, SegmentedControl and ToggleGroup also share `--full`, `--sm`, `--disabled` and `__label` now            |
+| Focus     | One selector resolves the focus recipes on the focused element, replacing two lists of 35 component classes                                                                                             | The lists had drifted: toasts missed them, so a danger toast showed a primary ring. Checked in Chromium with primary, success and danger across ten control kinds   |
+| Focus     | Standalone indicators raised to 80% accent                                                                                                                                                              | At 35% they reached 1.6–1.9:1, under the ≥ 3:1 that [authoring](./COMPONENT_AUTHORING.md#5-css-authoring) requires. At 80% the worst role and theme reaches 3.32:1  |
+| Disabled  | One recipe, `opacity` + `pointer-events: none`, in every control                                                                                                                                        | Ten `not-allowed` declarations contradicted the recipe the guide states, and six components carried `:not(--disabled)` guards because of them                       |
+| Dismissal | `createFloating` owns outside press and outside scroll for `Select`, `Dropdown` and `Context`                                                                                                           | Three copies of the same effect. `Context` also closed when its own list scrolled                                                                                   |
+| Keyboard  | `rovingIndex` (`utils/roving.ts`) serves `Tabs`, `ToggleGroup`, menus and `Select`                                                                                                                      | Four implementations; ArrowUp from a menu surface landed on the second to last item                                                                                 |
+| Tints     | `--lumi-state-hover-strength` joins `--lumi-state-bg-strength`                                                                                                                                          | Rows and options used 4, 5, 6, 8, 9 and 10% for hover and 8, 9, 11 and 12% for selected                                                                             |
+| Glass     | `.lumi-floating` adds the blur the design language describes                                                                                                                                            | Text behind an open menu read through its options, most visibly in dark mode                                                                                        |
+| API       | Missing peer props added (see Upgrade); `solidAccent` writes no inline style for primary                                                                                                                | A hundred-row selectable table repeated 130 bytes of inline style per row                                                                                           |
+
+**Verification.** `place()` was compared against `computePosition` in a real browser before Floating UI left the tree: 13,824 scenarios crossing 12 placements, 72 anchors, 4 surface sizes, 2 offset and padding pairs, arrows, and LTR and RTL. All agreed on `x`, `y`, placement, `maxHeight` and arrow position within a pixel. Browser testing of the keyboard path also caught what jsdom could not: a synchronous position let focus reach a menu before its `visibility` reached the DOM, so a hidden surface refused it. A regression test now asserts the order, and fails on the earlier code.
+
+A second pass measured overlays inside a `Dialog` against 1.1.1 and found two more problems. The first version tracked anchors through scroll, resize and `ResizeObserver` events, which lost what Floating UI's layout-shift detection covered: a tooltip opened during a Dialog's entrance froze 7 px from its place, because a transform raises no event. Comparing geometry each frame restores the 1.1.1 behavior with less code, and a test moves an anchor without any event. The pass also confirmed a bug older than this release: a `Tooltip` in a grid or flex column has a stretched wrapper, so its bubble centered on empty space, 149 px from the control in the measured Dialog. It now anchors to a lone child.
+
+A final review of the whole diff fixed what the refactor had introduced: a disabled `Collapse` blocked its open panel, links stopped working in disabled labels, hover faded a checked `Radio`, and the global focus rule carried an unscoped `:has()` for one consumer. Every export was then measured against 1.1.1 as a real page, with CSS merged and in separate files. That caught `Tabs` 81 B over, because it paid for rules only its peers use; they moved to `styles/switcher-group.css`, and all 76 surfaces now come out lighter.
+
+`pnpm run size` makes the budgets reproducible; lint, check, 42 tests and package pass, and the packaged build type-checks and builds in a copy of `lumi-web`.
+
+Not done on purpose: a `:root` default for `--lumi-control-accent` (`ListHeader` and menu icons read an unset accent as neutral), a `FieldShell` wrapper (four fields would trade duplicated lines for a component boundary and a snippet API), and a move to the native `<dialog>` (it would retire most of `utils/modal.ts`, but top-layer stacking of toasts and portaled overlays needs its own review).
+
+Still open: a CSS `zoom` on an ancestor of the portal target offsets fixed surfaces, because rects and `top`/`left` scale differently; browser zoom is unaffected. A stretched `Tooltip` wrapper also still counts as hover area, so the bubble can open with the pointer beside the control. Hugging the child would shrink children that rely on `width: 100%`. `Tooltip` counts elements, not text, so `Total <b>12</b>` anchors to the `<b>`. Fixed surfaces assume no transform or filter on `<body>`, which Floating UI compensated for and none of the three apps use.
+
+## 1.0 review — 2026-10-17
 
 Lumi 1.0 was built by separate builders for foundation, forms/data, display/overlays and new components, each followed by an independent adversarial review and a fix round, and closed by a verification pass. Consumer evidence came from a usage audit of Faztore, Coedula and Aeduca. Migration: [Upgrade 0.6 → 1.0](./UPGRADE.md#060--100).
 
-## What changed and why
+### What changed and why
 
 | Area           | Change                                                                                                                                                                                | Evidence                                                                                      |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
@@ -16,7 +47,7 @@ Lumi 1.0 was built by separate builders for foundation, forms/data, display/over
 
 Deliberately not added: a custom date picker (the apps use 39 native date/time inputs and no calendars), a generic popover, and app-level patterns such as a confirm dialog (candidate for a future `src/lib/patterns/`).
 
-## Verification evidence
+### Verification evidence
 
 - Library: `pnpm run lint`, `pnpm run check` (0 errors, 0 warnings), `pnpm run test`, `pnpm run package` and `git diff --check` pass. SSR renders of every changed component in English and Spanish were inspected for roles, names, ids and nesting.
 - Sizes (fully minified Vite 8 bundles, gzip 9, Svelte external; 0.6.0 re-measured the same way): Button 10,880 → 2,646 B, Divider 9,650 → 977 B, form/table contract set 22,424 → 14,480 B, storefront set 17,249 → 9,342 B, global CSS 11,661 → 8,396 B. All exports 83,450 → 79,631 B while adding six components.
@@ -27,9 +58,8 @@ Deliberately not added: a custom date picker (the apps use 39 native date/time i
 
 - A post-merge review caught that `Field/index.ts` imported `field.css`: under `sideEffects: ["**/*.css"]` bundlers skip a re-export-only module together with its CSS, so field controls shipped unstyled in production builds (earlier size figures also missed that CSS). Stylesheets are now imported by the `.svelte` components that need them, and a test forbids CSS imports from `.ts` modules.
 
-## Remaining considerations
+### Remaining considerations
 
-1. `Select` is ~13.5 KB, two thirds Floating UI. CSS anchor positioning + the popover API can replace it once baseline support covers the products' browsers.
-2. Tooltip descriptions attach to a consumer's own focusable child only after hydration; the server output carries the description as screen-reader text.
-3. Overlay positioning inside dialogs and the new `MessageList` scrolling were verified by review and SSR, not by an automated browser suite. Check them by hand in light/dark mode before publishing.
-4. Input sizes (`xs`–`xl`) differ from Select/Textarea/NumberInput (`sm`–`lg`), and `Select.clearable` defaults to `true`; both are documented, unchanged contracts.
+1. Tooltip descriptions attach to a consumer's own focusable child only after hydration; the server output carries the description as screen-reader text.
+2. Overlay positioning inside dialogs and the new `MessageList` scrolling were verified by review and SSR, not by an automated browser suite. Check them by hand in light/dark mode before publishing.
+3. `Select.clearable` defaults to `true`, unlike `Input`; a documented, unchanged contract.

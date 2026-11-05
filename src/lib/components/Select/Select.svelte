@@ -63,15 +63,18 @@
 	import X from '@lucide/svelte/icons/x';
 	import { tick } from 'svelte';
 	import { scale } from 'svelte/transition';
+	import '../../styles/floating.css';
 	import { portal } from '../../actions/portal';
 	import { useLumiLocale } from '../../i18n';
 	import { createFloating } from '../../utils/floating.svelte';
+	import { rovingIndex } from '../../utils/roving';
 	import { DURATION_FAST, motion } from '../config';
 	import { FieldLabel, FieldMessage } from '../Field';
 	import Icon from '../Icon/Icon.svelte';
 	import type { SelectProps } from './types';
 
 	let {
+		id: idProp,
 		value = $bindable(null),
 		options = [],
 		placeholder,
@@ -98,6 +101,7 @@
 	}: SelectProps = $props();
 
 	let root: HTMLDivElement | undefined = $state();
+	let control: HTMLDivElement | undefined = $state();
 	let input: HTMLInputElement | undefined = $state();
 	let listbox: HTMLDivElement | undefined = $state();
 	let focusedIndex = $state(-1);
@@ -105,23 +109,21 @@
 
 	const i18n = useLumiLocale(COPY);
 	const floating = createFloating(
-		() => root?.querySelector<HTMLElement>('.lumi-field__control') ?? undefined,
+		() => control,
 		() => listbox,
 		{
 			offset: 4,
 			maxHeight: 250,
-			viewportPadding: 16,
-			placement: 'bottom-start',
 			matchWidth: true,
-			zIndex: 'var(--lumi-z-dropdown)',
-			strategy: 'fixed'
+			inside: () => root,
+			onoutside: () => closeList()
 		}
 	);
 
 	const uid = $props.id();
-	const inputId = `lumi-select-${uid}`;
-	const listboxId = `${inputId}-listbox`;
-	const messageId = `${inputId}-message`;
+	const inputId = $derived(idProp ?? `lumi-select-${uid}`);
+	const listboxId = `lumi-select-${uid}-listbox`;
+	const messageId = `lumi-select-${uid}-message`;
 	const optionId = (index: number) => `${listboxId}-${index}`;
 
 	const normalized = $derived(
@@ -221,19 +223,6 @@
 			?.scrollIntoView({ block: 'nearest' });
 	}
 
-	function move(direction: 1 | -1): void {
-		if (!navigable.length) return;
-		const at = navigable.indexOf(focusedIndex);
-		// Wrap so neither end of the list is a dead end.
-		const next =
-			at === -1
-				? direction === 1
-					? 0
-					: navigable.length - 1
-				: (at + direction + navigable.length) % navigable.length;
-		void focusOption(navigable[next]);
-	}
-
 	function handleKeydown(event: KeyboardEvent): void {
 		switch (event.key) {
 			case ' ':
@@ -252,26 +241,26 @@
 				if (open) event.preventDefault();
 				closeList();
 				break;
-			case 'ArrowDown':
-			case 'ArrowUp': {
-				event.preventDefault();
-				const direction = event.key === 'ArrowDown' ? 1 : -1;
-				if (open) move(direction);
-				else openList(direction);
-				break;
-			}
-			case 'Home':
-			case 'End':
-				if (open && navigable.length) {
-					event.preventDefault();
-					void focusOption(
-						event.key === 'Home' ? navigable[0] : navigable.at(-1)!
-					);
-				}
-				break;
 			case 'Tab':
 				closeList();
 				break;
+			default: {
+				const arrow = event.key === 'ArrowDown' || event.key === 'ArrowUp';
+				if (arrow) event.preventDefault();
+				if (!open) {
+					if (arrow) openList(event.key === 'ArrowDown' ? 1 : -1);
+					break;
+				}
+				const at = rovingIndex(
+					event,
+					navigable.indexOf(focusedIndex),
+					navigable.length,
+					true
+				);
+				if (at === undefined) break;
+				event.preventDefault();
+				void focusOption(navigable[at]);
+			}
 		}
 	}
 
@@ -301,17 +290,6 @@
 	}
 
 	$effect(() => {
-		if (!open) return;
-		const onPointerDown = (event: PointerEvent) => {
-			const target = event.target as Node;
-			if (!root?.contains(target) && !listbox?.contains(target)) closeList();
-		};
-		document.addEventListener('pointerdown', onPointerDown, true);
-		return () =>
-			document.removeEventListener('pointerdown', onPointerDown, true);
-	});
-
-	$effect(() => {
 		if (disabled) closeList();
 	});
 </script>
@@ -335,7 +313,7 @@
 		<FieldLabel for={inputId} {label} {required} />
 	{/if}
 
-	<div class="lumi-field__control">
+	<div bind:this={control} class="lumi-field__control">
 		{#if name || required}
 			<!-- Form proxy: a hidden input cannot be validated, so `required`
 			     uses a visually hidden one that sends focus to the combobox. -->
@@ -363,7 +341,7 @@
 			role="combobox"
 			autocomplete="off"
 			aria-expanded={open}
-			aria-controls={listboxId}
+			aria-controls={open ? listboxId : undefined}
 			aria-haspopup="listbox"
 			aria-autocomplete={searchable ? 'list' : 'none'}
 			aria-activedescendant={focusedIndex > -1
@@ -408,7 +386,7 @@
 			bind:this={listbox}
 			use:portal
 			id={listboxId}
-			class="lumi-select__listbox lumi-select__listbox--{size} lumi-scrollbar"
+			class="lumi-floating lumi-select__listbox lumi-select__listbox--{size} lumi-scrollbar"
 			style={floating.styleString}
 			transition:scale={{ duration: motion(DURATION_FAST), start: 0.96 }}
 			style:--lumi-control-accent={accent}
@@ -496,19 +474,16 @@
 		overscroll-behavior: contain;
 		font-family: var(--lumi-font-family-sans);
 		font-size: var(--lumi-select-font);
-		background: var(--lumi-floating-surface-bg);
-		border: var(--lumi-border-width-thin) solid
-			var(--lumi-floating-surface-border);
-		border-radius: var(--lumi-surface-radius);
-		box-shadow: var(--lumi-floating-surface-shadow);
 	}
 
+	.lumi-select__listbox--xs,
 	.lumi-select__listbox--sm {
 		--lumi-select-font: var(--lumi-font-size-sm);
 		--lumi-select-pad: var(--lumi-space-2xs) var(--lumi-space-xs);
 	}
 
-	.lumi-select__listbox--lg {
+	.lumi-select__listbox--lg,
+	.lumi-select__listbox--xl {
 		--lumi-select-font: var(--lumi-font-size-lg);
 		--lumi-select-pad: var(--lumi-space-sm) var(--lumi-space-md);
 	}
@@ -519,14 +494,18 @@
 		gap: var(--lumi-space-xs);
 		padding: var(--lumi-select-pad);
 		color: var(--lumi-color-text);
-		border-radius: var(--lumi-radius-option);
+		border-radius: var(--lumi-radius-control);
 		cursor: pointer;
 		user-select: none;
 		transition: var(--lumi-transition-control);
 	}
 
 	.lumi-select__option--focused {
-		background: color-mix(in srgb, var(--lumi-control-accent) 10%, transparent);
+		background: color-mix(
+			in srgb,
+			var(--lumi-control-accent) var(--lumi-state-hover-strength),
+			transparent
+		);
 	}
 
 	.lumi-select__option--selected {
@@ -536,7 +515,7 @@
 
 	.lumi-select__option--disabled {
 		opacity: var(--lumi-opacity-disabled);
-		cursor: not-allowed;
+		pointer-events: none;
 	}
 
 	.lumi-select__label {

@@ -165,7 +165,7 @@
 	.lumi-list-item--interactive:hover {
 		background: color-mix(
 			in srgb,
-			var(--lumi-list-item-accent) 5%,
+			var(--lumi-list-item-accent) var(--lumi-state-hover-strength),
 			transparent
 		);
 		transform: translateY(var(--lumi-interactive-lift));
@@ -183,7 +183,7 @@
 	.lumi-list-item--selected:hover {
 		background: color-mix(
 			in srgb,
-			var(--lumi-list-item-accent) 9%,
+			var(--lumi-list-item-accent) var(--lumi-state-bg-strength),
 			transparent
 		);
 		box-shadow: var(--lumi-shadow-sm);

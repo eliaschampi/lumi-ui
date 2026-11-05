@@ -40,6 +40,9 @@ export interface SliderProps {
 	/** Whether to show tooltip on hover */
 	showTooltip?: boolean;
 
+	/** Accessible name when no visible label is present */
+	'aria-label'?: string;
+
 	/** Custom class */
 	class?: string;
 

@@ -5,7 +5,9 @@
 </script>
 
 <script lang="ts">
+	import '../../styles/switcher.css';
 	import { useLumiLocale } from '../../i18n';
+	import { rovingIndex } from '../../utils/roving';
 	import Icon from '../Icon/Icon.svelte';
 	import type { TabsProps } from './types';
 
@@ -25,9 +27,8 @@
 	const tabId = (index: number) => `lumi-tabs-${uid}-tab-${index}`;
 	const panelId = (index: number) => `lumi-tabs-${uid}-panel-${index}`;
 
-	// Falls back to the first enabled tab, so SSR renders a selected tab.
-	// An unknown or disabled `value` falls back to the first enabled tab, so the
-	// tablist always keeps one tab stop.
+	// An unknown or disabled `value` falls back to the first enabled tab, so SSR
+	// renders a selected tab and the tablist always keeps one tab stop.
 	const active = $derived(
 		tabs.some((tab) => tab.value === value && !tab.disabled)
 			? value
@@ -45,27 +46,17 @@
 
 	function handleKeydown(event: KeyboardEvent): void {
 		const enabled = tabs.flatMap((tab, index) => (tab.disabled ? [] : [index]));
-		if (!enabled.length) return;
-		const rtl =
-			getComputedStyle(event.currentTarget as Element).direction === 'rtl';
-		const horizontal = orientation === 'horizontal';
-		const back = horizontal ? (rtl ? 'ArrowRight' : 'ArrowLeft') : 'ArrowUp';
-		const forward = horizontal
-			? rtl
-				? 'ArrowLeft'
-				: 'ArrowRight'
-			: 'ArrowDown';
-		const at = enabled.indexOf(activeIndex);
-		let next: number | undefined;
-		if (event.key === back) next = enabled.at(at - 1);
-		else if (event.key === forward) next = enabled[(at + 1) % enabled.length];
-		else if (event.key === 'Home') next = enabled[0];
-		else if (event.key === 'End') next = enabled.at(-1);
-		if (next === undefined) return;
+		const at = rovingIndex(
+			event,
+			enabled.indexOf(activeIndex),
+			enabled.length,
+			orientation === 'vertical'
+		);
+		if (at === undefined) return;
 
 		event.preventDefault();
-		selectTab(tabs[next].value);
-		document.getElementById(tabId(next))?.focus();
+		selectTab(tabs[enabled[at]].value);
+		document.getElementById(tabId(enabled[at]))?.focus();
 	}
 </script>
 

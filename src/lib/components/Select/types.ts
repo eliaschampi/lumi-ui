@@ -1,4 +1,4 @@
-import type { LumiColor, LumiControlSize } from '../config';
+import type { LumiColor, LumiExtendedSize } from '../config';
 import type { FieldError } from '../Field';
 
 export type SelectValue = string | number | Record<string, unknown>;
@@ -14,10 +14,12 @@ export interface SelectOption {
 /** An option object, or a primitive used as both value and label. */
 export type SelectOptionInput = SelectOption | string | number;
 
-export type SelectSize = LumiControlSize;
+export type SelectSize = LumiExtendedSize;
 export type SelectSearchMode = 'client' | 'server';
 
 export interface SelectProps {
+	/** Id of the combobox input, to point a `<label for>` at it */
+	id?: string;
 	/** Selected value (bindable); objects compare structurally */
 	value?: SelectValue | null;
 	options?: SelectOptionInput[];

@@ -18,19 +18,20 @@ Supported Svelte versions: [`peerDependencies`](../package.json). No Tailwind, B
 
 [`package.json`](../package.json) is authoritative.
 
-| Import                                   | Source                                                      | Contract                                                                                           |
-| ---------------------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `@lumi-ui/svelte`                        | [`src/lib/index.ts`](../src/lib/index.ts)                   | Components, shared types, icon registry API, locale API, formatters, portal action, config         |
-| `@lumi-ui/svelte/icons`                  | [`icons.ts`](../src/lib/icons.ts)                           | Optional curated `lumiIcons` map for string icon names                                             |
-| `@lumi-ui/svelte/drive`                  | [`drive.ts`](../src/lib/drive.ts)                           | Pure Drive helpers, types and Drive copy (not the UI components)                                   |
-| `@lumi-ui/svelte/color-scheme`           | [`color-scheme/index.ts`](../src/lib/color-scheme/index.ts) | Pre-paint script, controller, pure policy, types                                                   |
-| `@lumi-ui/svelte/styles`                 | [`styles/index.css`](../src/lib/styles/index.css)           | Tokens + core (base, layout, utilities)                                                            |
-| `@lumi-ui/svelte/styles/tokens.base.css` | [`tokens.base.css`](../src/lib/styles/tokens.base.css)      | Token contract only                                                                                |
-| `@lumi-ui/svelte/styles/core.css`        | [`core.css`](../src/lib/styles/core.css)                    | `base.css` + `layout.css` + `utilities.css`                                                        |
-| `@lumi-ui/svelte/styles/base.css`        | [`base.css`](../src/lib/styles/base.css)                    | Reset, control contracts, surfaces and shared recipes (spinner, skeleton, switcher, icon, sr-only) |
-| `@lumi-ui/svelte/styles/layout.css`      | [`layout.css`](../src/lib/styles/layout.css)                | App and dashboard shells, page sidebar, two-column layouts, toast portal                           |
-| `@lumi-ui/svelte/styles/utilities.css`   | [`utilities.css`](../src/lib/styles/utilities.css)          | Flex, grid, stack, text, spacing and display helpers                                               |
-| `@lumi-ui/svelte/styles/patterns.css`    | [`patterns.css`](../src/lib/styles/patterns.css)            | Opt-in operative compositions (filter summary, toolbars, metric lists…)                            |
+| Import                                                    | Source                                                      | Contract                                                                                                      |
+| --------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `@lumi-ui/svelte`                                         | [`src/lib/index.ts`](../src/lib/index.ts)                   | Components, shared types, icon registry API, locale API, formatters, portal action, config                    |
+| `@lumi-ui/svelte/icons`                                   | [`icons.ts`](../src/lib/icons.ts)                           | Optional curated `lumiIcons` map for string icon names                                                        |
+| `@lumi-ui/svelte/drive`                                   | [`drive.ts`](../src/lib/drive.ts)                           | Pure Drive helpers, types and Drive copy (not the UI components)                                              |
+| `@lumi-ui/svelte/color-scheme`                            | [`color-scheme/index.ts`](../src/lib/color-scheme/index.ts) | Pre-paint script, controller, pure policy, types                                                              |
+| `@lumi-ui/svelte/styles`                                  | [`styles/index.css`](../src/lib/styles/index.css)           | Tokens + core (base, layout, utilities)                                                                       |
+| `@lumi-ui/svelte/styles/tokens.base.css`                  | [`tokens.base.css`](../src/lib/styles/tokens.base.css)      | Token contract only                                                                                           |
+| `@lumi-ui/svelte/styles/core.css`                         | [`core.css`](../src/lib/styles/core.css)                    | `base.css` + `layout.css` + `utilities.css`                                                                   |
+| `@lumi-ui/svelte/styles/base.css`                         | [`base.css`](../src/lib/styles/base.css)                    | Reset, control contracts, surfaces and shared recipes (spinner, skeleton, switcher, icon, sr-only)            |
+| `@lumi-ui/svelte/styles/layout.css`                       | [`layout.css`](../src/lib/styles/layout.css)                | App and dashboard shells, page sidebar, two-column layouts, toast portal                                      |
+| `@lumi-ui/svelte/styles/utilities.css`                    | [`utilities.css`](../src/lib/styles/utilities.css)          | Flex, grid, stack, text, spacing and display helpers                                                          |
+| `@lumi-ui/svelte/styles/patterns.css`                     | [`patterns.css`](../src/lib/styles/patterns.css)            | Opt-in operative compositions (filter summary, toolbars, metric lists…)                                       |
+| `@lumi-ui/svelte/styles/{switcher,skeleton,floating}.css` | [`styles/`](../src/lib/styles)                              | Recipes the components that use them import themselves; import one only to use its classes in your own markup |
 
 Drive UI components are root exports. Add a subpath only for cohesive optional capability—not mere convenience.
 
@@ -60,7 +61,7 @@ At the application root, import Lumi styles, then brand overrides:
 
 Lumi derives semantic states, surfaces, and light/dark values. Advanced seeds: [§3 Theming](#3-theming-and-color-scheme).
 
-Every global stylesheet declares the same cascade-layer order (`lumi.tokens, lumi.base, lumi.components, lumi.layout, lumi.utilities, lumi.patterns`), so **unlayered consumer CSS always wins** over Lumi globals regardless of import order or selector specificity. Component styles are scoped and unlayered; restyle components through their tokens and props, never by patching internals.
+Every global stylesheet declares the same cascade-layer order (`lumi.tokens, lumi.base, lumi.components, lumi.layout, lumi.patterns, lumi.utilities`), so **unlayered consumer CSS always wins** over Lumi globals regardless of import order or selector specificity. Component styles are scoped and unlayered; restyle components through their tokens and props, never by patching internals.
 
 **Lean public pages.** Pages that only render components (storefronts, landing pages) need tokens + base; add utilities or layout only when markup uses them. Load `patterns.css` in the layouts that use it (dashboards, auth), not at the root:
 
@@ -503,7 +504,7 @@ Domain-neutral compositions in [`patterns.css`](../src/lib/styles/patterns.css) 
 | Pattern                | Families and variants                                                                                                                                                                                                                                                                                                                                           |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Surfaces and auth      | `.lumi-surface`, `.lumi-auth-mark`; apply `.lumi-card--ambient` and `.lumi-auth-card` via `Card class`. **Plain cards do not blur** (`backdrop-filter: none`); glass/translucent cards must set `--lumi-surface-blur-filter` (`.lumi-auth-card`, `.lumi-drive-toolbar-card` do). This is a minor CSS migration if you previously relied on every card blurring. |
-| Shared control hooks   | Interactive roots re-declare accent-aware `--lumi-focus-outline` and form roots re-declare focus fill/shadow in core. Text fields opt into `.lumi-autofill` + `--lumi-control-autofill-bg`.                                                                                                                                                                     |
+| Shared control hooks   | `base.css` resolves the accent-aware focus recipes on the focused element, so any `--lumi-control-accent` above it applies. Text fields opt into `.lumi-autofill` + `--lumi-control-autofill-bg`.                                                                                                                                                               |
 | Filter summary         | `.lumi-filter-summary` + `__copy`, `__eyebrow`, `__title`, `__subtitle`, `__title-row`, `__meta`, `__actions`; `--compact`, `--split`, `--centered`, semantic color variants                                                                                                                                                                                    |
 | Section actions        | `.lumi-section-toolbar`, `.lumi-toolbar-field`, `.lumi-form-action-row`, `.lumi-inline-filters` (each has existing child/compact variants)                                                                                                                                                                                                                      |
 | Ranked metrics         | `.lumi-metric-rank-list` / `.lumi-metric-rank-row`; list `--dense`, `--accent-secondary`, `--scroll-capped`                                                                                                                                                                                                                                                     |
@@ -560,7 +561,7 @@ Lumi is a premium, minimal product shell—not a generic kit and not loud SaaS g
 
 1. **Layered light, not heavy chrome.** Surfaces float over a softly tinted canvas; borders are thin and low-contrast.
 2. **Elevation is quiet.** Shadows use the neutral ink key (`--lumi-color-shadow-key`) with contact + ambient layers; avoid pure-black blobs.
-3. **Glass is restrained.** Blur and translucency appear on overlays, shells, and **opt-in** glass cards—never as a noisy texture soup. Plain cards stay crisp (`backdrop-filter: none` unless `--lumi-surface-blur-filter` is set).
+3. **Glass is restrained.** Blur and translucency appear on overlays (menus and listboxes through `.lumi-floating`), shells, and **opt-in** glass cards—never as a noisy texture soup. Plain cards stay crisp (`backdrop-filter: none` unless `--lumi-surface-blur-filter` is set).
 4. **Disciplined gradients.** Card washes keep the `145deg` axis; the app canvas may layer one faint primary radial accent over its neutral gradient—subtle, not neon.
 5. **Sheen is optional polish.** Top-edge inset highlights simulate liquid glass; keep opacity low.
 6. **No arbitrary decoration.** No confetti backgrounds, no multi-colored borders, no bounce-heavy motion.
@@ -587,10 +588,10 @@ Dashboard content background is intentionally translucent so cards stay visibly 
 
 - Text: full ink (`--lumi-color-text`) on surfaces; muted/light for secondary copy.
 - Focus (shared contract):
-  - **Field / peer visuals** (input shell, checkbox visual, switch track): `--lumi-control-focus-shadow` with `--lumi-control-accent` on the control root.
+  - **Field / peer visuals** (input shell, checkbox visual, switch track): `--lumi-control-focus-shadow` with `--lumi-control-accent` on the control root. Fields pair a soft halo with their solid accent border; everything else draws a ≥ 3:1 indicator.
   - **Keyboard affordances** (icon buttons, list/menu items, tabs, close controls): `--lumi-focus-outline` + `--lumi-focus-outline-offset` (or a positive offset when the control is free-floating).
   - Set `--lumi-control-accent` from the semantic color; do not invent per-component focus rings.
-  - **Accent-aware recipes are re-declared on interactive roots** (see `core.css`). `:root` may hold a primary-only fallback; never put `var(--lumi-control-accent)` in a `:root` outline/shadow recipe or every control inherits baked primary.
+  - **Accent-aware recipes resolve on the focused element** (see `base.css`) or the sibling drawing for a hidden input. No component registers anywhere. `:root` holds a primary-only fallback; never put `var(--lumi-control-accent)` in a `:root` outline/shadow recipe or every control inherits baked primary.
 - Semantic states pair color with icon or text—never color alone.
 
 Components must not invent `purple`, `teal`, or product names as colors. The public color API is `primary | secondary | success | warning | danger | info` ([§3](#3-theming-and-color-scheme)).
@@ -610,19 +611,20 @@ The default brand and status seeds share `--lumi-accent-lightness` and respect `
 | Press / lift   | `--lumi-interactive-press-scale`, `--lumi-interactive-hover-scale`, `--lumi-interactive-zoom-scale`, `--lumi-interactive-lift`                                                                | Subtle; never jump; flattened on touch (`hover: none`)                                                                   |
 | Surface follow | `--lumi-surface-hover` (0 or 1)                                                                                                                                                               | An interactive surface sets 1 on hover or keyboard focus; nested tiles and glyphs move with it, never on their own hover |
 
-Control heights share one ladder (`--lumi-control-height-xs` … `--lumi-control-height-xl`), but not every component exposes every step: **Input** uses `xs…xl`, **Button** `sm…xl`, **Select / Textarea / NumberInput** `sm…lg`, **Chip** `sm` (+ compact). Match the step the component actually supports. Coordinate Svelte transitions with the `--lumi-duration-*` tokens (150 / 220 / 300 ms); Lumi's own JS transitions collapse to zero under reduced motion.
+Control heights share one ladder (`--lumi-control-height-xs` … `--lumi-control-height-xl`), but not every component exposes every step: **Input / Select / Textarea / NumberInput** use `xs…xl`, **Button** `sm…xl`, **Chip** `sm` (+ compact). Match the step the component actually supports. Coordinate Svelte transitions with the `--lumi-duration-*` tokens (150 / 220 / 300 ms); Lumi's own JS transitions collapse to zero under reduced motion.
 
 ### Interaction patterns
 
 | Pattern     | Expectation                                                                                     |
 | ----------- | ----------------------------------------------------------------------------------------------- |
 | Hover       | Soft fill/border shift; optional 1px lift—never jump (switcher options: fill only, no lift)     |
-| Focus       | Visible ring/outline from shared tokens; keyboard-first                                         |
-| Disabled    | Reduced opacity (`--lumi-opacity-disabled`), no pointer events                                  |
+| Tint        | Rows and options: `--lumi-state-hover-strength` on hover, `--lumi-state-bg-strength` selected   |
+| Focus       | Visible ring/outline from shared tokens, ≥ 3:1 in every role and theme; keyboard-first          |
+| Disabled    | Reduced opacity (`--lumi-opacity-disabled`) + `pointer-events: none`; hover rules need no guard |
 | Loading     | Shared spinner recipe (18% accent track + solid arc, ~1s) or progress; block double-submit      |
 | Selection   | Binary peers: control-active fill. Switchers: elevated active pill. Cards/lists: clear vs hover |
 | Destructive | `danger` color; confirm in app logic, not red styling alone                                     |
-| Overlays    | Portal + Floating UI; Escape closes unless `persistent`                                         |
+| Overlays    | Portal + `createFloating`; outside press and Escape close unless `persistent`                   |
 | Autofill    | Text fields use `.lumi-autofill` + `--lumi-control-autofill-bg`                                 |
 
 Dashboard chart tooltips portal to the page and remeasure when their content or viewport changes. Line series align by index against the first series; missing values break the curve. Smooth segments stay within adjacent values. Line and bar charts share one signed scale; donut slices stay nonnegative.
@@ -765,7 +767,7 @@ tokens.base.css → core.css → patterns.css → consumer brand CSS → consume
 
 Avoid import-time DOM mutation. Scope and clean up listeners, observers, timers, requests, and portals; cancel deferred close callbacks when reopening. Use `$props.id()` for SSR-stable DOM IDs.
 
-`Select`, `Dropdown`, `Context`, and `Tooltip` share floating positioning; clipped overlays use `portal`. Each component owns its focus model, dismissal, keyboard navigation, and role. Menus contain menu items; mixed controls need a neutral popover pattern.
+`Select`, `Dropdown`, `Context`, and `Tooltip` share `createFloating` for positioning and outside dismissal, and every list shares `rovingIndex` for arrows, Home and End; clipped overlays use `portal`. Each component owns its role and focus model. Menus contain menu items; mixed controls need a neutral popover pattern.
 
 ---
 
@@ -777,6 +779,7 @@ pnpm run lint
 pnpm run check
 pnpm run test
 pnpm run package
+pnpm run size
 git diff --check
 ```
 
@@ -784,7 +787,7 @@ git diff --check
 
 Before a release, also:
 
-1. Re-measure the [Lightweight Contract](../README.md#lightweight-contract) budgets (fully minified production bundles, gzip 9) and `npm pack --dry-run`.
+1. Re-measure the [Lightweight Contract](../README.md#lightweight-contract) budgets with `pnpm run package && pnpm run size` and `npm pack --dry-run`.
 2. Dry-run the current codemod on each consumer (`node scripts/migrate-1.0.mjs <app>`), then `svelte-check` the migrated app against the packaged build.
 3. Check overlays inside a Dialog, keyboard flows and light/dark mode in a browser; SSR output alone does not cover positioning.
 

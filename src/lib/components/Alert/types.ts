@@ -15,6 +15,9 @@ export interface AlertProps {
 	/** Show a dismiss button @default false */
 	closable?: boolean;
 
+	/** Accessible name of the dismiss button @default locale "Dismiss alert" */
+	closeLabel?: string;
+
 	/** Visible state (bindable) */
 	active?: boolean;
 

@@ -14,6 +14,16 @@ export type LumiExtendedSize = Extract<
 	'xs' | 'sm' | 'md' | 'lg' | 'xl'
 >;
 
+/**
+ * Inline accent of a control that fills with its color. Primary is the CSS
+ * default of those controls, so the common case writes nothing into the HTML.
+ */
+export function solidAccent(color: LumiColor): string | undefined {
+	if (color === 'primary') return undefined;
+	const role = `var(--lumi-color-${color}`;
+	return `--lumi-control-accent:${role});--lumi-control-solid:${role}-solid);--lumi-control-foreground:${role}-foreground)`;
+}
+
 /** JS transition durations (ms), mirroring the `--lumi-duration-*` tokens. */
 export const DURATION_FAST = 150;
 export const DURATION_BASE = 220;

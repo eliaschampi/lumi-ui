@@ -62,7 +62,7 @@
 		--lumi-control-accent: var(--lumi-color-primary);
 		--sidebar-item-hover-bg: color-mix(
 			in srgb,
-			var(--lumi-color-primary) 9%,
+			var(--lumi-color-primary) var(--lumi-state-hover-strength),
 			transparent
 		);
 		--sidebar-item-active-bg: linear-gradient(
@@ -82,20 +82,15 @@
 		background: transparent;
 		border: var(--lumi-border-width-thin) solid transparent;
 		cursor: pointer;
-		text-align: left;
+		text-align: start;
 		transition: var(--lumi-transition-control);
 		width: 100%;
 	}
 
 	.lumi-sidebar-item--sub {
-		--sidebar-item-hover-bg: color-mix(
-			in srgb,
-			var(--lumi-color-primary) 8%,
-			transparent
-		);
 		--sidebar-item-active-bg: color-mix(
 			in srgb,
-			var(--lumi-color-primary) 12%,
+			var(--lumi-color-primary) var(--lumi-state-bg-strength),
 			transparent
 		);
 		gap: var(--lumi-space-sm);
@@ -107,9 +102,8 @@
 	.lumi-sidebar-item::before {
 		content: '';
 		position: absolute;
-		left: var(--lumi-space-2xs);
-		top: var(--lumi-space-xs);
-		bottom: var(--lumi-space-xs);
+		inset-inline-start: var(--lumi-space-2xs);
+		inset-block: var(--lumi-space-xs);
 		width: var(--lumi-border-width-thick);
 		border-radius: var(--lumi-radius-full);
 		background: var(--lumi-color-primary);

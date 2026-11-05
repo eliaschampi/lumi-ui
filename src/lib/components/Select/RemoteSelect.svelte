@@ -23,6 +23,7 @@
 	/** Field props forwarded to the underlying Select. */
 	type FieldProps = Pick<
 		SelectProps,
+		| 'id'
 		| 'label'
 		| 'placeholder'
 		| 'name'

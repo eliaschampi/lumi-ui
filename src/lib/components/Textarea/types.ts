@@ -1,8 +1,8 @@
 import type { HTMLTextareaAttributes } from 'svelte/elements';
-import type { LumiColor, LumiControlSize } from '../config';
+import type { LumiColor, LumiExtendedSize } from '../config';
 import type { FieldError } from '../Field';
 
-export type TextareaSize = LumiControlSize;
+export type TextareaSize = LumiExtendedSize;
 export type TextareaColor = LumiColor;
 
 /**

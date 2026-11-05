@@ -259,6 +259,12 @@
 		}
 	}
 
+	@keyframes lumi-fade-in {
+		from {
+			opacity: 0;
+		}
+	}
+
 	@keyframes lumi-page-sidebar-slide {
 		from {
 			transform: translateX(-100%);

@@ -5,7 +5,6 @@
 </script>
 
 <script lang="ts">
-	import { cubicOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
 	import { DURATION_BASE, motion } from '../config';
 	import { useLumiLocale } from '../../i18n';
@@ -18,6 +17,7 @@
 		title = '',
 		message = '',
 		closable = true,
+		closeLabel,
 		duration = 0,
 		active = $bindable(true),
 		class: className,
@@ -36,9 +36,11 @@
 		{duration}
 		class={className ? `lumi-notification ${className}` : 'lumi-notification'}
 		role={statusRole(color)}
-		closeLabel={closable ? i18n.t.notificationDismiss : undefined}
+		closeLabel={closable
+			? (closeLabel ?? i18n.t.notificationDismiss)
+			: undefined}
 		motion={fly}
-		params={{ y: 12, duration: motion(DURATION_BASE), easing: cubicOut }}
+		params={{ y: 12, duration: motion(DURATION_BASE) }}
 		onclose={() => (active = false)}
 		onexpire={() => (active = false)}
 		onoutroend={onclose}

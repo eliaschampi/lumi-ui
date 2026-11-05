@@ -21,6 +21,7 @@
 		disabled = false,
 		showValue = false,
 		showTooltip = true,
+		'aria-label': ariaLabel,
 		class: className = '',
 		onchange
 	}: SliderProps = $props();
@@ -45,7 +46,7 @@
 		className
 	]}
 	style:--slider-fill="{percentage}%"
-	style:--slider-accent="var(--lumi-color-{color})"
+	style:--lumi-control-accent="var(--lumi-color-{color})"
 >
 	{#if label}
 		<div class="lumi-slider__header">
@@ -68,7 +69,7 @@
 			{step}
 			{disabled}
 			onchange={() => onchange?.(value)}
-			aria-label={label ? undefined : i18n.t.slider}
+			aria-label={ariaLabel ?? (label ? undefined : i18n.t.slider)}
 		/>
 
 		{#if showTooltip}
@@ -93,7 +94,6 @@
 		gap: var(--lumi-space-sm);
 		width: 100%;
 
-		--lumi-control-accent: var(--slider-accent);
 		--slider-fill: 0%;
 		--slider-track: color-mix(
 			in srgb,
@@ -128,15 +128,15 @@
 	}
 
 	.lumi-slider:focus-within .lumi-slider__label {
-		color: var(--slider-accent);
+		color: var(--lumi-control-accent);
 	}
 
 	.lumi-slider__value-inline {
-		font-family: var(--lumi-font-family-mono);
+		font-variant-numeric: tabular-nums;
 		font-size: var(--lumi-font-size-xs);
 		font-weight: var(--lumi-font-weight-bold);
-		color: var(--slider-accent);
-		background: color-mix(in srgb, var(--slider-accent) 12%, transparent);
+		color: var(--lumi-control-accent);
+		background: color-mix(in srgb, var(--lumi-control-accent) 12%, transparent);
 		border-radius: var(--lumi-radius-base);
 		padding: var(--lumi-space-2xs) var(--lumi-space-xs);
 	}
@@ -155,8 +155,8 @@
 		-webkit-appearance: none;
 		background: linear-gradient(
 			to right,
-			var(--slider-accent) 0%,
-			var(--slider-accent) var(--slider-fill),
+			var(--lumi-control-accent) 0%,
+			var(--lumi-control-accent) var(--slider-fill),
 			var(--slider-track) var(--slider-fill),
 			var(--slider-track) 100%
 		);
@@ -173,7 +173,7 @@
 	.lumi-slider__input {
 		--_thumb-scale: 1;
 		--_thumb-ring: 0 0 0 var(--lumi-border-width-thin)
-			color-mix(in srgb, var(--slider-accent) 18%, transparent);
+			color-mix(in srgb, var(--lumi-control-accent) 18%, transparent);
 		--_thumb-shadow: var(--lumi-shadow-sm);
 	}
 
@@ -182,7 +182,7 @@
 		--_thumb-scale: var(--lumi-interactive-zoom-scale);
 		--_thumb-shadow: var(--lumi-shadow-md);
 		--_thumb-ring: 0 0 0 var(--lumi-space-2xs)
-			color-mix(in srgb, var(--slider-accent) 22%, transparent);
+			color-mix(in srgb, var(--lumi-control-accent) 22%, transparent);
 	}
 
 	.lumi-slider__input:focus-visible {
@@ -190,14 +190,14 @@
 		--_thumb-ring: 0 0 0 var(--lumi-space-2xs)
 			color-mix(
 				in srgb,
-				var(--slider-accent) var(--lumi-control-focus-ring-strength),
+				var(--lumi-control-accent) var(--lumi-focus-outline-strength),
 				transparent
 			);
 	}
 
 	.lumi-slider__input:active {
 		--_thumb-ring: 0 0 0 var(--lumi-space-xs)
-			color-mix(in srgb, var(--slider-accent) 26%, transparent);
+			color-mix(in srgb, var(--lumi-control-accent) 26%, transparent);
 	}
 
 	.lumi-slider__input::-webkit-slider-thumb {
@@ -205,7 +205,7 @@
 		width: var(--_thumb-size);
 		height: var(--_thumb-size);
 		background: var(--lumi-color-surface);
-		border: var(--lumi-border-width-thick) solid var(--slider-accent);
+		border: var(--lumi-border-width-thick) solid var(--lumi-control-accent);
 		border-radius: var(--lumi-radius-full);
 		box-shadow: var(--_thumb-shadow), var(--_thumb-ring);
 		transform: scale(var(--_thumb-scale));
@@ -219,7 +219,7 @@
 		width: var(--_thumb-size);
 		height: var(--_thumb-size);
 		background: var(--lumi-color-surface);
-		border: var(--lumi-border-width-thick) solid var(--slider-accent);
+		border: var(--lumi-border-width-thick) solid var(--lumi-control-accent);
 		border-radius: var(--lumi-radius-full);
 		box-shadow: var(--_thumb-shadow), var(--_thumb-ring);
 		transform: scale(var(--_thumb-scale));
@@ -237,10 +237,10 @@
 		padding: var(--lumi-space-2xs) var(--lumi-space-sm);
 		background: var(--lumi-color-surface-overlay);
 		border: var(--lumi-border-width-thin) solid
-			color-mix(in srgb, var(--slider-accent) 35%, transparent);
+			color-mix(in srgb, var(--lumi-control-accent) 35%, transparent);
 		box-shadow: var(--lumi-shadow-lg);
 		color: var(--lumi-color-text);
-		font-family: var(--lumi-font-family-mono);
+		font-variant-numeric: tabular-nums;
 		font-size: var(--lumi-font-size-xs);
 		font-weight: var(--lumi-font-weight-bold);
 		border-radius: var(--lumi-radius-tooltip);
@@ -270,11 +270,11 @@
 
 	.lumi-slider__value {
 		align-self: center;
-		font-family: var(--lumi-font-family-mono);
+		font-variant-numeric: tabular-nums;
 		font-size: var(--lumi-font-size-sm);
 		font-weight: var(--lumi-font-weight-bold);
-		color: var(--slider-accent);
-		background: color-mix(in srgb, var(--slider-accent) 12%, transparent);
+		color: var(--lumi-control-accent);
+		background: color-mix(in srgb, var(--lumi-control-accent) 12%, transparent);
 		border-radius: var(--lumi-radius-base);
 		padding: var(--lumi-space-2xs) var(--lumi-space-sm);
 	}

@@ -17,6 +17,7 @@
 		title,
 		icon = true,
 		closable = false,
+		closeLabel,
 		active = $bindable(true),
 		class: className,
 		children,
@@ -34,7 +35,7 @@
 		{children}
 		class={className ? `lumi-alert ${className}` : 'lumi-alert'}
 		role={statusRole(color)}
-		closeLabel={closable ? i18n.t.alertDismiss : undefined}
+		closeLabel={closable ? (closeLabel ?? i18n.t.alertDismiss) : undefined}
 		motion={fade}
 		params={{ duration: motion(DURATION_BASE) }}
 		onclose={() => (active = false)}

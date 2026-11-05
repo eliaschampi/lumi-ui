@@ -13,6 +13,9 @@ export interface NotificationProps {
 	/** @default true */
 	closable?: boolean;
 
+	/** Accessible name of the dismiss button @default locale "Dismiss notification" */
+	closeLabel?: string;
+
 	/**
 	 * Auto-dismiss after this many milliseconds; pauses while hovered or
 	 * focused. `0` keeps it until closed.

@@ -5,6 +5,7 @@
 </script>
 
 <script lang="ts">
+	import '../../styles/skeleton.css';
 	import { useLumiLocale } from '../../i18n';
 	import type { ImageProps } from './types';
 
