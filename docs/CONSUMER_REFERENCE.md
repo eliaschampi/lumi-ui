@@ -210,15 +210,15 @@ Import: `@lumi-ui/svelte/styles` = tokens → core → patterns. No Tailwind/Boo
 
 ### Shells & layouts (CSS families)
 
-| Family         | Contract                                                                                                                                         |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Dashboard      | `.lumi-dashboard-layout`, `__content`, `.lumi-mobile-overlay`; sync `lumi-sidebar--is-collapsed` / `lumi-sidebar--mobile-open` with `Sidebar`    |
-| Two column     | `.lumi-layout--two-columns` + `.lumi-layout--sidebar-left` + `.lumi-layout--content-right`; collapses ≤ 64rem                                    |
-| Page sidebar   | `.lumi-page-sidebar-layout`, `__header-actions`, `__mobile-trigger`, `__section`, `__label`, `__radio-group`, `__radio-option`, `__bounded-list` |
-| Scroll well    | `.lumi-scroll-well` recessed scroll surface; `--lumi-scroll-well-max-height` / `--lumi-scroll-well-bg`                                           |
-| Containers     | `.lumi-container` (+ `--sm`); `--ultrawide` ≥ 96rem                                                                                              |
-| Centered task  | `.lumi-centered-layout` + `.lumi-centered-card--{sm,md,lg,xl}`; combine with `Card`                                                              |
-| Dashboard data | `.lumi-dashboard-overview-grid` (≤ 68.75rem); `.lumi-dashboard-analytics-grid` (≤ 61.25rem)                                                      |
+| Family         | Contract                                                                                                                                                                              |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dashboard      | `.lumi-dashboard-layout`, `__content`, `.lumi-mobile-overlay`; sync `lumi-sidebar--is-collapsed` / `lumi-sidebar--mobile-open` with `Sidebar`                                         |
+| Two column     | `.lumi-layout--two-columns` + `.lumi-layout--sidebar-left` + `.lumi-layout--content-right`; collapses ≤ 64rem                                                                         |
+| Page sidebar   | `.lumi-page-sidebar-layout`, `__header-actions`, `__mobile-trigger`, `__section`, `__label`, `__radio-group`, `__radio-option`, `__bounded-list`                                      |
+| Scroll well    | `.lumi-scroll-well` recessed scroll surface; `--lumi-scroll-well-max-height` / `--lumi-scroll-well-bg`. `.lumi-scroll-contain` holds the wheel only while a custom scroller overflows |
+| Containers     | `.lumi-container` (+ `--sm`); `--ultrawide` ≥ 96rem                                                                                                                                   |
+| Centered task  | `.lumi-centered-layout` + `.lumi-centered-card--{sm,md,lg,xl}`; combine with `Card`                                                                                                   |
+| Dashboard data | `.lumi-dashboard-overview-grid` (≤ 68.75rem); `.lumi-dashboard-analytics-grid` (≤ 61.25rem)                                                                                           |
 
 ### Dashboard shell
 

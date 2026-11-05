@@ -92,7 +92,11 @@
 
 <div class="lumi-page-sidebar__section">
 	<p class="lumi-page-sidebar__label">{i18n.t.driveNavigation}</p>
-	<List size="sm" color="primary" class="lumi-drive-sidebar__nav">
+	<List
+		size="sm"
+		color="primary"
+		class="lumi-drive-sidebar__nav lumi-scroll-contain"
+	>
 		<ListItem
 			title={i18n.t.driveMyDrive}
 			description={i18n.t.driveMyDriveHint}
@@ -150,7 +154,6 @@
 		max-height: var(--lumi-drive-sidebar-nav-max-height);
 		overflow-x: hidden;
 		overflow-y: auto;
-		overscroll-behavior: contain;
 	}
 
 	.lumi-drive-sidebar__scope {

@@ -155,7 +155,6 @@
 		min-height: 0;
 		overflow-x: hidden;
 		overflow-y: auto;
-		overscroll-behavior: contain;
 		padding: var(--lumi-space-xs);
 		border-radius: var(--lumi-radius-panel);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);
@@ -170,7 +169,6 @@
 		min-height: 0;
 		overflow-x: hidden;
 		overflow-y: auto;
-		overscroll-behavior: contain;
 		padding: var(--lumi-space-sm);
 		border-radius: var(--lumi-radius-panel);
 		border: var(--lumi-border-width-thin) solid var(--lumi-color-border-glass);

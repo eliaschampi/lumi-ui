@@ -56,6 +56,33 @@ describe('packaging', () => {
 		expect(offenders).toEqual([]);
 	});
 
+	it('gives the table pagination a flex basis, because a container has no intrinsic width', () => {
+		const table = import.meta.glob<string>(
+			'../src/lib/components/Table/Table.svelte',
+			{ query: '?raw', import: 'default', eager: true }
+		)['../src/lib/components/Table/Table.svelte'];
+		expect(table).toMatch(
+			/\.lumi-table__pagination\) \{\s*(?:\/\*.*?\*\/\s*)?flex: 1 1 \d+rem;/s
+		);
+	});
+
+	it('keeps plain overscroll containment on overlays only', () => {
+		const sources = import.meta.glob<string>('../src/lib/**/*.{css,svelte}', {
+			query: '?raw',
+			import: 'default',
+			eager: true
+		});
+		const offenders = Object.keys(sources)
+			.filter((path) => /overscroll-behavior: contain;/.test(sources[path]))
+			.map((path) => path.replace('../src/lib/', ''));
+		expect(offenders.sort()).toEqual([
+			'components/Dialog/Dialog.svelte',
+			'components/Select/Select.svelte',
+			'styles/base.css',
+			'styles/layout.css'
+		]);
+	});
+
 	it('declares -webkit-backdrop-filter first, or Lightning CSS drops the standard one', () => {
 		const sources = import.meta.glob<string>('../src/lib/**/*.{css,svelte}', {
 			query: '?raw',

@@ -469,15 +469,15 @@ Classes below are supported composition hooks. Other selectors style component i
 
 ### Shells and layouts (CSS)
 
-| Family             | Contract                                                                                                                                                                                                          |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Dashboard          | `.lumi-dashboard-layout`, `__content`, `.lumi-mobile-overlay`; sync `lumi-sidebar--is-collapsed` and `lumi-sidebar--mobile-open` with `Sidebar`                                                                   |
-| Two column         | `.lumi-layout--two-columns` + `.lumi-layout--sidebar-left` + `.lumi-layout--content-right`; collapses at `64rem`                                                                                                  |
-| Page sidebar hooks | `.lumi-page-sidebar-layout`, `__header-actions`, `__mobile-trigger`, `__section`, `__label`, `__radio-group`, `__radio-option`, `__radio-description`, `__bounded-list`; drawer internals belong to `PageSidebar` |
-| Scroll well        | `.lumi-scroll-well` recessed internally scrolling surface; cap and background through `--lumi-scroll-well-max-height` / `--lumi-scroll-well-bg`                                                                   |
-| Containers         | `.lumi-container` (+ `--sm`); `--ultrawide` from `96rem`                                                                                                                                                          |
-| Centered task      | `.lumi-centered-layout`, `.lumi-centered-card`, `--{sm,md,lg,xl}`; combine with `Card`                                                                                                                            |
-| Dashboard data     | `.lumi-dashboard-overview-grid` collapses at `68.75rem`; `.lumi-dashboard-analytics-grid` at `61.25rem`                                                                                                           |
+| Family             | Contract                                                                                                                                                                                                                                                       |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dashboard          | `.lumi-dashboard-layout`, `__content`, `.lumi-mobile-overlay`; sync `lumi-sidebar--is-collapsed` and `lumi-sidebar--mobile-open` with `Sidebar`                                                                                                                |
+| Two column         | `.lumi-layout--two-columns` + `.lumi-layout--sidebar-left` + `.lumi-layout--content-right`; collapses at `64rem`                                                                                                                                               |
+| Page sidebar hooks | `.lumi-page-sidebar-layout`, `__header-actions`, `__mobile-trigger`, `__section`, `__label`, `__radio-group`, `__radio-option`, `__radio-description`, `__bounded-list`; drawer internals belong to `PageSidebar`                                              |
+| Scroll well        | `.lumi-scroll-well` recessed internally scrolling surface; cap and background through `--lumi-scroll-well-max-height` / `--lumi-scroll-well-bg`; holds the wheel only while it overflows, and `.lumi-scroll-contain` gives a custom scroller the same behavior |
+| Containers         | `.lumi-container` (+ `--sm`); `--ultrawide` from `96rem`                                                                                                                                                                                                       |
+| Centered task      | `.lumi-centered-layout`, `.lumi-centered-card`, `--{sm,md,lg,xl}`; combine with `Card`                                                                                                                                                                         |
+| Dashboard data     | `.lumi-dashboard-overview-grid` collapses at `68.75rem`; `.lumi-dashboard-analytics-grid` at `61.25rem`                                                                                                                                                        |
 
 ### Grid contract
 

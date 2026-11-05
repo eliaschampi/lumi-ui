@@ -561,8 +561,10 @@
 		color: var(--lumi-color-text-muted);
 	}
 
+	/* The pagination is an inline-size container, so it has no intrinsic width
+	   for `flex-wrap` to see: the basis is what sends it to its own line. */
 	.lumi-table__footer :global(.lumi-table__pagination) {
-		flex: 1 1 auto;
+		flex: 1 1 19rem;
 		inline-size: auto;
 		justify-content: flex-end;
 	}

@@ -89,7 +89,9 @@
 		rel={href && rel}
 		onclick={(event) => go(event, target)}
 	>
-		{rel === 'prev' ? i18n.t.paginationPrevious : i18n.t.paginationNext}
+		<span class="lumi-pagination__label">
+			{rel === 'prev' ? i18n.t.paginationPrevious : i18n.t.paginationNext}
+		</span>
 	</Button>
 {/snippet}
 
@@ -175,7 +177,9 @@
 	/* Announces page changes only in compact or narrow layouts, where shown. */
 	.lumi-pagination__status {
 		display: none;
+		flex: none;
 		padding-inline: var(--lumi-space-sm);
+		white-space: nowrap;
 		font-size: var(--lumi-font-size-sm);
 		font-weight: var(--lumi-font-weight-medium);
 		color: var(--lumi-color-text-muted);
@@ -196,6 +200,18 @@
 
 		.lumi-pagination__status {
 			display: inline;
+		}
+	}
+
+	/* Too narrow for words: the steps keep their names for assistive tech. */
+	@container (max-width: 19rem) {
+		.lumi-pagination__label {
+			position: absolute;
+			inline-size: 1px;
+			block-size: 1px;
+			overflow: hidden;
+			clip-path: inset(50%);
+			white-space: nowrap;
 		}
 	}
 </style>

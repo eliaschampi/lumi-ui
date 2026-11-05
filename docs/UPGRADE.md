@@ -2,6 +2,16 @@
 
 Consumer migration for **0.1.5 → 1.0** and later. Use **pnpm** only. Source remains authoritative.
 
+## 1.2.0 → 1.2.1
+
+No code changes are required.
+
+| Change                                               | Note                                                                                                                                                                                                                                                                                                                       |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Table` and `Pagination` fit narrow screens          | The pagination is a size container, so it had no intrinsic width and its buttons overflowed onto the "Showing…" text. It now takes its own line, the `2 / 5` status never wraps, and below `19rem` the steps show only their icons while keeping their names for assistive tech                                            |
+| Short scroll surfaces no longer trap the mouse wheel | `overscroll-behavior: contain` also held the wheel with nothing to scroll. `.lumi-scroll-well`, `List maxHeight`, `MessageList` and the bounded sidebar, metric and result lists now contain scrolling only while they overflow. Browsers without scroll timelines let it chain to the page. Overlays keep plain `contain` |
+| **New:** `.lumi-scroll-contain`                      | The same behavior for your own scroll surfaces. Add it to the scroller                                                                                                                                                                                                                                                     |
+
 ## 1.1.1 → 1.2.0
 
 No code changes are required. Apps that import Lumi see smaller overlays and one dependency less.

@@ -259,9 +259,33 @@
 		animation: lumi-spin var(--lumi-duration-spin) linear infinite;
 	}
 
+	/* Scroll surfaces inside a page hold the wheel only while they really scroll:
+	   a plain `overscroll-behavior: contain` also traps it with nothing to scroll.
+	   A scroll timeline is active only with overflow; without support they chain.
+	   Overlays keep plain `contain`, because the page behind must never move. */
+	@supports (animation-timeline: scroll()) {
+		:where(
+			.lumi-scroll-contain,
+			.lumi-scroll-well,
+			.lumi-page-sidebar__bounded-list,
+			.lumi-metric-rank-list--scroll-capped,
+			.lumi-result-list
+		) {
+			animation: lumi-scroll-contain linear both;
+			animation-timeline: scroll(self block);
+		}
+	}
+
 	/* ========================================================================== */
 	/* ANIMATIONS (shared keyframes) */
 	/* ========================================================================== */
+	@keyframes lumi-scroll-contain {
+		from,
+		to {
+			overscroll-behavior: contain;
+		}
+	}
+
 	@keyframes lumi-spin {
 		from {
 			transform: rotate(0deg);

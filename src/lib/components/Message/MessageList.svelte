@@ -119,7 +119,7 @@
 	<!-- svelte-ignore a11y_no_noninteractive_tabindex (A scrollable region must be keyboard reachable.) -->
 	<div
 		bind:this={viewport}
-		class="lumi-message-list__viewport lumi-scrollbar"
+		class="lumi-message-list__viewport lumi-scrollbar lumi-scroll-contain"
 		role="region"
 		aria-label={ariaLabel || i18n.t.messages}
 		tabindex="0"
@@ -178,7 +178,6 @@
 		flex-direction: column;
 		min-block-size: 0;
 		overflow-y: auto;
-		overscroll-behavior: contain;
 		border-radius: inherit;
 	}
 

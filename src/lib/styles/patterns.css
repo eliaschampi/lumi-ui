@@ -331,7 +331,6 @@
 		max-height: var(--lumi-metric-rank-list-scroll-max-height, none);
 		min-height: 0;
 		overflow-y: auto;
-		overscroll-behavior: contain;
 	}
 
 	.lumi-metric-rank-row {
@@ -496,7 +495,6 @@
 			var(--lumi-color-border-light);
 		overflow-x: hidden;
 		overflow-y: auto;
-		overscroll-behavior: contain;
 	}
 
 	.lumi-placeholder-tile {

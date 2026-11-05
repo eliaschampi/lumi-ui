@@ -14,6 +14,7 @@ import {
 	createToaster,
 	Notification,
 	NumberInput,
+	Pagination,
 	Radio,
 	Select,
 	Slider,
@@ -113,6 +114,17 @@ describe('Tabs', () => {
 		const stops = target.querySelectorAll('[role="tab"][tabindex="0"]');
 		expect(stops).toHaveLength(1);
 		expect(stops[0].textContent).toContain('A');
+	});
+});
+
+describe('Pagination', () => {
+	it('keeps the step names in the DOM when narrow layouts hide them', () => {
+		const target = render(Pagination, { page: 2, pages: 5 });
+		const steps = target.querySelectorAll('.lumi-pagination__label');
+		expect([...steps].map((step) => step.textContent?.trim())).toEqual([
+			'Previous',
+			'Next'
+		]);
 	});
 });
 
