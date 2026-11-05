@@ -72,22 +72,22 @@ Brand seeds and color scheme: [Guide §3](./docs/GUIDE.md#3-theming-and-color-sc
 
 ## Lightweight Contract
 
-Budgets are release gates: `pnpm run package && pnpm run size` re-measures them and fails over budget. Browser figures sum separately gzipped (level 9) JavaScript and component CSS from fully minified Vite 8 production ES bundles (Rolldown + Lightning CSS) with Svelte externalized. Measured **2026-11-04** for 1.2.0; 1.1.1 re-measured with the same script.
+Budgets are release gates: `pnpm run package && pnpm run size` re-measures them and fails over budget. Browser figures sum separately gzipped (level 9) JavaScript and component CSS from fully minified Vite 8 production ES bundles (Rolldown + Lightning CSS) with Svelte externalized. Measured **2026-11-05** for 1.2.0; 1.1.1 re-measured with the same script.
 
 | Surface                                                                               |   1.1.1 |   1.2.0 |    Budget |
 | ------------------------------------------------------------------------------------- | ------: | ------: | --------: |
-| Global CSS `@lumi-ui/svelte/styles` (bundled, minified)                               |   8,486 |   7,691 |   ≤ 7,800 |
-| Lean CSS `tokens.base.css` + `base.css`                                               |   5,901 |   4,984 |   ≤ 5,100 |
-| `Button`                                                                              |   2,754 |   2,754 |   ≤ 3,000 |
-| `Divider`                                                                             |     966 |     966 |   ≤ 1,000 |
-| `Tooltip`                                                                             |   9,748 |   4,121 |   ≤ 4,300 |
-| `Dropdown` + `DropdownItem`                                                           |  11,091 |   5,560 |   ≤ 5,800 |
-| `Select`                                                                              |  14,256 |   8,751 |   ≤ 9,000 |
-| `Switch` + `Radio` + `Textarea` + `Checkbox` + `SegmentedControl` + `Input` + `Table` |  14,619 |  15,156 |  ≤ 15,500 |
-| Storefront set: `Button` + `Card` + `Image` + `Chip` + `Input` + `Icon` + `Divider`   |   9,478 |   9,776 |  ≤ 10,000 |
-| `Tabs`, `SegmentedControl`, `ToggleGroup`, `Skeleton`, `Message`, `MessageList`       | ≤ 3,070 | ≤ 3,197 |   ≤ 3,500 |
-| All exports                                                                           |  79,786 |  74,124 |         — |
-| npm tarball                                                                           | 183 KiB | 188 KiB | ≤ 200 KiB |
+| Global CSS `@lumi-ui/svelte/styles` (bundled, minified)                               |   8,486 |   7,675 |   ≤ 7,800 |
+| Lean CSS `tokens.base.css` + `base.css`                                               |   5,901 |   4,979 |   ≤ 5,100 |
+| `Button`                                                                              |   2,754 |   2,745 |   ≤ 3,000 |
+| `Divider`                                                                             |     966 |     968 |   ≤ 1,000 |
+| `Tooltip`                                                                             |   9,748 |   4,076 |   ≤ 4,300 |
+| `Dropdown` + `DropdownItem`                                                           |  11,091 |   5,468 |   ≤ 5,800 |
+| `Select`                                                                              |  14,256 |   8,666 |   ≤ 9,000 |
+| `Switch` + `Radio` + `Textarea` + `Checkbox` + `SegmentedControl` + `Input` + `Table` |  14,619 |  15,074 |  ≤ 15,500 |
+| Storefront set: `Button` + `Card` + `Image` + `Chip` + `Input` + `Icon` + `Divider`   |   9,478 |   9,692 |  ≤ 10,000 |
+| `Tabs`, `SegmentedControl`, `ToggleGroup`, `Skeleton`, `Message`, `MessageList`       | ≤ 3,070 | ≤ 3,133 |   ≤ 3,500 |
+| All exports                                                                           |  79,786 |  74,033 |         — |
+| npm tarball                                                                           | 183 KiB | 187 KiB | ≤ 200 KiB |
 | Runtime dependencies (packages installed with Lumi, Lucide aside)                     |       4 |       1 |         — |
 
 The component rows that grow do so because the switcher and skeleton recipes left the global stylesheet for the components that use them. What a page downloads still falls: measured against 1.1.1 as global CSS plus component, **all 76 exports and sets are lighter**, whether the CSS ships merged or in separate files (median −793 B, worst case `Tabs` −8 B). The tarball grows by the new modules, and installing Lumi still drops about 0.5 MB with Floating UI gone. `Pagination` adds 2.2 KB on top of the `Button` it renders. `Toaster` is 3.6 KB including `Notification`, its timers and modal-aware placement.

@@ -17,7 +17,6 @@ function at(x: number, y: number, overrides: Partial<PlaceInput> = {}) {
 		offset: 8,
 		padding: 12,
 		maxHeight: 300,
-		rtl: false,
 		...overrides
 	});
 }
@@ -72,10 +71,6 @@ describe('place', () => {
 		expect(placed.maxHeight).toBe(250);
 	});
 
-	it('reads start as the reading direction on the block sides', () => {
-		expect(at(300, 300, { rtl: true }).x).toBe(300 + 100 - 200);
-	});
-
 	it('gives a surface beside its anchor the whole viewport height', () => {
 		const placed = at(300, 600, { placement: 'right' });
 		expect(placed.placement).toBe('right');
@@ -106,10 +101,9 @@ describe('place', () => {
 
 describe('transformOrigin', () => {
 	it('grows from the edge that faces the trigger, at the aligned end', () => {
-		expect(transformOrigin('bottom-start', false)).toBe('left top');
-		expect(transformOrigin('bottom-start', true)).toBe('right top');
-		expect(transformOrigin('top-end', false)).toBe('right bottom');
-		expect(transformOrigin('right', false)).toBe('left center');
-		expect(transformOrigin('left-end', false)).toBe('right bottom');
+		expect(transformOrigin('bottom-start')).toBe('left top');
+		expect(transformOrigin('top-end')).toBe('right bottom');
+		expect(transformOrigin('right')).toBe('left center');
+		expect(transformOrigin('left-end')).toBe('right bottom');
 	});
 });

@@ -476,7 +476,7 @@
 		text-align: center;
 	}
 
-	/* Rows: hairline separators and an inline-start accent (mirrors in RTL). */
+	/* Rows: hairline separators and an inline-start accent. */
 	.lumi-table__row {
 		border-block-end: var(--lumi-border-width-thin) solid
 			color-mix(in srgb, var(--lumi-color-border) 72%, transparent);

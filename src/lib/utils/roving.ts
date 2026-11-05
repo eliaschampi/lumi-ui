@@ -1,8 +1,8 @@
 /**
- * The one list-navigation model: Home/End jump, arrows move and wrap, and
- * inline arrows follow the reading direction. Returns the next index among
- * `count` items, or `undefined` when the key is not a navigation key. From
- * `current = -1` (nothing active yet) both arrows land on an end of the list.
+ * The one list-navigation model: Home/End jump, arrows move and wrap. Returns
+ * the next index among `count` items, or `undefined` when the key is not a
+ * navigation key. From `current = -1` (nothing active yet) both arrows land on
+ * an end of the list.
  */
 export function rovingIndex(
 	event: KeyboardEvent,
@@ -17,11 +17,7 @@ export function rovingIndex(
 
 	const forward = vertical ? 'ArrowDown' : 'ArrowRight';
 	const back = vertical ? 'ArrowUp' : 'ArrowLeft';
-	if (key !== forward && key !== back) return undefined;
-
-	const rtl =
-		!vertical &&
-		getComputedStyle(event.currentTarget as Element).direction === 'rtl';
-	if ((key === forward) !== rtl) return (current + 1) % count;
-	return current > 0 ? current - 1 : count - 1;
+	if (key === forward) return (current + 1) % count;
+	if (key === back) return current > 0 ? current - 1 : count - 1;
+	return undefined;
 }

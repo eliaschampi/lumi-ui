@@ -39,7 +39,6 @@ export interface PlaceInput {
 	/** Margin kept from the viewport edges */
 	padding: number;
 	maxHeight: number;
-	rtl: boolean;
 	/** Arrow length, and how close it may get to the surface's corners */
 	arrow?: { size: number; padding: number };
 }
@@ -82,7 +81,7 @@ const SIDE_OVERFLOWS = 1e6;
  * room left on the chosen side.
  */
 export function place(input: PlaceInput): Placement {
-	const { anchor, width, viewport, offset, padding, rtl, arrow } = input;
+	const { anchor, width, viewport, offset, padding, arrow } = input;
 	const height = Math.min(input.height, input.maxHeight);
 	const left = viewport.x + padding;
 	const top = viewport.y + padding;
@@ -93,11 +92,9 @@ export function place(input: PlaceInput): Placement {
 		let x: number;
 		let y: number;
 		if (isBlock(side)) {
-			// Logical alignment: `start` follows the reading direction.
-			const leading = (align === 'start') !== rtl;
 			x = !align
 				? anchor.x + (anchor.width - width) / 2
-				: leading
+				: align === 'start'
 					? anchor.x
 					: anchor.x + anchor.width - width;
 			y =
@@ -184,14 +181,11 @@ export function place(input: PlaceInput): Placement {
 }
 
 /** Surfaces grow out of their trigger: the facing edge, at the aligned end. */
-export function transformOrigin(
-	placement: FloatingPlacement,
-	rtl: boolean
-): string {
+export function transformOrigin(placement: FloatingPlacement): string {
 	const [side, align] = placement.split('-') as [Side, Align?];
 	const vertical = isBlock(side);
-	const start = vertical ? (rtl ? 'right' : 'left') : 'top';
-	const end = vertical ? (rtl ? 'left' : 'right') : 'bottom';
+	const start = vertical ? 'left' : 'top';
+	const end = vertical ? 'right' : 'bottom';
 	const along = !align ? 'center' : align === 'start' ? start : end;
 	return vertical ? `${along} ${OPPOSITE[side]}` : `${OPPOSITE[side]} ${along}`;
 }

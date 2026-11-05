@@ -83,11 +83,10 @@ export function createFloating(
 	let isOpen = $state(false);
 	let position = $state<FloatingPosition>({ top: 0, left: 0 });
 	let resolvedPlacement = $state<FloatingPlacement>('bottom-start');
-	let origin = $state('');
 	let hasPosition = $state(false);
 
 	const styleString = $derived.by(() => {
-		let style = `position: fixed; top: ${position.top}px; left: ${position.left}px; z-index: ${settings.zIndex}; visibility: ${hasPosition ? 'visible' : 'hidden'}; transform-origin: ${origin}`;
+		let style = `position: fixed; top: ${position.top}px; left: ${position.left}px; z-index: ${settings.zIndex}; visibility: ${hasPosition ? 'visible' : 'hidden'}; transform-origin: ${transformOrigin(resolvedPlacement)}`;
 		if (settings.matchWidth && position.width !== undefined)
 			style += `; width: ${position.width}px`;
 		if (position.maxHeight !== undefined)
@@ -103,7 +102,6 @@ export function createFloating(
 		const { offset, placement, matchWidth, maxHeight, arrow } = settings;
 		const anchor = trigger.getBoundingClientRect();
 		const view = floating.ownerDocument.defaultView as Window;
-		const rtl = view.getComputedStyle(floating).direction === 'rtl';
 		const placed = place({
 			anchor,
 			// Layout size: an entrance transition may be scaling the surface.
@@ -114,7 +112,6 @@ export function createFloating(
 			offset,
 			padding: settings.viewportPadding,
 			maxHeight,
-			rtl,
 			arrow: arrow && {
 				size: arrow.element.offsetWidth,
 				padding: arrow.padding ?? 0
@@ -130,7 +127,6 @@ export function createFloating(
 			arrowY: placed.arrowY
 		};
 		resolvedPlacement = placed.placement;
-		origin = transformOrigin(placed.placement, rtl);
 		hasPosition = true;
 	}
 

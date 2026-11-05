@@ -210,10 +210,6 @@
 		animation-play-state: paused;
 	}
 
-	:global([dir='rtl']) .lumi-status--timed::after {
-		transform-origin: right;
-	}
-
 	@keyframes lumi-status-countdown {
 		to {
 			transform: scaleX(0);

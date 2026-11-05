@@ -1,6 +1,6 @@
 /* Skeleton placeholder shared by Skeleton, Image and Table; imported by those
    components, so only pages that render one ship it. One soft shimmer pass per
-   cycle in reading direction; static under reduced motion. Size it from outside. */
+   cycle; static under reduced motion. Size it from outside. */
 @layer lumi.tokens, lumi.base, lumi.components, lumi.layout, lumi.patterns, lumi.utilities;
 
 @layer lumi.components {
@@ -15,10 +15,6 @@
 			)
 			0 0 / 200% 100%;
 		animation: lumi-shimmer var(--lumi-duration-shimmer) linear infinite;
-	}
-
-	.lumi-skeleton:dir(rtl) {
-		animation-direction: reverse;
 	}
 
 	.lumi-skeleton--text {
