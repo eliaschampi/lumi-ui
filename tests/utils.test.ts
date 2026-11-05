@@ -55,4 +55,19 @@ describe('packaging', () => {
 		expect(Object.keys(sources).length).toBeGreaterThan(20);
 		expect(offenders).toEqual([]);
 	});
+
+	it('declares -webkit-backdrop-filter first, or Lightning CSS drops the standard one', () => {
+		const sources = import.meta.glob<string>('../src/lib/**/*.{css,svelte}', {
+			query: '?raw',
+			import: 'default',
+			eager: true
+		});
+		const offenders = Object.keys(sources).filter((path) =>
+			/(?<!-webkit-)backdrop-filter:[^;]+;\s*-webkit-backdrop-filter:/.test(
+				sources[path]
+			)
+		);
+		expect(Object.keys(sources).length).toBeGreaterThan(20);
+		expect(offenders).toEqual([]);
+	});
 });

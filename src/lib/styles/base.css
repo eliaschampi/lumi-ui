@@ -169,17 +169,18 @@
 		box-shadow: var(--lumi-surface-shadow, var(--lumi-floating-surface-shadow));
 	}
 
-	/* Blur on translucent shells; cards opt in via --lumi-surface-blur-filter. */
+	/* Blur on translucent shells; cards opt in via --lumi-surface-blur-filter.
+	   Prefixed first: Lightning CSS keeps only the last of the pair otherwise. */
 	:where(.lumi-surface, .lumi-navbar, .lumi-dialog) {
-		backdrop-filter: blur(var(--lumi-surface-blur, var(--lumi-blur-sm)))
-			saturate(var(--lumi-surface-saturation));
 		-webkit-backdrop-filter: blur(var(--lumi-surface-blur, var(--lumi-blur-sm)))
+			saturate(var(--lumi-surface-saturation));
+		backdrop-filter: blur(var(--lumi-surface-blur, var(--lumi-blur-sm)))
 			saturate(var(--lumi-surface-saturation));
 	}
 
 	:where(.lumi-card) {
-		backdrop-filter: var(--lumi-surface-blur-filter, none);
 		-webkit-backdrop-filter: var(--lumi-surface-blur-filter, none);
+		backdrop-filter: var(--lumi-surface-blur-filter, none);
 	}
 
 	.lumi-card--ambient::after {

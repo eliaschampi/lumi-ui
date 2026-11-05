@@ -14,17 +14,14 @@ export function rovingIndex(
 	const { key } = event;
 	if (key === 'Home') return 0;
 	if (key === 'End') return count - 1;
-	if (!key.startsWith('Arrow')) return undefined;
 
-	let forward = vertical ? 'ArrowDown' : 'ArrowRight';
-	let back = vertical ? 'ArrowUp' : 'ArrowLeft';
-	if (
+	const forward = vertical ? 'ArrowDown' : 'ArrowRight';
+	const back = vertical ? 'ArrowUp' : 'ArrowLeft';
+	if (key !== forward && key !== back) return undefined;
+
+	const rtl =
 		!vertical &&
-		getComputedStyle(event.currentTarget as Element).direction === 'rtl'
-	) {
-		[forward, back] = [back, forward];
-	}
-	if (key === forward) return (current + 1) % count;
-	if (key === back) return current > 0 ? current - 1 : count - 1;
-	return undefined;
+		getComputedStyle(event.currentTarget as Element).direction === 'rtl';
+	if ((key === forward) !== rtl) return (current + 1) % count;
+	return current > 0 ? current - 1 : count - 1;
 }

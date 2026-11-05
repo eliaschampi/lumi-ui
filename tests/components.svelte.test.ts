@@ -201,6 +201,11 @@ describe('rovingIndex', () => {
 		expect(rovingIndex(key('ArrowDown'), 0, 0, true)).toBeUndefined();
 	});
 
+	it('ignores a keydown without a key, as autofill dispatches', () => {
+		const event = new Event('keydown') as KeyboardEvent;
+		expect(rovingIndex(event, 0, 3, true)).toBeUndefined();
+	});
+
 	it('follows the reading direction on inline arrows', () => {
 		const element = document.body.appendChild(document.createElement('div'));
 		const seen: (number | undefined)[] = [];

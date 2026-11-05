@@ -7,6 +7,8 @@ export default defineConfig({
 	test: {
 		include: ['tests/**/*.test.ts'],
 		environment: 'jsdom',
+		// Vitest empties stylesheets; source tests read them through `?raw`.
+		css: { include: [/\.css\?raw/] },
 		setupFiles: ['tests/setup.ts']
 	}
 });

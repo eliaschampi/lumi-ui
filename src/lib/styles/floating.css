@@ -9,9 +9,10 @@
 			var(--lumi-floating-surface-border);
 		border-radius: var(--lumi-surface-radius);
 		box-shadow: var(--lumi-floating-surface-shadow);
-		backdrop-filter: blur(var(--lumi-blur-sm))
-			saturate(var(--lumi-surface-saturation));
+		/* Prefixed first: Lightning CSS keeps only the last of the pair otherwise. */
 		-webkit-backdrop-filter: blur(var(--lumi-blur-sm))
+			saturate(var(--lumi-surface-saturation));
+		backdrop-filter: blur(var(--lumi-blur-sm))
 			saturate(var(--lumi-surface-saturation));
 	}
 }
